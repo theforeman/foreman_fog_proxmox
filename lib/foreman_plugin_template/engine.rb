@@ -37,7 +37,7 @@ module ForemanPluginTemplate
         Host::Managed.send(:include, ForemanPluginTemplate::HostExtensions)
         HostsHelper.send(:include, ForemanPluginTemplate::HostsHelperExtensions)
       rescue => e
-        puts "ForemanTemplatePlugin: skipping engine hook (#{e.to_s})"
+        puts "ForemanPluginTemplate: skipping engine hook (#{e.to_s})"
       end
     end
 

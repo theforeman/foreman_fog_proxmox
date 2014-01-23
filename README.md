@@ -1,9 +1,9 @@
-= ForemanPluginTemplate
+# ForemanPluginTemplate
 
 This repo is an example plugin which you can use as a starting point for developing
 your own Foreman plugins
 
-== Getting Started
+## Getting Started
 
 First, clone this repo to a directory named for your new plugin
 
@@ -19,7 +19,7 @@ Apply this change, and restart Foreman
 
 Once working, update the README with appropriate information, and publish your plugin!
 
-== Out of the box functionality
+## Out of the box functionality
 
 This example plugin comes with:
 
@@ -32,7 +32,7 @@ This example plugin comes with:
 
 These examples show how to add to Foreman in various ways.
 
-== Getting help
+## Getting help
 
 The Foreman developers IRC channel and mailing list are the best places to get help:
 

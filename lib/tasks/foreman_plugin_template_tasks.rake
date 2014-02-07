@@ -24,6 +24,8 @@ Rake::Task[:test].enhance do
 end
 
 load 'tasks/jenkins.rake'
-Rake::Task["jenkins:unit"].enhance do
-  Rake::Task['test:foreman_plugin_template'].invoke
+if Rake::Task.task_defined?(:'jenkins:setup')
+  Rake::Task["jenkins:unit"].enhance do
+    Rake::Task['test:foreman_plugin_template'].invoke
+  end
 end

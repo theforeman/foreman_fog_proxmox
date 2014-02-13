@@ -1,9 +1,12 @@
+require 'deface'
+
 module ForemanPluginTemplate
   class Engine < ::Rails::Engine
 
     config.autoload_paths += Dir["#{config.root}/app/controllers/concerns"]
     config.autoload_paths += Dir["#{config.root}/app/helpers/concerns"]
     config.autoload_paths += Dir["#{config.root}/app/models/concerns"]
+    config.autoload_paths += Dir["#{config.root}/app/overrides"]
 
     # Add any db migrations
     initializer "foreman_plugin_template.load_app_instance_data" do |app|

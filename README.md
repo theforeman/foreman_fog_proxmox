@@ -26,6 +26,7 @@ This example plugin comes with:
 * A model and helper concern
 * An inherited controller
 * A route/view which displays the plugin name
+* A widget for the Dashboard
 * A plugin registration block adding permissions/roles/menu entry
 * A functioning example rake task
 * A functioning example test and factory

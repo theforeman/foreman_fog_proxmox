@@ -31,6 +31,9 @@ module ForemanPluginTemplate
              :caption  => 'ForemanPluginTemplate',
              :parent   => :hosts_menu,
              :after    => :hosts
+
+        # add dashboard widget
+        widget 'foreman_plugin_template_widget', :name=>N_('Foreman plugin template widget'), :sizex => 4, :sizey =>1
       end
     end
 

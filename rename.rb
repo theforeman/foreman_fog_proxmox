@@ -30,14 +30,16 @@ end
 
 old_dirs = []
 Find.find('.') do |path|
+  next unless File.file?(path)
+  next if path =~ /\.git/
   next if path == "./rename.rb"
 
   # Change content on all files
-  if File.file?(path) && !(path=~/\.git/)
-    system( %Q{sed 's/foreman_plugin_template/#{snake}/g' -i #{path} } )
-    system( %Q{sed 's/ForemanPluginTemplate/#{camel}/g'   -i #{path} } )
-  end
+  system( %Q{sed 's/foreman_plugin_template/#{snake}/g' -i #{path} } )
+  system( %Q{sed 's/ForemanPluginTemplate/#{camel}/g'   -i #{path} } )
+end
 
+Find.find('.') do |path|
   # Change all the paths to the new snake_case name
   if path =~ /foreman_plugin_template/i
     new = path.gsub('foreman_plugin_template',snake)

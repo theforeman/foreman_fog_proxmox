@@ -30,8 +30,22 @@ This example plugin comes with:
 * A plugin registration block adding permissions/roles/menu entry
 * A functioning example rake task
 * A functioning example test and factory
+* Functioning internationalization support
 
 These examples show how to add to Foreman in various ways.
+
+### i18n
+
+From your Foreman checkout, run `rake plugin:gettext[foreman_plugin_example]` to
+extract the latest strings, and then inside the plugin checkout run `make -C locale
+tx-update` to pull and merge in the latest translations.  Do this regularly and
+before each release.
+
+Have your .pot file published in Foreman's Transifex project by contacting the
+development team below.
+
+[Translating](http://projects.theforeman.org/projects/foreman/wiki/Translating#Translating-for-developers)
+has more information about writing code with i18n support.
 
 ## Getting help
 

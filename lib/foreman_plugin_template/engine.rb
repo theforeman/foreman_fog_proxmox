@@ -53,5 +53,11 @@ module ForemanPluginTemplate
       end
     end
 
+    initializer 'foreman_plugin_template.register_gettext', :after => :load_config_initializers do |app|
+      locale_dir = File.join(File.expand_path('../../..', __FILE__), 'locale')
+      locale_domain = 'foreman_plugin_template'
+      Foreman::Gettext::Support.add_text_domain locale_domain, locale_dir
+    end
+
   end
 end

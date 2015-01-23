@@ -2,6 +2,7 @@ require 'deface'
 
 module ForemanPluginTemplate
   class Engine < ::Rails::Engine
+    engine_name 'foreman_plugin_template'
 
     config.autoload_paths += Dir["#{config.root}/app/controllers/concerns"]
     config.autoload_paths += Dir["#{config.root}/app/helpers/concerns"]
@@ -35,6 +36,22 @@ module ForemanPluginTemplate
         # add dashboard widget
         widget 'foreman_plugin_template_widget', :name=>N_('Foreman plugin template widget'), :sizex => 4, :sizey =>1
       end
+    end
+
+    # Precompile any JS or CSS files under app/assets/
+    # If requiring files from each other, list them explicitly here to avoid precompiling the same
+    # content twice.
+    assets_to_precompile =
+      Dir.chdir(root) do
+        Dir['app/assets/javascripts/**/*', 'app/assets/stylesheets/**/*'].map do |f|
+          f.split(File::SEPARATOR, 4).last
+        end
+      end
+    initializer 'foreman_plugin_template.assets.precompile' do |app|
+      app.config.assets.precompile += assets_to_precompile
+    end
+    initializer 'foreman_plugin_template.configure_assets', :group => :assets do
+      SETTINGS[:foreman_plugin_template] = {:assets => {:precompile => assets_to_precompile}}
     end
 
     #Include concerns in this config.to_prepare block

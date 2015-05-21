@@ -15,6 +15,5 @@ module ForemanPluginTemplate
       def class_method_name
       end
     end
-
   end
 end

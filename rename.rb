@@ -5,16 +5,16 @@ require 'fileutils'
 class String
   def camel_case
     return self if self !~ /_/ && self =~ /[A-Z]+.*/
-    split('_').map{|e| e.capitalize}.join
+    split('_').map(&:capitalize).join
   end
 end
 
 def usage
-  puts "This script renames the template plugin to a name of your choice"
-  puts "Please supply the desired plugin name in snake_case, e.g."
-  puts ""
-  puts "    rename.rb my_awesome_plugin"
-  puts ""
+  puts 'This script renames the template plugin to a name of your choice'
+  puts 'Please supply the desired plugin name in snake_case, e.g.'
+  puts ''
+  puts '    rename.rb my_awesome_plugin'
+  puts ''
   exit 0
 end
 
@@ -32,17 +32,17 @@ old_dirs = []
 Find.find('.') do |path|
   next unless File.file?(path)
   next if path =~ /\.git/
-  next if path == "./rename.rb"
+  next if path == './rename.rb'
 
   # Change content on all files
-  system( %Q{sed 's/foreman_plugin_template/#{snake}/g' -i #{path} } )
-  system( %Q{sed 's/ForemanPluginTemplate/#{camel}/g'   -i #{path} } )
+  system(%(sed 's/foreman_plugin_template/#{snake}/g' -i #{path} ))
+  system(%(sed 's/ForemanPluginTemplate/#{camel}/g'   -i #{path} ))
 end
 
 Find.find('.') do |path|
   # Change all the paths to the new snake_case name
   if path =~ /foreman_plugin_template/i
-    new = path.gsub('foreman_plugin_template',snake)
+    new = path.gsub('foreman_plugin_template', snake)
     # Recursively copy the directory and store the original for deletion
     # Check for $ because we don't need to copy template/hosts for example
     if File.directory?(path) && path =~ /foreman_plugin_template$/i
@@ -58,11 +58,11 @@ end
 # Clean up
 FileUtils.rm_rf(old_dirs)
 
-FileUtils.mv('README.plugin.md','README.md')
+FileUtils.mv('README.plugin.md', 'README.md')
 
-puts "All done!"
+puts 'All done!'
 puts "Add this to Foreman's bundler configuration:"
-puts ""
+puts ''
 puts "  gem '#{snake}', :path => '#{Dir.pwd}'"
-puts ""
-puts "Happy hacking!"
+puts ''
+puts 'Happy hacking!'

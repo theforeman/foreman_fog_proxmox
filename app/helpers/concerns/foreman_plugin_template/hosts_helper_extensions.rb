@@ -10,5 +10,4 @@ module ForemanPluginTemplate
     def instance_method_name
     end
   end
-
 end

@@ -33,5 +33,15 @@ Rake::TestTask.new(:test) do |t|
   t.verbose = false
 end
 
-
 task :default => :test
+
+begin
+  require 'rubocop/rake_task'
+  RuboCop::RakeTask.new
+rescue => _
+  puts "Rubocop not loaded."
+end
+
+task :default do
+  Rake::Task['rubocop'].execute
+end

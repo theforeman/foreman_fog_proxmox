@@ -60,7 +60,7 @@ module ForemanPluginTemplate
         Host::Managed.send(:include, ForemanPluginTemplate::HostExtensions)
         HostsHelper.send(:include, ForemanPluginTemplate::HostsHelperExtensions)
       rescue => e
-        puts "ForemanPluginTemplate: skipping engine hook (#{e})"
+        Rails.logger.warn "ForemanPluginTemplate: skipping engine hook (#{e})"
       end
     end
 

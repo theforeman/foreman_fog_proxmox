@@ -1,0 +1,16 @@
+inherit_from:
+  - .rubocop_todo.yml
+
+AllCops:
+  RunRailsCops: true # always run the rails cops
+
+# Don't enforce documentation
+Style/Documentation:
+  Enabled: false
+
+# Force before_filter until upgrade to Rails 4
+Rails/ActionFilter:
+  EnforcedStyle: filter
+
+Metrics/MethodLength:
+  Max: 20

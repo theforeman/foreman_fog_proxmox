@@ -11,7 +11,9 @@ module ForemanPluginTemplate
 
     # Add any db migrations
     initializer 'foreman_plugin_template.load_app_instance_data' do |app|
-      app.config.paths['db/migrate'] += ForemanPluginTemplate::Engine.paths['db/migrate'].existent
+      ForemanPluginTemplate::Engine.paths['db/migrate'].existent.each do |path|
+        app.config.paths['db/migrate'] << path
+      end
     end
 
     initializer 'foreman_plugin_template.register_plugin', after: :finisher_hook do |_app|

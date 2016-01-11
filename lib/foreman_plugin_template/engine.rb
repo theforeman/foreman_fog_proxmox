@@ -16,7 +16,7 @@ module ForemanPluginTemplate
       end
     end
 
-    initializer 'foreman_plugin_template.register_plugin', after: :finisher_hook do |_app|
+    initializer 'foreman_plugin_template.register_plugin', :before => :finisher_hook do |_app|
       Foreman::Plugin.register :foreman_plugin_template do
         requires_foreman '>= 1.4'
 

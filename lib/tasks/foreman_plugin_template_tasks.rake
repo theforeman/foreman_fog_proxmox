@@ -16,6 +16,7 @@ namespace :test do
     t.libs << ['test', test_dir]
     t.pattern = "#{test_dir}/**/*_test.rb"
     t.verbose = true
+    t.warning = false
   end
 end
 

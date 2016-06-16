@@ -1,6 +1,3 @@
-inherit_from:
-  - .rubocop_todo.yml
-
 Rails:
   Enabled: true
 
@@ -14,3 +11,13 @@ Rails/ActionFilter:
 
 Metrics/MethodLength:
   Max: 20
+
+Metrics/LineLength:
+  Max: 111 # TODO: discuss and set this
+
+Style/Next:
+  Enabled: false
+
+# Support both ruby19 and hash_rockets
+Style/HashSyntax:
+  Enabled: false

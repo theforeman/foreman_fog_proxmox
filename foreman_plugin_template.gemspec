@@ -4,7 +4,7 @@ require 'date'
 Gem::Specification.new do |s|
   s.name        = 'foreman_plugin_template'
   s.version     = ForemanPluginTemplate::VERSION
-  s.date        = Date.today.to_s
+  s.date        = Time.zone.today
   s.authors     = ['TODO: Your name']
   s.email       = ['TODO: Your email']
   s.homepage    = 'TODO'

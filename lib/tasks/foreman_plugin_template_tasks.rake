@@ -1,3 +1,5 @@
+require 'rake/testtask'
+
 # Tasks
 namespace :foreman_plugin_template do
   namespace :example do

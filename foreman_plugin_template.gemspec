@@ -5,6 +5,7 @@ Gem::Specification.new do |s|
   s.name        = 'foreman_plugin_template'
   s.version     = ForemanPluginTemplate::VERSION
   s.date        = Time.zone.today
+  s.license     = 'GPL-3.0'
   s.authors     = ['TODO: Your name']
   s.email       = ['TODO: Your email']
   s.homepage    = 'TODO'

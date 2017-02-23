@@ -1,5 +1,3 @@
-require 'deface'
-
 module ForemanPluginTemplate
   class Engine < ::Rails::Engine
     engine_name 'foreman_plugin_template'

@@ -34,6 +34,12 @@ This example plugin comes with:
 
 These examples show how to add to Foreman in various ways.
 
+### Further examples
+
+The [How to create a plugin](http://projects.theforeman.org/projects/foreman/wiki/How_to_Create_a_Plugin)
+wiki page contains a lot of information on supported plugin extension points in
+Foreman and how to use them from a plugin.
+
 ### i18n
 
 From your Foreman checkout, run `rake plugin:gettext[foreman_plugin_example]` to

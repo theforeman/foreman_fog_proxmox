@@ -1,10 +1,8 @@
 require File.expand_path('../lib/foreman_plugin_template/version', __FILE__)
-require 'date'
 
 Gem::Specification.new do |s|
   s.name        = 'foreman_plugin_template'
   s.version     = ForemanPluginTemplate::VERSION
-  s.date        = Time.zone.today
   s.license     = 'GPL-3.0'
   s.authors     = ['TODO: Your name']
   s.email       = ['TODO: Your email']

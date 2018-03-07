@@ -35,8 +35,10 @@ Find.find('.') do |path|
   next if path == './rename.rb'
 
   # Change content on all files
-  system(%(sed 's/foreman_plugin_template/#{snake}/g' -i #{path} ))
-  system(%(sed 's/ForemanPluginTemplate/#{camel}/g'   -i #{path} ))
+  tmp_file = "#{path}.tmp"
+  system(%(sed 's/foreman_plugin_template/#{snake}/g' #{path} > #{tmp_file}))
+  system(%(sed 's/ForemanPluginTemplate/#{camel}/g' #{tmp_file} > #{path}))
+  system(%(rm #{tmp_file}))
 end
 
 Find.find('.') do |path|

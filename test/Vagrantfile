@@ -1,0 +1,39 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.define 'proxmox', primary: true do |proxmox|
+    proxmox.vm.box = "debian/stretch64"
+    proxmox.vm.provider "virtualbox" do |vb|
+      vb.memory = "1024"
+    end
+    proxmox.vm.provision "shell", inline: <<-SHELL
+      echo "deb http://download.proxmox.com/debian/pve stretch pve-no-subscription" > /etc/apt/sources.list.d/pve-install-repo.list
+      wget http://download.proxmox.com/debian/proxmox-ve-release-5.x.gpg -O /etc/apt/trusted.gpg.d/proxmox-ve-release-5.x.gpg
+      apt update
+      apt install proxmox-ve postfix open-iscsi
+      apt remove os-prober 
+    SHELL
+  end
+
+  config.vm.define 'foreman' do |foreman|
+    foreman.vm.box = "debian/stretch64"
+    foreman.vm.synced_folder "../", "/foreman_proxmox"
+    foreman.vm.provider "virtualbox" do |vb|
+      vb.memory = "1024"
+    end
+    foreman.vm.provision "shell", inline: <<-SHELL
+      apt update
+      apt install -y git ruby
+      cd /opt
+      git clone https://github.com/theforeman/foreman.git
+      echo "gem 'foreman_proxmox', :path => '/foreman_proxmox'" > /opt/foreman/bunlder.d/Gemfile.local.rb
+      cd foreman
+      bundle install --without libvirt postgresql
+      npm install
+      bundle exec bin/rake db:migrate
+      bundle exec bin/rake db:seed
+      bundle exec foreman start
+    SHELL
+  end
+end

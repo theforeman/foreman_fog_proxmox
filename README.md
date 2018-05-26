@@ -1,78 +1,47 @@
-# ForemanPluginTemplate
+![ForemanProxmox](foremanproxmox.png)
 
-This repo is an example plugin which you can use as a starting point for developing
-your own Foreman plugins
+# Foreman::Proxmox
 
-## Getting Started
+[Foreman](http://theforeman.org/) plugin that manages [Proxmox](https://www.proxmox.com/en/proxmox-ve) virtual machines and containers using the [fog-proxmox](https://github.com/tristanrobert/fog-proxmox) module.
 
-First, clone this repo to a directory named for your new plugin
+It is intended to satisfy this [feature](http://projects.theforeman.org/issues/2186)
 
-    git clone https://github.com/theforeman/foreman_plugin_template foreman_my_plugin
+## Installation
 
-Now use the provided script to rewrite all the files in the plugin
+Add this line to your application's Gemfile:
 
-    cd foreman_my_plugin
-    ./rename.rb foreman_my_plugin
+```ruby
+gem 'foreman_proxmox'
+```
 
-The script will also output the required Bundler line to add the plugin to Foreman.
-Apply this change, and restart Foreman
+And then execute:
 
-Once working, update the README with appropriate information, and publish your plugin!
+    $ bundle
 
-## Out of the box functionality
+Or install it yourself as:
 
-This example plugin comes with:
+    $ gem install foreman_proxmox
 
-* A model and helper concern
-* An inherited controller
-* A route/view which displays the plugin name
-* A widget for the Dashboard
-* A plugin registration block adding permissions/roles/menu entry
-* A functioning example rake task
-* A functioning example test and factory
-* Functioning internationalization support
+## Usage
 
-These examples show how to add to Foreman in various ways.
+This is not yet a stable version. I recommend you not to use it in production.
 
-### Further examples
+Work is still in progress...
 
-The [How to create a plugin](http://projects.theforeman.org/projects/foreman/wiki/How_to_Create_a_Plugin)
-wiki page contains a lot of information on supported plugin extension points in
-Foreman and how to use them from a plugin.
+## Development
 
-### i18n
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-From your Foreman checkout, run `rake plugin:gettext[foreman_plugin_example]` to
-extract the latest strings, and then inside the plugin checkout run `make -C locale
-tx-update` to pull and merge in the latest translations.  Do this regularly and
-before each release.
+To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
-Have your .pot file published in Foreman's Transifex project by contacting the
-development team below.
+## Contributing
 
-[Translating](http://projects.theforeman.org/projects/foreman/wiki/Translating#Translating-for-developers)
-has more information about writing code with i18n support.
+Bug reports and pull requests are welcome on GitHub at https://github.com/tristanrobert/foreman_proxmox. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
-## Getting help
+## License
 
-The Foreman developers IRC channel and mailing list are the best places to get help:
+The code is available as open source under the terms of the [GNU Public License v3](LICENSE).
 
-* Freenode: #theforeman-dev
-* Google Groups: foreman-dev@googlegroups.com
+## Code of Conduct
 
-## Copyright
-
-Copyright (c) 2014 Red Hat
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+Everyone interacting in the Foreman::Proxmox project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](CODE_OF_CONDUCT.md).

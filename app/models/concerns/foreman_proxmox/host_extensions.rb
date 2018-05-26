@@ -1,4 +1,4 @@
-module ForemanPluginTemplate
+module ForemanProxmox
   module HostExtensions
     extend ActiveSupport::Concern
 

@@ -16,7 +16,6 @@ Vagrant.configure("2") do |config|
       wget http://download.proxmox.com/debian/proxmox-ve-release-5.x.gpg -O /etc/apt/trusted.gpg.d/proxmox-ve-release-5.x.gpg
       apt update && dist-upgrade
       apt install proxmox-ve postfix open-iscsi
-      apt remove os-prober 
     SHELL
   end
 

@@ -6,11 +6,15 @@ Vagrant.configure("2") do |config|
     proxmox.vm.box = "debian/stretch64"
     proxmox.vm.provider "virtualbox" do |vb|
       vb.memory = "1024"
+      vb.cpus = "2"
+      vb.name = "proxmox_vagrant"
+      vb.linked_clone = true
     end
     proxmox.vm.provision "shell", inline: <<-SHELL
+      dpkg --configure -a
       echo "deb http://download.proxmox.com/debian/pve stretch pve-no-subscription" > /etc/apt/sources.list.d/pve-install-repo.list
       wget http://download.proxmox.com/debian/proxmox-ve-release-5.x.gpg -O /etc/apt/trusted.gpg.d/proxmox-ve-release-5.x.gpg
-      apt update
+      apt update && dist-upgrade
       apt install proxmox-ve postfix open-iscsi
       apt remove os-prober 
     SHELL
@@ -21,9 +25,13 @@ Vagrant.configure("2") do |config|
     foreman.vm.synced_folder "../", "/foreman_proxmox"
     foreman.vm.provider "virtualbox" do |vb|
       vb.memory = "1024"
+      vb.cpus = "2"
+      vb.name = "foreman_vagrant"
+      vb.linked_clone = true
     end
     foreman.vm.provision "shell", inline: <<-SHELL
-      apt update
+      dpkg --configure -a
+      apt update && dist-upgrade
       apt install -y git ruby
       cd /opt
       git clone https://github.com/theforeman/foreman.git

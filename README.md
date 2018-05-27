@@ -36,7 +36,10 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/tristanrobert/foreman_proxmox. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+You can reach the [contributors](CONTRIBUTORS.md).
+Bug reports and pull requests are welcome on GitHub at [ForemanProxmox](https://github.com/tristanrobert/foreman_proxmox). This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+
+Please read [how to contribute](CONTRIBUTING.md).
 
 ## License
 
@@ -44,4 +47,4 @@ The code is available as open source under the terms of the [GNU Public License 
 
 ## Code of Conduct
 
-Everyone interacting in the Foreman::Proxmox project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](CODE_OF_CONDUCT.md).
+Everyone interacting in the ForemanProxmox project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](CODE_OF_CONDUCT.md).

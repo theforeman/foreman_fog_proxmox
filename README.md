@@ -8,19 +8,9 @@ It is intended to satisfy this [feature](http://projects.theforeman.org/issues/2
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Please see the Foreman manual for appropriate instructions:
 
-```ruby
-gem 'foreman_proxmox'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install foreman_proxmox
+* [Foreman: How to Install a Plugin](http://theforeman.org/manuals/latest/index.html#6.1InstallaPlugin)
 
 ## Usage
 

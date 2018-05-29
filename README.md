@@ -25,7 +25,7 @@ You need a Proxmox VE >= 5.1 server running.
 * Fork this github repo.
 * Clone it on your local machine
 
-To install in a Docker container, move to the source code:
+To install the plugin with foreman in a Docker container, move to the source code:
 
 ```shell
 cd foreman_proxmox
@@ -49,6 +49,14 @@ Run it:
 ```shell
 sudo docker run -it -p 3808:5000 --name foreman foreman
 ```
+
+Access container's bash console:
+
+```shell
+sudo docker exec -it foreman bash
+```
+
+The docker container use ruby 2.3.7, latest nodejs 8.x (8.11.2) and foreman 1.17.1.
 
 ## Contributing
 

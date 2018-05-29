@@ -9,8 +9,9 @@ ADD . /foreman_proxmox
 RUN mkdir /foreman
 WORKDIR /foreman
 RUN git clone https://github.com/theforeman/foreman.git
-RUN echo "gem 'foreman_proxmox', :path => '/foreman_proxmox'" > /foreman/foreman/bundler.d/Gemfile.local.rb
 WORKDIR /foreman/foreman
+RUN git checkout tags/1.17.1
+RUN echo "gem 'foreman_proxmox', :path => '/foreman_proxmox'" > /foreman/foreman/bundler.d/Gemfile.local.rb
 RUN cp /foreman/foreman/config/settings.yaml.example /foreman/foreman/config/settings.yaml
 RUN cp /foreman/foreman/config/database.yml.example /foreman/foreman/config/database.yml
 RUN bundle install --jobs 20

@@ -20,9 +20,35 @@ Work is still in progress...
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+You need a Proxmox VE >= 5.1 server running.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+* Fork this github repo.
+* Clone it on your local machine
+
+To install in a Docker container, move to the source code:
+
+```shell
+cd foreman_proxmox
+```
+
+Build a docker container:
+
+```shell
+sudo docker build -t foreman .
+```
+
+If you are behind a proxy http server, add:
+
+```shell
+--build-arg http_proxy=http://<user>:<password>@<ip>:<port>
+...
+```
+
+Run it:
+
+```shell
+sudo docker run -it -p 3808:5000 --name foreman foreman
+```
 
 ## Contributing
 

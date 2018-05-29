@@ -1,4 +1,5 @@
 FROM ruby:2.3.7
+LABEL MAINTAINER="tristan.robert.44@gmail.com"
 RUN apt-get update -qq && apt-get install -y build-essential libpq-dev libsystemd-dev libvirt-dev git curl
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
 RUN apt-get install -y nodejs

@@ -36,5 +36,4 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'rubocop'
   s.add_development_dependency 'rdoc'
-  s.add_dependency 'fog-proxmox', :git => 'https://github.com/tristanrobert/fog-proxmox.git'
 end

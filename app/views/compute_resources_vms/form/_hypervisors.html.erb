@@ -1,0 +1,12 @@
+<div id='templates' class=''>
+  <div class="form-group">
+    <%= selectable_f f, :hypervisor_host,
+                     [[_("Automatic allocation"), ""]] + proxmox_hypervisor_map(compute_resource),
+                     {},
+                     { :class => 'form-control span2',
+                       :disabled => (controller_name != 'hosts'),
+                       :label => 'Hypervisor'
+                     }
+    %>
+  </div>
+</div>

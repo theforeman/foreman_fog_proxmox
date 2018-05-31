@@ -1,0 +1,119 @@
+<%
+
+   if params[:host] && params[:host][:compute_attributes] && params[:host][:compute_attributes][:proxmoxstore]
+     vmdata = params[:host][:compute_attributes][:proxmoxstore]['vm-data']
+   else
+     vmdata = init_vmdata
+   end
+
+   disabled = 'readonly'
+
+%>
+
+<div class="children_fields">
+
+  <div class="fields">
+
+    <div class="form-group">
+      <label class="col-md-2 control-label" for="proxmoxstore-vm-data-ifs-0-ip">vm-data/ifs/0/ip</label>
+
+      <div class="col-md-4">
+        <div class="controls">
+          <input <%= disabled %> id="proxmoxstore-vm-data-ifs-0-ip" type="text" name="host[compute_attributes][proxmoxstore][vm-data][ifs][0][ip]" class="form-control input-mini" value="<%= vmdata[:ifs]['0'][:ip] %>">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-md-2 control-label" for="proxmoxstore-vm-data-ifs-0-gateway">vm-data/ifs/0/gateway</label>
+
+      <div class="col-md-4">
+        <div class="controls">
+          <input <%= disabled %> id="proxmoxstore-vm-data-ifs-0-gateway" type="text" name="host[compute_attributes][proxmoxstore][vm-data][ifs][0][gateway]" class="form-control input-mini" value="<%= vmdata[:ifs]['0'][:gateway] %>">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-md-2 control-label" for="proxmoxstore-vm-data-ifs-0-netmask">vm-data/ifs/0/netmask</label>
+
+      <div class="col-md-4">
+        <div class="controls">
+          <input <%= disabled %> id="proxmoxstore-vm-data-ifs-0-netmask" type="text" name="host[compute_attributes][proxmoxstore][vm-data][ifs][0][netmask]" class="form-control input-mini" value="<%= vmdata[:ifs]['0'][:netmask] %>">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-md-2 control-label" for="proxmoxstore-vm-data-nameserver1">vm-data/nameserver1</label>
+
+      <div class="col-md-4">
+        <input <%= disabled %> id="proxmoxstore-vm-data-nameserver1" type="text" name="host[compute_attributes][proxmoxstore][vm-data][nameserver1]" class="form-control input-mini" value="<%= vmdata[:nameserver1] %>">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-md-2 control-label" for="proxmoxstore-vm-data-nameserver2">vm-data/nameserver2</label>
+
+      <div class="col-md-4">
+        <input <%= disabled %> id="proxmoxstore-vm-data-nameserver2" type="text" name="host[compute_attributes][proxmoxstore][vm-data][nameserver2]" class="form-control input-mini" value="<%= vmdata[:nameserver2] %>">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-md-2 control-label" for="proxmoxstore-vm-data-environment">vm-data/environment</label>
+
+      <div class="col-md-4">
+        <input <%= disabled %> id="proxmoxstore-vm-data-environment" type="text" name="host[compute_attributes][proxmoxstore][vm-data][environment]" class="form-control input-mini" value="<%= vmdata[:environment] %>">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script type="text/javascript">
+    function autocomplete_proxmoxstore(subnet_id) {
+        url = "/subnets/" + subnet_id + "/edit";
+        $.get(url, function (data) {
+            fields = $('#primary', data);
+            $('#proxmoxstore-vm-data-ifs-0-gateway').val($('#subnet_gateway', fields).val());
+            $('#proxmoxstore-vm-data-ifs-0-netmask').val($('#subnet_mask', fields).val());
+            $('#proxmoxstore-vm-data-nameserver1').val($('#subnet_dns_primary', fields).val());
+            $('#proxmoxstore-vm-data-nameserver2').val($('#subnet_dns_secondary', fields).val());
+            $('#proxmoxstore-vm-data-ifs-0-ip').val($('#host_interfaces_attributes_0_ip').val());
+            $('#proxmoxstore-vm-data-environment').val($('#host_environment_id option:selected').text())
+        })
+    }
+
+    subnet_id = $('#host_interfaces_attributes_0_subnet_id option:selected').val();
+
+    if (subnet_id) {
+        autocomplete_proxmoxstore(subnet_id)
+    }
+
+    $(document).off('change.proxmoxstore', '#host_interfaces_attributes_0_subnet_id');
+    $(document).on('change.proxmoxstore', '#host_interfaces_attributes_0_subnet_id', function (data) {
+        subnet_id = $('option:selected', data.target).val();
+        if (subnet_id) {
+            autocomplete_proxmoxstore(subnet_id)
+        }
+    });
+
+    $('#proxmoxstore-vm-data-environment').val($('#host_environment_id option:selected').text());
+
+    $(document).off('change.proxmoxstore', '#host_environment_id');
+    $(document).on('change.proxmoxstore', '#host_environment_id', function (data) {
+        env = $('option:selected', data.target).text();
+        $('#proxmoxstore-vm-data-environment').val(env)
+    });
+
+    $(document).off('click.proxmoxstore', '#compute_resource_tab a');
+    $(document).on('click.proxmoxstore', '#compute_resource_tab a', function (data) {
+        subnet_id = $('#host_interfaces_attributes_0_subnet_id option:selected').val();
+
+        if (subnet_id) {
+            autocomplete_proxmoxstore(subnet_id)
+        }
+    })
+
+</script>

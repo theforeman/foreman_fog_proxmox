@@ -1,0 +1,18 @@
+<div class="fields">
+  <%= selectable_f_with_cache_invalidation f, :sr_uuid,
+        proxmox_storage_pool_map(compute_resource),
+        { :selected => attribute_map[:volume_selected] },
+        { :class => "span2",
+         :label => _("Storage Repository"),
+        },
+        {
+           :callback               => 'proxmoxPopulateStoragePools',
+           :title                  => 'Refresh available storage repositories',
+           :url                    => '/foreman_proxmox/cache/refresh',
+           :computer_resource_id   => compute_resource.id,
+           :attribute              => 'storage_pools'
+        }
+  %>
+
+  <%= text_f f, :physical_size, :class => "input-mini", :label => _("Size (GB)"), :value => attribute_map[:volume_size] %>
+</div>

@@ -1,0 +1,12 @@
+<%= text_f f, :url, :class => "input-xlarge", :help_block => _("e.g. https://<host>:<port>/api2/json") %>
+<%= text_f f, :user %>
+<%= password_f f, :password %>
+<%= checkbox_f, :ssl_verify_peer %>
+
+<% hypervisor = f.object.hypervisor.uuid rescue nil %>
+<% if hypervisor -%>
+    <%= f.hidden_field :uuid, :value => hypervisor %>
+<% end -%>
+<%= link_to_function _("Test Connection"), "testConnection(this)", :class => "btn + #{hypervisor.nil? ? "btn-default" : "btn-success"}", :'data-url' => test_connection_compute_resources_path %>
+
+<%= hidden_spinner('', :id => 'test_connection_indicator') %>

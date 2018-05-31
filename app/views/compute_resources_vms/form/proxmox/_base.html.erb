@@ -1,0 +1,196 @@
+<% new = f.object
+   attribute_map = compute_attribute_map(params, compute_resource, new)
+
+   hide_raw = ''
+   if params && params['host'] && params['host']['compute_attributes'] && params['host']['compute_attributes']['custom_template_name'] != ''
+     hide_raw = 'display:none;'
+   end
+
+   if controller_name == 'hosts'
+     fields_enabled = true
+     start_enable   = true
+   elsif controller_name == 'compute_attributes'
+     fields_enabled     = true
+     compute_attributes = compute_resource.compute_profile_attributes_for(params['compute_profile_id'])
+     name               = compute_attributes['name']
+   else
+     fields_enabled = false
+   end
+
+-%>
+<%= javascript_tag("$(document).on('ContentLoad', tfm.numFields.initAll)"); %>
+<!-- VM Initial Settings -->
+<div class="children_fields">
+  <fieldset id="vm_profile">
+    <legend>VM Profile</legend>
+    <div class="fields">
+      <!--<%= text_f f, :name, :disabled => !fields_enabled, :value => name, :label => 'Name' if controller_name != 'hosts' %>-->
+      <%= counter_f f,   :vcpus_max,  :disabled => !fields_enabled, :label => _('vCPUs'),      :label_size => 'col-md-2', :'data-soft-max' => compute_resource.max_cpu_count %>
+      <%= byte_size_f f, :memory_min, :disabled => !fields_enabled, :label => _('Memory Min'), :label_size => "col-md-2", :'data-soft-max' => compute_resource.max_memory %>
+      <%= byte_size_f f, :memory_max, :disabled => !fields_enabled, :label => _('Memory Max'), :label_size => "col-md-2", :'data-soft-max' => compute_resource.max_memory %>
+    </div>
+  </fieldset>
+</div>
+
+<!-- Templates -->
+<div class="children_fields">
+  <%= field_set_tag 'VM Template', :id => 'proxmox_templates', :title => _('Template') do -%>
+      <%= render 'compute_resources_vms/form/templates', :f => f, :compute_resource => compute_resource, :new => new, :attribute_map => attribute_map %>
+  <% end -%>
+</div>
+
+<!-- ProxmoxStore Data -->
+<div class="children_fields" id="proxmoxserver-proxmoxstore-data">
+  <%= field_set_tag 'Proxmox Store Data', :id => 'proxmox_store_data', :title => _('Proxmox Store Data') do -%>
+      <%= render 'compute_resources_vms/form/proxmoxstore', :f => f, :compute_resource => compute_resource, :new => new, :attribute_map => attribute_map %>
+  <% end %>
+</div>
+
+<!-- Storage -->
+<div class="children_fields proxmoxserver-raw" id="proxmoxserver-storage" style="<%= hide_raw %>">
+  <%= field_set_tag 'Storage', :id => 'storage_volumes', :title => _('Storage') do -%>
+      <%= f.fields_for :VBDs do |i| %>
+          <%= render 'compute_resources_vms/form/volume', :f => i, :compute_resource => compute_resource, :new => new, :attribute_map => attribute_map %>
+      <% end -%>
+  <% end -%>
+  <%= checkbox_f f, :xstools, :checked => false, :label => _('Insert XS Tools ISO Drive') %>
+</div>
+
+<!-- Network -->
+<div class="children_fields" id="proxmoxserver-network" style="<%= hide_raw %>">
+  <%= field_set_tag 'Network interfaces', :id => 'network_interfaces', :title => _('Networks') do -%>
+      <%= f.fields_for :VIFs do |i| %>
+          <%= render 'compute_resources_vms/form/network', :f => i, :compute_resource => compute_resource, :new => new, :attribute_map => attribute_map %>
+      <% end -%>
+  <% end -%>
+</div>
+
+<div class="children_fields" id="proxmoxserver-hosts" style="<%= hide_raw %>">
+  <%= field_set_tag 'Start on server', :id => 'proxmox_hypervisors', :title => _('Start on server') do -%>
+      <%= render 'compute_resources_vms/form/hypervisors', :f => f, :compute_resource => compute_resource, :new => new, :attribute_map => attribute_map %>
+  <% end -%>
+</div>
+
+<!-- Startup -->
+<div class="children_fields" id="proxmoxserver-vm-start" style="<%= hide_raw %>">
+  <%= field_set_tag 'VM Startup Options', :id => 'vm_startup_options', :title => _('Power ON VM') do -%>
+      <%= checkbox_f f, :start, :checked => (attribute_map[:power_on] == '1' || start_enable), :label => _("Power ON VM") %>
+  <% end -%>
+</div>
+
+<script type="text/javascript">
+
+    // Check if its a computer resource template then just do not show the form of ProxmoxStore
+    if ($("#compute_attribute_compute_profile_id").length > 0) {
+        $('#proxmoxserver-proxmoxstore-data').hide(1)
+    }
+
+    // Check if custom template in use then do now show SR settings
+    if ($("#compute_attribute_vm_attrs_builtin_template_name").val() == "" && $("#compute_attribute_vm_attrs_custom_template_name").val() != "") {
+        $('.proxmoxserver-raw').hide(1);
+    }
+
+    // Check which template are in use
+    if ($("#compute_attribute_vm_attrs_builtin_template_name").val() != "") {
+        $('#compute_attribute_vm_attrs_custom_template_name').val($("#compute_attribute_vm_attrs_custom_template_name option:contains('No template')").val());
+        // IE and Chrome
+        $('#compute_attribute_vm_attrs_custom_template_name').attr("disabled", 'disabled');
+        $('.custom_template_name').prop("disabled", true);
+    }
+
+    if ($("#compute_attribute_vm_attrs_custom_template_name").val() != "") {
+        $('#compute_attribute_vm_attrs_builtin_template_name').val($("#compute_attribute_vm_attrs_custom_template_name option:contains('No template')").val());
+        // IE and Chrome
+        $('#compute_attribute_vm_attrs_builtin_template_name').attr("disabled", 'disabled');
+        $('.builtin_templates').prop("disabled", true);
+    }
+
+    // Computer Profile Templates
+    $(document).off('change.proxmoxserver', '#compute_attribute_vm_attrs_custom_template_name');
+    $(document).on('change.proxmoxserver', '#compute_attribute_vm_attrs_custom_template_name', function (data) {
+        if ($('option:selected', data.target).val() == "") {
+            $('.proxmoxserver-raw').show(1000);
+            // IE and Chrome
+            $('.builtin_templates').prop("disabled", false);
+            $('#compute_attribute_vm_attrs_builtin_template_name').removeAttr('disabled');
+        } else {
+            $('.proxmoxserver-raw').hide(1000);
+            $('#compute_attribute_vm_attrs_builtin_template_name').val($("#compute_attribute_vm_attrs_builtin_template_name option:contains('No template')").val());
+            // IE and Chrome
+            $('#compute_attribute_vm_attrs_builtin_template_name').attr("disabled", 'disabled');
+            $('.builtin_templates').prop("disabled", true);
+
+        }
+
+    });
+
+    $(document).off('change.proxmoxserver', '#compute_attribute_vm_attrs_builtin_template_name');
+    $(document).on('change.proxmoxserver', '#compute_attribute_vm_attrs_builtin_template_name', function (data) {
+        if ($('option:selected', data.target).val() == "") {
+            // IE and Chrome
+            $('.builtin_templates').prop("disabled", false);
+            $('#compute_attribute_vm_attrs_custom_template_name').removeAttr('disabled');
+        } else {
+            $('#compute_attribute_vm_attrs_custom_template_name').val($("#compute_attribute_vm_attrs_custom_template_name option:contains('No template')").val());
+            // IE and Chrome
+            $('#compute_attribute_vm_attrs_custom_template_name').attr("disabled", 'disabled');
+            $('.custom_template_name').prop("disabled", true);
+
+        }
+
+    });
+
+
+    // Host Profile Forms
+
+    // Check which template are in use
+    if ($("#host_compute_attributes_custom_template_name").val() != "") {
+        $('#host_compute_attributes_builtin_template_name').val($("#host_compute_attributes_builtin_template_name option:contains('No template')").val());
+        // IE and Chrome
+        $('#host_compute_attributes_builtin_template_name').attr("disabled", 'disabled');
+        $('.builtin_templates').prop("disabled", true);
+    }
+
+    if ($("#host_compute_attributes_builtin_template_name").val() != "") {
+        $('#host_compute_attributes_custom_template_name').val($("#host_compute_attributes_custom_template_name option:contains('No template')").val());
+        // IE and Chrome
+        $('#host_compute_attributes_custom_template_name').attr("disabled", 'disabled');
+        $('.custom_template_name').prop("disabled", true);
+    }
+
+    $(document).off('change.proxmoxserver', '#host_compute_attributes_custom_template_name');
+    $(document).on('change.proxmoxserver', '#host_compute_attributes_custom_template_name', function (data) {
+        if ($('option:selected', data.target).val() == "") {
+            $('.proxmoxserver-raw').show(1000);
+            // IE and Chrome
+            $('.builtin_templates').prop("disabled", false);
+            $('#host_compute_attributes_builtin_template_name').removeAttr('disabled');
+        } else {
+            $('.proxmoxserver-raw').hide(1000);
+            $('#host_compute_attributes_builtin_template_name').val($("#host_compute_attributes_builtin_template_name option:contains('No template')").val());
+            // IE and Chrome
+            $('#host_compute_attributes_builtin_template_name').attr("disabled", 'disabled');
+            $('.builtin_templates').prop("disabled", true);
+
+        }
+
+    });
+
+    $(document).off('change.proxmoxserver', '#host_compute_attributes_builtin_template_name');
+    $(document).on('change.proxmoxserver', '#host_compute_attributes_builtin_template_name', function (data) {
+        if ($('option:selected', data.target).val() == "") {
+            // IE and Chrome
+            $('.builtin_templates').prop("disabled", false);
+            $('#host_compute_attributes_custom_template_name').removeAttr('disabled');
+        } else {
+            $('#host_compute_attributes_custom_template_name').val($("#host_compute_attributes_builtin_template_name option:contains('No template')").val());
+            // IE and Chrome
+            $('#host_compute_attributes_custom_template_name').attr("disabled", 'disabled');
+            $('.custom_template_name').prop("disabled", true);
+
+        }
+    })
+</script>
+
+<%= compute_specific_js(compute_resource, 'foreman_proxmox/cache_refresh') %>
+<%= compute_specific_js(compute_resource, 'foreman_proxmox/populate_fields') %>

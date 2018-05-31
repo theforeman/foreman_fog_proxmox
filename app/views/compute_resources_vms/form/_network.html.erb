@@ -1,0 +1,20 @@
+<div class="fields">
+  <div id='nat' class=''>
+    <%= selectable_f_with_cache_invalidation f, :print,
+                     compute_resource.networks.map(&:name),
+                     {  :include_blank => compute_resource.networks.any? ? false : _('No networks'),
+                        :selected      => attribute_map[:network_selected]
+                     },
+                     {  :class         => 'span2',
+                        :label         => _('Network')
+                     },
+                     {
+                         :callback               => 'proxmoxPopulateNetworks',
+                         :title                  => 'Refresh available networks',
+                         :url                    => '/foreman_proxmox/cache/refresh',
+                         :computer_resource_id   => compute_resource.id,
+                         :attribute              => 'networks'
+                     }
+    %>
+  </div>
+</div>

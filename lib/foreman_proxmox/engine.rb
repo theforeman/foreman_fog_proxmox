@@ -16,7 +16,10 @@ module ForemanProxmox
 
     initializer 'foreman_proxmox.register_plugin', :before => :finisher_hook do |_app|
       Foreman::Plugin.register :foreman_proxmox do
-        requires_foreman '>= 1.4'
+        requires_foreman '>= 1.17'
+        # Register Proxmox VE compute resource in foreman
+        compute_resource ForemanProxmox::Proxmox
+        parameter_filter(ComputeResource, :uuid)
 
         # Add permissions
         security_block :foreman_proxmox do

@@ -11,7 +11,8 @@ WORKDIR /foreman
 RUN git clone https://github.com/theforeman/foreman.git
 WORKDIR /foreman/foreman
 RUN git checkout tags/1.17.1
-RUN echo "gem 'foreman_proxmox', :path => '/foreman_proxmox'" > /foreman/foreman/bundler.d/Gemfile.local.rb
+RUN echo "gem 'foreman_proxmox', :path => '/foreman_proxmox'\n" > /foreman/foreman/bundler.d/Gemfile.local.rb
+RUN echo "gem 'fog-proxmox', :git => 'https://github.com/fog/fog-proxmox.git'" >> /foreman/foreman/bundler.d/Gemfile.local.rb
 RUN cp /foreman/foreman/config/settings.yaml.test /foreman/foreman/config/settings.yaml
 RUN echo ":webpack_dev_server: false" >> /foreman/foreman/config/settings.yaml
 RUN cp /foreman/foreman/config/database.yml.example /foreman/foreman/config/database.yml

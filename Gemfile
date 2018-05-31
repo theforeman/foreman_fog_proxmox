@@ -2,4 +2,4 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'fog-proxmox', :github => 'tristanrobert/fog-proxmox'
+gem 'fog-proxmox', :git => 'https://github.com/fog/fog-proxmox.git'

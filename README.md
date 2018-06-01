@@ -4,7 +4,9 @@
 
 [Foreman](http://theforeman.org/) plugin that adds [Proxmox](https://www.proxmox.com/en/proxmox-ve) compute resource: managing virtual machines and containers using the [fog-proxmox](https://github.com/fog/fog-proxmox) module.
 
-It is intended to satisfy this [feature](http://projects.theforeman.org/issues/2186)
+It is intended to satisfy this [feature](http://projects.theforeman.org/issues/2186).
+
+It is inpired by the great [foreman-xen](https://github.com/theforeman/foreman-xen) project.
 
 ## Compatibility
 

@@ -31,7 +31,7 @@ namespace :foreman_proxmox do
                          "#{ForemanProxmox::Engine.root}/lib/**/*.rb",
                          "#{ForemanProxmox::Engine.root}/test/**/*.rb"]
       end
-    rescue
+    rescue StandardError
       puts 'Rubocop not loaded.'
     end
 

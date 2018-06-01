@@ -15,4 +15,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-Welcome to <b>ForemanProxmox</b>
+<div id='templates' class=''>
+  <div class="form-group">
+    <%= selectable_f f, :nodes,
+                     [[_("Automatic allocation"), ""]] + proxmox_nodes_map(compute_resource),
+                     {},
+                     { :class => 'form-control span2',
+                       :disabled => (controller_name != 'nodes'),
+                       :label => 'Nodes'
+                     }
+    %>
+  </div>
+</div>

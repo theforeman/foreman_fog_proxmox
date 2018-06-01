@@ -1,3 +1,22 @@
+# frozen_string_literal: true
+
+# Copyright 2018 Tristan Robert
+
+# This file is part of ForemanProxmox.
+
+# ForemanProxmox is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# ForemanProxmox is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
+
 module ForemanProxmox
   class Engine < ::Rails::Engine
     engine_name 'foreman_proxmox'
@@ -62,7 +81,7 @@ module ForemanProxmox
       begin
         Host::Managed.send(:include, ForemanProxmox::HostExtensions)
         HostsHelper.send(:include, ForemanProxmox::HostsHelperExtensions)
-      rescue => e
+      rescue StandardError => e
         Rails.logger.warn "ForemanProxmox: skipping engine hook (#{e})"
       end
     end
@@ -74,7 +93,7 @@ module ForemanProxmox
     end
 
     initializer 'foreman_proxmox.register_gettext', after: :load_config_initializers do |_app|
-      locale_dir = File.join(File.expand_path('../../..', __FILE__), 'locale')
+      locale_dir = File.join(File.expand_path('../..', __dir__), 'locale')
       locale_domain = 'foreman_proxmox'
       Foreman::Gettext::Support.add_text_domain locale_domain, locale_dir
     end

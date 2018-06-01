@@ -1,10 +1,17 @@
 ![ForemanProxmox](foremanproxmox.png)
 
-# Foreman::Proxmox
+# ForemanProxmox
 
-[Foreman](http://theforeman.org/) plugin that manages [Proxmox](https://www.proxmox.com/en/proxmox-ve) virtual machines and containers using the [fog-proxmox](https://github.com/tristanrobert/fog-proxmox) module.
+[Foreman](http://theforeman.org/) plugin that adds [Proxmox](https://www.proxmox.com/en/proxmox-ve) compute resource: managing virtual machines and containers using the [fog-proxmox](https://github.com/fog/fog-proxmox) module.
 
 It is intended to satisfy this [feature](http://projects.theforeman.org/issues/2186)
+
+## Compatibility
+
+Tested with:
+
+* Foreman >= 1.17
+* Fog-proxmox >= 0.3.0
 
 ## Installation
 

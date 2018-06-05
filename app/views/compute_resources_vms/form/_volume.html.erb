@@ -15,21 +15,59 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-<div class="fields">
-  <%= selectable_f_with_cache_invalidation f, :sr_uuid,
-        proxmox_storage_pool_map(compute_resource),
-        { :selected => attribute_map[:volume_selected] },
+<div id='volume' class="fields">
+  <%= selectable_f_with_cache_invalidation f, :storage_uuid,
+        proxmox_storages_map(compute_resource),
+        { :selected => attribute_map[:storage_selected] },
         { :class => "span2",
-         :label => _("Storage Repository"),
+         :label => _("Storage"),
         },
         {
-           :callback               => 'proxmoxPopulateStoragePools',
-           :title                  => 'Refresh available storage repositories',
+           :callback               => 'proxmoxPopulateStorages',
+           :title                  => 'Refresh available storage',
            :url                    => '/foreman_proxmox/cache/refresh',
            :computer_resource_id   => compute_resource.id,
-           :attribute              => 'storage_pools'
+           :attribute              => 'storages'
         }
   %>
-
-  <%= text_f f, :physical_size, :class => "input-mini", :label => _("Size (GB)"), :value => attribute_map[:volume_size] %>
+  <%= selectable_f_with_cache_invalidation f, :bus_uuid,
+        proxmox_buses_map,
+        { :selected => attribute_map[:bus_selected] },
+        { :class => "span2",
+         :label => _("Bus"),
+        },
+        {
+           :callback               => 'proxmoxPopulateBuses',
+           :title                  => 'Refresh available buses',
+           :url                    => '/foreman_proxmox/cache/refresh',
+           :attribute              => 'buses'
+        }
+  %>
+  <%= selectable_f_with_cache_invalidation f, :device_uuid,
+        proxmox_devices_map(bus_uuid),
+        { :selected => attribute_map[:device_selected] },
+        { :class => "span2",
+         :label => _("Device"),
+        },
+        {
+           :callback               => 'proxmoxPopulateBuses',
+           :title                  => 'Refresh available devices',
+           :url                    => '/foreman_proxmox/cache/refresh',
+           :attribute              => 'devices'
+        }
+  %>
+  <%= selectable_f_with_cache_invalidation f, :cache_uuid,
+        proxmox_caches_map(compute_resource),
+        { :selected => attribute_map[:cache_selected] },
+        { :class => "span2",
+         :label => _("Cache"),
+        },
+        {
+           :callback               => 'proxmoxPopulateCaches',
+           :title                  => 'Refresh available caches',
+           :url                    => '/foreman_proxmox/cache/refresh',
+           :attribute              => 'caches'
+        }
+  %>
+  <%= text_f f, :size, :class => "input-mini", :label => _("Size (GB)"), :value => attribute_map[:volume_size] %>
 </div>

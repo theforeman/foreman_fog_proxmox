@@ -22,6 +22,7 @@ require 'fog/proxmox'
 module ForemanProxmox
   class Proxmox < ComputeResource
     validates :url, :user, :password, :presence => true
+    attr_accessor :node
 
     def provided_attributes
       super.merge(
@@ -71,19 +72,30 @@ module ForemanProxmox
       errors[:base] << e.message
     end
 
-    def available_hypervisors
-      read_from_cache('available_hypervisors', 'available_hypervisors!')
+    def available_nodes
+      read_from_cache('available_nodes', 'available_nodes!')
     end
 
-    def available_hypervisors!
-      store_in_cache('available_hypervisors') do
-        hosts = client.nodes.all
-        hosts.sort_by(&:node)
+    def available_nodes!
+      store_in_cache('available_nodes') do
+        nodes = client.nodes.all
+        nodes.sort_by(&:node)
+      end
+    end
+
+    def available_storages
+      read_from_cache('available_storages', 'available_storages!')
+    end
+
+    def available_storages!
+      store_in_cache('available_storages') do
+        storages = client.storages.all
+        storages.sort_by(&:storage)
       end
     end
 
     def associated_host(vm)
-      associate_by('mac', vm.interfaces.map(&:mac).map { |mac| Net::Validations.normalize_mac(mac) })
+      associate_by('node', vm.node)
     end
 
     def new_vm(attr = {})
@@ -96,36 +108,22 @@ module ForemanProxmox
         opts[collection] = nested_attributes_for(collection, nested_attrs) if nested_attrs
       end
       opts.reject! { |_, v| v.nil? }
-      node.servers.new opts
+      client.servers.new opts
     end
 
     def create_vm(args = {})
-      custom_template_name  = args[:custom_template_name].to_s
-      builtin_template_name = args[:builtin_template_name].to_s
-
-      if builtin_template_name != '' && custom_template_name != ''
-        logger.info "custom_template_name: #{custom_template_name}"
-        logger.info "builtin_template_name: #{builtin_template_name}"
-        raise 'you can select at most one template type'
-      end
-      begin
-        logger.info "create_vm(): custom_template_name: #{custom_template_name}"
-        logger.info "create_vm(): builtin_template_name: #{builtin_template_name}"
-        vm = custom_template_name != '' ? create_vm_from_custom(args) : create_vm_from_builtin(args)
-        vm.set_attribute('name_description', 'Provisioned by Foreman')
-        vm.set_attribute('VCPUs_max', args[:vcpus_max])
-        vm.set_attribute('VCPUs_at_startup', args[:vcpus_max])
-        vm.reload
-        return vm
-      rescue StandardError => e
-        logger.info e
-        logger.info e.backtrace.join("\n")
-        return false
-      end
+      node = get_cluster_node(args)
+      logger.info "create_vm(): node: #{node.node}"
+      node.servers.create(args)
+    rescue StandardError => e
+      logger.info e
+      logger.info e.backtrace.join("\n")
+      false
     end
 
-    def hypervisor
-      node
+    def next_vmid
+      node = get_cluster_node
+      node.servers.next_id
     end
 
     protected
@@ -139,10 +137,6 @@ module ForemanProxmox
       )
     end
 
-    def node(id = 'pve') # default cluster node is 'pve'
-      client.nodes.find_by_id(id)
-    end
-
     def disconnect
       client.terminate if @client
       @client = nil
@@ -154,9 +148,9 @@ module ForemanProxmox
 
     private
 
-    def get_hypervisor_host(args)
-      return client.nodes.first unless args[:hypervisor_host] != ''
-      client.nodes.find { |_host| node.node == args[:hypervisor_host] }
+    def get_cluster_node(args = {})
+      return client.nodes.all.first unless args[:cluster_node] != ''
+      client.nodes.find_by_id(args[:cluster_node])
     end
 
     def read_from_cache(key, fallback)

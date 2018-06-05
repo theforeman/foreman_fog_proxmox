@@ -45,7 +45,7 @@ module ForemanProxmox
           permission :view_foreman_proxmox, :'foreman_proxmox/hosts' => [:new_action]
         end
 
-        # Add a new role called 'Discovery' if it doesn't exist
+        # Add a new role called 'ForemanProxmox' if it doesn't exist
         role 'ForemanProxmox', [:view_foreman_proxmox]
 
         # add menu entry

@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <div class="fields">
-  <div id='nat' class=''>
-    <%= selectable_f_with_cache_invalidation f, :print,
-                     compute_resource.networks.map(&:name),
+  <div id='network' class=''>
+    <%= selectable_f_with_cache_invalidation f, :nic,
+                     compute_resource.networks.map(&:id),
                      {  :include_blank => compute_resource.networks.any? ? false : _('No networks'),
                         :selected      => attribute_map[:network_selected]
                      },

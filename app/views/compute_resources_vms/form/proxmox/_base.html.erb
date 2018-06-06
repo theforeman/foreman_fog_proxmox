@@ -43,54 +43,23 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     <legend>General</legend>
     <div class="fields">
       <%= text_f f, :vmid, :label => _('VM ID'), :value => compute_resource.next_vmid %>
-    <%= selectable_f f, :node,
+      <%= selectable_f f, :node,
                      proxmox_nodes_map(compute_resource),
                      {},
                      { :class => 'form-control span2',
                        :disabled => (controller_name != 'hosts'),
                        :label => 'Node'
                      }
-    %>
+      %>
     </div>
   </fieldset>
 </div>
 
-<!-- CPU -->
-<div class="children_fields" id="proxmoxserver-cpu" style="<%= hide_raw %>">
-   <fieldset id="vm_cpu">
-    <legend>CPU</legend>
-    <div class="fields">
-      <%= text_f f, :sockets, :label => _('Sockets'), :value => 1 %>
-      <%= text_f f, :cores, :label => _('Cores'), :value => 1 %>
-      <%= text_f f, :vcpus, :label => _('VCPUs'), :value => 4 %>
-      <%= text_f f, :cpulimit, :label => _('CPU limit'), :value => 0 %>
-      <%= text_f f, :cpuunits, :label => _('CPU units'), :value => 1024 %>
-    <%= selectable_f f, :cpu_type,
-                     proxmox_cpus_map,
-                     {},
-                     { :class => 'form-control span2',
-                       :disabled => (controller_name != 'hosts'),
-                       :label => 'Type'
-                     }
-    %>
-      <%= checkbox_f f, :numa, :label => _('Enable NUMA'), :value => false %>
-      <%= checkbox_f f, :pcid, :label => _('PCID'), :value => false %>
-      <%= checkbox_f f, :spectre, :label => _('Spectre-CTRL'), :value => false %>
-    </div>
-  </fieldset>
-</div>
-
-<!-- Memory -->
-<div class="children_fields" id="proxmoxserver-memory" style="<%= hide_raw %>">
-   <fieldset id="vm_memory">
-    <legend>Memory</legend>
-    <div class="fields">
-      <%= text_f f, :memory, :label => _('Memory (MiB)'), :value => 512 %>
-      <%= text_f f, :min_memory, :label => _('Minimum memory (MiB)'), :value => 512 %>
-      <%= text_f f, :shares, :label => _('Shares'), :value => 0 %>
-      <%= checkbox_f f, :ballon, :label => _('Ballooning Device'), :value => true %>
-    </div>
-  </fieldset>
+<!-- Config -->
+<div class="children_fields" id="proxmoxserver-config" style="<%= hide_raw %>">
+  <%= field_set_tag 'Config', :id => 'config', :title => _('Config') do -%>
+    <%= render 'compute_resources_vms/form/config', :f => 'config', :compute_resource => compute_resource, :new => config, :attribute_map => attribute_map %>
+  <% end -%>
 </div>
 
 <!-- Volume -->

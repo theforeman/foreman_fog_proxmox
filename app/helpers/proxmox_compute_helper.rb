@@ -29,22 +29,32 @@ module ProxmoxComputeHelper
 
   private
 
-  def hosts_controller_compute_attribute_map(_params, _compute_resource, new)
+  def hosts_controller_compute_attribute_map(params, compute_resource, new)
     attribute_map = empty_attribute_map
-    if new.try(:new_record?)
-      attribute_map = empty_attribute_map
+    if !new.persisted?
+      compute_resource.compute_profile_attributes_for(params['host']['compute_profile_id'])
     elsif new
-      attribute_map[:cpu_count]  = new.vcpus_max ? new.vcpus_max : nil
-      attribute_map[:memory_min] = new.memory_static_min ? new.memory_static_min : nil
-      attribute_map[:memory_max] = new.memory_static_max ? new.memory_static_max : nil
-      if new.config.ides
-        ide = new.config.ides.first
-        if ide
-          attribute_map[:storage_selected] = ide.storage ? disk_image.storage : nil
-          attribute_map[:bus_selected] = disk_image.id ? vdi.sr.uuid : nil
-          attribute_map[:device_selected] = vdi.sr.uuid ? vdi.sr.uuid : nil
-          attribute_map[:cache_selected] = vdi.sr.uuid ? vdi.sr.uuid : nil
-          attribute_map[:volume_size] = vdi.virtual_size ? (vdi.virtual_size.to_i / 1_073_741_824).to_s : nil
+      attribute_map[:cpu_type] = new.config.cpu_type ? new.config.cpu_type : nil
+      attribute_map[:pcid] = new.config.pcid ? new.config.pcid : nil
+      attribute_map[:spectre] = new.config.spectre ? new.config.spectre : nil
+      attribute_map[:cpulimit] = new.config.cpulimit ? new.config.cpulimit : nil
+      attribute_map[:cpuunits] = new.config.cpuunits ? new.config.cpuunits : nil
+      attribute_map[:numa] = new.config.numa ? new.config.numa : nil
+      attribute_map[:cores] = new.config.cores ? new.config.cores : nil
+      attribute_map[:sockets] = new.config.sockets ? new.config.sockets : nil
+      attribute_map[:vcpus] = new.config.vcpus ? new.config.vcpus : nil
+      attribute_map[:memory] = new.config.memory ? new.config.memory : nil
+      attribute_map[:min_memory] = new.config.min_memory ? new.config.min_memory : nil
+      attribute_map[:shares] = new.config.shares ? new.config.shares : nil
+      attribute_map[:ballon] = new.config.ballon ? new.config.ballon : nil
+      if new.config.disk_images
+        disk_image = new.config.disk_images.first
+        if disk_image
+          attribute_map[:storage_selected] = disk_image.storage ? disk_image.storage : nil
+          attribute_map[:bus_selected] = disk_image.id ? disk_image.id : nil
+          attribute_map[:device_selected] = disk_image.id ? disk_image.id : nil
+          attribute_map[:cache_selected] = disk_image.id ? disk_image.id : nil
+          attribute_map[:volume_size] = disk_image.size ? (disk_image.size.to_i / 1_073_741_824).to_s : nil
         end
       end
       if new.config.nics

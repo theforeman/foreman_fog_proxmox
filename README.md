@@ -6,8 +6,6 @@
 
 It is intended to satisfy this [feature](http://projects.theforeman.org/issues/2186).
 
-It is inpired by the great [foreman-xen](https://github.com/theforeman/foreman-xen) project.
-
 ## Compatibility
 
 Tested with:

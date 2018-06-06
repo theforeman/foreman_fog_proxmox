@@ -23,9 +23,7 @@ module FogExtensions
       extend ActiveSupport::Concern
 
       include ActionView::Helpers::NumberHelper
-
-      attr_accessor :start
-      attr_accessor :memory_min, :memory_max, :custom_template_name, :builtin_template_name, :hypervisor_host
+      has_one :config
 
       def to_s
         name
@@ -39,7 +37,9 @@ module FogExtensions
         config.disk_images
       end
 
-      delegate :memory, to: :config
+      def cpu_type
+        config.cpu_type
+      end
 
       def mac
         config.mac_addresses.first
@@ -50,7 +50,7 @@ module FogExtensions
       end
 
       def vm_description
-        format(_('%{cpus} CPUs and %{ram} memory'), :cpus => config.sockets*config.cores, :ram => number_to_human_size(config.memory.to_i))
+        format(_('%{cpus} CPUs and %{ram} memory'), :cpus => config.sockets * config.cores, :ram => number_to_human_size(config.memory.to_i))
       end
 
       def interfaces

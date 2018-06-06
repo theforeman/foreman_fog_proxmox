@@ -21,8 +21,8 @@ require 'fog/proxmox'
 
 module ForemanProxmox
   class Proxmox < ComputeResource
+    has_one :config
     validates :url, :user, :password, :presence => true
-    attr_accessor :node
 
     def provided_attributes
       super.merge(
@@ -108,13 +108,15 @@ module ForemanProxmox
         opts[collection] = nested_attributes_for(collection, nested_attrs) if nested_attrs
       end
       opts.reject! { |_, v| v.nil? }
-      client.servers.new opts
+      node = get_cluster_node
+      node.servers.new_object
     end
 
     def create_vm(args = {})
-      node = get_cluster_node(args)
+      node = get_cluster_node
       logger.info "create_vm(): node: #{node.node}"
       node.servers.create(args)
+      node.servers.get args[:vmid]
     rescue StandardError => e
       logger.info e
       logger.info e.backtrace.join("\n")
@@ -128,13 +130,20 @@ module ForemanProxmox
 
     protected
 
-    def client
-      @client ||= ::Fog::Compute::Proxmox.new(
-        pve_url: url,
+    def fog_credentials
+      { pve_url: url,
         pve_username: user,
         pve_password: password,
         connection_options: { disable_proxy: true, ssl_verify_peer: false } # dev tests only
-      )
+      }
+    end
+
+    def client
+      @client ||= ::Fog::Compute::Proxmox.new(fog_credentials)
+    end
+
+    def identity_client
+      @identity_client ||= ::Fog::Identity::Proxmox.new(fog_credentials)
     end
 
     def disconnect

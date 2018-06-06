@@ -1,6 +1,7 @@
 GIT
   remote: https://github.com/fog/fog-proxmox.git
-  revision: 03025280e7fdb3883f938347000166a927646912
+  revision: 0cf58fcaee323e726b3c2420e61220c0d8b134e9
+  branch: foreman
   specs:
     fog-proxmox (0.3.0)
       fog-core (~> 1.45)
@@ -54,4 +55,4 @@ DEPENDENCIES
   rubocop
 
 BUNDLED WITH
-   1.16.1
+   1.16.2

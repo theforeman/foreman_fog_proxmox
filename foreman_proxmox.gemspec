@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
   s.license     = 'GPL-3.0'
   s.authors     = ['Tristan Robert']
   s.email       = ['tristan.robert.44@gmail.com']
-  s.homepage    = 'https://github.com/tristanrobert/foreman-proxmox'
+  s.homepage    = 'https://github.com/tristanrobert/foreman_proxmox'
   s.summary     = 'Foreman plugin that adds Proxmox VE compute resource using fog-proxmox'
   # also update locale/gemspec.rb
   s.description = 'Foreman plugin that adds Proxmox VE compute resource using fog-proxmox'

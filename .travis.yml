@@ -1,12 +1,11 @@
-sudo: false
-language: ruby
-rvm:
-  - 2.3.7
-  - 2.4.4
-  - 2.5.0
+language: node_js
+node_js:
+  - '8' # current LTS
 before_install:
-  - gem update --remote bundler
-install:
-  - bundle install --retry=3
-script:
-  - bundle exec rubocop -D -S
+  - git clone https://github.com/theforeman/foreman.git
+  - git checkout tags/1.17.1
+  - cd foreman
+  - cp config/settings.yaml.example config/settings.yaml
+  - bundle install --without console development ec2 fog gce jsonp libvirt mysql2 openid openstack ovirt postgresql rackspace sqlite test vmware
+  - npm install -g npm@'>=3.0.0, <5.0.0'
+script: foreman/script/travis_run_js_tests.sh

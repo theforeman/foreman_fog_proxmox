@@ -50,7 +50,7 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
          :label => _("Device"),
         },
         {
-           :callback               => 'proxmoxPopulateBuses',
+           :callback               => 'proxmoxPopulateDevices',
            :title                  => 'Refresh available devices',
            :url                    => '/foreman_proxmox/cache/refresh',
            :attribute              => 'devices'

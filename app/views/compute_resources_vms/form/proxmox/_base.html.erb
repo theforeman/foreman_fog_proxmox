@@ -18,6 +18,11 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% new = f.object
    attribute_map = compute_attribute_map(params, compute_resource, new)
 
+   hide_raw = ''
+   if params && params['host'] && params['host']['compute_attributes'] != ''
+     hide_raw = 'display:none;'
+   end
+
    if controller_name == 'hosts'
      fields_enabled = true
      start_enable   = true
@@ -39,7 +44,7 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     <div class="fields">
       <%= text_f f, :vmid, :label => _('VM ID'), :value => compute_resource.next_vmid %>
     <%= selectable_f f, :node,
-                     proxmox_nodes_map,
+                     proxmox_nodes_map(compute_resource),
                      {},
                      { :class => 'form-control span2',
                        :disabled => (controller_name != 'hosts'),
@@ -58,8 +63,8 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
       <%= text_f f, :sockets, :label => _('Sockets'), :value => 1 %>
       <%= text_f f, :cores, :label => _('Cores'), :value => 1 %>
       <%= text_f f, :vcpus, :label => _('VCPUs'), :value => 4 %>
-      <%= text_f f, :cores, :label => _('CPU limit'), :value => 0 %>
-      <%= text_f f, :cores, :label => _('CPU units'), :value => 1024 %>
+      <%= text_f f, :cpulimit, :label => _('CPU limit'), :value => 0 %>
+      <%= text_f f, :cpuunits, :label => _('CPU units'), :value => 1024 %>
     <%= selectable_f f, :cpu_type,
                      proxmox_cpus_map,
                      {},

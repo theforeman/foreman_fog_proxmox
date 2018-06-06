@@ -36,7 +36,7 @@ module FogExtensions
       end
 
       def volumes_attributes=(_attrs)
-        volumes
+        config.disk_images
       end
 
       delegate :memory, to: :config
@@ -50,7 +50,7 @@ module FogExtensions
       end
 
       def vm_description
-        format(_('%{cpus} CPUs and %{ram} memory'), :cpus => vcpus_max, :ram => number_to_human_size(memory_max.to_i))
+        format(_('%{cpus} CPUs and %{ram} memory'), :cpus => config.sockets*config.cores, :ram => number_to_human_size(config.memory.to_i))
       end
 
       def interfaces

@@ -57,7 +57,7 @@ module ForemanProxmox
     end
 
     def credentials_valid?
-      errors[:url].empty? && errors[:user].empty? && errors[:user].include?('@') && errors[:password].empty? && hypervisor
+      errors[:url].empty? && errors[:user].empty? && errors[:user].include?('@') && errors[:password].empty?
     end
 
     def test_connection(options = {})
@@ -149,7 +149,7 @@ module ForemanProxmox
     private
 
     def get_cluster_node(args = {})
-      return client.nodes.all.first unless args[:cluster_node] != ''
+      return client.nodes.first unless !args.empty? && args[:cluster_node] != ''
       client.nodes.find_by_id(args[:cluster_node])
     end
 

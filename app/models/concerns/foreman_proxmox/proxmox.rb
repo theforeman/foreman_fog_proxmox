@@ -35,21 +35,13 @@ module ForemanProxmox
       [:build]
     end
 
-    def find_vm_by_uuid(vmid)
-      node.servers.get(vmid)
+    def find_vm_by_uuid(uuid)
+      node.servers.get(uuid)
     rescue Fog::Errors::Error => e
-      Foreman::Logging.exception("Failed retrieving proxmox vm by vmid #{vmid}", e)
+      Foreman::Logging.exception("Failed retrieving proxmox vm by vmid #{uuid}", e)
       raise(ActiveRecord::RecordNotFound) if e.message.include?('HANDLE_INVALID')
       raise(ActiveRecord::RecordNotFound) if e.message.include?('VM.get_record: ["SESSION_INVALID"')
       raise e
-    end
-
-    # we default to destroy the VM's storage as well.
-    def destroy_vm(ref, args = {})
-      logger.info "destroy_vm: #{ref} #{args}"
-      find_vm_by_uuid(ref).destroy
-    rescue ActiveRecord::RecordNotFound
-      true
     end
 
     def self.model_name
@@ -101,24 +93,22 @@ module ForemanProxmox
         opts[collection] = nested_attributes_for(collection, nested_attrs) if nested_attrs
       end
       opts.reject! { |_, v| v.nil? }
-      node = get_cluster_node
       node.servers.new(vmid: next_vmid, memory: 512, cores: 1, sockets: 1, cpu: 'kvm64')
     end
 
     def create_vm(args = {})
-      node = get_cluster_node
-      raise ::Foreman::Exception.new N_("invalid vmid") unless node.servers.valid_id?(args[:vmid])
-      logger.info "create_vm(): node: #{node.node}"
-      node.servers.create(args)
-      node.servers.get args[:vmid]
-    rescue StandardError => e
-      logger.info e
-      logger.info e.backtrace.join("\n")
-      false
+      raise ::Foreman::Exception.new N_("invalid vmid") unless node.servers.id_valid?(args[:vmid])
+      super(args)
+      vm = node.servers.get(args[:vmid])
+      vm
+    rescue => e
+      logger.warn "failed to create vm: #{e}"
+      destroy_vm vm.id if vm
+      volume_client.volumes.delete(@boot_vol_id) if args[:boot_from_volume]
+      raise message
     end
 
     def next_vmid
-      node = get_cluster_node
       node.servers.next_id
     end
 
@@ -149,6 +139,10 @@ module ForemanProxmox
     end
 
     private
+
+    def node
+      get_cluster_node
+    end
 
     def get_cluster_node(args = {})
       return client.nodes.first unless !args.empty? && args[:cluster_node] != ''

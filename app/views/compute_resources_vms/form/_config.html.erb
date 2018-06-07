@@ -15,40 +15,26 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-<!-- CPU -->
-<div class="children_fields" id="proxmoxserver-cpu" style="<%= hide_raw %>">
-   <fieldset id="vm_cpu">
-    <legend>CPU</legend>
-    <div class="fields">
-      <%= text_f f, :sockets, :label => _('Sockets'), :value => 1 %>
-      <%= text_f f, :cores, :label => _('Cores'), :value => 1 %>
-      <%= text_f f, :vcpus, :label => _('VCPUs'), :value => 4 %>
-      <%= text_f f, :cpulimit, :label => _('CPU limit'), :value => 0 %>
-      <%= text_f f, :cpuunits, :label => _('CPU units'), :value => 1024 %>
-    <%= selectable_f f, :cpu_type,
-                     proxmox_cpus_map,
-                     {},
-                     { :class => 'form-control span2',
-                       :disabled => (controller_name != 'hosts'),
-                       :label => 'Type'
-                     }
-    %>
-      <%= checkbox_f f, :numa, :label => _('Enable NUMA'), :value => false %>
-      <%= checkbox_f f, :pcid, :label => _('PCID'), :value => false %>
-      <%= checkbox_f f, :spectre, :label => _('Spectre-CTRL'), :value => false %>
-    </div>
-  </fieldset>
-</div>
-
-<!-- Memory -->
-<div class="children_fields" id="proxmoxserver-memory" style="<%= hide_raw %>">
-   <fieldset id="vm_memory">
-    <legend>Memory</legend>
-    <div class="fields">
-      <%= text_f f, :memory, :label => _('Memory (MiB)'), :value => 512 %>
-      <%= text_f f, :min_memory, :label => _('Minimum memory (MiB)'), :value => 512 %>
-      <%= text_f f, :shares, :label => _('Shares'), :value => 0 %>
-      <%= checkbox_f f, :ballon, :label => _('Ballooning Device'), :value => true %>
-    </div>
-  </fieldset>
-</div>
+<%= field_set_tag _("Options"), :id => "options" do %>
+  <%= checkbox_f f, :onboot, :label => _('Start at boot'), :label_size => "col-md-2" %>
+  <%= text_f f, :boot, :label => _('Start/Shutdown order'), :label_size => "col-md-2" %>
+  <%= checkbox_f f, :agent, :label => _('Qemu Agent'), :label_size => "col-md-2" %>
+  <%= textarea_f f, :description, :label => _('Description'), :label_size => "col-md-2" %>
+<% end %>
+<%= field_set_tag _("CPU"), :id => "cpu" do %>
+  <%= select_f f, :cpu_type, proxmox_cpus_map, :id, :name, {}, :label => _('Type'), :label_size => "col-md-2" %>
+  <%= text_f f, :sockets, :label => _('Sockets'), :label_size => "col-md-2" %>
+  <%= text_f f, :cores, :label => _('Cores'), :label_size => "col-md-2" %>
+  <%= text_f f, :vcpus, :label => _('VCPUs'), :label_size => "col-md-2" %>
+  <%= text_f f, :cpulimit, :label => _('CPU limit'), :label_size => "col-md-2" %>
+  <%= text_f f, :cpuunits, :label => _('CPU units'), :label_size => "col-md-2" %>
+  <%= checkbox_f f, :numa, :label => _('Enable NUMA'), :label_size => "col-md-2" %>
+  <%= checkbox_f f, :pcid, :label => _('PCID'), :label_size => "col-md-2" %>
+  <%= checkbox_f f, :spectre, :label => _('Spectre-CTRL'), :label_size => "col-md-2" %>
+<% end %>
+<%= field_set_tag _("Memory"), :id => "memory" do %>
+  <%= text_f f, :memory, :label => _('Memory (MiB)'), :label_size => "col-md-2" %>
+  <%= text_f f, :min_memory, :label => _('Minimum memory (MiB)'), :label_size => "col-md-2" %>
+  <%= text_f f, :shares, :label => _('Shares'), :label_size => "col-md-2" %>
+  <%= checkbox_f f, :balloon, :label => _('Ballooning Device'), :label_size => "col-md-2" %>
+<% end %>

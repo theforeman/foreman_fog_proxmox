@@ -72,26 +72,19 @@ module ForemanProxmox
       errors[:base] << e.message
     end
 
-    def available_nodes
-      read_from_cache('available_nodes', 'available_nodes!')
+    def nodes
+      nodes = client.nodes.all
+      nodes.sort_by(&:node)
     end
 
-    def available_nodes!
-      store_in_cache('available_nodes') do
-        nodes = client.nodes.all
-        nodes.sort_by(&:node)
-      end
+    def pools
+      pools = identity_client.pools.all
+      pools.sort_by(&:poolid)
     end
 
-    def available_storages
-      read_from_cache('available_storages', 'available_storages!')
-    end
-
-    def available_storages!
-      store_in_cache('available_storages') do
-        storages = client.storages.all
-        storages.sort_by(&:storage)
-      end
+    def storages
+      storages = client.storages.all
+      storages.sort_by(&:storage)
     end
 
     def associated_host(vm)
@@ -109,11 +102,12 @@ module ForemanProxmox
       end
       opts.reject! { |_, v| v.nil? }
       node = get_cluster_node
-      node.servers.new_object
+      node.servers.new(vmid: next_vmid, memory: 512, cores: 1, sockets: 1, cpu: 'kvm64')
     end
 
     def create_vm(args = {})
       node = get_cluster_node
+      raise ::Foreman::Exception.new N_("invalid vmid") unless node.servers.valid_id?(args[:vmid])
       logger.info "create_vm(): node: #{node.node}"
       node.servers.create(args)
       node.servers.get args[:vmid]
@@ -134,8 +128,7 @@ module ForemanProxmox
       { pve_url: url,
         pve_username: user,
         pve_password: password,
-        connection_options: { disable_proxy: true, ssl_verify_peer: false } # dev tests only
-      }
+        connection_options: { disable_proxy: true, ssl_verify_peer: false } } # dev tests only
     end
 
     def client
@@ -159,7 +152,7 @@ module ForemanProxmox
 
     def get_cluster_node(args = {})
       return client.nodes.first unless !args.empty? && args[:cluster_node] != ''
-      client.nodes.find_by_id(args[:cluster_node])
+      client.nodes.find_by(id: args[:cluster_node])
     end
 
     def read_from_cache(key, fallback)

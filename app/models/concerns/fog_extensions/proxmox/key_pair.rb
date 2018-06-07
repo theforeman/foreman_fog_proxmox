@@ -19,46 +19,17 @@
 
 module FogExtensions
   module Proxmox
-    module Server
-      extend ActiveSupport::Concern
+    class KeyPair
+      attr_accessor :id
+      attr_accessor :name
 
-      include ActionView::Helpers::NumberHelper
-      has_one :config
-
-      def to_s
-        name
+      def persisted?
+        !id.nil? && id != ''
       end
 
-      def nics_attributes=(_attrs)
-        config.nics
-      end
-
-      def volumes_attributes=(_attrs)
-        config.disk_images
-      end
-
-      def cpu_type
-        config.cpu_type
-      end
-
-      def mac
-        config.mac_addresses.first
-      end
-
-      def state
-        status
-      end
-
-      def vm_description
-        format(_('%{cpus} CPUs and %{ram} memory'), :cpus => config.sockets * config.cores, :ram => number_to_human_size(config.memory.to_i))
-      end
-
-      def interfaces
-        config.nics
-      end
-
-      def select_nic(fog_nics, _nic)
-        fog_nics[0]
+      def initialize(attr)
+        self.id = attr[:id]
+        self.name = attr[:name]
       end
     end
   end

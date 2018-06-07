@@ -18,6 +18,5 @@
 # along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 Rails.application.routes.draw do
-  get 'new_action', to: 'foreman_proxmox/hosts#new_action'
   match 'cache/refresh', :to => 'cache#refresh', :via => 'post'
 end

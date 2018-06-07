@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
 
+require 'fog_extensions/proxmox/key_pair'
+
 module ProxmoxComputeSelectorsHelper
   def proxmox_buses_map
     [['ide', 'IDE', 3], ['sata', 'SATA', 5], ['scsi', 'SCSI', 13], ['VirtIO Block', 'virtio', 15]]
@@ -39,35 +41,35 @@ module ProxmoxComputeSelectorsHelper
   end
 
   def proxmox_cpus_map
-    [%w[486 486],
-     %w[athlon athlon],
-     %w[core2duo core2duo],
-     %w[coreduo coreduo],
-     %w[kvm32 kvm32],
-     %w[kvm64 kvm64],
-     %w[pentium pentium],
-     %w[pentium2 pentium2],
-     %w[pentium3 pentium3],
-     %w[phenom phenom],
-     %w[qemu32 qemu32],
-     %w[qemu64 qemu64],
-     %w[Conroe Conroe],
-     %w[Penryn Penryn],
-     %w[Nehalem Nehalem],
-     %w[Westmere Westmere],
-     %w[SandyBridge SandyBridge],
-     %w[IvyBridge IvyBridge],
-     %w[Haswell Haswell],
-     ['Haswell-noTSX', 'Haswell-noTSX'],
-     %w[Broadwell Broadwell],
-     ['Broadwell-noTSX', 'Broadwell-noTSX'],
-     ['Skylake-Client', 'Skylake-Client'],
-     %w[Opteron_G1 Opteron_G1],
-     %w[Opteron_G2 Opteron_G2],
-     %w[Opteron_G3 Opteron_G3],
-     %w[Opteron_G4 Opteron_G4],
-     %w[Opteron_G5 Opteron_G5],
-     %w[host host]]
+    [FogExtensions::Proxmox::KeyPair.new(id: '486', name: '486'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'athlon', name: 'athlon'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'core2duo', name: 'core2duo'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'coreduo', name: 'coreduo'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'kvm32', name: 'kvm32'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'kvm64', name: '(Default) kvm64'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'pentium', name: 'pentium'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'pentium2', name: 'pentium2'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'pentium3', name: 'pentium3'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'phenom', name: 'phenom'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'qemu32', name: 'qemu32'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'qemu64', name: 'qemu64'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'Conroe', name: 'Conroe'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'Penryn', name: 'Penryn'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'Nehalem', name: 'Nehalem'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'Westmere', name: 'Westmere'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'SandyBridge', name: 'SandyBridge'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'IvyBridge', name: 'IvyBridge'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'Haswell', name: 'Haswell'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'Haswell-noTSX', name: 'Haswell-noTSX'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'Broadwell', name: 'Broadwell'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'Broadwell-noTSX', name: 'Broadwell-noTSX'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'Skylake-Client', name: 'Skylake-Client'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'Opteron_G1', name: 'Opteron_G1'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'Opteron_G2', name: 'Opteron_G2'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'Opteron_G3', name: 'Opteron_G3'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'Opteron_G4', name: 'Opteron_G4'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'Opteron_G5', name: 'Opteron_G5'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'host', name: 'host')]
   end
 
   def proxmox_scsihw_map

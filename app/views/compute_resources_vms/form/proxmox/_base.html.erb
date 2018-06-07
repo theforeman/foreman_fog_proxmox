@@ -15,70 +15,21 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-<% new = f.object
-   attribute_map = compute_attribute_map(params, compute_resource, new)
-
-   hide_raw = ''
-   if params && params['host'] && params['host']['compute_attributes'] != ''
-     hide_raw = 'display:none;'
-   end
-
-   if controller_name == 'hosts'
-     fields_enabled = true
-     start_enable   = true
-   elsif controller_name == 'compute_attributes'
-     fields_enabled     = true
-     compute_attributes = compute_resource.compute_profile_attributes_for(params['compute_profile_id'])
-     name               = compute_attributes['name']
-   else
-     fields_enabled = false
-   end
-
--%>
-<%= javascript_tag("$(document).on('ContentLoad', tfm.numFields.initAll)"); %>
-
 <!-- VM Initial Settings -->
-<div class="children_fields">
-  <fieldset id="vm_general">
-    <legend>General</legend>
-    <div class="fields">
-      <%= text_f f, :vmid, :label => _('VM ID'), :value => compute_resource.next_vmid %>
-      <%= selectable_f f, :node,
-                     proxmox_nodes_map(compute_resource),
-                     {},
-                     { :class => 'form-control span2',
-                       :disabled => (controller_name != 'hosts'),
-                       :label => 'Node'
-                     }
-      %>
-    </div>
-  </fieldset>
-</div>
+<%= field_set_tag _("General"), :id => "general" do %>
+  <%= text_f f, :vmid, :label => _('VM ID'), :label_size => "col-md-2", :required => true %>
+  <%= select_f f, :node, compute_resource.nodes, :node, :node, {}, :label => _('Node'), :label_size => "col-md-2", :required => true %>
+  <%= select_f f, :node, compute_resource.pools, :poolid, :comment, {}, :label => _('Pool'), :label_size => "col-md-2" %>
+<% end %>
 
 <!-- Config -->
-<div class="children_fields" id="proxmoxserver-config" style="<%= hide_raw %>">
-  <%= field_set_tag 'Config', :id => 'config', :title => _('Config') do -%>
-    <%= render 'compute_resources_vms/form/config', :f => 'config', :compute_resource => compute_resource, :new => config, :attribute_map => attribute_map %>
-  <% end -%>
-</div>
 
+<%= f.fields_for :config do |f| %>
+  <%= render :partial => 'compute_resources_vms/form/config', :locals => { :f => f, :compute_resource =>  compute_resource, :new_host => true, :new_vm => true, :item_layout => 'removable' } %>
+<% end %>
 <!-- Volume -->
-<div class="children_fields proxmoxserver-raw" id="proxmoxserver-volume" style="<%= hide_raw %>">
-  <%= field_set_tag 'Volume', :id => 'volume', :title => _('Volume') do -%>
-      <%= f.fields_for :volumes do |i| %>
-          <%= render 'compute_resources_vms/form/volume', :f => i, :compute_resource => compute_resource, :new => new, :attribute_map => attribute_map %>
-      <% end -%>
-  <% end -%>
-</div>
+<%# render :partial => 'compute_resources_vms/form/volumes', :locals => { :f => f, :compute_resource => @compute_resource, :new_host => true, :new_vm => true, :item_layout => 'removable' } %>
 
 <!-- Network -->
-<div class="children_fields" id="proxmoxserver-network" style="<%= hide_raw %>">
-  <%= field_set_tag 'Network interfaces', :id => 'network_interfaces', :title => _('Networks') do -%>
-      <%= f.fields_for :nics do |i| %>
-          <%= render 'compute_resources_vms/form/network', :f => i, :compute_resource => compute_resource, :new => new, :attribute_map => attribute_map %>
-      <% end -%>
-  <% end -%>
-</div>
+<%# render :partial => 'compute_resources_vms/form/networks', :locals => { :f => f, :compute_resource => @compute_resource, :new_host => true, :new_vm => true, :item_layout => 'removable' } %>
 
-<%= compute_specific_js(compute_resource, 'foreman_proxmox/cache_refresh') %>
-<%= compute_specific_js(compute_resource, 'foreman_proxmox/populate_fields') %>

@@ -104,12 +104,19 @@ module ForemanProxmox
     rescue => e
       logger.warn "failed to create vm: #{e}"
       destroy_vm vm.id if vm
-      volume_client.volumes.delete(@boot_vol_id) if args[:boot_from_volume]
-      raise message
+      raise e
     end
 
     def next_vmid
       node.servers.next_id
+    end
+
+    def new_volume(attr = {})
+      server = node.servers.get attr[:vmid]
+      server.attach(attr)
+    rescue => e
+      logger.warn "failed to attach volume: #{e}"
+      raise e
     end
 
     protected
@@ -163,5 +170,6 @@ module ForemanProxmox
     def cache_key
       "computeresource_#{id}/"
     end
+
   end
 end

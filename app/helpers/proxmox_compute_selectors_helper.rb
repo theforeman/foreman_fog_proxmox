@@ -21,11 +21,14 @@ require 'fog_extensions/proxmox/key_pair'
 
 module ProxmoxComputeSelectorsHelper
   def proxmox_buses_map
-    [['ide', 'IDE', 3], ['sata', 'SATA', 5], ['scsi', 'SCSI', 13], ['VirtIO Block', 'virtio', 15]]
+    [FogExtensions::Proxmox::KeyPair.new(id:'ide', name: 'IDE', range: 3), 
+      FogExtensions::Proxmox::KeyPair.new(id:'sata', name: 'SATA', range: 5), 
+        FogExtensions::Proxmox::KeyPair.new(id:'scsi', name: 'SCSI', range: 13), 
+          FogExtensions::Proxmox::KeyPair.new(name:'VirtIO Block', id: 'virtio', range: 15)]
   end
 
   def proxmox_devices_map(bus)
-    array_up_to(bus[2])
+    array_up_to(bus[:range])
   end
 
   def array_up_to(i)
@@ -33,11 +36,11 @@ module ProxmoxComputeSelectorsHelper
   end
 
   def proxmox_caches_map
-    [['directsync', 'Direct sync'],
-     ['writethrough', 'Write through'],
-     ['writeback', 'Write back'],
-     ['unsafe', 'Write back unsafe'],
-     ['none', 'No cache']]
+    [FogExtensions::Proxmox::KeyPair.new(id: 'directsync', name: 'Direct sync'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'writethrough', name: 'Write through'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'writeback', name: 'Write back'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'unsafe', name: 'Write back unsafe'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'none', name: 'No cache')]
   end
 
   def proxmox_cpus_map
@@ -73,18 +76,18 @@ module ProxmoxComputeSelectorsHelper
   end
 
   def proxmox_scsihw_map
-    [%w[lsi lsi],
-     %w[lsi53c810 lsi53c810],
-     %w[megasas megasas],
-     ['virtio-scsi-pci', 'virtio-scsi-pci'],
-     ['virtio-scsi-single', 'virtio-scsi-single'],
-     %w[pvscsi pvscsi]]
+    [FogExtensions::Proxmox::KeyPair.new(id: 'lsi', name: 'lsi'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'lsi53c810', name: 'lsi53c810'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'megasas', name: 'megasas'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'virtio-scsi-pci', name: 'virtio-scsi-pci'),
+      FogExtensions::Proxmox::KeyPair.new(id: 'virtio-scsi-single', name: 'virtio-scsi-single'),
+     FogExtensions::Proxmox::KeyPair.new(id: 'pvscsi', name: 'pvscsi')]
   end
 
   def proxmox_networkcards_map
-    [['e1000', 'Intel E1000'],
-     ['virtio', 'VirtIO (paravirtualized)'],
-     ['rtl8139', 'Realtek RTL8139'],
-     ['vmxnet3', 'VMware vmxnet3']]
+    [FogExtensions::Proxmox::KeyPair.new(id: 'e1000', name:  'Intel E1000'),
+      FogExtensions::Proxmox::KeyPair.new(id: 'virtio', name:  'VirtIO (paravirtualized)'),
+      FogExtensions::Proxmox::KeyPair.new(id: 'rtl8139', name:  'Realtek RTL8139'),
+        FogExtensions::Proxmox::KeyPair.new(id: 'vmxnet3', name:  'VMware vmxnet3')]
   end
 end

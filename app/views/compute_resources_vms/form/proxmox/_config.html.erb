@@ -23,18 +23,18 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% end %>
 <%= field_set_tag _("CPU"), :id => "cpu" do %>
   <%= select_f f, :cpu_type, proxmox_cpus_map, :id, :name, {}, :label => _('Type'), :label_size => "col-md-2" %>
-  <%= text_f f, :sockets, :label => _('Sockets'), :label_size => "col-md-2" %>
-  <%= text_f f, :cores, :label => _('Cores'), :label_size => "col-md-2" %>
-  <%= text_f f, :vcpus, :label => _('VCPUs'), :label_size => "col-md-2" %>
-  <%= text_f f, :cpulimit, :label => _('CPU limit'), :label_size => "col-md-2" %>
-  <%= text_f f, :cpuunits, :label => _('CPU units'), :label_size => "col-md-2" %>
+  <%= text_f f, :sockets, :class => "input-mini", :label => _('Sockets'), :label_size => "col-md-2" %>
+  <%= text_f f, :cores, :class => "input-mini", :label => _('Cores'), :label_size => "col-md-2" %>
+  <%= text_f f, :vcpus, :class => "input-mini", :label => _('VCPUs'), :label_size => "col-md-2" %>
+  <%= text_f f, :cpulimit, :class => "input-mini", :label => _('CPU limit'), :label_size => "col-md-2" %>
+  <%= text_f f, :cpuunits, :class => "input-mini", :label => _('CPU units'), :label_size => "col-md-2" %>
   <%= checkbox_f f, :numa, :label => _('Enable NUMA'), :label_size => "col-md-2" %>
   <%= checkbox_f f, :pcid, :label => _('PCID'), :label_size => "col-md-2" %>
   <%= checkbox_f f, :spectre, :label => _('Spectre-CTRL'), :label_size => "col-md-2" %>
 <% end %>
 <%= field_set_tag _("Memory"), :id => "memory" do %>
-  <%= text_f f, :memory, :label => _('Memory (MiB)'), :label_size => "col-md-2" %>
-  <%= text_f f, :min_memory, :label => _('Minimum memory (MiB)'), :label_size => "col-md-2" %>
-  <%= text_f f, :shares, :label => _('Shares'), :label_size => "col-md-2" %>
+  <%= text_f f, :memory, :class => "input-mini", :label => _('Memory (MiB)'), :label_size => "col-md-2" %>
+  <%= text_f f, :min_memory, :class => "input-mini", :label => _('Minimum memory (MiB)'), :label_size => "col-md-2" %>
+  <%= text_f f, :shares, :class => "input-mini", :label => _('Shares'), :label_size => "col-md-2" %>
   <%= checkbox_f f, :balloon, :label => _('Ballooning Device'), :label_size => "col-md-2" %>
 <% end %>

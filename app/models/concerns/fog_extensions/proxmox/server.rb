@@ -17,22 +17,28 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-module FogExtensions
-  module Proxmox
-    class KeyPair
-      attr_accessor :id
-      attr_accessor :name
-      attr_accessor :range
-
-      def persisted?
-        !id.nil? && id != ''
-      end
-
-      def initialize(attr)
-        self.id = attr[:id]
-        self.name = attr[:name]
-        self.range = attr[:range]
-      end
+module ForemanProxmox
+    module Server
+        extend ActiveSupport::Concern
+        def to_s
+            name
+        end
+        def mac
+            get_config.mac_addresses.first
+        end
+    
+        def state
+            get_config.status
+        end
+        def interfaces
+            get_config.nics
+        end
+    
+        def select_nic(fog_nics, nic)
+            fog_nics[0]
+        end
+        def vm_description
+            "Name=#{name}, vmid=#{vmid}"
+        end
     end
-  end
-end
+end   

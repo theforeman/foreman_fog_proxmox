@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-<!-- VM Initial Settings -->
+<!-- VM General Settings -->
 <%= field_set_tag _("General"), :id => "general" do %>
   <%= text_f f, :vmid, :label => _('VM ID'), :label_size => "col-md-2", :required => true %>
   <%= select_f f, :node, compute_resource.nodes, :node, :node, {}, :label => _('Node'), :label_size => "col-md-2", :required => true %>
@@ -23,10 +23,10 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% end %>
 
 <!-- Config -->
-
 <%= f.fields_for :config do |f| %>
   <%= render :partial => 'compute_resources_vms/form/config', :locals => { :f => f, :compute_resource =>  compute_resource, :new_host => true, :new_vm => true, :item_layout => 'removable' } %>
 <% end %>
+
 <!-- Volume -->
 <%# render :partial => 'compute_resources_vms/form/volumes', :locals => { :f => f, :compute_resource => @compute_resource, :new_host => true, :new_vm => true, :item_layout => 'removable' } %>
 

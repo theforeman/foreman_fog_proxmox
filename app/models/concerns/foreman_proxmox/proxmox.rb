@@ -26,9 +26,12 @@ module ForemanProxmox
 
     def provided_attributes
       super.merge(
-        :uuid => :reference,
         :mac  => :mac
       )
+    end
+    
+    def self.provider_friendly_name
+      "Proxmox"
     end
 
     def capabilities
@@ -75,7 +78,7 @@ module ForemanProxmox
     end
 
     def storages
-      storages = client.storages.all
+      storages = node.storages.all
       storages.sort_by(&:storage)
     end
 
@@ -85,20 +88,14 @@ module ForemanProxmox
 
     def new_vm(attr = {})
       test_connection
-      return unless errors.empty?
-      opts = vm_instance_defaults.merge(attr.to_hash).symbolize_keys
-
-      %i[networks volumes].each do |collection|
-        nested_attrs     = opts.delete("#{collection}_attributes".to_sym)
-        opts[collection] = nested_attributes_for(collection, nested_attrs) if nested_attrs
-      end
-      opts.reject! { |_, v| v.nil? }
-      node.servers.new(vmid: next_vmid, memory: 512, cores: 1, sockets: 1, cpu: 'kvm64')
+      node.servers.new(vm_instance_defaults.merge(attr.to_hash.deep_symbolize_keys)) if errors.empty?
     end
 
     def create_vm(args = {})
       raise ::Foreman::Exception.new N_("invalid vmid") unless node.servers.id_valid?(args[:vmid])
-      super(args)
+      node = get_cluster_node args
+      logger.debug("create_vm(): #{args}")
+      node.servers.create(parse_vm(args))
       vm = node.servers.get(args[:vmid])
       vm
     rescue => e
@@ -107,16 +104,76 @@ module ForemanProxmox
       raise e
     end
 
+    def parse_vm(args)
+      config = args['config']
+      volumes = parse_volume(args['volumes'])
+      cpu = parse_cpu(args.reject { |key,_value| !['cpu_type','spectre','pcid'].include? key })
+      memory = parse_memory(args.reject { |key,_value| !['memory','min_memory','balloon','shares'].include? key })
+      args = args.reject { |key,_value| ['node','config','volumes','interfaces_attributes','firmware_type','provision_method'].include? key }
+      args = args.merge(config)
+      args = args.merge(volumes)
+      args = args.merge(cpu)
+      args = args.merge(memory)
+      logger.debug("parse_vm(): #{args}")
+      args
+    end
+
+    def parse_memory(args)
+      memory = {memory: args['cpu_type'].to_i}
+      ballooned = args['balloon'].to_i
+      if ballooned
+        memory.store(:shares,args['shares'].to_i)
+        memory.store(:balloon,args['min_memory'].to_i)
+      else
+        memory.store(:balloon,ballooned)
+      end
+      memory
+    end
+
+    def parse_cpu(args)
+      cpu = "cputype=#{args['cpu_type']}"
+      spectre = args['spectre'].to_i
+      pcid = args['pcid'].to_i
+      cpu += ",flags=" if spectre || pcid
+      cpu += "+spec-ctrl" if spectre
+      cpu += ";" if spectre && pcid
+      cpu += "+pcid" if pcid
+      { cpu: cpu }
+    end
+
+    def parse_volume(args)
+      disk = {}
+      id = "#{args['bus']}#{args['device']}"
+      delete = args['_delete'].to_i == 1
+      if delete
+        logger.debug("parse_volumes(): delete id=#{id}")
+        disk.store(:delete, id)
+        disk
+      else
+        disk.store(:id, id)
+        disk.store(:storage, "#{args['storage']}")
+        disk.store(:size, "#{args['size']}")
+        options = args.reject { |key,_value| ['bus','device','storage','size','_delete'].include? key}
+        logger.debug("parse_volume(): add disk=#{disk}, options=#{options}")
+        Fog::Proxmox::Disk.flatten(disk,Fog::Proxmox::Hash.stringify(options))
+      end 
+    end
+
     def next_vmid
       node.servers.next_id
     end
 
     def new_volume(attr = {})
-      server = node.servers.get attr[:vmid]
-      server.attach(attr)
+      storages = node.storages.list_by_content_type 'images'
+      storage = storages.first
+      storage.volumes.new attr
     rescue => e
-      logger.warn "failed to attach volume: #{e}"
+      logger.warn "failed to initialize volume: #{e}"
       raise e
+    end
+
+    def new_volume_errors
+      []
     end
 
     protected
@@ -142,7 +199,7 @@ module ForemanProxmox
     end
 
     def vm_instance_defaults
-      super.merge({})
+      super.merge(vmid: next_vmid, node: node)
     end
 
     private
@@ -152,8 +209,7 @@ module ForemanProxmox
     end
 
     def get_cluster_node(args = {})
-      return client.nodes.first unless !args.empty? && args[:cluster_node] != ''
-      client.nodes.find_by(id: args[:cluster_node])
+      args.empty? ? client.nodes.first : client.nodes.find_by_id(args[:node])
     end
 
     def read_from_cache(key, fallback)

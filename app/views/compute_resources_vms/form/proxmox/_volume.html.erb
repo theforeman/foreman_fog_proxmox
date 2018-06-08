@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <%= field_set_tag _("Volume"), :id => "volume" do %>
-  <%= select_f f, :storage, proxmox_storages_map, :id, :name, {}, :label => _('Storage'), :label_size => "col-md-2" %>
+  <%= select_f f, :storage, compute_resource.storages, :storage, :storage, {}, :label => _('Storage'), :label_size => "col-md-2" %>
   <%= select_f f, :bus, proxmox_buses_map, :id, :name, {}, :label => _('Bus'), :label_size => "col-md-2" %>
-  <%= select_f f, :device, proxmox_devices_map(:storage), :id, :name, {}, :label => _('Device'), :label_size => "col-md-2" %>
+  <%= select_f f, :device, proxmox_devices_map(:bus), :id, :name, {}, :label => _('Device'), :label_size => "col-md-2" %>
   <%= select_f f, :cache, proxmox_caches_map, :id, :name, {}, :label => _('Cache'), :label_size => "col-md-2" %>
   <%= text_f f, :size, :class => "input-mini", :label => _("Size (GB)"), :label_size => "col-md-2" %>
 <% end %>

@@ -27,8 +27,15 @@ module ProxmoxComputeSelectorsHelper
           FogExtensions::Proxmox::KeyPair.new(name:'VirtIO Block', id: 'virtio', range: 15)]
   end
 
-  def proxmox_devices_map(bus)
-    array_up_to(bus[:range])
+  def bus(id)
+    proxmox_buses_map.find { |bus| bus.id == id}
+  end
+
+  def proxmox_devices_map(bus_id)
+    devices = []
+    bus_range = bus(bus_id) ? bus(bus_id).range  : 1
+    array_up_to(bus_range).each { |i| devices << FogExtensions::Proxmox::KeyPair.new(id: i, name: i) }
+    devices
   end
 
   def array_up_to(i)

@@ -39,6 +39,8 @@ module ForemanProxmox
         # Register Proxmox VE compute resource in foreman
         compute_resource ForemanProxmox::Proxmox
         parameter_filter(ComputeResource, :uuid)
+        # add dashboard widget
+        widget 'foreman_proxmox_widget', name: N_('Foreman plugin template widget'), sizex: 4, sizey: 1
       end
     end
 

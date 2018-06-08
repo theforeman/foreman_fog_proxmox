@@ -17,28 +17,37 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-module ForemanProxmox
-    module Server
-        extend ActiveSupport::Concern
-        def to_s
-            name
-        end
-        def mac
-            get_config.mac_addresses.first
-        end
-    
-        def state
-            get_config.status
-        end
-        def interfaces
-            get_config.nics
-        end
-    
-        def select_nic(fog_nics, nic)
-            fog_nics[0]
-        end
-        def vm_description
-            "Name=#{name}, vmid=#{vmid}"
+module FogExtensions
+    module Proxmox
+        module Server
+            extend ActiveSupport::Concern
+            def to_s
+                name
+            end
+            def reboot
+                stop
+                start
+            end
+            def reset
+                reboot
+            end
+            def mac
+                get_config.mac_addresses.first
+            end
+        
+            def state
+                get_config.status
+            end
+            def interfaces
+                get_config.nics
+            end
+        
+            def select_nic(fog_nics, nic)
+                fog_nics[0]
+            end
+            def vm_description
+                "Name=#{name}, vmid=#{vmid}"
+            end
         end
     end
 end   

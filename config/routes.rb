@@ -18,5 +18,4 @@
 # along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 Rails.application.routes.draw do
-  match 'cache/refresh', :to => 'cache#refresh', :via => 'post'
 end

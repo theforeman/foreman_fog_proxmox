@@ -15,9 +15,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-<%= text_f f, :url, :class => "input-xlarge", :help_block => _("e.g. https://127.0.0.1:8006/api2/json") %>
+<%= text_f f, :url, :help_block => _("e.g. https://127.0.0.1:8006/api2/json") %>
 <%= text_f f, :user , :help_block => _("e.g. root@pam") %>
-<%= password_f f, :password %>
+<%= password_f f, :password, :keep_value => true, :unset => unset_password? %>
 
 <% hypervisor = f.object.hypervisor.uuid rescue nil %>
 <% if hypervisor -%>

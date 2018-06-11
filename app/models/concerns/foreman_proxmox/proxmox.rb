@@ -21,8 +21,9 @@ require 'fog/proxmox'
 
 module ForemanProxmox
   class Proxmox < ComputeResource
-    has_one :config
-    validates :url, :user, :password, :presence => true
+    validates :url, :format => { :with => URI::DEFAULT_PARSER.make_regexp }, :presence => true
+    validates :user, :format => { :with => /(\w+)[@]{1}(\w+)/ }, :presence => true
+    validates :password, :presence => true
 
     def provided_attributes
       super.merge(
@@ -52,7 +53,7 @@ module ForemanProxmox
     end
 
     def credentials_valid?
-      errors[:url].empty? && errors[:user].empty? && errors[:user].include?('@') && errors[:password].empty?
+      errors[:url].empty? && errors[:user].empty? && errors[:user].include?('@') && errors[:password].empty? && node
     end
 
     def test_connection(options = {})
@@ -107,38 +108,50 @@ module ForemanProxmox
     def parse_vm(args)
       config = args['config']
       volumes = parse_volume(args['volumes'])
-      cpu = parse_cpu(args.reject { |key,_value| !['cpu_type','spectre','pcid'].include? key })
-      memory = parse_memory(args.reject { |key,_value| !['memory','min_memory','balloon','shares'].include? key })
-      args = args.reject { |key,_value| ['node','config','volumes','interfaces_attributes','firmware_type','provision_method'].include? key }
-      args = args.merge(config)
-      args = args.merge(volumes)
-      args = args.merge(cpu)
-      args = args.merge(memory)
-      logger.debug("parse_vm(): #{args}")
-      args
+      cpu_a = ['cpu_type','spectre','pcid','vcpus','cpulimit','cpuunits','cores','sockets','numa']
+      cpu = parse_cpu(config.select { |key,_value| cpu_a.include? key })
+      memory_a = ['memory','min_memory','balloon','shares']
+      memory = parse_memory(config.select { |key,_value| memory_a.include? key })
+      general_a = ['node','config','volumes','interfaces_attributes','firmware_type','provision_method']
+      logger.debug("general_a: #{general_a}")
+      args.delete_if { |key,_value| general_a.include? key }
+      config.delete_if { |key,_value| cpu_a.include? key }
+      config.delete_if { |key,_value| memory_a.include? key }
+      config.delete_if { |_key,value| value.empty? }
+      config.each { |_key,value| value = value.to_i }
+      logger.debug("parse_config(): #{config}")
+      parsed_vm = args.merge(config).merge(volumes).merge(cpu).merge(memory)
+      logger.debug("parse_vm(): #{parsed_vm}")
+      parsed_vm
     end
 
     def parse_memory(args)
-      memory = {memory: args['cpu_type'].to_i}
-      ballooned = args['balloon'].to_i
+      memory = {memory: args['memory'].to_i}
+      ballooned = args['balloon'].to_i == 1
       if ballooned
         memory.store(:shares,args['shares'].to_i)
         memory.store(:balloon,args['min_memory'].to_i)
       else
-        memory.store(:balloon,ballooned)
+        memory.store(:balloon,args['balloon'].to_i)
       end
+      logger.debug("parse_memory(): #{memory}")
       memory
     end
 
     def parse_cpu(args)
       cpu = "cputype=#{args['cpu_type']}"
-      spectre = args['spectre'].to_i
-      pcid = args['pcid'].to_i
+      spectre = args['spectre'].to_i == 1
+      pcid = args['pcid'].to_i == 1
       cpu += ",flags=" if spectre || pcid
       cpu += "+spec-ctrl" if spectre
       cpu += ";" if spectre && pcid
-      cpu += "+pcid" if pcid
-      { cpu: cpu }
+      cpu += "+pcid" if pcid      
+      args.delete_if { |key,_value| ['cpu_type','spectre','pcid'].include? key }
+      args.delete_if { |_key,value| value.empty? }
+      args.each { |_key,value| value = value.to_i }
+      parsed_cpu = { cpu: cpu }.merge(args)
+      logger.debug("parse_cpu(): #{parsed_cpu}")
+      parsed_cpu
     end
 
     def parse_volume(args)
@@ -210,21 +223,6 @@ module ForemanProxmox
 
     def get_cluster_node(args = {})
       args.empty? ? client.nodes.first : client.nodes.find_by_id(args[:node])
-    end
-
-    def read_from_cache(key, fallback)
-      value = Rails.cache.fetch(cache_key + key) { public_send(fallback) }
-      value
-    end
-
-    def store_in_cache(key)
-      value = yield
-      Rails.cache.write(cache_key + key, value)
-      value
-    end
-
-    def cache_key
-      "computeresource_#{id}/"
     end
 
   end

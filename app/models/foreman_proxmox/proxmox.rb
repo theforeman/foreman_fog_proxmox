@@ -18,12 +18,15 @@
 # along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 require 'fog/proxmox'
+require 'fog/proxmox/disk'
+require 'fog/proxmox/nic'
 
 module ForemanProxmox
   class Proxmox < ComputeResource
     validates :url, :format => { :with => URI::DEFAULT_PARSER.make_regexp }, :presence => true
     validates :user, :format => { :with => /(\w+)[@]{1}(\w+)/ }, :presence => true
     validates :password, :presence => true
+    attr_accessor :ssl_verify_peer, :disable_proxy
 
     def provided_attributes
       super.merge(
@@ -59,13 +62,9 @@ module ForemanProxmox
     def test_connection(options = {})
       super
       credentials_valid?
-    rescue StandardError => e
-      begin
-        disconnect
-      rescue StandardError
-        nil
-      end
+    rescue => e
       errors[:base] << e.message
+      errors[:url] << e.message
     end
 
     def nodes
@@ -85,6 +84,12 @@ module ForemanProxmox
 
     def associated_host(vm)
       associate_by('node', vm.node)
+    end
+
+    def interfaces
+      node.server.get_config.nics
+    rescue
+      []
     end
 
     def new_vm(attr = {})
@@ -112,15 +117,18 @@ module ForemanProxmox
       cpu = parse_cpu(config.select { |key,_value| cpu_a.include? key })
       memory_a = ['memory','min_memory','balloon','shares']
       memory = parse_memory(config.select { |key,_value| memory_a.include? key })
+      interfaces_attributes = args['interfaces_attributes']
+      networks = parse_interfaces(interfaces_attributes)
       general_a = ['node','config','volumes','interfaces_attributes','firmware_type','provision_method']
       logger.debug("general_a: #{general_a}")
       args.delete_if { |key,_value| general_a.include? key }
       config.delete_if { |key,_value| cpu_a.include? key }
       config.delete_if { |key,_value| memory_a.include? key }
       config.delete_if { |_key,value| value.empty? }
-      config.each { |_key,value| value = value.to_i }
+      config.each_value { |value| value.to_i }
       logger.debug("parse_config(): #{config}")
       parsed_vm = args.merge(config).merge(volumes).merge(cpu).merge(memory)
+      networks.each { |network| parsed_vm = parsed_vm.merge(network) }
       logger.debug("parse_vm(): #{parsed_vm}")
       parsed_vm
     end
@@ -148,7 +156,7 @@ module ForemanProxmox
       cpu += "+pcid" if pcid      
       args.delete_if { |key,_value| ['cpu_type','spectre','pcid'].include? key }
       args.delete_if { |_key,value| value.empty? }
-      args.each { |_key,value| value = value.to_i }
+      args.each_value { |value| value.to_i }
       parsed_cpu = { cpu: cpu }.merge(args)
       logger.debug("parse_cpu(): #{parsed_cpu}")
       parsed_cpu
@@ -159,16 +167,46 @@ module ForemanProxmox
       id = "#{args['bus']}#{args['device']}"
       delete = args['_delete'].to_i == 1
       if delete
-        logger.debug("parse_volumes(): delete id=#{id}")
+        logger.debug("parse_volume(): delete id=#{id}")
         disk.store(:delete, id)
         disk
       else
         disk.store(:id, id)
-        disk.store(:storage, "#{args['storage']}")
-        disk.store(:size, "#{args['size']}")
+        disk.store(:storage, args['storage'].to_s)
+        disk.store(:size, args['size'].to_i)
         options = args.reject { |key,_value| ['bus','device','storage','size','_delete'].include? key}
         logger.debug("parse_volume(): add disk=#{disk}, options=#{options}")
         Fog::Proxmox::Disk.flatten(disk,Fog::Proxmox::Hash.stringify(options))
+      end 
+    end
+
+    def parse_interfaces(args)
+      nics = []
+      args.each_value { |value| nics.push(parse_interface(value))}
+      logger.debug("parse_interfaces(): nics=#{nics}")
+      nics
+    end
+
+    def parse_interface(args)
+      args.delete_if { |_key,value| value.empty? }
+      nic = {}
+      id = "net0"
+      delete = args['_delete'].to_i == 1
+      if delete
+        logger.debug("parse_interface(): delete id=#{id}")
+        nic.store(:delete, id)
+        nic
+      else
+        nic.store(:id, id)
+        nic.store(:tag, args['vlan'].to_i) if args['vlan']
+        nic.store(:model, args['model'].to_s)
+        nic.store(:bridge, args['bridge'].to_s) if args['bridge']
+        nic.store(:firewall, args['firewall'].to_i) if args['firewall']
+        nic.store(:rate, args['rate'].to_i) if args['rate']
+        nic.store(:link_down, args['disconnect'].to_i) if args['disconnect']
+        nic.store(:queues, args['queues'].to_i) if args['queues']
+        logger.debug("parse_interface(): add nic=#{nic}")
+        Fog::Proxmox::Nic.flatten(nic)
       end 
     end
 
@@ -185,17 +223,41 @@ module ForemanProxmox
       raise e
     end
 
+    def new_interface(args = {})
+      nic = {}
+      vm = node.servers.get(args[:vmid])
+      i = vm.get_config.next_nicid
+      id = "net#{i}"
+      nic.store(:id, id)
+      nic.store(:tag, args['vlan'].to_i)
+      nic.store(:model, args['networkcard'].to_s)
+      nic.store(:bridge, args['bridge'].to_i)
+      nic.store(:firewall, args['firewall'].to_i)
+      nic.store(:rate, args['rate'].to_i)
+      nic.store(:link_down, args['disconnect'].to_i)
+      nic.store(:queues, args['queues'].to_i)
+      nic
+    end
+
     def new_volume_errors
-      []
+      errors = []
+      errors.push _('no storage available on hypervisor') if storages.empty?
+      errors
+    end
+
+    def node
+      get_cluster_node
     end
 
     protected
 
     def fog_credentials
+      disable_proxy = disable_proxy ? Foreman::Cast.to_bool(disable_proxy) : true # dev tests only
+      ssl_verify_peer = ssl_verify_peer ? Foreman::Cast.to_bool(ssl_verify_peer) : false # dev tests only
       { pve_url: url,
         pve_username: user,
         pve_password: password,
-        connection_options: { disable_proxy: true, ssl_verify_peer: false } } # dev tests only
+        connection_options: { disable_proxy: disable_proxy, ssl_verify_peer: ssl_verify_peer } } 
     end
 
     def client
@@ -216,10 +278,6 @@ module ForemanProxmox
     end
 
     private
-
-    def node
-      get_cluster_node
-    end
 
     def get_cluster_node(args = {})
       args.empty? ? client.nodes.first : client.nodes.find_by_id(args[:node])

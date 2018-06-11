@@ -44,6 +44,12 @@ module FogExtensions
             def vm_description
                 "Name=#{name}, vmid=#{vmid}"
             end
+            def interfaces
+                get_config.nics
+            end
+            def select_nic(fog_nics, nic)
+                fog_nics.select {|fog_nic| fog_nic == nic}
+            end
         end
     end
 end   

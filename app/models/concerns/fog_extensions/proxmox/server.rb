@@ -24,6 +24,9 @@ module FogExtensions
             def to_s
                 name
             end
+            def persisted?
+                !!identity && !!uptime
+            end
             def reboot
                 stop
                 start
@@ -37,13 +40,6 @@ module FogExtensions
         
             def state
                 get_config.status
-            end
-            def interfaces
-                get_config.nics
-            end
-        
-            def select_nic(fog_nics, nic)
-                fog_nics[0]
             end
             def vm_description
                 "Name=#{name}, vmid=#{vmid}"

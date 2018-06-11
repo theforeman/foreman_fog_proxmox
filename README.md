@@ -10,7 +10,7 @@ It is intended to satisfy this [feature](http://projects.theforeman.org/issues/2
 
 Tested with:
 
-* Foreman >= 1.17
+* Foreman = 1.17.1
 * Fog-proxmox >= 0.3.0
 
 ## Installation

@@ -71,5 +71,12 @@ module ForemanProxmox
       locale_domain = 'foreman_proxmox'
       Foreman::Gettext::Support.add_text_domain locale_domain, locale_dir
     end
+
+    config.to_prepare do
+      require 'fog/compute/proxmox/models/server'
+
+      Fog::Compute::Proxmox::Server.send :include, FogExtensions::Proxmox::Server
+    end
+
   end
 end

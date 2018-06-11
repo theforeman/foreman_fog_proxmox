@@ -15,14 +15,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-<%= text_f f, :url, :help_block => _("e.g. https://127.0.0.1:8006/api2/json") %>
+<% node = f.object.node rescue nil %>
+<%= text_f f, :url, :help_block => _("e.g. https://127.0.0.1:8006/api2/json"), :help_inline_permanent => load_button_f(f, !!node, _("Test failed")) %>
 <%= text_f f, :user , :help_block => _("e.g. root@pam") %>
 <%= password_f f, :password, :keep_value => true, :unset => unset_password? %>
-
-<% hypervisor = f.object.hypervisor.uuid rescue nil %>
-<% if hypervisor -%>
-    <%= f.hidden_field :uuid, :value => hypervisor %>
-<% end -%>
-<%= link_to_function _("Test Connection"), "testConnection(this)", :class => "btn + #{hypervisor.nil? ? "btn-default" : "btn-success"}", :'data-url' => test_connection_compute_resources_path %>
-
-<%= hidden_spinner('', :id => 'test_connection_indicator') %>
+<%= checkbox_f f, :ssl_verify_peer, :label => _("SSL verify peer") %>
+<%= checkbox_f f, :disable_proxy, :label => _("Disable proxy") %>

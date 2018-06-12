@@ -9,6 +9,7 @@ cache: bundler
 rvm:
 - 2.3.7
 before_install:
+  - sudo apt-get update -qq && apt-get install -y build-essential libpq-dev libsystemd-dev libvirt-dev
   - git clone https://github.com/theforeman/foreman.git
   - cd foreman
   - git checkout tags/$FOREMAN
@@ -16,7 +17,7 @@ before_install:
   - cp config/database.yml.example config/database.yml
   - echo "gem 'foreman_proxmox', :git => 'https://github.com/foreman_proxmox', :branch => 'create_host'\n" > bundler.d/Gemfile.local.rb
   - echo "gem 'fog-proxmox', :git => 'https://github.com/fog/fog-proxmox.git', :branch => 'foreman'" >> bundler.d/Gemfile.local.rb
-  - bundle install --without console development ec2 fog gce jsonp libvirt mysql2 openid openstack ovirt postgresql rackspace sqlite test vmware
+  - bundle install --jobs 20
   - bundle exec bin/rake db:migrate
 before_script:
 - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter

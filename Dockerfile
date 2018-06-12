@@ -28,16 +28,11 @@ RUN git clone https://github.com/theforeman/foreman.git
 WORKDIR /usr/local/foreman
 RUN git checkout tags/1.17.1
 RUN echo "gem 'foreman_proxmox', :path => '/usr/local/foreman_proxmox'\n" > /usr/local/foreman/bundler.d/Gemfile.local.rb
-RUN echo "gem 'fog-proxmox', :git => 'https://github.com/fog/fog-proxmox.git'" >> /usr/local/foreman/bundler.d/Gemfile.local.rb
-RUN cp /usr/local/foreman/config/settings.yaml.test /usr/local/foreman/config/settings.yaml
-RUN echo ":webpack_dev_server: false" >> /usr/local/foreman/config/settings.yaml
+RUN echo "gem 'fog-proxmox', :git => 'https://github.com/fog/fog-proxmox.git', :branch => 'foreman'" >> /usr/local/foreman/bundler.d/Gemfile.local.rb
+RUN cp /usr/local/foreman/config/settings.yaml.example /usr/local/foreman/config/settings.yaml
 RUN cp /usr/local/foreman/config/database.yml.example /usr/local/foreman/config/database.yml
 RUN bundle install --jobs 20
 RUN npm install
 ENTRYPOINT ["bundle", "exec"]
 RUN bundle exec bin/rake db:migrate
-RUN bundle exec bin/rake db:seed
-RUN bundle exec bin/rake webpack:compile
-ENV BIND=0.0.0.0
-EXPOSE 3808
-CMD ["foreman", "start"]
+CMD ["bin/rake", "test:foreman_proxmox"]

@@ -1,11 +1,27 @@
-language: node_js
-node_js:
-  - '8' # current LTS
+env:
+  global:
+  - CC_TEST_REPORTER_ID=02cd1b70507cc6f516c3440b02d7238db03acc5e3b6d66331ce20381432b9b24
+  - TASK=test:foreman_proxmox
+  - FOREMAN=1.17.1
+language: ruby
+sudo: false
+cache: bundler
+rvm:
+- 2.3.7
 before_install:
   - git clone https://github.com/theforeman/foreman.git
   - cd foreman
-  - git checkout tags/1.17.1
+  - git checkout tags/$FOREMAN
   - cp config/settings.yaml.example config/settings.yaml
+  - cp config/database.yml.example config/database.yml
+  - echo "gem 'foreman_proxmox', :git => 'https://github.com/foreman_proxmox', :branch => 'create_host'\n" > bundler.d/Gemfile.local.rb
+  - echo "gem 'fog-proxmox', :git => 'https://github.com/fog/fog-proxmox.git', :branch => 'foreman'" >> bundler.d/Gemfile.local.rb
   - bundle install --without console development ec2 fog gce jsonp libvirt mysql2 openid openstack ovirt postgresql rackspace sqlite test vmware
-  - npm install -g npm@'>=3.0.0, <5.0.0'
-script: script/travis_run_js_tests.sh
+  - bundle exec bin/rake db:migrate
+before_script:
+- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+- chmod +x ./cc-test-reporter
+- "./cc-test-reporter before-build"
+script: bundle exec bin/rake $TASK
+after_script:
+- "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"

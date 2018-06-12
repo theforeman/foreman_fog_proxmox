@@ -18,7 +18,7 @@
 # along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 require 'fog/proxmox/disk'
-require 'fog/proxmox/nic'
+require 'fog/proxmox/helpers/nic_helper'
 
 module ProxmoxComputeHelper
 
@@ -118,7 +118,7 @@ module ProxmoxComputeHelper
       nic.store(:link_down, args['disconnect'].to_i) if args['disconnect']
       nic.store(:queues, args['queues'].to_i) if args['queues']
       logger.debug("parse_interface(): add nic=#{nic}")
-      Fog::Proxmox::Nic.flatten(nic)
+      Fog::Proxmox::NicHelper.flatten(nic)
     end 
   end
 

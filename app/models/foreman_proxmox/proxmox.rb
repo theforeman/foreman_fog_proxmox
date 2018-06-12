@@ -18,7 +18,6 @@
 # along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 require 'fog/proxmox'
-require 'fog/proxmox'
 
 module ForemanProxmox
   class Proxmox < ComputeResource

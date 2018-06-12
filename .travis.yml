@@ -13,7 +13,6 @@ before_install:
   - sudo apt-get install -y build-essential libpq-dev libsystemd-journal-dev libvirt-dev
   - git clone https://github.com/theforeman/foreman.git
   - cd foreman
-  - pwd
   - git checkout tags/$FOREMAN
   - cp config/settings.yaml.example config/settings.yaml
   - cp config/database.yml.example config/database.yml
@@ -24,8 +23,8 @@ before_script:
 - chmod +x ./cc-test-reporter
 - "./cc-test-reporter before-build"
 script: 
-- pwd
-- bundle exec $HOME/foreman/bin/rake db:migrate
-- bundle exec $HOME/foreman/bin/rake $TASK
+- cd foreman
+- bundle exec bin/rake db:migrate
+- bundle exec bin/rake $TASK
 after_script:
 - "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"

@@ -13,16 +13,19 @@ before_install:
   - sudo apt-get install -y build-essential libpq-dev libsystemd-journal-dev libvirt-dev
   - git clone https://github.com/theforeman/foreman.git
   - cd foreman
+  - pwd
   - git checkout tags/$FOREMAN
   - cp config/settings.yaml.example config/settings.yaml
   - cp config/database.yml.example config/database.yml
   - echo "gem 'foreman_proxmox', :git => 'https://github.com/foreman_proxmox', :branch => 'create_host'\n" > bundler.d/Gemfile.local.rb
   - echo "gem 'fog-proxmox', :git => 'https://github.com/fog/fog-proxmox.git', :branch => 'foreman'" >> bundler.d/Gemfile.local.rb
-  - bundle install --jobs 20
 before_script:
 - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
 - chmod +x ./cc-test-reporter
 - "./cc-test-reporter before-build"
-script: bundle exec bin/rake db:migrate && bundle exec bin/rake $TASK
+script: 
+- pwd
+- bundle exec $HOME/foreman/bin/rake db:migrate
+- bundle exec $HOME/foreman/bin/rake $TASK
 after_script:
 - "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"

@@ -4,15 +4,13 @@ env:
   - TASK=test:foreman_proxmox
   - FOREMAN=1.17.1
 language: ruby
-os: linux
-dist: bionic
 sudo: false
 cache: bundler
 rvm:
 - 2.3.7
 before_install:
   - sudo apt-get update -qq 
-  - sudo apt-get install -y build-essential libpq-dev libsystemd-dev libvirt-dev
+  - sudo apt-get install -y build-essential libpq-dev libsystemd-journal-dev libvirt-dev
   - git clone https://github.com/theforeman/foreman.git
   - cd foreman
   - git checkout tags/$FOREMAN

@@ -4,7 +4,6 @@ env:
   - TASK=test:foreman_proxmox
   - FOREMAN=1.17.1
 language: ruby
-sudo: false
 cache: bundler
 rvm:
 - 2.3.7

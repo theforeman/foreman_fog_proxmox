@@ -22,9 +22,8 @@ before_script:
 - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
 - chmod +x ./cc-test-reporter
 - "./cc-test-reporter before-build"
-script: 
-- cd foreman
-- bundle exec bin/rake db:migrate
-- bundle exec bin/rake $TASK
+script:
+- bundle exec /home/travis/build/tristanrobert/foreman_proxmox/foreman/bin/rake db:migrate
+- bundle exec /home/travis/build/tristanrobert/foreman_proxmox/foreman/bin/rake $TASK
 after_script:
 - "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"

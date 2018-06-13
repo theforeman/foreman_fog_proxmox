@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-require 'fog/proxmox/disk'
+require 'fog/proxmox/helpers/disk_helper'
 require 'fog/proxmox/helpers/nic_helper'
 
 module ProxmoxComputeHelper
@@ -88,7 +88,7 @@ module ProxmoxComputeHelper
       disk.store(:size, args['size'].to_i)
       options = args.reject { |key,_value| ['bus','device','storage','size','_delete'].include? key}
       logger.debug("parse_volume(): add disk=#{disk}, options=#{options}")
-      Fog::Proxmox::Disk.flatten(disk,Fog::Proxmox::Hash.stringify(options))
+      Fog::Proxmox::DiskHelper.flatten(disk,Fog::Proxmox::Hash.stringify(options))
     end 
   end
 

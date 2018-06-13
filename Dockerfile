@@ -32,7 +32,6 @@ RUN echo "gem 'fog-proxmox', :git => 'https://github.com/fog/fog-proxmox.git'" >
 RUN cp /usr/local/foreman/config/settings.yaml.example /usr/local/foreman/config/settings.yaml
 RUN cp /usr/local/foreman/config/database.yml.example /usr/local/foreman/config/database.yml
 RUN bundle install --jobs 20
-RUN npm install
 ENTRYPOINT ["bundle", "exec"]
 RUN bundle exec bin/rake db:migrate
 CMD ["bin/rake", "test:foreman_proxmox"]

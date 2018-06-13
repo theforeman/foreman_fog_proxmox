@@ -17,6 +17,6 @@ before_script:
 - chmod +x ./cc-test-reporter
 - "./cc-test-reporter before-build"
 script:
-- docker run foreman/proxmox /bin/sh -c "cd /root/foreman; bundle exec bin/rake test:foreman_proxmox"
+- docker run foreman/proxmox /bin/sh -c "bundle exec bin/rake test:foreman_proxmox"
 after_script:
 - "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"

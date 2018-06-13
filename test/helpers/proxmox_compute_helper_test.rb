@@ -43,7 +43,10 @@ class ProxmoxComputeHelperTest < ActiveSupport::TestCase
           'sockets' => '1'
         },
         'volumes' => { 'bus' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1', 'cache' => 'none' }, 
-        'interfaces_attributes' => { '0' => { 'model' => 'virtio', 'bridge' => 'vmbr0' } } 
+        'interfaces_attributes' => { 
+          '0' => { 'model' => 'virtio', 'bridge' => 'vmbr0' },
+          '1' => { 'model' => 'intel1000', 'bridge' => 'vmbr0' } 
+        } 
       }
     end
 
@@ -93,13 +96,19 @@ class ProxmoxComputeHelperTest < ActiveSupport::TestCase
     end
     
     test '#interface with model virtio and bridge' do       
-      interface = parse_interface(host['interfaces_attributes']['0'])
+      interface = parse_interface(host['interfaces_attributes']['0'].merge(device: '0'))
       assert interface.has_key?(:net0)
       assert_equal interface[:net0], 'model=virtio,bridge=vmbr0'
     end
     
+    test '#interface with model intel1000 and bridge' do       
+      interface = parse_interface(host['interfaces_attributes']['1'].merge(device: '1'))
+      assert interface.has_key?(:net1)
+      assert_equal interface[:net1], 'model=intel1000,bridge=vmbr0'
+    end
+    
     test '#interface delete net0' do       
-      interface = parse_interface(host_delete['interfaces_attributes']['0'])
+      interface = parse_interface(host_delete['interfaces_attributes']['0'].merge(device: '0'))
       assert interface.has_key?(:delete)
       assert_match(/(scsi0,){0,1}net0(,scsi0){0,1}/, interface[:delete])
       assert_equal interface.length, 1
@@ -108,7 +117,9 @@ class ProxmoxComputeHelperTest < ActiveSupport::TestCase
     test '#interfaces' do       
       interfaces = parse_interfaces(host['interfaces_attributes'])
       assert !interfaces.empty?
-      assert_equal interfaces.length, 1
+      assert_equal interfaces.length, 2
+      assert interfaces.include?({ net0: 'model=virtio,bridge=vmbr0'})
+      assert interfaces.include?({ net1: 'model=intel1000,bridge=vmbr0'})
     end
 
   end

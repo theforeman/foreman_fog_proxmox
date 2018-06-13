@@ -45,10 +45,10 @@ module FogExtensions
                 "Name=#{name}, vmid=#{vmid}"
             end
             def interfaces
-                get_config.nics
+                get_config.interfaces.all
             end
             def select_nic(fog_nics, nic)
-                fog_nics.select {|fog_nic| fog_nic == nic}
+                fog_nics.find {|fog_nic| fog_nic.identity.to_s == nic.identifier}
             end
         end
     end

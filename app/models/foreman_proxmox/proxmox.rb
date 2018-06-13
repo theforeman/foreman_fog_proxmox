@@ -78,7 +78,7 @@ module ForemanProxmox
     end
 
     def interfaces
-      node.server.get_config.nics
+      node.server.get_config.interfaces
     rescue
       []
     end
@@ -94,7 +94,7 @@ module ForemanProxmox
       nic.store(:bridge, args['bridge'].to_i)
       nic.store(:firewall, args['firewall'].to_i)
       nic.store(:rate, args['rate'].to_i)
-      nic.store(:link_down, args['disconnect'].to_i)
+      nic.store(:link_down, args['link_down'].to_i)
       nic.store(:queues, args['queues'].to_i)
       nic
     end

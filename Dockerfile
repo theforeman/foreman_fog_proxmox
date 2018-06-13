@@ -28,7 +28,7 @@ RUN git clone https://github.com/theforeman/foreman.git
 WORKDIR /usr/local/foreman
 RUN git checkout tags/1.17.1
 RUN echo "gem 'foreman_proxmox', :path => '/usr/local/foreman_proxmox'\n" > /usr/local/foreman/bundler.d/Gemfile.local.rb
-RUN echo "gem 'fog-proxmox', :git => 'https://github.com/fog/fog-proxmox.git', :branch => 'foreman'" >> /usr/local/foreman/bundler.d/Gemfile.local.rb
+RUN echo "gem 'fog-proxmox', :git => 'https://github.com/fog/fog-proxmox.git'" >> /usr/local/foreman/bundler.d/Gemfile.local.rb
 RUN cp /usr/local/foreman/config/settings.yaml.example /usr/local/foreman/config/settings.yaml
 RUN cp /usr/local/foreman/config/database.yml.example /usr/local/foreman/config/database.yml
 RUN bundle install --jobs 20

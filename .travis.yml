@@ -13,10 +13,10 @@ addons:
 before_install:
   - docker build -t foreman/proxmox .
 before_script:
-- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-- chmod +x ./cc-test-reporter
-- "./cc-test-reporter before-build"
+- docker run foreman/proxmox /bin/sh -c "curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter"
+- docker run foreman/proxmox /bin/sh -c "chmod +x ./cc-test-reporter"
+- docker run foreman/proxmox /bin/sh -c "./cc-test-reporter before-build"
 script:
 - docker run foreman/proxmox /bin/sh -c "bundle exec bin/rake test:foreman_proxmox"
 after_script:
-- "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"
+- docker run foreman/proxmox /bin/sh -c "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"

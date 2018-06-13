@@ -1,6 +1,6 @@
 ![ForemanProxmox](foremanproxmox.png)
 
-[![Build Status](https://travis-ci.com/tristanrobert/foreman_proxmox.svg?branch=create_host)](https://travis-ci.com/tristanrobert/foreman_proxmox)
+[![Build Status](https://travis-ci.com/tristanrobert/foreman_proxmox.svg?branch=master)](https://travis-ci.com/tristanrobert/foreman_proxmox)
 [![Maintainability](https://api.codeclimate.com/v1/badges/922162c278e0fa9207ba/maintainability)](https://codeclimate.com/github/tristanrobert/foreman_proxmox/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/922162c278e0fa9207ba/test_coverage)](https://codeclimate.com/github/tristanrobert/foreman_proxmox/test_coverage)
 

@@ -22,18 +22,23 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     <th><%= _('CPUs') -%></th>
     <th><%= _('Memory') -%></th>
     <th><%= _('Power') -%></th>
-    <th><%= _('DomID') -%></th>
+    <th><%= _('Uptime') -%></th>
+    <th></th>
   </tr>
   </thead>
   <tbody>
   <% @vms.each do |vm| -%>
       <tr>
         <td><%= link_to_if_authorized vm.name, hash_for_compute_resource_vm_path(:compute_resource_id => @compute_resource, :id => vm.identity) %></td>
-        <td><%= vm.vcpus_max %></td>
-        <td><%= (vm.memory_static_max.to_i / 1073741824).to_s %> GB</td>
-        <td><%= vm.power_state %> </td>
-        <td><%= vm.domid %></td>
-
+        <td><%= vm.cpus %></td>
+        <td><%= (vm.memory.to_i / (1024 * 1024)).to_s %> MB</td>
+        <td> <span <%= vm_power_class(vm.ready?) %>> <%= vm_state(vm) %></span> </td>
+        <td><%= vm.uptime %></td>
+        <td>
+        <%= action_buttons(
+                vm_power_action(vm, authorizer),
+                display_delete_if_authorized(hash_for_compute_resource_vm_path(:compute_resource_id => @compute_resource, :id => vm.identity).merge(:auth_object => @compute_resource, :authorizer => authorizer))) %>
+        </td>
       </tr>
   <% end -%>
   </tbody>

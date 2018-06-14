@@ -27,6 +27,12 @@ module FogExtensions
             def persisted?
                 !!identity && !!uptime
             end
+            def start
+                action('start')
+            end
+            def stop
+                action('stop')
+            end
             def reboot
                 stop
                 start

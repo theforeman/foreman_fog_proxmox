@@ -13,4 +13,4 @@ addons:
 before_install:
   - docker build -t foreman/proxmox .
 script:
-- docker run foreman/proxmox /bin/sh -c "curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter; chmod +x ./cc-test-reporter; ./cc-test-reporter before-build; bundle exec bin/rake test:foreman_proxmox; ./cc-test-reporter format-coverage -t simplecov --prefix /usr/local/foreman --output codeclimate.json; ./cc-test-reporter after-build --exit-code $?;"
+- docker run foreman/proxmox /bin/sh -c "curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter; chmod +x ./cc-test-reporter; ./cc-test-reporter before-build; bundle exec bin/rake test:foreman_proxmox; ./cc-test-reporter format-coverage -t simplecov --prefix /usr/local/foreman; ./cc-test-reporter after-build --exit-code $?;"

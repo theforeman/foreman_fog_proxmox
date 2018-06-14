@@ -35,17 +35,22 @@ module FogExtensions
                 reboot
             end
             def mac
-                get_config.mac_addresses.first
+                config.mac_addresses.first
             end
-        
+            def memory
+                config.memory * 1024 * 1024
+            end
             def state
-                get_config.status
+                qmpstatus
+            end
+            def description
+                config.description
             end
             def vm_description
                 "Name=#{name}, vmid=#{vmid}"
             end
             def interfaces
-                get_config.interfaces.all
+                config.interfaces.all
             end
             def select_nic(fog_nics, nic)
                 fog_nics.find {|fog_nic| fog_nic.identity.to_s == nic.identifier}

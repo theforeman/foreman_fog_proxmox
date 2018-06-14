@@ -1,1 +1,1 @@
-attributes :user, :node
+attributes :user, :url

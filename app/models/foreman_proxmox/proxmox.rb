@@ -26,7 +26,7 @@ module ForemanProxmox
     validates :user, :format => { :with => /(\w+)[@]{1}(\w+)/ }, :presence => true
     validates :password, :presence => true
     before_create :test_connection
-    attr_accessor :ssl_verify_peer, :disable_proxy
+    attr_accessor :ssl_verify_peer, :disable_proxy, :node
 
     def provided_attributes
       super.merge(
@@ -78,7 +78,7 @@ module ForemanProxmox
     end
 
     def interfaces
-      node.server.get_config.interfaces
+      node.server.config.interfaces.all
     rescue
       []
     end
@@ -86,7 +86,7 @@ module ForemanProxmox
     def new_interface(args = {})
       nic = {}
       vm = node.servers.get(args[:vmid])
-      i = vm.get_config.next_nicid
+      i = vm.config.next_nicid
       id = "net#{i}"
       nic.store(:id, id)
       nic.store(:tag, args['vlan'].to_i)
@@ -145,7 +145,7 @@ module ForemanProxmox
     end
 
     def node
-      get_cluster_node
+      @node ||= get_cluster_node
     end
 
     private
@@ -173,7 +173,7 @@ module ForemanProxmox
     end
 
     def vm_instance_defaults
-      super.merge(vmid: next_vmid, node: node)
+      super.merge(vmid: next_vmid, type: 'qemu', node: node)
     end
 
     def get_cluster_node(args = {})

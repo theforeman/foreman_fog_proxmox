@@ -44,8 +44,8 @@ class ProxmoxComputeHelperTest < ActiveSupport::TestCase
         },
         'volumes' => { 'bus' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1', 'cache' => 'none' }, 
         'interfaces_attributes' => { 
-          '0' => { 'model' => 'virtio', 'bridge' => 'vmbr0' },
-          '1' => { 'model' => 'intel1000', 'bridge' => 'vmbr0' } 
+          '0' => { 'id' => 'net0', 'model' => 'virtio', 'bridge' => 'vmbr0' },
+          '1' => { 'id' => 'net1', 'model' => 'intel1000', 'bridge' => 'vmbr0' } 
         } 
       }
     end
@@ -54,7 +54,7 @@ class ProxmoxComputeHelperTest < ActiveSupport::TestCase
       { 'vmid' => 100, 
         'name' =>  'test', 
         'volumes' => { '_delete' => '1', 'bus' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1' }, 
-        'interfaces_attributes' => { '0' => { '_delete' => '1', 'model' => 'virtio' } } 
+        'interfaces_attributes' => { '0' => { '_delete' => '1', 'id' => 'net0', 'model' => 'virtio' } } 
       }
     end
 

@@ -102,7 +102,7 @@ module ProxmoxComputeHelper
   def parse_interface(args)
     args.delete_if { |_key,value| value.empty? }
     nic = {}
-    id = args[:id]
+    id = args['id']
     logger.debug("parse_interface(): id=#{id}")
     delete = args['_delete'].to_i == 1
     if delete

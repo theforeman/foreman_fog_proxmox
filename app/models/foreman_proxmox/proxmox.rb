@@ -84,19 +84,16 @@ module ForemanProxmox
     end
 
     def new_interface(args = {})
-      nic = {}
-      vm = node.servers.get(args[:vmid])
-      i = vm.config.next_nicid
-      id = "net#{i}"
-      nic.store(:id, id)
-      nic.store(:tag, args['vlan'].to_i)
-      nic.store(:model, args['networkcard'].to_s)
-      nic.store(:bridge, args['bridge'].to_i)
-      nic.store(:firewall, args['firewall'].to_i)
-      nic.store(:rate, args['rate'].to_i)
-      nic.store(:link_down, args['link_down'].to_i)
-      nic.store(:queues, args['queues'].to_i)
-      nic
+      vm = args[:vm]
+      vm.config.interfaces.new args
+    end
+
+    def host_interfaces_attrs(host)
+      host.interfaces.select(&:physical?).each.with_index.reduce({}) do |hash, (nic, index)|
+        raise ::Foreman::Exception.new N_("Identifier interface[#{index}] required.") if nic.identifier.empty?
+        raise ::Foreman::Exception.new N_("Invalid identifier interface[#{index}]. Must be net[n] with n integer >= 0") unless Fog::Proxmox::NicHelper.valid?(nic.identifier)
+        hash.merge(index.to_s => nic.compute_attributes.merge(id: nic.identifier, ip: nic.ip, ip6: nic.ip6))
+      end
     end
 
     def new_vm(attr = {})

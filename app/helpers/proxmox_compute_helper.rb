@@ -94,7 +94,7 @@ module ProxmoxComputeHelper
 
   def parse_interfaces(args)
     nics = []
-    args.each { |key,value| nics.push(parse_interface(value.merge(device: key)))}
+    args.each { |key,value| nics.push(parse_interface(value))}
     logger.debug("parse_interfaces(): nics=#{nics}")
     nics
   end
@@ -102,9 +102,8 @@ module ProxmoxComputeHelper
   def parse_interface(args)
     args.delete_if { |_key,value| value.empty? }
     nic = {}
-    device = args[:device]
-    logger.debug("parse_interface(): device=#{device}")
-    id = "net#{device}"
+    id = args[:id]
+    logger.debug("parse_interface(): id=#{id}")
     delete = args['_delete'].to_i == 1
     if delete
       logger.debug("parse_interface(): delete id=#{id}")

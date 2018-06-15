@@ -1,7 +1,6 @@
 env:
   global:
   - CC_TEST_REPORTER_ID=02cd1b70507cc6f516c3440b02d7238db03acc5e3b6d66331ce20381432b9b24
-  - FOREMAN=1.17.1
 language: ruby
 sudo: required
 services: 
@@ -13,4 +12,4 @@ addons:
 install:
   - docker build -t foreman/proxmox .
 script:
-  - docker run foreman/proxmox /bin/sh -c "curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter; chmod +x ./cc-test-reporter; ./cc-test-reporter before-build; bundle exec bin/rake test:foreman_proxmox; ./cc-test-reporter format-coverage -t simplecov -o tmp/codeclimate.backend.json coverage/backend/.resultset.json; ./cc-test-reporter sum-coverage tmp/codeclimate.*.json -p 1 -o tmp/codeclimate.total.json; ./cc-test-reporter upload-coverage -i tmp/codeclimate.total.json -r $CC_TEST_REPORTER_ID"
+  - docker run foreman/proxmox /bin/sh -c "curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter; chmod +x ./cc-test-reporter; ./cc-test-reporter before-build; bundle exec bin/rake test:foreman_proxmox; ./cc-test-reporter format-coverage -d -t simplecov -o tmp/codeclimate.backend.json coverage/backend/.resultset.json; ./cc-test-reporter sum-coverage tmp/codeclimate.*.json -p 1 -o tmp/codeclimate.total.json; ./cc-test-reporter upload-coverage -i tmp/codeclimate.total.json -r $CC_TEST_REPORTER_ID"

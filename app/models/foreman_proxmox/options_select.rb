@@ -17,22 +17,20 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-module FogExtensions
-  module Proxmox
-    class KeyPair
+module ForemanProxmox
+    class OptionsSelect
       attr_accessor :id
       attr_accessor :name
       attr_accessor :range
 
-      def persisted?
-        !id.nil? && id != ''
+      def to_s
+        id
       end
 
-      def initialize(attr)
-        self.id = attr[:id]
-        self.name = attr[:name]
-        self.range = attr[:range]
+      def initialize(args = {})
+        @id = args[:id]
+        @name = args[:name]
+        @range = args[:range]
       end
     end
-  end
 end

@@ -69,7 +69,7 @@ module ForemanProxmox
     end
 
     def storages
-      storages = node.storages.all
+      storages = node.storages.list_by_content_type 'images'
       storages.sort_by(&:storage)
     end
 
@@ -79,6 +79,12 @@ module ForemanProxmox
 
     def interfaces
       node.server.config.interfaces.all
+    rescue
+      []
+    end
+
+    def templates
+      node.server.disk_images.all
     rescue
       []
     end
@@ -97,7 +103,12 @@ module ForemanProxmox
     end
 
     def new_vm(attr = {})
-      node.servers.new(vm_instance_defaults.merge(attr.to_hash.deep_symbolize_keys)) if errors.empty?
+      vm = node.servers.new(vm_instance_defaults.merge(attr.to_hash.deep_symbolize_keys)) if errors.empty?
+      interfaces = nested_attributes_for :interfaces, attr[:interfaces_attributes]
+      interfaces.map{ |i| vm.interfaces << new_interface(i)}
+      volumes = nested_attributes_for :volumes, attr[:volumes_attributes]
+      volumes.map { |v| vm.volumes << new_volume(v) }
+      vm
     end
 
     def create_vm(args = {})
@@ -170,7 +181,15 @@ module ForemanProxmox
     end
 
     def vm_instance_defaults
-      super.merge(vmid: next_vmid, type: 'qemu', node: node)
+      super.merge(vmid: next_vmid, type: 'qemu', node: node, config: { cores: 1, sockets: 1, memory: 512, ostype: 'l26' })
+    end
+
+    def volume_defaults
+      { bus: 'scsi', device: 0, scsihw: 'virtio-scsi-pci', size: 8, storage: storage.first }
+    end
+
+    def interface_defaults
+      { id: 'net0', model: 'virtio', bridge: 'vmbr0' }
     end
 
     def get_cluster_node(args = {})

@@ -45,7 +45,7 @@ class ProxmoxComputeHelperTest < ActiveSupport::TestCase
         'volumes' => { 'bus' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1', 'cache' => 'none' }, 
         'interfaces_attributes' => { 
           '0' => { 'id' => 'net0', 'model' => 'virtio', 'bridge' => 'vmbr0' },
-          '1' => { 'id' => 'net1', 'model' => 'intel1000', 'bridge' => 'vmbr0' } 
+          '1' => { 'id' => 'net1', 'model' => 'e1000', 'bridge' => 'vmbr0' } 
         } 
       }
     end
@@ -101,10 +101,10 @@ class ProxmoxComputeHelperTest < ActiveSupport::TestCase
       assert_equal interface[:net0], 'model=virtio,bridge=vmbr0'
     end
     
-    test '#interface with model intel1000 and bridge' do       
+    test '#interface with model e1000 and bridge' do       
       interface = parse_interface(host['interfaces_attributes']['1'].merge(device: '1'))
       assert interface.has_key?(:net1)
-      assert_equal interface[:net1], 'model=intel1000,bridge=vmbr0'
+      assert_equal interface[:net1], 'model=e1000,bridge=vmbr0'
     end
     
     test '#interface delete net0' do       
@@ -119,7 +119,7 @@ class ProxmoxComputeHelperTest < ActiveSupport::TestCase
       assert !interfaces.empty?
       assert_equal interfaces.length, 2
       assert interfaces.include?({ net0: 'model=virtio,bridge=vmbr0'})
-      assert interfaces.include?({ net1: 'model=intel1000,bridge=vmbr0'})
+      assert interfaces.include?({ net1: 'model=e1000,bridge=vmbr0'})
     end
 
   end

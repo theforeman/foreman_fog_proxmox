@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <%= f.hidden_field :id %>
-<%= select_f f, :model, proxmox_networkcards_map, :id, :name, {}, :label => _('Network card'), :label_size => "col-md-2" %>
+<%= select_f f, :model, proxmox_networkcards_map, :id, :name, { selected: :model }, :label => _('Network card'), :label_size => "col-md-2" %>
 <%#= select_f f, :bridge, compute_resources.bridges, :id, :name, {}, :label => _('Bridge'), :label_size => "col-md-2" TODO: nics in fog-proxmox%>
 <%= text_f f, :vlan, :class => "input-mini", :label => _('VLAN tag'), :label_size => "col-md-2" %>
 <%= text_f f, :rate, :class => "input-mini", :label => _('Rate limit'), :label_size => "col-md-2" %>

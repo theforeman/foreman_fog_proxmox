@@ -22,7 +22,7 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= checkbox_f f, :agent, :label => _('Qemu Agent') %>
 <% end %>
 <%= field_set_tag _("CPU"), :id => "cpu" do %>
-  <%= select_f f, :cpu_type, proxmox_cpus_map, :id, :name, {}, :label => _('Type'), :label_size => "col-md-2" %>
+  <%= select_f f, :cpu_type, proxmox_cpus_map, :id, :name, { selected: :cpu_type }, :label => _('Type'), :label_size => "col-md-2" %>
   <%= text_f f, :sockets, :class => "input-mini", :label => _('Sockets'), :label_size => "col-md-2" %>
   <%= text_f f, :cores, :class => "input-mini", :label => _('Cores'), :label_size => "col-md-2" %>
   <%= text_f f, :vcpus, :class => "input-mini", :label => _('VCPUs'), :label_size => "col-md-2" %>

@@ -18,7 +18,6 @@
 # along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 require 'fog/proxmox/helpers/cpu_helper'
-require 'fog/proxmox/helpers/disk_helper'
 
 module FogExtensions
     module Proxmox
@@ -34,7 +33,7 @@ module FogExtensions
                 Fog::Proxmox::CpuHelper.extract_pcid(cpu)
             end
             def volumes
-                disks.all
+                disks
             end
         end
     end

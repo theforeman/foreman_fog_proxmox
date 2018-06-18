@@ -77,26 +77,23 @@ module ForemanProxmox
       associate_by('node', vm.node)
     end
 
-    def interfaces
-      node.server.config.interfaces.all
-    rescue
-      []
-    end
-
     def bridges
       node = network_client.nodes.all.first
       bridges = node.networks.all(type: 'bridge')
       bridges.sort_by(&:iface)
+    end    
+
+    def templates(opts = {})
     end
 
-    def templates
-      node.server.disk_images.all
-    rescue
-      []
+    def template(id,opts = {})
     end
 
     def new_interface(attr = {})
       Fog::Compute::Proxmox::Interface.new interface_defaults.merge(attr.to_hash.deep_symbolize_keys)
+    rescue => e
+      logger.warn "failed to initialize interface: #{e}"
+      raise e
     end
 
     def host_interfaces_attrs(host)
@@ -195,17 +192,17 @@ module ForemanProxmox
         node: node, 
         cores: 1, 
         sockets: 1, 
-        memory: 512 * 1024 * 1024, 
+        memory: 512 * MEGA, 
         ostype: 'l26',
         cpu: 'kvm64',
         scsihw: 'virtio-scsi-pci',
-        scsi0: "#{storages.first}:8",
+        scsi0: "#{storages.first},size=8",
         net0: "virtio,bridge=#{bridges.first}"
       )
     end
 
     def volume_defaults
-      { id: 'scsi0', storage: storages.first, size: 8 }
+      { id: 'scsi0', storage: storages.first, size: (8 * GIGA) }
     end
 
     def interface_defaults

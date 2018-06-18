@@ -18,10 +18,10 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <!-- VM General Settings -->
 <%= field_set_tag _("General"), :id => "general" do %>
   <%= counter_f f, :vmid, :label => _('VM ID'), :label_size => "col-md-2", :required => true %>
-  <%= select_f f, :node, compute_resource.nodes, :node, :node, { selected: :node }, :label => _('Node'), :label_size => "col-md-2", :required => true %>
+  <%= select_f f, :node, compute_resource.nodes, :node, :node, { }, :label => _('Node'), :label_size => "col-md-2", :required => true %>
 <% end %>
 
 <!-- Config -->
-<%= f.fields_for :config do |f| %>
-  <%= render :partial => 'compute_resources_vms/form/proxmox/config', :locals => { :f => f, :compute_resource =>  compute_resource, :host => @host, :new_vm => new_vm, :item_layout => 'removable' } %>
+<%= f.fields_for :config, f.object.config do |config_f|%>
+  <%= render :partial => 'compute_resources_vms/form/proxmox/config', :locals => { :f => config_f, :compute_resource =>  compute_resource, :host => @host, :new_vm => new_vm, :item_layout => 'removable' } %>
 <% end %>

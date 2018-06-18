@@ -17,7 +17,7 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <!-- VM General Settings -->
 <%= field_set_tag _("General"), :id => "general" do %>
-  <%= text_f f, :vmid, :label => _('VM ID'), :label_size => "col-md-2", :required => true %>
+  <%= counter_f f, :vmid, :label => _('VM ID'), :label_size => "col-md-2", :required => true %>
   <%= select_f f, :node, compute_resource.nodes, :node, :node, { selected: :node }, :label => _('Node'), :label_size => "col-md-2", :required => true %>
 <% end %>
 

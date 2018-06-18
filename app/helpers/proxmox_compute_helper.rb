@@ -46,7 +46,7 @@ module ProxmoxComputeHelper
   end
 
   def parse_memory(args)
-    memory = {memory: args['memory'].to_i}
+    memory = {memory: args['memory'].to_i / (1024 * 1024)}
     ballooned = args['balloon'].to_i == 1
     if ballooned
       memory.store(:shares,args['shares'].to_i)
@@ -76,7 +76,7 @@ module ProxmoxComputeHelper
 
   def parse_volume(args)
     disk = {}
-    id = "#{args['bus']}#{args['device']}"
+    id = "#{args['controller']}#{args['device']}"
     delete = args['_delete'].to_i == 1
     if delete
       logger.debug("parse_volume(): delete id=#{id}")
@@ -85,8 +85,8 @@ module ProxmoxComputeHelper
     else
       disk.store(:id, id)
       disk.store(:storage, args['storage'].to_s)
-      disk.store(:size, args['size'].to_i)
-      options = args.reject { |key,_value| ['bus','device','storage','size','_delete'].include? key}
+      disk.store(:size, args['size'].to_i / (1024 * 1024 * 1024))
+      options = args.reject { |key,_value| ['controller','device','storage','size','_delete'].include? key}
       logger.debug("parse_volume(): add disk=#{disk}, options=#{options}")
       Fog::Proxmox::DiskHelper.flatten(disk,Fog::Proxmox::Hash.stringify(options))
     end 

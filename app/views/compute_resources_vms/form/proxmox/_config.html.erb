@@ -15,26 +15,26 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-<%= field_set_tag _("Options"), :id => "options" do %>
+<%#= field_set_tag _("Options"), :id => "options" do %>
   <%= textarea_f f, :description, :label => _('Description'), :label_size => "col-md-2" %>
   <%= text_f f, :boot, :label => _('Start/Shutdown order'), :label_size => "col-md-2" %>
   <%= checkbox_f f, :onboot, :label => _('Start at boot') %>
   <%= checkbox_f f, :agent, :label => _('Qemu Agent') %>
-<% end %>
-<%= field_set_tag _("CPU"), :id => "cpu" do %>
+<%# end %>
+<%#= field_set_tag _("CPU"), :id => "cpu" do %>
   <%= select_f f, :cpu_type, proxmox_cpus_map, :id, :name, { selected: :cpu_type }, :label => _('Type'), :label_size => "col-md-2" %>
-  <%= text_f f, :sockets, :class => "input-mini", :label => _('Sockets'), :label_size => "col-md-2" %>
-  <%= text_f f, :cores, :class => "input-mini", :label => _('Cores'), :label_size => "col-md-2" %>
-  <%= text_f f, :vcpus, :class => "input-mini", :label => _('VCPUs'), :label_size => "col-md-2" %>
-  <%= text_f f, :cpulimit, :class => "input-mini", :label => _('CPU limit'), :label_size => "col-md-2" %>
-  <%= text_f f, :cpuunits, :class => "input-mini", :label => _('CPU units'), :label_size => "col-md-2" %>
+  <%= counter_f f, :sockets, :class => "input-mini", :label => _('Sockets'), :label_size => "col-md-2" %>
+  <%= counter_f f, :cores, :class => "input-mini", :label => _('Cores'), :label_size => "col-md-2" %>
+  <%= counter_f f, :vcpus, :class => "input-mini", :label => _('VCPUs'), :label_size => "col-md-2" %>
+  <%= counter_f f, :cpulimit, :class => "input-mini", :label => _('CPU limit'), :label_size => "col-md-2" %>
+  <%= counter_f f, :cpuunits, :class => "input-mini", :label => _('CPU units'), :label_size => "col-md-2" %>
   <%= checkbox_f f, :numa, :label => _('Enable NUMA') %>
   <%= checkbox_f f, :pcid, :label => _('PCID') %>
   <%= checkbox_f f, :spectre, :label => _('Spectre-CTRL') %>
-<% end %>
-<%= field_set_tag _("Memory"), :id => "memory" do %>
-  <%= text_f f, :memory, :class => "input-mini", :label => _('Memory (MiB)'), :label_size => "col-md-2" %>
-  <%= text_f f, :min_memory, :class => "input-mini", :label => _('Minimum memory (MiB)'), :label_size => "col-md-2" %>
-  <%= text_f f, :shares, :class => "input-mini", :label => _('Shares'), :label_size => "col-md-2" %>
+<%# end %>
+<%#= field_set_tag _("Memory"), :id => "memory" do %>
+  <%= byte_size_f f, :memory, :class => "input-mini", :label => _('Memory (MiB)'), :label_size => "col-md-2" %>
+  <%= byte_size_f f, :min_memory, :class => "input-mini", :label => _('Minimum memory (MiB)'), :label_size => "col-md-2" %>
+  <%= counter_f f, :shares, :class => "input-mini", :label => _('Shares'), :label_size => "col-md-2" %>
   <%= checkbox_f f, :balloon, :label => _('Ballooning Device') %>
-<% end %>
+<%# end %>

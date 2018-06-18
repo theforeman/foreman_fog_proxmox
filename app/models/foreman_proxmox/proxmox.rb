@@ -83,31 +83,33 @@ module ForemanProxmox
       []
     end
 
+    def bridges
+      node = network_client.nodes.all.first
+      bridges = node.networks.all(type: 'bridge')
+      bridges.sort_by(&:iface)
+    end
+
     def templates
       node.server.disk_images.all
     rescue
       []
     end
 
-    def new_interface(args = {})
-      vm = args[:vm]
-      vm.config.interfaces.new args
+    def new_interface(attr = {})
+      Fog::Compute::Proxmox::Interface.new interface_defaults.merge(attr.to_hash.deep_symbolize_keys)
     end
 
     def host_interfaces_attrs(host)
       host.interfaces.select(&:physical?).each.with_index.reduce({}) do |hash, (nic, index)|
         raise ::Foreman::Exception.new N_("Identifier interface[#{index}] required.") if nic.identifier.empty?
-        raise ::Foreman::Exception.new N_("Invalid identifier interface[#{index}]. Must be net[n] with n integer >= 0") unless Fog::Proxmox::NicHelper.valid?(nic.identifier)
+        raise ::Foreman::Exception.new N_("Invalid identifier interface[#{index}]. Must be net[n] with n integer >= 0") unless Fog::Proxmox::ControllerHelper.valid?(Fog::Compute::Proxmox::Interface::NAME,nic.identifier)
         hash.merge(index.to_s => nic.compute_attributes.merge(id: nic.identifier, ip: nic.ip, ip6: nic.ip6))
       end
     end
 
     def new_vm(attr = {})
       vm = node.servers.new(vm_instance_defaults.merge(attr.to_hash.deep_symbolize_keys)) if errors.empty?
-      interfaces = nested_attributes_for :interfaces, attr[:interfaces_attributes]
-      interfaces.map{ |i| vm.interfaces << new_interface(i)}
-      volumes = nested_attributes_for :volumes, attr[:volumes_attributes]
-      volumes.map { |v| vm.volumes << new_volume(v) }
+      logger.debug("new_vm() vm.config=#{vm.config.inspect}")
       vm
     end
 
@@ -138,9 +140,7 @@ module ForemanProxmox
     end
 
     def new_volume(attr = {})
-      storages = node.storages.list_by_content_type 'images'
-      storage = storages.first
-      storage.volumes.new attr
+      Fog::Compute::Proxmox::Disk.new volume_defaults.merge(attr.to_hash.deep_symbolize_keys)
     rescue => e
       logger.warn "failed to initialize volume: #{e}"
       raise e
@@ -175,21 +175,41 @@ module ForemanProxmox
       @identity_client ||= ::Fog::Identity::Proxmox.new(fog_credentials)
     end
 
+    def network_client
+      @network_client ||= ::Fog::Network::Proxmox.new(fog_credentials)
+    end
+
     def disconnect
       client.terminate if @client
       @client = nil
+      identity_client.terminate if @identity_client
+      @identity_client = nil
+      network_client.terminate if @network_client
+      @network_client = nil
     end
 
     def vm_instance_defaults
-      super.merge(vmid: next_vmid, type: 'qemu', node: node, config: { cores: 1, sockets: 1, memory: 512, ostype: 'l26' })
+      super.merge(
+        vmid: next_vmid, 
+        type: 'qemu', 
+        node: node, 
+        cores: 1, 
+        sockets: 1, 
+        memory: 512 * 1024 * 1024, 
+        ostype: 'l26',
+        cpu: 'kvm64',
+        scsihw: 'virtio-scsi-pci',
+        scsi0: "#{storages.first}:8",
+        net0: "virtio,bridge=#{bridges.first}"
+      )
     end
 
     def volume_defaults
-      { bus: 'scsi', device: 0, scsihw: 'virtio-scsi-pci', size: 8, storage: storage.first }
+      { id: 'scsi0', storage: storages.first, size: 8 }
     end
 
     def interface_defaults
-      { id: 'net0', model: 'virtio', bridge: 'vmbr0' }
+      { id: 'net0', model: 'virtio', bridge: bridges.first }
     end
 
     def get_cluster_node(args = {})

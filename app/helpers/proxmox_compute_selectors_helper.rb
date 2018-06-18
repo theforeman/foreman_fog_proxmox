@@ -18,21 +18,21 @@
 # along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 module ProxmoxComputeSelectorsHelper
-  def proxmox_buses_map
+  def proxmox_controllers_map
     [ForemanProxmox::OptionsSelect.new(id:'ide', name: 'IDE', range: 3), 
       ForemanProxmox::OptionsSelect.new(id:'sata', name: 'SATA', range: 5), 
         ForemanProxmox::OptionsSelect.new(id:'scsi', name: 'SCSI', range: 13), 
           ForemanProxmox::OptionsSelect.new(name:'VirtIO Block', id: 'virtio', range: 15)]
   end
 
-  def bus(id)
-    proxmox_buses_map.find { |bus| bus.id == id}
+  def get_controller(id)
+    proxmox_controllers_map.find { |controller| controller.id == id}
   end
 
-  def proxmox_devices_map(bus_id)
+  def proxmox_devices_map(controller_id)
     devices = []
-    bus_range = bus(bus_id) ? bus(bus_id).range  : 1
-    array_up_to(bus_range).each { |i| devices << ForemanProxmox::OptionsSelect.new(id: i, name: i) }
+    controller_range = get_controller(controller_id) ? get_controller(controller_id).range  : 1
+    array_up_to(controller_range).each { |i| devices << ForemanProxmox::OptionsSelect.new(id: i, name: i) }
     devices
   end
 

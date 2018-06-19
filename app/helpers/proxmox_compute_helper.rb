@@ -22,8 +22,9 @@ require 'fog/proxmox/helpers/nic_helper'
 
 module ProxmoxComputeHelper
 
-  MEGA = 1024 * 1024
-  GIGA = 1024 * MEGA
+  KILO = 1024
+  MEGA = KILO * KILO
+  GIGA = KILO * MEGA
 
   def parse_vm(args)
     config = args['config']

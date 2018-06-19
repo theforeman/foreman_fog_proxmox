@@ -15,6 +15,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
+<%= javascript_tag("$(document).on('ContentLoad', tfm.numFields.initAll)"); %>
+
 <!-- VM General Settings -->
 <%= field_set_tag _("General"), :id => "general" do %>
   <%= counter_f f, :vmid, :label => _('VM ID'), :label_size => "col-md-2", :required => true %>
@@ -22,6 +24,6 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% end %>
 
 <!-- Config -->
-<%= f.fields_for :config, f.object.config do |config_f|%>
+<%= f.fields_for :config do |config_f|%>
   <%= render :partial => 'compute_resources_vms/form/proxmox/config', :locals => { :f => config_f, :compute_resource =>  compute_resource, :host => @host, :new_vm => new_vm, :item_layout => 'removable' } %>
 <% end %>

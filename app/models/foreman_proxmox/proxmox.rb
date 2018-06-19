@@ -107,6 +107,10 @@ module ForemanProxmox
     def new_vm(attr = {})
       vm = node.servers.new(vm_instance_defaults.merge(attr.to_hash.deep_symbolize_keys)) if errors.empty?
       logger.debug("new_vm() vm.config=#{vm.config.inspect}")
+      interfaces = nested_attributes_for :interfaces, attr[:interfaces_attributes]
+      interfaces.map{ |i| vm.config.interfaces << new_interface(i)}
+      volumes = nested_attributes_for :volumes, attr[:volumes_attributes]
+      volumes.map { |v| vm.config.disks << new_volume(v) }
       vm
     end
 
@@ -196,13 +200,13 @@ module ForemanProxmox
         ostype: 'l26',
         cpu: 'kvm64',
         scsihw: 'virtio-scsi-pci',
-        scsi0: "#{storages.first},size=8",
+        scsi0: "#{storages.first},size=#{8*GIGA},cache=none",
         net0: "virtio,bridge=#{bridges.first}"
       )
     end
 
     def volume_defaults
-      { id: 'scsi0', storage: storages.first, size: (8 * GIGA) }
+      { id: 'scsi0', storage: storages.first, size: (8 * GIGA), cache: 'none' }
     end
 
     def interface_defaults

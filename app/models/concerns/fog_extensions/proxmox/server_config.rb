@@ -32,9 +32,6 @@ module FogExtensions
             def pcid
                 Fog::Proxmox::CpuHelper.extract_pcid(cpu)
             end
-            def volumes
-                disks
-            end
         end
     end
 end   

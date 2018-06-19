@@ -44,7 +44,7 @@ module FogExtensions
                 config.mac_addresses.first
             end
             def memory
-                config.memory * 1024 * 1024
+                config.memory * MEGA
             end
             def state
                 qmpstatus
@@ -58,6 +58,15 @@ module FogExtensions
             def select_nic(fog_nics, nic)
                 fog_nics.find {|fog_nic| fog_nic.identity.to_s == nic.identifier}
             end
+            def interfaces
+                config.interfaces
+            end
+            def volumes
+                config.disks
+            end
+            def interfaces_attributes=(attrs); end
+            def volumes_attributes=(attrs); end
+            def config_attributes=(attrs); end
         end
     end
 end   

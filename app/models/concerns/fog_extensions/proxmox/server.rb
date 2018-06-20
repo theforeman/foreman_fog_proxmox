@@ -62,7 +62,7 @@ module FogExtensions
                 config.interfaces
             end
             def volumes
-                config.disks
+                config.disks.reject { |disk| disk.cdrom? }
             end
             def interfaces_attributes=(attrs); end
             def volumes_attributes=(attrs); end

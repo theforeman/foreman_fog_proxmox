@@ -39,3 +39,8 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= counter_f f, :shares, :class => "input-mini", :label => _('Shares'), :label_size => "col-md-2" %>
   <%= checkbox_f f, :balloon, :label => _('Ballooning Device') %>
 <% end %>
+<%= field_set_tag _("CD-ROM"), :id => "cdrom" do %>
+  <%= radio_button_f f, :cdrom, :value => 'none', :text => _('None') %>
+  <%= radio_button_f f, :cdrom, :value => 'cdrom' , :text => _('Physical') %>
+  <%= radio_button_f f, :cdrom, :value => 'image' , :text => _('Image') %>
+<% end %>

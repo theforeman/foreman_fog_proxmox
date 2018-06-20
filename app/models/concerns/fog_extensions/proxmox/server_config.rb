@@ -32,6 +32,9 @@ module FogExtensions
             def pcid
                 Fog::Proxmox::CpuHelper.extract_pcid(cpu)
             end
+            def cdrom
+                disks.cdrom.volid
+            end
         end
     end
 end   

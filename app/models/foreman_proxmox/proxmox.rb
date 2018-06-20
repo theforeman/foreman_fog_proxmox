@@ -201,7 +201,8 @@ module ForemanProxmox
         ostype: 'l26',
         cpu: 'kvm64',
         scsihw: 'virtio-scsi-pci',
-        scsi0: "#{storages.first},size=#{8*GIGA},cache=none",
+        ide2: "none,media=cdrom",
+        scsi0: "#{storages.first}:#{8*GIGA},cache=none",
         net0: "virtio,bridge=#{bridges.first}"
       )
     end

@@ -28,6 +28,7 @@ module ProxmoxComputeHelper
 
   def parse_vm(args)
     config = args['config']
+    cdrom = parse_cdrom(config[:cdrom])
     volumes = parse_volume(args['volumes'])
     cpu_a = ['cpu_type','spectre','pcid','vcpus','cpulimit','cpuunits','cores','sockets','numa']
     cpu = parse_cpu(config.select { |key,_value| cpu_a.include? key })
@@ -76,6 +77,12 @@ module ProxmoxComputeHelper
     parsed_cpu = { cpu: cpu }.merge(args)
     logger.debug("parse_cpu(): #{parsed_cpu}")
     parsed_cpu
+  end
+
+  def parse_cdrom(args)
+    volid = "#{args[:cdrom]}"
+    cdrom = "#{volid},media=cdrom"
+    {ide2: cdrom}
   end
 
   def parse_volume(args)

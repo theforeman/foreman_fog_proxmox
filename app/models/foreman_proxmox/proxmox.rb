@@ -196,6 +196,7 @@ module ForemanProxmox
         node: node, 
         cores: 1, 
         sockets: 1, 
+        kvm: 1,
         memory: 512 * MEGA, 
         ostype: 'l26',
         cpu: 'kvm64',

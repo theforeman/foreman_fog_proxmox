@@ -20,7 +20,7 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= text_f f, :boot, :label => _('Start/Shutdown order'), :label_size => "col-md-2" %>
   <%= checkbox_f f, :onboot, :label => _('Start at boot') %>
   <%= checkbox_f f, :agent, :label => _('Qemu Agent') %>
-  <%= checkbox_f f, :kvm, :label => _('KVM'), :help_inline => _('Enable/disable KVM hardware virtualization') %>
+  <%= checkbox_f f, :kvm, :label => _('KVM'), :label_help => _('Enable/disable KVM hardware virtualization') %>
 <% end %>
 <%= field_set_tag _("CPU"), :id => "cpu" do %>
   <%= select_f f, :cpu_type, proxmox_cpus_map, :id, :name, { }, :label => _('Type'), :label_size => "col-md-2" %>

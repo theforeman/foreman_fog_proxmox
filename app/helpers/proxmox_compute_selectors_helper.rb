@@ -21,78 +21,72 @@ module ProxmoxComputeSelectorsHelper
   def proxmox_controllers_map
     [ForemanProxmox::OptionsSelect.new(id:'ide', name: 'IDE', range: 3), 
       ForemanProxmox::OptionsSelect.new(id:'sata', name: 'SATA', range: 5), 
-        ForemanProxmox::OptionsSelect.new(id:'scsi', name: 'SCSI', range: 13), 
-          ForemanProxmox::OptionsSelect.new(name:'VirtIO Block', id: 'virtio', range: 15)]
+      ForemanProxmox::OptionsSelect.new(id:'scsi', name: 'SCSI', range: 13), 
+      ForemanProxmox::OptionsSelect.new(name:'VirtIO Block', id: 'virtio', range: 15)]
   end
 
   def get_controller(id)
     proxmox_controllers_map.find { |controller| controller.id == id}
   end
 
-  def proxmox_devices_map(controller_id)
-    devices = []
-    controller_range = get_controller(controller_id) ? get_controller(controller_id).range  : 1
-    array_up_to(controller_range).each { |i| devices << ForemanProxmox::OptionsSelect.new(id: i, name: i) }
-    devices
-  end
-
-  def array_up_to(i)
-    (0..i - 1).to_a
+  def proxmox_max_device(id)
+    options_select = get_controller(id)
+    options_select ? options_select.range  : 1
   end
 
   def proxmox_caches_map
-    [ForemanProxmox::OptionsSelect.new(id: 'directsync', name: 'Direct sync'),
-     ForemanProxmox::OptionsSelect.new(id: 'writethrough', name: 'Write through'),
-     ForemanProxmox::OptionsSelect.new(id: 'writeback', name: 'Write back'),
-     ForemanProxmox::OptionsSelect.new(id: 'unsafe', name: 'Write back unsafe'),
-     ForemanProxmox::OptionsSelect.new(id: 'none', name: 'No cache')]
+    [OpenStruct.new(id: 'directsync', name: 'Direct sync'),
+     OpenStruct.new(id: 'writethrough', name: 'Write through'),
+     OpenStruct.new(id: 'writeback', name: 'Write back'),
+     OpenStruct.new(id: 'unsafe', name: 'Write back unsafe'),
+     OpenStruct.new(id: 'none', name: 'No cache')]
   end
 
   def proxmox_cpus_map
-    [ForemanProxmox::OptionsSelect.new(id: '486', name: '486'),
-     ForemanProxmox::OptionsSelect.new(id: 'athlon', name: 'athlon'),
-     ForemanProxmox::OptionsSelect.new(id: 'core2duo', name: 'core2duo'),
-     ForemanProxmox::OptionsSelect.new(id: 'coreduo', name: 'coreduo'),
-     ForemanProxmox::OptionsSelect.new(id: 'kvm32', name: 'kvm32'),
-     ForemanProxmox::OptionsSelect.new(id: 'kvm64', name: '(Default) kvm64'),
-     ForemanProxmox::OptionsSelect.new(id: 'pentium', name: 'pentium'),
-     ForemanProxmox::OptionsSelect.new(id: 'pentium2', name: 'pentium2'),
-     ForemanProxmox::OptionsSelect.new(id: 'pentium3', name: 'pentium3'),
-     ForemanProxmox::OptionsSelect.new(id: 'phenom', name: 'phenom'),
-     ForemanProxmox::OptionsSelect.new(id: 'qemu32', name: 'qemu32'),
-     ForemanProxmox::OptionsSelect.new(id: 'qemu64', name: 'qemu64'),
-     ForemanProxmox::OptionsSelect.new(id: 'Conroe', name: 'Conroe'),
-     ForemanProxmox::OptionsSelect.new(id: 'Penryn', name: 'Penryn'),
-     ForemanProxmox::OptionsSelect.new(id: 'Nehalem', name: 'Nehalem'),
-     ForemanProxmox::OptionsSelect.new(id: 'Westmere', name: 'Westmere'),
-     ForemanProxmox::OptionsSelect.new(id: 'SandyBridge', name: 'SandyBridge'),
-     ForemanProxmox::OptionsSelect.new(id: 'IvyBridge', name: 'IvyBridge'),
-     ForemanProxmox::OptionsSelect.new(id: 'Haswell', name: 'Haswell'),
-     ForemanProxmox::OptionsSelect.new(id: 'Haswell-noTSX', name: 'Haswell-noTSX'),
-     ForemanProxmox::OptionsSelect.new(id: 'Broadwell', name: 'Broadwell'),
-     ForemanProxmox::OptionsSelect.new(id: 'Broadwell-noTSX', name: 'Broadwell-noTSX'),
-     ForemanProxmox::OptionsSelect.new(id: 'Skylake-Client', name: 'Skylake-Client'),
-     ForemanProxmox::OptionsSelect.new(id: 'Opteron_G1', name: 'Opteron_G1'),
-     ForemanProxmox::OptionsSelect.new(id: 'Opteron_G2', name: 'Opteron_G2'),
-     ForemanProxmox::OptionsSelect.new(id: 'Opteron_G3', name: 'Opteron_G3'),
-     ForemanProxmox::OptionsSelect.new(id: 'Opteron_G4', name: 'Opteron_G4'),
-     ForemanProxmox::OptionsSelect.new(id: 'Opteron_G5', name: 'Opteron_G5'),
-     ForemanProxmox::OptionsSelect.new(id: 'host', name: 'host')]
+    [OpenStruct.new(id: '486', name: '486'),
+     OpenStruct.new(id: 'athlon', name: 'athlon'),
+     OpenStruct.new(id: 'core2duo', name: 'core2duo'),
+     OpenStruct.new(id: 'coreduo', name: 'coreduo'),
+     OpenStruct.new(id: 'kvm32', name: 'kvm32'),
+     OpenStruct.new(id: 'kvm64', name: '(Default) kvm64'),
+     OpenStruct.new(id: 'pentium', name: 'pentium'),
+     OpenStruct.new(id: 'pentium2', name: 'pentium2'),
+     OpenStruct.new(id: 'pentium3', name: 'pentium3'),
+     OpenStruct.new(id: 'phenom', name: 'phenom'),
+     OpenStruct.new(id: 'qemu32', name: 'qemu32'),
+     OpenStruct.new(id: 'qemu64', name: 'qemu64'),
+     OpenStruct.new(id: 'Conroe', name: 'Conroe'),
+     OpenStruct.new(id: 'Penryn', name: 'Penryn'),
+     OpenStruct.new(id: 'Nehalem', name: 'Nehalem'),
+     OpenStruct.new(id: 'Westmere', name: 'Westmere'),
+     OpenStruct.new(id: 'SandyBridge', name: 'SandyBridge'),
+     OpenStruct.new(id: 'IvyBridge', name: 'IvyBridge'),
+     OpenStruct.new(id: 'Haswell', name: 'Haswell'),
+     OpenStruct.new(id: 'Haswell-noTSX', name: 'Haswell-noTSX'),
+     OpenStruct.new(id: 'Broadwell', name: 'Broadwell'),
+     OpenStruct.new(id: 'Broadwell-noTSX', name: 'Broadwell-noTSX'),
+     OpenStruct.new(id: 'Skylake-Client', name: 'Skylake-Client'),
+     OpenStruct.new(id: 'Opteron_G1', name: 'Opteron_G1'),
+     OpenStruct.new(id: 'Opteron_G2', name: 'Opteron_G2'),
+     OpenStruct.new(id: 'Opteron_G3', name: 'Opteron_G3'),
+     OpenStruct.new(id: 'Opteron_G4', name: 'Opteron_G4'),
+     OpenStruct.new(id: 'Opteron_G5', name: 'Opteron_G5'),
+     OpenStruct.new(id: 'host', name: 'host')]
   end
 
   def proxmox_scsihw_map
-    [ForemanProxmox::OptionsSelect.new(id: 'lsi', name: 'lsi'),
-     ForemanProxmox::OptionsSelect.new(id: 'lsi53c810', name: 'lsi53c810'),
-     ForemanProxmox::OptionsSelect.new(id: 'megasas', name: 'megasas'),
-     ForemanProxmox::OptionsSelect.new(id: 'virtio-scsi-pci', name: 'virtio-scsi-pci'),
-      ForemanProxmox::OptionsSelect.new(id: 'virtio-scsi-single', name: 'virtio-scsi-single'),
-     ForemanProxmox::OptionsSelect.new(id: 'pvscsi', name: 'pvscsi')]
+    [OpenStruct.new(id: 'lsi', name: 'lsi'),
+     OpenStruct.new(id: 'lsi53c810', name: 'lsi53c810'),
+     OpenStruct.new(id: 'megasas', name: 'megasas'),
+     OpenStruct.new(id: 'virtio-scsi-pci', name: 'virtio-scsi-pci'),
+      OpenStruct.new(id: 'virtio-scsi-single', name: 'virtio-scsi-single'),
+     OpenStruct.new(id: 'pvscsi', name: 'pvscsi')]
   end
 
   def proxmox_networkcards_map
-    [ForemanProxmox::OptionsSelect.new(id: 'e1000', name:  'Intel E1000'),
-      ForemanProxmox::OptionsSelect.new(id: 'virtio', name:  'VirtIO (paravirtualized)'),
-      ForemanProxmox::OptionsSelect.new(id: 'rtl8139', name:  'Realtek RTL8139'),
-        ForemanProxmox::OptionsSelect.new(id: 'vmxnet3', name:  'VMware vmxnet3')]
+    [OpenStruct.new(id: 'e1000', name:  'Intel E1000'),
+      OpenStruct.new(id: 'virtio', name:  'VirtIO (paravirtualized)'),
+      OpenStruct.new(id: 'rtl8139', name:  'Realtek RTL8139'),
+        OpenStruct.new(id: 'vmxnet3', name:  'VMware vmxnet3')]
   end
 end

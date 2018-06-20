@@ -17,6 +17,6 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <%= select_f f, :storage, compute_resource.storages, :storage, :storage, { }, :label => _('Storage'), :label_size => "col-md-2" %>
 <%= select_f f, :controller, proxmox_controllers_map, :id, :name, { }, :label => _('Controller'), :label_size => "col-md-2" %>
-<%= select_f f, :device, proxmox_devices_map(:controller), :id, :name, { }, :label => _('Device'), :label_size => "col-md-2" %>
+<%= counter_f f, :device, :label => _('Device'), :label_size => "col-md-2", :min => 0, :max => proxmox_max_device(f.object.controller) %>
 <%= select_f f, :cache, proxmox_caches_map, :id, :name, { }, :label => _('Cache'), :label_size => "col-md-2" %>
 <%= byte_size_f f, :size, :class => "input-mini", :label => _("Size (GB)"), :label_size => "col-md-2" %>

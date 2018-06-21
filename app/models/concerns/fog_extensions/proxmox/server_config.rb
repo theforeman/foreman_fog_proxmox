@@ -35,6 +35,12 @@ module FogExtensions
             def cdrom
                 disks.cdrom.volid
             end
+            def cdrom_storage
+                disks.cdrom.storage
+            end
+            def cdrom_image
+                disks.cdrom.volid
+            end
         end
     end
 end   

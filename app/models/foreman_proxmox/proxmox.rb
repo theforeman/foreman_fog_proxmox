@@ -73,6 +73,17 @@ module ForemanProxmox
       storages.sort_by(&:storage)
     end
 
+    def storages_isos
+      storages = node.storages.list_by_content_type 'iso'
+      storages.sort_by(&:storage)
+    end
+
+    def isos(storage_id)
+      storage = node.storages.find_by_id storage_id if storage_id
+      return storage.volumes.sort_by(&:volid) if storage
+      []
+    end
+
     def associated_host(vm)
       associate_by('node', vm.node)
     end

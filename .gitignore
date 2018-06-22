@@ -11,3 +11,4 @@ locale/*/*.po.time_stamp
 locale/*/*.pox
 **/.vagrant/
 bin/
+public/

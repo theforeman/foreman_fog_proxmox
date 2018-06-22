@@ -57,7 +57,10 @@ module ForemanProxmox
       app.config.assets.precompile += assets_to_precompile
     end
     initializer 'foreman_proxmox.configure_assets', group: :assets do
-      SETTINGS[:foreman_proxmox] = { assets: { precompile: assets_to_precompile } }
+      SETTINGS[:foreman_proxmox] = { 
+        assets: { 
+          precompile: assets_to_precompile 
+        }, :js_compressor => Uglifier.new(:mangle => false) }
     end
 
     rake_tasks do

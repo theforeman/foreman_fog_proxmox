@@ -1,19 +1,16 @@
-import $ from 'jquery';
-import { showSpinner } from '../foreman_tools';
-
-export function cdromSelected(item) {
-  const selected = $(item).val();
-  const cdrom_image = $(item).parentsUntil('.fields').parent().find('#cdrom_image');
+function cdromSelected(item) {
+  var selected = $(item).val();
+  var cdrom_image_form = $('#cdrom_image_form');
 
   switch (selected) {
     case 'none':
-      cdrom_image.hide();
+      cdrom_image_form.hide();
       break;
-    case 'physical':
-      cdrom_image.hide();
+    case 'cdrom':
+      cdrom_image_form.hide();
       break;
     case 'image':
-      cdrom_image.show();
+      cdrom_image_form.show();
       break;
     default:
       break;

@@ -27,25 +27,28 @@ module ProxmoxComputeHelper
   GIGA = KILO * MEGA
 
   def parse_vm(args)
-    config = args['config']
-    cdrom = parse_cdrom(config[:cdrom])
-    volumes = parse_volume(args['volumes'])
-    cpu_a = ['cpu_type','spectre','pcid','vcpus','cpulimit','cpuunits','cores','sockets','numa']
+    config = args['config_attributes']
+    cdrom_a = %w[cdrom cdrom_storage cdrom_image]
+    cdrom = parse_cdrom(config.select { |key,_value| cdrom_a.include? key })
+    volumes = parse_volumes(args['volumes_attributes'])
+    cpu_a = %w[cpu_type spectre pcid vcpus cpulimit cpuunits cores sockets numa]
     cpu = parse_cpu(config.select { |key,_value| cpu_a.include? key })
-    memory_a = ['memory','min_memory','balloon','shares']
+    memory_a = %w[memory 'min_memory balloon shares]
     memory = parse_memory(config.select { |key,_value| memory_a.include? key })
     interfaces_attributes = args['interfaces_attributes']
     networks = parse_interfaces(interfaces_attributes)
-    general_a = ['node','config','volumes','interfaces_attributes','firmware_type','provision_method']
+    general_a = %w[node config_attributes volumes_attributes interfaces_attributes firmware_type provision_method]
     logger.debug("general_a: #{general_a}")
     args.delete_if { |key,_value| general_a.include? key }
     config.delete_if { |key,_value| cpu_a.include? key }
+    config.delete_if { |key,_value| cdrom_a.include? key }
     config.delete_if { |key,_value| memory_a.include? key }
     config.delete_if { |_key,value| value.empty? }
     config.each_value { |value| value.to_i }
     logger.debug("parse_config(): #{config}")
-    parsed_vm = args.merge(config).merge(volumes).merge(cpu).merge(memory)
+    parsed_vm = args.merge(config).merge(cpu).merge(memory).merge(cdrom)
     networks.each { |network| parsed_vm = parsed_vm.merge(network) }
+    volumes.each { |volume| parsed_vm = parsed_vm.merge(volume) }
     logger.debug("parse_vm(): #{parsed_vm}")
     parsed_vm
   end
@@ -71,7 +74,7 @@ module ProxmoxComputeHelper
     cpu += "+spec-ctrl" if spectre
     cpu += ";" if spectre && pcid
     cpu += "+pcid" if pcid      
-    args.delete_if { |key,_value| ['cpu_type','spectre','pcid'].include? key }
+    args.delete_if { |key,_value| %w[cpu_type spectre pcid].include? key }
     args.delete_if { |_key,value| value.empty? }
     args.each_value { |value| value.to_i }
     parsed_cpu = { cpu: cpu }.merge(args)
@@ -80,7 +83,9 @@ module ProxmoxComputeHelper
   end
 
   def parse_cdrom(args)
-    volid = "#{args[:cdrom]}"
+    cdrom = args['cdrom']
+    cdrom_image = args['cdrom_image']
+    volid = cdrom_image.empty? ? cdrom : cdrom_image
     cdrom = "#{volid},media=cdrom"
     {ide2: cdrom}
   end
@@ -89,6 +94,7 @@ module ProxmoxComputeHelper
     disk = {}
     id = "#{args['controller']}#{args['device']}"
     delete = args['_delete'].to_i == 1
+    args.delete_if { |_key,value| value.empty? }
     if delete
       logger.debug("parse_volume(): delete id=#{id}")
       disk.store(:delete, id)
@@ -97,15 +103,22 @@ module ProxmoxComputeHelper
       disk.store(:id, id)
       disk.store(:storage, args['storage'].to_s)
       disk.store(:size, args['size'].to_i / GIGA)
-      options = args.reject { |key,_value| ['controller','device','storage','size','_delete'].include? key}
+      options = args.reject { |key,_value| %w[id controller device storage size _delete].include? key}
       logger.debug("parse_volume(): add disk=#{disk}, options=#{options}")
       Fog::Proxmox::DiskHelper.flatten(disk,Fog::Proxmox::Hash.stringify(options))
     end 
   end
 
+  def parse_volumes(args)
+    volumes = []
+    args.each_value { |value| volumes.push(parse_volume(value))}
+    logger.debug("parse_volumes(): volumes=#{volumes}")
+    volumes
+  end
+
   def parse_interfaces(args)
     nics = []
-    args.each { |key,value| nics.push(parse_interface(value))}
+    args.each_value { |value| nics.push(parse_interface(value))}
     logger.debug("parse_interfaces(): nics=#{nics}")
     nics
   end

@@ -43,9 +43,12 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= radio_button_f f, :cdrom, :value => 'none', :text => _('None'), :onclick => 'cdromSelected(this)' %>
   <%= radio_button_f f, :cdrom, :value => 'cdrom' , :text => _('Physical'), :onclick => 'cdromSelected(this)' %>
   <%= radio_button_f f, :cdrom, :value => 'image' , :text => _('Image'), :onclick => 'cdromSelected(this)' %>
-  <div id='cdrom_image' class='<%= 'hide' if %[none cdrom].include? f.object.cdrom %>'>
-  <%= select_f f, :cdrom_storage, compute_resource.storages_isos, :storage, :storage, { }, :label => _('Storage'), :label_size => "col-md-2", :onchange => 'tfm.computeResource.proxmox.storageIsoSelected(this)' %>
-  <%= select_f f, :cdrom_image, compute_resource.isos(f.object.cdrom_storage), :volid, :volid, { }, :label => _('Image ISO'), :label_size => "col-md-2" %>
-</div>
+  <div id='cdrom_image_form' class='<%= 'hide' if %[none cdrom].include? f.object.cdrom %>'>
+    <%= select_f f, :cdrom_storage, compute_resource.storages_isos, :storage, :storage, { :include_blank => true }, :label => _('Storage'), :label_size => "col-md-2", :onchange => 'storageIsoSelected(this)' %>
+    <%= select_f f, :cdrom_image, compute_resource.isos(f.object.cdrom_storage), :volid, :volid, { :include_blank => true }, :label => _('Image ISO'), :label_size => "col-md-2" %>
+  </div>
 <% end %>
-<%= compute_specific_js(compute_resource, 'foreman_proxmox/proxmox') %>
+
+<script type="text/javascript">
+
+</script>

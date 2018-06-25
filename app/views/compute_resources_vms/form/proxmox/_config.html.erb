@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-<%= field_set_tag _("Options"), :id => "options" do %>
+<%= field_set_tag _("Config options"), :id => "config_options" do %>
   <%= textarea_f f, :description, :label => _('Description'), :label_size => "col-md-2" %>
   <%= text_f f, :boot, :label => _('Start/Shutdown order'), :label_size => "col-md-2" %>
   <%= checkbox_f f, :onboot, :label => _('Start at boot') %>

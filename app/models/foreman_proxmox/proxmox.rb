@@ -106,6 +106,40 @@ module ForemanProxmox
       raise e
     end
 
+    def host_compute_attrs(host)
+      super.tap do |attrs|
+        ostype = host.compute_attributes['config_attributes']['ostype']
+        raise Foreman::Exception.new("Operating system family #{host.operatingsystem.type} is not consistent with #{ostype}") unless compute_os_types(host).include?(ostype)
+      end
+    end  
+    
+    def compute_os_types(host)
+      os_linux_types_mapping(host).empty? ? os_windows_types_mapping(host) : os_linux_types_mapping(host)
+    end
+
+    def available_operating_systems
+      operating_systems = %w[other solaris]
+      operating_systems += available_linux_operating_systems
+      operating_systems += available_windows_operating_systems
+      operating_systems
+    end
+
+    def available_linux_operating_systems
+      %w[l24 l26]
+    end
+
+    def available_windows_operating_systems
+      %w[wxp w2k w2k3 w2k8 wvista win7 win8 win10]
+    end
+
+    def os_linux_types_mapping(host)
+      %w[Debian Redhat Suse Altlinux Archlinux CoreOs Gentoo].include?(host.operatingsystem.type) ? available_linux_operating_systems : []
+    end
+
+    def os_windows_types_mapping(host)
+      %w[Windows].include?(host.operatingsystem.type) ? available_windows_operating_systems : []
+    end
+
     def host_interfaces_attrs(host)
       host.interfaces.select(&:physical?).each.with_index.reduce({}) do |hash, (nic, index)|
         raise ::Foreman::Exception.new N_("Identifier interface[#{index}] required.") if nic.identifier.empty?

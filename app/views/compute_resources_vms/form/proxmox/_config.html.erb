@@ -48,3 +48,6 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     <%= select_f f, :cdrom_iso, compute_resource.isos(f.object.cdrom_storage), :volid, :volid, { :include_blank => true }, :label => _('Image ISO'), :label_size => "col-md-2" %>
   </div>
 <% end %>
+<%= field_set_tag _("Operating System"), :id => "config_os" do %>
+  <%= select_f f, :ostype, proxmox_operating_systems_map, :id, :name, { :include_blank => true }, :label => _('OS type'), :label_size => "col-md-2" %>
+<% end %>

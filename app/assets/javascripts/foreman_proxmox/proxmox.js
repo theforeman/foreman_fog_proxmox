@@ -35,9 +35,7 @@ function cdromSelected(item) {
       },
       success: function(isos) {
         $('#host_compute_attributes_config_attributes_cdrom_iso').empty();
-        console.log('isos='+isos);
         $.each(isos, function(i,iso){
-          console.log('iso='+iso);
           $('#host_compute_attributes_config_attributes_cdrom_iso').append($("<option></option>").val(iso.volid).text(iso.volid));
         });
       }

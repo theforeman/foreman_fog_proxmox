@@ -80,8 +80,8 @@ module ForemanProxmox
 
     def isos(storage_id)
       storage = node.storages.find_by_id storage_id if storage_id
-      return storage.volumes.sort_by(&:volid) if storage
-      []
+      volumes = []
+      storage.volumes.list_by_content_type('iso').sort_by(&:volid) if storage
     end
 
     def associated_host(vm)

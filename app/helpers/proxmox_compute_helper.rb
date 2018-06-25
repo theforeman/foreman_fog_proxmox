@@ -28,7 +28,7 @@ module ProxmoxComputeHelper
 
   def parse_vm(args)
     config = args['config_attributes']
-    cdrom_a = %w[cdrom cdrom_storage cdrom_image]
+    cdrom_a = %w[cdrom cdrom_storage cdrom_iso]
     cdrom = parse_cdrom(config.select { |key,_value| cdrom_a.include? key })
     volumes = parse_volumes(args['volumes_attributes'])
     cpu_a = %w[cpu_type spectre pcid vcpus cpulimit cpuunits cores sockets numa]
@@ -84,7 +84,7 @@ module ProxmoxComputeHelper
 
   def parse_cdrom(args)
     cdrom = args['cdrom']
-    cdrom_image = args['cdrom_image']
+    cdrom_image = args['cdrom_iso']
     volid = cdrom_image.empty? ? cdrom : cdrom_image
     cdrom = "#{volid},media=cdrom"
     {ide2: cdrom}

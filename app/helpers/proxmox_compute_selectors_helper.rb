@@ -40,6 +40,34 @@ module ProxmoxComputeSelectorsHelper
       OpenStruct.new(id: 'solaris', name: 'Solaris/OpenSolaris/OpenIndiania kernel')]
   end
 
+  def proxmox_keyboards_map
+    [OpenStruct.new(id: 'de', name: 'Deutsch'),
+    OpenStruct.new(id: 'de-ch', name: 'Deutsch (Swiss)'),
+    OpenStruct.new(id: 'da', name: 'Danish'), 
+    OpenStruct.new(id: 'en-gb', name: 'English (UK)'), 
+    OpenStruct.new(id: 'en-us', name: 'English (US)'),  
+    OpenStruct.new(id: 'es', name: 'Spanish'),
+    OpenStruct.new(id: 'fi', name: 'Finnish'), 
+    OpenStruct.new(id: 'fr', name: 'French'),
+    OpenStruct.new(id: 'fr-be', name: 'French (Belgium)'), 
+    OpenStruct.new(id: 'fr-ca', name: 'French (Canadian)'),
+    OpenStruct.new(id: 'fr-ch', name: 'French (Swiss)'),
+    OpenStruct.new(id: 'hu', name: 'Hungarian'),
+    OpenStruct.new(id: 'is', name: 'Israelian'), 
+    OpenStruct.new(id: 'it', name: 'Italian'), 
+    OpenStruct.new(id: 'ja', name: 'Japanese'), 
+    OpenStruct.new(id: 'lt', name: 'Lituanian'), 
+    OpenStruct.new(id: 'mk', name: ''),
+    OpenStruct.new(id: 'nl', name: 'Nederland'), 
+    OpenStruct.new(id: 'no', name: 'Norway'), 
+    OpenStruct.new(id: 'pl', name: 'Polish'), 
+    OpenStruct.new(id: 'pt', name: 'Portugese'),
+    OpenStruct.new(id: 'pt-br', name: 'Portugese (Brasilian)'),
+    OpenStruct.new(id: 'sv', name: 'Sv'),
+    OpenStruct.new(id: 'sl', name: 'Slovakian'),
+    OpenStruct.new(id: 'tr', name: 'Tr')]
+  end
+
   def get_controller(id)
     proxmox_controllers_map.find { |controller| controller.id == id}
   end

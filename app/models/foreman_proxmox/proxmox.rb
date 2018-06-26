@@ -99,13 +99,6 @@ module ForemanProxmox
     def template(id,opts = {})
     end
 
-    def new_interface(attr = {})
-      Fog::Compute::Proxmox::Interface.new interface_defaults.merge(attr.to_hash.deep_symbolize_keys)
-    rescue => e
-      logger.warn "failed to initialize interface: #{e}"
-      raise e
-    end
-
     def host_compute_attrs(host)
       super.tap do |attrs|
         ostype = host.compute_attributes['config_attributes']['ostype']
@@ -121,13 +114,27 @@ module ForemanProxmox
       end
     end
 
-    def new_vm(attr = {})
-      vm = node.servers.new(vm_instance_defaults.merge(attr.to_hash.deep_symbolize_keys)) if errors.empty?
+    def new_volume(attrs = {})  
+      # controller = 'scsi'
+      # device = vm.config.disks.next_device(controller)    
+      opts = volume_defaults.merge(attrs.to_h).deep_symbolize_keys
+      Fog::Compute::Proxmox::Disk.new(opts)
+    end
+
+    def new_interface(attrs = {})
+      # net_idx = vm.config.interfaces.next_nicid
+      # nic_id = "net#{net_idx}"
+      opts = interface_defaults.merge(attrs.to_h).deep_symbolize_keys
+      Fog::Compute::Proxmox::Interface.new(opts)
+    end
+
+    def new_vm(attrs = {})
+      vm = node.servers.new(vm_instance_defaults.merge(attrs.to_hash.deep_symbolize_keys)) if errors.empty?
+      interfaces = nested_attributes_for :interfaces, attrs[:interfaces_attributes]
+      interfaces.map{ |interface| vm.config.interfaces << new_interface(interface) }
+      volumes = nested_attributes_for :volumes, attrs[:volumes_attributes]
+      volumes.map { |volume| vm.config.disks << new_volume(volume) }
       logger.debug("new_vm() vm.config=#{vm.config.inspect}")
-      interfaces = nested_attributes_for :interfaces, attr[:interfaces_attributes]
-      interfaces.map{ |i| vm.config.interfaces << new_interface(i)}
-      volumes = nested_attributes_for :volumes, attr[:volumes_attributes]
-      volumes.map { |v| vm.config.disks << new_volume(v) }
       vm
     end
 
@@ -136,7 +143,7 @@ module ForemanProxmox
       node = get_cluster_node args
       logger.debug("create_vm(): #{args}")
       node.servers.create(parse_vm(args))
-      vm = node.servers.get(args[:vmid])
+      vm = find_vm_by_uuid(args[:vmid])
       vm
     rescue => e
       logger.warn "failed to create vm: #{e}"
@@ -153,21 +160,18 @@ module ForemanProxmox
       raise e
     end
 
+    def supports_update?
+      true
+    end
+
+    def save_vm(uuid, attrs)
+      vm = find_vm_by_uuid(uuid)
+      logger.debug("save_vm(): #{attrs}")
+      vm.update(vm.attributes.merge!(parse_vm(attrs).symbolize_keys).deep_symbolize_keys)
+    end
+
     def next_vmid
       node.servers.next_id
-    end
-
-    def new_volume(attr = {})
-      Fog::Compute::Proxmox::Disk.new volume_defaults.merge(attr.to_hash.deep_symbolize_keys)
-    rescue => e
-      logger.warn "failed to initialize volume: #{e}"
-      raise e
-    end
-
-    def new_volume_errors
-      errors = []
-      errors.push _('no storage available on hypervisor') if storages.empty?
-      errors
     end
 
     def node
@@ -216,21 +220,20 @@ module ForemanProxmox
         kvm: 1,
         memory: 512 * MEGA, 
         ostype: 'l26',
-        keyboard: 'fr',
+        keyboard: 'en-us',
         cpu: 'kvm64',
         scsihw: 'virtio-scsi-pci',
-        ide2: "none,media=cdrom",
-        scsi0: "#{storages.first}:#{8*GIGA},cache=none",
-        net0: "virtio,bridge=#{bridges.first}"
-      )
+        ide2: "none,media=cdrom"
+      ).merge(Fog::Proxmox::DiskHelper.flatten(volume_defaults)).merge(Fog::Proxmox::NicHelper.flatten(interface_defaults))
     end
 
-    def volume_defaults
-      { id: 'scsi0', storage: storages.first, size: (8 * GIGA), cache: 'none' }
+    def volume_defaults(controller = 'scsi', device = 0)
+      id = "#{controller}#{device}"
+      { id: id, storage: storages.first.to_s, size: (8 * GIGA), options: { cache: 'none' } }
     end
 
-    def interface_defaults
-      { id: 'net0', model: 'virtio', bridge: bridges.first }
+    def interface_defaults(id = 'net0')
+      { id: id, model: 'virtio', bridge: bridges.first.to_s }
     end
 
     def get_cluster_node(args = {})

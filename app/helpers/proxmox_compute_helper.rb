@@ -104,8 +104,9 @@ module ProxmoxComputeHelper
       disk.store(:storage, args['storage'].to_s)
       disk.store(:size, args['size'].to_i / GIGA)
       options = args.reject { |key,_value| %w[id controller device storage size _delete].include? key}
-      logger.debug("parse_volume(): add disk=#{disk}, options=#{options}")
-      Fog::Proxmox::DiskHelper.flatten(disk,Fog::Proxmox::Hash.stringify(options))
+      disk.store(:options, options)
+      logger.debug("parse_volume(): add disk=#{disk}")
+      Fog::Proxmox::DiskHelper.flatten(disk)
     end 
   end
 
@@ -118,7 +119,7 @@ module ProxmoxComputeHelper
 
   def parse_interfaces(args)
     nics = []
-    args.each_value { |value| nics.push(parse_interface(value))}
+    args.each_value { |value| nics.push(parse_interface(value))} if args
     logger.debug("parse_interfaces(): nics=#{nics}")
     nics
   end

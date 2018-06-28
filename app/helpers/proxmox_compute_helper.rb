@@ -27,26 +27,28 @@ module ProxmoxComputeHelper
   GIGA = KILO * MEGA
 
   def parse_vm(args)
+    return {} unless args
+    return {} if args.empty?
     config = args['config_attributes']
     cdrom_a = %w[cdrom cdrom_storage cdrom_iso]
     cdrom = parse_cdrom(config.select { |key,_value| cdrom_a.include? key })
     volumes = parse_volumes(args['volumes_attributes'])
     cpu_a = %w[cpu_type spectre pcid vcpus cpulimit cpuunits cores sockets numa]
     cpu = parse_cpu(config.select { |key,_value| cpu_a.include? key })
-    memory_a = %w[memory 'min_memory balloon shares]
+    memory_a = %w[memory min_memory balloon shares]
     memory = parse_memory(config.select { |key,_value| memory_a.include? key })
     interfaces_attributes = args['interfaces_attributes']
     networks = parse_interfaces(interfaces_attributes)
     general_a = %w[node config_attributes volumes_attributes interfaces_attributes firmware_type provision_method]
     logger.debug("general_a: #{general_a}")
-    args.delete_if { |key,_value| general_a.include? key }
-    config.delete_if { |key,_value| cpu_a.include? key }
-    config.delete_if { |key,_value| cdrom_a.include? key }
-    config.delete_if { |key,_value| memory_a.include? key }
-    config.delete_if { |_key,value| value.empty? }
-    config.each_value { |value| value.to_i }
-    logger.debug("parse_config(): #{config}")
-    parsed_vm = args.merge(config).merge(cpu).merge(memory).merge(cdrom)
+    parsed_vm = args.reject { |key,value| general_a.include?(key) || value.empty? }
+    config_a = []
+    config_a += cpu_a
+    config_a += cdrom_a
+    config_a += memory_a
+    parsed_config = config.reject { |key,value| config_a.include?(key) || value.empty? }
+    logger.debug("parse_config(): #{parsed_config}")
+    parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory).merge(cdrom)
     networks.each { |network| parsed_vm = parsed_vm.merge(network) }
     volumes.each { |volume| parsed_vm = parsed_vm.merge(volume) }
     logger.debug("parse_vm(): #{parsed_vm}")
@@ -54,7 +56,7 @@ module ProxmoxComputeHelper
   end
 
   def parse_memory(args)
-    memory = { memory: args['memory'].to_i / MEGA }
+    memory = { memory: args['memory'].to_i }
     ballooned = args['balloon'].to_i == 1
     if ballooned
       memory.store(:shares,args['shares'].to_i)
@@ -74,8 +76,7 @@ module ProxmoxComputeHelper
     cpu += "+spec-ctrl" if spectre
     cpu += ";" if spectre && pcid
     cpu += "+pcid" if pcid      
-    args.delete_if { |key,_value| %w[cpu_type spectre pcid].include? key }
-    args.delete_if { |_key,value| value.empty? }
+    args.delete_if { |key,value| %w[cpu_type spectre pcid].include?(key) || value.empty? }
     args.each_value { |value| value.to_i }
     parsed_cpu = { cpu: cpu }.merge(args)
     logger.debug("parse_cpu(): #{parsed_cpu}")
@@ -92,7 +93,8 @@ module ProxmoxComputeHelper
 
   def parse_volume(args)
     disk = {}
-    id = "#{args['controller']}#{args['device']}"
+    id = args['id']
+    id = "#{args['controller']}#{args['device']}" unless id
     delete = args['_delete'].to_i == 1
     args.delete_if { |_key,value| value.empty? }
     if delete
@@ -101,9 +103,10 @@ module ProxmoxComputeHelper
       disk
     else
       disk.store(:id, id)
+      disk.store(:volid, args['volid'])
       disk.store(:storage, args['storage'].to_s)
-      disk.store(:size, args['size'].to_i / GIGA)
-      options = args.reject { |key,_value| %w[id controller device storage size _delete].include? key}
+      disk.store(:size, args['size'])
+      options = args.reject { |key,_value| %w[id volid controller device storage size _delete].include? key}
       disk.store(:options, options)
       logger.debug("parse_volume(): add disk=#{disk}")
       Fog::Proxmox::DiskHelper.flatten(disk)
@@ -112,7 +115,7 @@ module ProxmoxComputeHelper
 
   def parse_volumes(args)
     volumes = []
-    args.each_value { |value| volumes.push(parse_volume(value))}
+    args.each_value { |value| volumes.push(parse_volume(value))} if args
     logger.debug("parse_volumes(): volumes=#{volumes}")
     volumes
   end

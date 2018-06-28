@@ -39,7 +39,7 @@ module ForemanProxmox
     end
 
     def capabilities
-      [:build]
+      [:build, :new_volume]
     end
 
     def self.model_name
@@ -94,9 +94,13 @@ module ForemanProxmox
     end    
 
     def templates(opts = {})
+      storage = storages.first
+      storage.volumes.list_by_content_type_and_by_server('images',opts['vmid'])
     end
 
     def template(id,opts = {})
+      storage = storages.first
+      storage.volumes.get(id)
     end
 
     def host_compute_attrs(host)
@@ -114,26 +118,32 @@ module ForemanProxmox
       end
     end
 
-    def new_volume(attrs = {})  
-      # controller = 'scsi'
-      # device = vm.config.disks.next_device(controller)    
-      opts = volume_defaults.merge(attrs.to_h).deep_symbolize_keys
+    def new_volume(attr = {})     
+      opts = volume_defaults.merge(attr.to_h).deep_symbolize_keys
       Fog::Compute::Proxmox::Disk.new(opts)
     end
 
-    def new_interface(attrs = {})
-      # net_idx = vm.config.interfaces.next_nicid
-      # nic_id = "net#{net_idx}"
-      opts = interface_defaults.merge(attrs.to_h).deep_symbolize_keys
+    def new_interface(attr = {})
+      opts = interface_defaults.merge(attr.to_h).deep_symbolize_keys
       Fog::Compute::Proxmox::Interface.new(opts)
     end
 
-    def new_vm(attrs = {})
-      vm = node.servers.new(vm_instance_defaults.merge(attrs.to_hash.deep_symbolize_keys)) if errors.empty?
-      interfaces = nested_attributes_for :interfaces, attrs[:interfaces_attributes]
-      interfaces.map{ |interface| vm.config.interfaces << new_interface(interface) }
-      volumes = nested_attributes_for :volumes, attrs[:volumes_attributes]
-      volumes.map { |volume| vm.config.disks << new_volume(volume) }
+    def vm_compute_attributes(vm)
+      vm_attrs = super(vm)
+      vm_attrs = set_vm_interfaces_attributes(vm, vm_attrs)
+      vm_attrs
+    end
+
+    def set_vm_interfaces_attributes(vm, vm_attrs)
+      if vm.respond_to?(:interfaces)
+        interfaces = vm.interfaces || []
+        vm_attrs[:interfaces_attributes] = Hash[interfaces.each_with_index.map { |interface, idx| [idx.to_s, interface.attributes] }]
+      end
+      vm_attrs
+    end
+
+    def new_vm(attr = {})
+      vm = node.servers.new(vm_instance_defaults.merge(parse_vm(attr)))
       logger.debug("new_vm() vm.config=#{vm.config.inspect}")
       vm
     end
@@ -142,6 +152,7 @@ module ForemanProxmox
       raise ::Foreman::Exception.new N_("invalid vmid") unless node.servers.id_valid?(args[:vmid])
       node = get_cluster_node args
       logger.debug("create_vm(): #{args}")
+      convert_sizes(args)
       node.servers.create(parse_vm(args))
       vm = find_vm_by_uuid(args[:vmid])
       vm
@@ -154,20 +165,42 @@ module ForemanProxmox
     def find_vm_by_uuid(uuid)
       node.servers.get(uuid)
     rescue Fog::Errors::Error => e
-      Foreman::Logging.exception("Failed retrieving proxmox vm by vmid #{uuid}", e)
-      raise(ActiveRecord::RecordNotFound) if e.message.include?('HANDLE_INVALID')
-      raise(ActiveRecord::RecordNotFound) if e.message.include?('VM.get_record: ["SESSION_INVALID"')
-      raise e
+      Foreman::Logging.exception("Failed retrieving proxmox vm by vmid=#{uuid}", e)
+      raise(ActiveRecord::RecordNotFound)
     end
 
     def supports_update?
       true
     end
 
-    def save_vm(uuid, attrs)
+    def update_required?(old_attrs, new_attrs)
+      return true if super(old_attrs, new_attrs)
+
+      new_attrs[:interfaces_attributes].each do |key, interface|
+        return true if (interface[:id].blank? || interface[:_delete] == '1') && key != 'new_interfaces' #ignore the template
+      end if new_attrs[:interfaces_attributes]
+
+      new_attrs[:volumes_attributes].each do |key, volume|
+        return true if (volume[:id].blank? || volume[:_delete] == '1') && key != 'new_volumes' #ignore the template
+      end if new_attrs[:volumes_attributes]
+
+      false
+    end
+
+    def editable_network_interfaces?
+      true
+    end
+
+    def user_data_supported?
+      true
+    end
+
+    def save_vm(uuid, attr)
       vm = find_vm_by_uuid(uuid)
-      logger.debug("save_vm(): #{attrs}")
-      vm.update(vm.attributes.merge!(parse_vm(attrs).symbolize_keys).deep_symbolize_keys)
+      logger.debug("save_vm(): #{attr}")
+      merged = vm.config.attributes.merge!(parse_vm(attr).symbolize_keys).deep_symbolize_keys
+      filtered = merged.reject { |key,value| %w[node vmid].include?(key) || value.to_s.empty? }
+      vm.update(filtered)
     end
 
     def next_vmid
@@ -214,7 +247,7 @@ module ForemanProxmox
       super.merge(
         vmid: next_vmid, 
         type: 'qemu', 
-        node: node, 
+        node: node.to_s, 
         cores: 1, 
         sockets: 1, 
         kvm: 1,
@@ -237,7 +270,8 @@ module ForemanProxmox
     end
 
     def get_cluster_node(args = {})
-      args.empty? ? client.nodes.first : client.nodes.find_by_id(args[:node])
+      test_connection
+      args.empty? ? client.nodes.first : client.nodes.find_by_id(args[:node])  if errors.empty?
     end 
     
     def compute_os_types(host)
@@ -265,6 +299,13 @@ module ForemanProxmox
 
     def os_windows_types_mapping(host)
       %w[Windows].include?(host.operatingsystem.type) ? available_windows_operating_systems : []
+    end
+
+    def convert_sizes(args)
+      args['config_attributes']['memory'] = (args['config_attributes']['memory'].to_i / MEGA).to_s
+      args['config_attributes']['min_memory'] = (args['config_attributes']['min_memory'].to_i / MEGA).to_s
+      args['config_attributes']['shares'] = (args['config_attributes']['shares'].to_i / MEGA).to_s
+      args['volumes_attributes'].each_value { |value| value['size'] = (value['size'].to_i / GIGA).to_s }
     end
 
   end

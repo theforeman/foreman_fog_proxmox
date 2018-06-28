@@ -35,8 +35,8 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= checkbox_f f, :spectre, :label => _('Spectre-CTRL') %>
 <% end %>
 <%= field_set_tag _("Memory"), :id => "memory" do %>
-  <%= byte_size_f f, :memory, :class => "input-mini", :label => _('Memory (MiB)'), :label_size => "col-md-2" %>
-  <%= byte_size_f f, :min_memory, :class => "input-mini", :label => _('Minimum memory (MiB)'), :label_size => "col-md-2" %>
+  <%= byte_size_f f, :memory, :class => "input-mini", :label => _('Memory'), :label_size => "col-md-2" %>
+  <%= byte_size_f f, :min_memory, :class => "input-mini", :label => _('Minimum memory'), :label_size => "col-md-2" %>
   <%= counter_f f, :shares, :class => "input-mini", :label => _('Shares'), :label_size => "col-md-2" %>
   <%= checkbox_f f, :balloon, :label => _('Ballooning Device') %>
 <% end %>

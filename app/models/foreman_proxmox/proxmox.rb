@@ -119,7 +119,8 @@ module ForemanProxmox
     end
 
     def new_volume(attr = {})     
-      opts = volume_defaults.merge(attr.to_h).deep_symbolize_keys
+      opts = volume_defaults('scsi',1).merge(attr.to_h).deep_symbolize_keys
+      opts[:size] = opts[:size].to_s
       Fog::Compute::Proxmox::Disk.new(opts)
     end
 
@@ -129,14 +130,24 @@ module ForemanProxmox
     end
 
     def vm_compute_attributes(vm)
-      vm_attrs = super(vm)
+      vm_attrs = vm.attributes rescue {}
+      vm_attrs = vm_attrs.reject{|k,v| k == :id }  
+      vm_attrs = set_vm_volumes_attributes(vm, vm_attrs)
       vm_attrs = set_vm_interfaces_attributes(vm, vm_attrs)
       vm_attrs
     end
 
+    def set_vm_volumes_attributes(vm, vm_attrs)
+      if vm.config.respond_to?(:volumes)
+        volumes = vm.config.volumes || []
+        vm_attrs[:volumes_attributes] = Hash[volumes.each_with_index.map { |volume, idx| [idx.to_s, volume.attributes] }]
+      end
+      vm_attrs
+    end
+
     def set_vm_interfaces_attributes(vm, vm_attrs)
-      if vm.respond_to?(:interfaces)
-        interfaces = vm.interfaces || []
+      if vm.config.respond_to?(:interfaces)
+        interfaces = vm.config.interfaces || []
         vm_attrs[:interfaces_attributes] = Hash[interfaces.each_with_index.map { |interface, idx| [idx.to_s, interface.attributes] }]
       end
       vm_attrs
@@ -228,6 +239,7 @@ module ForemanProxmox
       end
       store
     rescue => e
+      logger.error(e)
       raise ::Foreman::Exception.new N_("Unable to store X509 certificates")
     end
 

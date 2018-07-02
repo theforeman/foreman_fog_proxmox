@@ -1,1 +1,1 @@
-attributes :user, :url
+attributes :user, :url, :ssl_verify_peer, :disable_proxy

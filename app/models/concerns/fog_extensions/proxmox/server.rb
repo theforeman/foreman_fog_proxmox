@@ -44,7 +44,7 @@ module FogExtensions
                 config.mac_addresses.first
             end
             def memory
-                config.memory * MEGA
+                config.memory * 1024 *1024
             end
             def state
                 qmpstatus

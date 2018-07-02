@@ -26,7 +26,7 @@ module ForemanProxmox
     validates :user, :format => { :with => /(\w+)[@]{1}(\w+)/ }, :presence => true
     validates :password, :presence => true
     before_create :test_connection
-    attr_accessor :ssl_verify_peer, :disable_proxy, :node
+    attr_accessor :node
 
     def provided_attributes
       super.merge(
@@ -211,15 +211,55 @@ module ForemanProxmox
       @node ||= get_cluster_node
     end
 
+    def ssl_certs  
+      self.attrs[:ssl_certs]
+    end
+
+    def ssl_certs=(value)
+      self.attrs[:ssl_certs] = value
+    end
+
+    def certs_to_store
+      return if ssl_certs.blank?
+      store = OpenSSL::X509::Store.new
+      ssl_certs.split(/(?=-----BEGIN)/).each do |cert|
+        x509_cert = OpenSSL::X509::Certificate.new cert
+        store.add_cert x509_cert
+      end
+      store
+    rescue => e
+      raise ::Foreman::Exception.new N_("Unable to store X509 certificates")
+    end
+
+    def disable_proxy
+      self.attrs[:disable_proxy].blank? ? true : Foreman::Cast.to_bool(self.attrs[:disable_proxy])
+    end
+
+    def disable_proxy=(value)
+      self.attrs[:disable_proxy] = value
+    end
+
+    def ssl_verify_peer
+      self.attrs[:ssl_verify_peer].blank? ? false : Foreman::Cast.to_bool(self.attrs[:ssl_verify_peer])
+    end
+
+    def ssl_verify_peer=(value)
+      self.attrs[:ssl_verify_peer] = value
+    end
+
+    def options
+      opts = { disable_proxy: disable_proxy, ssl_verify_peer: ssl_verify_peer }
+      opts.store(:ssl_cert_store, certs_to_store) if Foreman::Cast.to_bool(ssl_verify_peer)
+      opts
+    end
+
     private
 
     def fog_credentials
-      disable_proxy = disable_proxy ? Foreman::Cast.to_bool(disable_proxy) : true # dev tests only
-      ssl_verify_peer = ssl_verify_peer ? Foreman::Cast.to_bool(ssl_verify_peer) : false # dev tests only
-      { pve_url: url,
+     { pve_url: url,
         pve_username: user,
         pve_password: password,
-        connection_options: { disable_proxy: disable_proxy, ssl_verify_peer: ssl_verify_peer } } 
+        connection_options: options }
     end
 
     def client

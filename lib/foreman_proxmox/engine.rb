@@ -81,6 +81,7 @@ module ForemanProxmox
 
       Fog::Compute::Proxmox::Server.send :include, FogExtensions::Proxmox::Server
       Fog::Compute::Proxmox::ServerConfig.send :include, FogExtensions::Proxmox::ServerConfig
+      ::ComputeResourcesController.send :include, ForemanProxmox::Controller::Parameters::ComputeResource
     end
 
   end

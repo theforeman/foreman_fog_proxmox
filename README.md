@@ -1,4 +1,4 @@
-![ForemanProxmox](foremanproxmox.png)
+![ForemanProxmox](.github/images/foremanproxmox.png)
 
 [![Build Status](https://travis-ci.com/tristanrobert/foreman_proxmox.svg?branch=master)](https://travis-ci.com/tristanrobert/foreman_proxmox)
 [![Maintainability](https://api.codeclimate.com/v1/badges/922162c278e0fa9207ba/maintainability)](https://codeclimate.com/github/tristanrobert/foreman_proxmox/maintainability)
@@ -25,9 +25,16 @@ Please see the Foreman manual for appropriate instructions:
 
 ## Usage
 
-This is not yet a stable version. I recommend you not to use it in production.
+First create your resource.
 
-Work is still in progress...
+## Screenshots
+
+![Compute resource](.github/images/compute_resource.png)
+![Show vms of compute resource](.github/images/vms_compute_resource.png)
+![Compute profile](.github/images/compute_profile_small.png)
+![Create host](.github/images/create_host.png)
+![List hosts](.github/images/hosts.png)
+![Show host](.github/images/show_host.png)
 
 ## Development
 
@@ -68,6 +75,9 @@ sudo docker exec -it foreman bash
 ```
 
 The docker container use ruby 2.3.7, latest nodejs 8.x (8.11.2) and foreman 1.17.1.
+
+If you want to debug live. You have to clone foreman 1.17.1 repo and install foreman_proxmox plugin as gem. 
+See [how to create a foreman plugin](https://projects.theforeman.org/projects/foreman/wiki/How_to_Create_a_Plugin)
 
 ## Contributing
 

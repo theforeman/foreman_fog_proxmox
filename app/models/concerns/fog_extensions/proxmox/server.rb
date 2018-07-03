@@ -44,7 +44,7 @@ module FogExtensions
                 config.mac_addresses.first
             end
             def memory
-                config.memory * 1024 *1024
+                config.memory * 1024 * 1024
             end
             def state
                 qmpstatus
@@ -63,6 +63,12 @@ module FogExtensions
             end
             def volumes
                 config.disks.reject { |disk| disk.cdrom? }
+            end
+            def disks
+                config.disks.collect { |disk| disk.id+': '+disk.volid }
+            end
+            def vga
+                config.vga
             end
             def interfaces_attributes=(attrs); end
             def volumes_attributes=(attrs); end

@@ -15,17 +15,13 @@ It is intended to satisfy this [feature](http://projects.theforeman.org/issues/2
 Tested with:
 
 * Foreman = 1.17.1
-* Fog-proxmox >= 0.3.0
+* Fog-proxmox >= 0.4.0
 
 ## Installation
 
 Please see the Foreman manual for appropriate instructions:
 
 * [Foreman: How to Install a Plugin](http://theforeman.org/manuals/latest/index.html#6.1InstallaPlugin)
-
-## Usage
-
-First create your resource.
 
 ## Screenshots
 
@@ -35,6 +31,8 @@ First create your resource.
 ![Create host](.github/images/create_host.png)
 ![List hosts](.github/images/hosts.png)
 ![Show host](.github/images/show_host.png)
+![VNC Console](.github/images/vnc_console.png)
+![VNC Console 2](.github/images/vnc_console2.png)
 
 ## Development
 

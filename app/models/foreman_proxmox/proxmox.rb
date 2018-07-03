@@ -265,6 +265,16 @@ module ForemanProxmox
       opts
     end
 
+    def console(uuid)
+      vm = find_vm_by_uuid(uuid)
+      if vm.config.type_console == 'vnc'
+        vnc_console = vm.start_console(websocket: 1)  
+        WsProxy.start(:host => host, :host_port => vnc_console['port'], :password => vnc_console['ticket']).merge(:name => vm.name, :type => vm.config.type_console)
+      else
+        raise ::Foreman::Exception.new(N_("%s console is not supported at this time"), vm.config.type_console)
+      end
+    end
+
     private
 
     def fog_credentials
@@ -303,6 +313,7 @@ module ForemanProxmox
         cores: 1, 
         sockets: 1, 
         kvm: 1,
+        vga: 'std',
         memory: 512 * MEGA, 
         ostype: 'l26',
         keyboard: 'en-us',
@@ -358,6 +369,10 @@ module ForemanProxmox
       args['config_attributes']['min_memory'] = (args['config_attributes']['min_memory'].to_i / MEGA).to_s
       args['config_attributes']['shares'] = (args['config_attributes']['shares'].to_i / MEGA).to_s
       args['volumes_attributes'].each_value { |value| value['size'] = (value['size'].to_i / GIGA).to_s }
+    end
+
+    def host
+      URI.parse(url).host
     end
 
   end

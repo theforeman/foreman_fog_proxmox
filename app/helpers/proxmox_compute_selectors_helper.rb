@@ -40,6 +40,19 @@ module ProxmoxComputeSelectorsHelper
       OpenStruct.new(id: 'solaris', name: 'Solaris/OpenSolaris/OpenIndiania kernel')]
   end
 
+  def proxmox_vgas_map
+     [OpenStruct.new(id: 'std', name: 'Standard VGA'),
+     OpenStruct.new(id: 'vmware', name: 'Vmware compatible'),
+     OpenStruct.new(id: 'qxl', name: 'SPICE'),
+     OpenStruct.new(id: 'qxl2', name: 'SPICE 2 monnitors'),
+     OpenStruct.new(id: 'qxl3', name: 'SPICE 3 monnitors'),
+     OpenStruct.new(id: 'qxl4', name: 'SPICE 4 monnitors'),
+     OpenStruct.new(id: 'serial0', name: 'Serial terminal 0'),
+     OpenStruct.new(id: 'serial1', name: 'Serial terminal 1'),
+     OpenStruct.new(id: 'serial2', name: 'Serial terminal 2'),
+     OpenStruct.new(id: 'serial3', name: 'Serial terminal 3')]
+  end
+
   def proxmox_keyboards_map
     [OpenStruct.new(id: 'de', name: 'Deutsch'),
     OpenStruct.new(id: 'de-ch', name: 'Deutsch (Swiss)'),

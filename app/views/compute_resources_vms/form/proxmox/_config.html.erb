@@ -22,6 +22,7 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= checkbox_f f, :agent, :label => _('Qemu Agent') %>
   <%= checkbox_f f, :kvm, :label => _('KVM'), :label_help => _('Enable/disable KVM hardware virtualization') %>
   <%= select_f f, :keyboard, proxmox_keyboards_map, :id, :name, { }, :label => _('Keyboard'), :label_size => "col-md-2" %>
+  <%= select_f f, :vga, proxmox_vgas_map, :id, :name, { :include_blank => true }, :label => _('VGA'), :label_size => "col-md-2" %>
 <% end %>
 <%= field_set_tag _("CPU"), :id => "cpu" do %>
   <%= select_f f, :cpu_type, proxmox_cpus_map, :id, :name, { }, :label => _('Type'), :label_size => "col-md-2" %>

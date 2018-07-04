@@ -1,7 +1,6 @@
 function cdromSelected(item) {
   var selected = $(item).val();
   var cdrom_image_form = $('#cdrom_image_form');
-  var cdrom_image_form = $('#cdrom_image_form');
 
   switch (selected) {
     case 'none':

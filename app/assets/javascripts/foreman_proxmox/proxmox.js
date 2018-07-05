@@ -92,23 +92,16 @@ function computeControllerMaxDevice(controller){
   }
 }
 
-function imageSelected(item) {
+function imageProxmoxSelected(item) {
   var volid = $(item).val();
-  console.log('volid='+volid)
-  if (volid) {
-    tfm.tools.showSpinner();
-    $.getJSON({
-      type: 'get',
-      url: '/foreman_proxmox/template/'+volid,
-      success: function(template) {
-        console.log('template='+template)
-      },
-      error: function(j,status,error){
-        console.log("Error=" + error +", status=" + status + " loading image for id=" + vmid);
-      },
-      complete: function(){
-        tfm.tools.hideSpinner();
-      },
-    });
+  console.log('volid='+volid);
+  disableProxmoxConfig();
+}
+
+function disableProxmoxConfig(){
+  var ids = ['config_options','memory','cpu','cdrom','config_os']
+  for (i=0;i< ids.length;i++){
+    $(id[i]).disabled();
+    $(id[i]).hide();
   }
 }

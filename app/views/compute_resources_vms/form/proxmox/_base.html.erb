@@ -21,16 +21,23 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <!-- VM General Settings -->
 <%= field_set_tag _("General"), :id => "general" do %>
+  <%= checkbox_f f, :templated, :label => _('Create image?'), :disabled => new_vm && !f.object.templated?, :hide => new_vm && !f.object.templated? %>
   <%= counter_f f, :vmid, :label => _('VM ID'), :label_size => "col-md-2", :required => true, :disabled => !new_vm %>
   <%= select_f f, :node, compute_resource.nodes, :node, :node, { }, :label => _('Node'), :label_size => "col-md-2", :required => true, :disabled => !new_vm %>
-  <div id='image_selection'>
-  <%= select_f f, :image_id, compute_resource.available_images, :volid, :volid, { :include_blank => true }, 
-    :disabled => params[:host][:provision_method] == 'build', 
-    :onchange    => 'imageSelected(this)',
-    :help_inline => :indicator,
-    :label => _('Image'), 
-    :label_size => "col-md-2" %>
-  </div>
+  <% unless local_assigns[:hide_image] %>
+    <%
+      arch ||= nil ; os ||= nil
+      images = possible_images(compute_resource, arch, os)
+    -%>
+    <div id='image_selection'>
+    <%= select_f f, :image_id, images, :uuid, :name, { :include_blank => true }, 
+      :disabled => images.empty? || (params[:host] && params[:host][:provision_method] == 'build'), 
+      :onchange    => 'imageProxmoxSelected(this)',
+      :help_inline => :indicator,
+      :label => _('Image'), 
+      :label_size => "col-md-2" %>
+    </div>
+  <% end %>
 <% end %>
 
 <!-- Config -->

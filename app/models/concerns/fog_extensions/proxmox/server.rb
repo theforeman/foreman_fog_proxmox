@@ -21,6 +21,7 @@ module FogExtensions
     module Proxmox
         module Server
             extend ActiveSupport::Concern
+            attr_accessor :image_id, :create_template
             def to_s
                 name
             end
@@ -73,10 +74,9 @@ module FogExtensions
             def interfaces_attributes=(attrs); end
             def volumes_attributes=(attrs); end
             def config_attributes=(attrs); end
-            def image_id
-                ''
+            def templated?
+                volumes.any? { |volume| volume.templated? }
             end
-            def image_id=(attrs); end
         end
     end
 end   

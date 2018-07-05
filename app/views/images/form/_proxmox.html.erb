@@ -1,4 +1,4 @@
-<%= text_f f, :username, :placeholder => "root", :help_block => _("The user that is used to ssh into the instance, normally cloud-user, ubuntu, root etc") %>
-<%= password_f f, :password, :help_block => _("Password to authenticate with - used for SSH finish step.") %>
-<%= checkbox_f f, :user_data, :help_block => _("Does this image support user data input (e.g. via cloud-init)?") %>
-<%= image_field(f, :label => _("Image volid"), :help_block => _("volid of template volume.")) %>
+<%= text_f f, :username, :placeholder => "root", :help_inline => _("The user that is used to ssh into the instance, normally cloud-user, ubuntu, root etc") %>
+<%= password_f f, :password, :help_inline => _("Password to authenticate with - used for SSH finish step.") %>
+<%= checkbox_f f, :user_data, :help_inline => _("Does this image support user data input (e.g. via cloud-init)?") %>
+<%= image_field(f, :label => _("Image volid"), :help_inline => _("volid of template volume.")) %>

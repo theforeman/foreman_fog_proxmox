@@ -78,9 +78,11 @@ module ForemanProxmox
     config.to_prepare do
       require 'fog/compute/proxmox/models/server'
       require 'fog/compute/proxmox/models/server_config'
+      require 'fog/compute/proxmox/models/volume'
 
       Fog::Compute::Proxmox::Server.send :include, FogExtensions::Proxmox::Server
       Fog::Compute::Proxmox::ServerConfig.send :include, FogExtensions::Proxmox::ServerConfig
+      Fog::Compute::Proxmox::Volume.send :include, FogExtensions::Proxmox::Volume
       ::ComputeResourcesController.send :include, ForemanProxmox::Controller::Parameters::ComputeResource
     end
 

@@ -94,18 +94,17 @@ module ForemanProxmox
     end    
 
     def available_images
-      templates
+      templates.collect { |template| OpenStruct.new(id: template.vmid) }
     end
 
-    def templates(opts = {})
+    def templates
       storage = storages.first
       images = storage.volumes.list_by_content_type('images')
-      images.select { |image| image.volid.match(/^([\w-]+)[:]base-(\d+)-disk-(\d+)/) }
+      images.select { |image| image.templated? }
     end
 
-    def template(id,opts = {})
-      storage = storages.first
-      storage.volumes.get(id)
+    def template(vmid)
+      find_vm_by_uuid(vmid)
     end
 
     def host_compute_attrs(host)
@@ -169,15 +168,16 @@ module ForemanProxmox
       raise ::Foreman::Exception.new N_("invalid vmid=#{vmid}") unless node.servers.id_valid?(vmid)
       image_id = args[:image_id]
       node = get_cluster_node args
-      logger.debug("create_vm(): #{args}")
-      convert_sizes(args)
       if image_id
+        logger.debug("create_vm(): clone #{image_id} in #{vmid}")
         image = node.servers.get image_id
-        image.clone(args[:vmid])
+        image.clone(vmid)
       else
+        logger.debug("create_vm(): #{args}")
+        convert_sizes(args)
         node.servers.create(parse_vm(args))
       end
-      vm = find_vm_by_uuid(args[:vmid])
+      vm = find_vm_by_uuid(vmid)
       vm
     rescue => e
       logger.warn "failed to create vm: #{e}"
@@ -221,9 +221,14 @@ module ForemanProxmox
     def save_vm(uuid, attr)
       vm = find_vm_by_uuid(uuid)
       logger.debug("save_vm(): #{attr}")
-      merged = vm.config.attributes.merge!(parse_vm(attr).symbolize_keys).deep_symbolize_keys
-      filtered = merged.reject { |key,value| %w[node vmid].include?(key) || value.to_s.empty? }
-      vm.update(filtered)
+      templated = attr[:templated]
+      if (templated && !vm.templated?)
+        vm.template
+      else
+        merged = vm.config.attributes.merge!(parse_vm(attr).symbolize_keys).deep_symbolize_keys
+        filtered = merged.reject { |key,value| %w[node vmid templated image_id].include?(key) || value.to_s.empty? }
+        vm.update(filtered)
+      end
     end
 
     def next_vmid
@@ -324,7 +329,8 @@ module ForemanProxmox
         keyboard: 'en-us',
         cpu: 'kvm64',
         scsihw: 'virtio-scsi-pci',
-        ide2: "none,media=cdrom"
+        ide2: "none,media=cdrom",
+        templated: 0
       ).merge(Fog::Proxmox::DiskHelper.flatten(volume_defaults)).merge(Fog::Proxmox::NicHelper.flatten(interface_defaults))
     end
 

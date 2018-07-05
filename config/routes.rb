@@ -20,5 +20,6 @@
 Rails.application.routes.draw do
     namespace :foreman_proxmox do
         match 'isos/:storage', :to => 'compute_resources#isos', :via => 'get'
+        match 'template/:vmid', :to => 'compute_resources#template', :via => 'get'
     end
 end

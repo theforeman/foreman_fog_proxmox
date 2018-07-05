@@ -39,7 +39,7 @@ module ForemanProxmox
     end
 
     def capabilities
-      [:build, :new_volume]
+      [:build, :new_volume, :image]
     end
 
     def self.model_name
@@ -84,7 +84,7 @@ module ForemanProxmox
     end
 
     def associated_host(vm)
-      associate_by('node', vm.node)
+      associate_by('mac', vm.mac)
     end
 
     def bridges
@@ -93,9 +93,14 @@ module ForemanProxmox
       bridges.sort_by(&:iface)
     end    
 
+    def available_images
+      templates
+    end
+
     def templates(opts = {})
       storage = storages.first
-      storage.volumes.list_by_content_type_and_by_server('images',opts['vmid'])
+      images = storage.volumes.list_by_content_type('images')
+      images.select { |image| image.volid.match(/^([\w-]+)[:]base-(\d+)-disk-(\d+)/) }
     end
 
     def template(id,opts = {})
@@ -160,11 +165,18 @@ module ForemanProxmox
     end
 
     def create_vm(args = {})
-      raise ::Foreman::Exception.new N_("invalid vmid") unless node.servers.id_valid?(args[:vmid])
+      vmid = args[:vmid]
+      raise ::Foreman::Exception.new N_("invalid vmid=#{vmid}") unless node.servers.id_valid?(vmid)
+      image_id = args[:image_id]
       node = get_cluster_node args
       logger.debug("create_vm(): #{args}")
       convert_sizes(args)
-      node.servers.create(parse_vm(args))
+      if image_id
+        image = node.servers.get image_id
+        image.clone(args[:vmid])
+      else
+        node.servers.create(parse_vm(args))
+      end
       vm = find_vm_by_uuid(args[:vmid])
       vm
     rescue => e
@@ -243,14 +255,6 @@ module ForemanProxmox
       raise ::Foreman::Exception.new N_("Unable to store X509 certificates")
     end
 
-    def disable_proxy
-      self.attrs[:disable_proxy].blank? ? true : Foreman::Cast.to_bool(self.attrs[:disable_proxy])
-    end
-
-    def disable_proxy=(value)
-      self.attrs[:disable_proxy] = value
-    end
-
     def ssl_verify_peer
       self.attrs[:ssl_verify_peer].blank? ? false : Foreman::Cast.to_bool(self.attrs[:ssl_verify_peer])
     end
@@ -259,8 +263,9 @@ module ForemanProxmox
       self.attrs[:ssl_verify_peer] = value
     end
 
-    def options
-      opts = { disable_proxy: disable_proxy, ssl_verify_peer: ssl_verify_peer }
+    def connection_options
+      opts = http_proxy ? {proxy: http_proxy.full_url} : {disable_proxy: 1}
+      opts.store(:ssl_verify_peer, ssl_verify_peer)
       opts.store(:ssl_cert_store, certs_to_store) if Foreman::Cast.to_bool(ssl_verify_peer)
       opts
     end
@@ -281,7 +286,7 @@ module ForemanProxmox
      { pve_url: url,
         pve_username: user,
         pve_password: password,
-        connection_options: options }
+        connection_options: connection_options }
     end
 
     def client
@@ -312,7 +317,7 @@ module ForemanProxmox
         node: node.to_s, 
         cores: 1, 
         sockets: 1, 
-        kvm: 1,
+        kvm: 0,
         vga: 'std',
         memory: 512 * MEGA, 
         ostype: 'l26',

@@ -73,6 +73,10 @@ module FogExtensions
             def interfaces_attributes=(attrs); end
             def volumes_attributes=(attrs); end
             def config_attributes=(attrs); end
+            def image_id
+                ''
+            end
+            def image_id=(attrs); end
         end
     end
 end   

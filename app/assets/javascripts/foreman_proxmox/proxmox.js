@@ -91,3 +91,24 @@ function computeControllerMaxDevice(controller){
       break;
   }
 }
+
+function imageSelected(item) {
+  var volid = $(item).val();
+  console.log('volid='+volid)
+  if (volid) {
+    tfm.tools.showSpinner();
+    $.getJSON({
+      type: 'get',
+      url: '/foreman_proxmox/template/'+volid,
+      success: function(template) {
+        console.log('template='+template)
+      },
+      error: function(j,status,error){
+        console.log("Error=" + error +", status=" + status + " loading image for id=" + vmid);
+      },
+      complete: function(){
+        tfm.tools.hideSpinner();
+      },
+    });
+  }
+}

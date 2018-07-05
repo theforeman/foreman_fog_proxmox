@@ -20,6 +20,5 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <%= text_f f, :user , :help_block => _("e.g. root@pam") %>
 <%= password_f f, :password, :keep_value => true, :unset => unset_password? %>
 <%= checkbox_f f, :ssl_verify_peer, :label => _("SSL verify peer") %>
-<%= checkbox_f f, :disable_proxy, :label => _("Disable proxy") %>
 <%= textarea_f f, :ssl_certs, :label => _("X509 Certification Authorities"), :size => "col-md-8",
   :placeholder => _("Optionally provide a CA, or a correctly ordered CA chain. If left blank, disable ssl_verify_peer.") %>

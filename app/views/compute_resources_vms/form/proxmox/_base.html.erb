@@ -23,6 +23,14 @@ along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <%= field_set_tag _("General"), :id => "general" do %>
   <%= counter_f f, :vmid, :label => _('VM ID'), :label_size => "col-md-2", :required => true, :disabled => !new_vm %>
   <%= select_f f, :node, compute_resource.nodes, :node, :node, { }, :label => _('Node'), :label_size => "col-md-2", :required => true, :disabled => !new_vm %>
+  <div id='image_selection'>
+  <%= select_f f, :image_id, compute_resource.available_images, :volid, :volid, { :include_blank => true }, 
+    :disabled => params[:host][:provision_method] == 'build', 
+    :onchange    => 'imageSelected(this)',
+    :help_inline => :indicator,
+    :label => _('Image'), 
+    :label_size => "col-md-2" %>
+  </div>
 <% end %>
 
 <!-- Config -->

@@ -21,7 +21,7 @@
 require File.expand_path('lib/foreman_proxmox/version', __dir__)
 
 Gem::Specification.new do |s|
-  s.name        = 'foreman_proxmox'
+  s.name        = 'theforeman_proxmox'
   s.version     = ForemanProxmox::VERSION
   s.license     = 'GPL-3.0'
   s.authors     = ['Tristan Robert']

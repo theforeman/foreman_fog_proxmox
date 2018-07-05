@@ -29,14 +29,6 @@ module ForemanProxmox
       end
     end
 
-    # GET foreman_proxmox/template/:volid
-    def template
-      template = @compute_resource.template(params[:volid])
-      respond_to do |format|
-        format.json { render :json => template }
-      end
-    end
-
     private
 
     def load_compute_resource

@@ -218,6 +218,10 @@ module ForemanProxmox
       true
     end
 
+    def image_exists?(image)
+      find_vm_by_uuid(image)
+    end
+
     def save_vm(uuid, attr)
       vm = find_vm_by_uuid(uuid)
       logger.debug("save_vm(): #{attr}")

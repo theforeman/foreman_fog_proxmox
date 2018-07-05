@@ -91,17 +91,3 @@ function computeControllerMaxDevice(controller){
       break;
   }
 }
-
-function imageProxmoxSelected(item) {
-  var volid = $(item).val();
-  console.log('volid='+volid);
-  disableProxmoxConfig();
-}
-
-function disableProxmoxConfig(){
-  var ids = ['config_options','memory','cpu','cdrom','config_os']
-  for (i=0;i< ids.length;i++){
-    $(id[i]).disabled();
-    $(id[i]).hide();
-  }
-}

@@ -19,7 +19,7 @@
 
 module FogExtensions
     module Proxmox
-        module Volume
+        module Disk
             extend ActiveSupport::Concern
             def templated?
                 volid ? volid.match(/^([\w-]+)[:]base-(\d+)-disk-(\d+)/) : false

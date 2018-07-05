@@ -21,7 +21,7 @@ module FogExtensions
     module Proxmox
         module Server
             extend ActiveSupport::Concern
-            attr_accessor :image_id, :create_template
+            attr_accessor :image_id, :templated
             def to_s
                 name
             end

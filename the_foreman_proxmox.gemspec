@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
   s.test_files = Dir['test/**/*']
 
   s.add_dependency 'fog-proxmox', '~> 0.4'
-  s.add_development_dependency 'rdoc', '~> 0'
-  s.add_development_dependency 'rubocop', '~> 0'
-  s.add_development_dependency 'simplecov', '~> 0'
+  s.add_development_dependency 'rdoc', '~> 6.0'
+  s.add_development_dependency 'rubocop', '~> 0.52'
+  s.add_development_dependency 'simplecov', '~> 0.16'
 end

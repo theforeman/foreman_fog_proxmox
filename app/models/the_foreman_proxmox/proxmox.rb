@@ -226,11 +226,11 @@ module TheForemanProxmox
       vm = find_vm_by_uuid(uuid)
       logger.debug("save_vm(): #{attr}")
       templated = attr[:templated]
-      if (templated && !vm.templated?)
+      if (templated == '1' && !vm.templated?)
         vm.template
       else
         merged = vm.config.attributes.merge!(parse_vm(attr).symbolize_keys).deep_symbolize_keys
-        filtered = merged.reject { |key,value| %w[node vmid templated image_id].include?(key) || value.to_s.empty? }
+        filtered = merged.reject { |key,value| %w[node vmid].include?(key) || [:templated,:image_id].include?(key) || value.to_s.empty? }
         vm.update(filtered)
       end
     end

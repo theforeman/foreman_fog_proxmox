@@ -28,7 +28,7 @@ class ProxmoxComputeHelperTest < ActiveSupport::TestCase
     teardown { Fog.unmock! }
 
     let(:host) do 
-      { 'vmid' => 100, 
+      { 'vmid' => '100', 
         'name' =>  'test', 
         'node' => 'pve',
         'config_attributes' => { 
@@ -42,7 +42,7 @@ class ProxmoxComputeHelperTest < ActiveSupport::TestCase
           'cores' => '1', 
           'sockets' => '1'
         },
-        'volumes_attributes' => {'0'=> { 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => (1024*1024*1024).to_s, 'cache' => 'none' }}, 
+        'volumes_attributes' => {'0'=> { 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => 'none' }}, 
         'interfaces_attributes' => { 
           '0' => { 'id' => 'net0', 'model' => 'virtio', 'bridge' => 'vmbr0' },
           '1' => { 'id' => 'net1', 'model' => 'e1000', 'bridge' => 'vmbr0' } 
@@ -51,9 +51,9 @@ class ProxmoxComputeHelperTest < ActiveSupport::TestCase
     end
 
     let(:host_delete) do 
-      { 'vmid' => 100, 
+      { 'vmid' => '100', 
         'name' =>  'test', 
-        'volumes_attributes' => { '0' => { '_delete' => '1', 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => (1024*1024*1024).to_s }}, 
+        'volumes_attributes' => { '0' => { '_delete' => '1', 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824' }}, 
         'interfaces_attributes' => { '0' => { '_delete' => '1', 'id' => 'net0', 'model' => 'virtio' } } 
       }
     end
@@ -76,23 +76,27 @@ class ProxmoxComputeHelperTest < ActiveSupport::TestCase
       assert_equal vm['sockets'], '1'
       assert_equal vm[:cpu], 'cputype=kvm64,flags=+spec-ctrl'
       assert_equal vm[:memory], 512
-      assert_equal vm[:scsi0], 'local-lvm:1,cache=none'
+      assert_equal vm[:scsi0], 'local-lvm:1073741824,cache=none'
       assert_equal vm[:net0], 'model=virtio,bridge=vmbr0'
       assert !vm.has_key?(:config)
       assert !vm.has_key?(:node)
     end   
 
     test '#volume with scsi 1Gb' do       
-      volume = parse_volume(host['volumes_attributes'])
+      volumes = parse_volumes(host['volumes_attributes'])
+      assert !volumes.empty?
+      assert volume = volumes.first
       assert volume.has_key?(:scsi0)
-      assert_equal volume[:scsi0], 'local-lvm:1,cache=none'
+      assert_equal volume[:scsi0], 'local-lvm:1073741824,cache=none'
     end    
     
     test '#volume delete scsi0' do       
-      volume = parse_volume(host_delete['volumes_attributes'])
+      volumes = parse_volumes(host_delete['volumes_attributes'])
+      assert !volumes.empty?
+      assert_equal volumes.length, 1
+      assert volume = volumes.first
       assert volume.has_key?(:delete)
       assert_match(/(net0,){0,1}scsi0(,net0){0,1}/, volume[:delete])
-      assert_equal volume.length, 1
     end
     
     test '#interface with model virtio and bridge' do       

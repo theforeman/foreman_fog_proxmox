@@ -12,3 +12,4 @@ locale/*/*.pox
 **/.vagrant/
 bin/
 public/
+*.gem

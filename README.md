@@ -25,23 +25,23 @@ Tested with:
 gem install the_foreman_proxmox
 ```
 
+You can see it in about foreman page:
+
+![About resources](.github/images/about_resources.png)
+![About greffon](.github/images/about_greffon.png)
+
 ### Packages
 
 Deb, yum, rpm: work in progress...
 
-Please see the Foreman manual for appropriate instructions:
+Please see the Foreman manual for complete instructions:
 
 * [Foreman: How to Install a Plugin](http://theforeman.org/manuals/latest/index.html#6.1InstallaPlugin)
 
 ## Usage
 
 * [Compute resource](.github/compute_resource.md)
-
-![Create host](.github/images/create_host.png)
-![List hosts](.github/images/hosts.png)
-![Show host](.github/images/show_host.png)
-![VNC Console](.github/images/vnc_console.png)
-![VNC Console 2](.github/images/vnc_console2.png)
+* [Manage hosts](.github/hosts.md)
 
 ## Development
 

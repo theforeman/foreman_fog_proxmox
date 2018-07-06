@@ -17,9 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-module ForemanProxmox
+module TheForemanProxmox
   class Engine < ::Rails::Engine
-    engine_name 'foreman_proxmox'
+    engine_name 'the_foreman_proxmox'
 
     config.autoload_paths += Dir["#{config.root}/app/controllers/concerns"]
     config.autoload_paths += Dir["#{config.root}/app/helpers/concerns"]
@@ -27,20 +27,20 @@ module ForemanProxmox
     config.autoload_paths += Dir["#{config.root}/app/overrides"]
 
     # Add any db migrations
-    initializer 'foreman_proxmox.load_app_instance_data' do |app|
-      ForemanProxmox::Engine.paths['db/migrate'].existent.each do |path|
+    initializer 'the_foreman_proxmox.load_app_instance_data' do |app|
+      TheForemanProxmox::Engine.paths['db/migrate'].existent.each do |path|
         app.config.paths['db/migrate'] << path
       end
     end
 
-    initializer 'foreman_proxmox.register_plugin', :before => :finisher_hook do |_app|
-      Foreman::Plugin.register :foreman_proxmox do
+    initializer 'the_foreman_proxmox.register_plugin', :before => :finisher_hook do |_app|
+      Foreman::Plugin.register :the_foreman_proxmox do
         requires_foreman '>= 1.17'
         # Register Proxmox VE compute resource in foreman
-        compute_resource ForemanProxmox::Proxmox
+        compute_resource TheForemanProxmox::Proxmox
         parameter_filter(ComputeResource, :uuid)
         # add dashboard widget
-        widget 'foreman_proxmox_widget', name: N_('Foreman plugin template widget'), sizex: 4, sizey: 1
+        widget 'the_foreman_proxmox_widget', name: N_('Foreman plugin template widget'), sizex: 4, sizey: 1
       end
     end
 
@@ -53,11 +53,11 @@ module ForemanProxmox
           f.split(File::SEPARATOR, 4).last
         end
       end
-    initializer 'foreman_proxmox.assets.precompile' do |app|
+    initializer 'the_foreman_proxmox.assets.precompile' do |app|
       app.config.assets.precompile += assets_to_precompile
     end
-    initializer 'foreman_proxmox.configure_assets', group: :assets do
-      SETTINGS[:foreman_proxmox] = { 
+    initializer 'the_foreman_proxmox.configure_assets', group: :assets do
+      SETTINGS[:the_foreman_proxmox] = { 
         assets: { 
           precompile: assets_to_precompile 
         }, :js_compressor => Uglifier.new(:mangle => false) }
@@ -65,13 +65,13 @@ module ForemanProxmox
 
     rake_tasks do
       Rake::Task['db:seed'].enhance do
-        ForemanProxmox::Engine.load_seed
+        TheForemanProxmox::Engine.load_seed
       end
     end
 
-    initializer 'foreman_proxmox.register_gettext', after: :load_config_initializers do |_app|
+    initializer 'the_foreman_proxmox.register_gettext', after: :load_config_initializers do |_app|
       locale_dir = File.join(File.expand_path('../..', __dir__), 'locale')
-      locale_domain = 'foreman_proxmox'
+      locale_domain = 'the_foreman_proxmox'
       Foreman::Gettext::Support.add_text_domain locale_domain, locale_dir
     end
 
@@ -85,7 +85,7 @@ module ForemanProxmox
       Fog::Compute::Proxmox::ServerConfig.send :include, FogExtensions::Proxmox::ServerConfig
       Fog::Compute::Proxmox::Disk.send :include, FogExtensions::Proxmox::Disk
       Fog::Compute::Proxmox::Volume.send :include, FogExtensions::Proxmox::Volume
-      ::ComputeResourcesController.send :include, ForemanProxmox::Controller::Parameters::ComputeResource
+      ::ComputeResourcesController.send :include, TheForemanProxmox::Controller::Parameters::ComputeResource
     end
 
   end

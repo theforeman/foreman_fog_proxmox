@@ -17,22 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-module ForemanProxmox
-  class ComputeResourcesController < ::ApplicationController
-    before_action :load_compute_resource
+require 'the_foreman_proxmox/engine'
 
-    # GET foreman_proxmox/isos/:storage
-    def isos
-      volumes = @compute_resource.isos(params[:storage])
-      respond_to do |format|
-        format.json { render :json => volumes }
-      end
-    end
-
-    private
-
-    def load_compute_resource
-      @compute_resource = ComputeResource.find_by(type: 'ForemanProxmox::Proxmox')
-    end
-  end
+module TheForemanProxmox
 end

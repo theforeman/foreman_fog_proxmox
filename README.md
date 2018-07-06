@@ -19,15 +19,24 @@ Tested with:
 
 ## Installation
 
+### Gem
+
+```shell
+gem install the_foreman_proxmox
+```
+
+### Packages
+
+Deb, yum, rpm: work in progress...
+
 Please see the Foreman manual for appropriate instructions:
 
 * [Foreman: How to Install a Plugin](http://theforeman.org/manuals/latest/index.html#6.1InstallaPlugin)
 
-## Screenshots
+## Usage
 
-![Compute resource](.github/images/compute_resource.png)
-![Show vms of compute resource](.github/images/vms_compute_resource.png)
-![Compute profile](.github/images/compute_profile_small.png)
+* [Compute resource](.github/compute_resource.md)
+
 ![Create host](.github/images/create_host.png)
 ![List hosts](.github/images/hosts.png)
 ![Show host](.github/images/show_host.png)

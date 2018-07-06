@@ -17,8 +17,17 @@
 # You should have received a copy of the GNU General Public License
 # along with TheForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-Rails.application.routes.draw do
-    namespace :the_foreman_proxmox do
-        match 'isos/:storage', :to => 'compute_resources#isos', :via => 'get'
+FactoryBot.define do
+  factory :container_resource, :class => ComputeResource do
+    sequence(:name) { |n| "compute_resource#{n}" }
+
+    trait :proxmox do
+      provider 'proxmox'
+      url 'https://192.168.56.101:8006/api2/json'
+      user 'root@pam'
+      password 'proxmox01'
     end
+
+    factory :proxmox_cr, :class => TheForemanProxmox::Proxmox, :traits => [:proxmox]
+  end
 end

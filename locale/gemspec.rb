@@ -1,2 +1,2 @@
-# Matches foreman_proxmox.gemspec
-_('TODO: Description of ForemanProxmox.')
+# Matches the_foreman_proxmox.gemspec
+_('TheForemanProxmox plugin adds Proxmox VE compute resource to Foreman using fog-proxmox gem.')

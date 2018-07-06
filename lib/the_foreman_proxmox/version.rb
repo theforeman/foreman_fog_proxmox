@@ -17,17 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-FactoryBot.define do
-  factory :container_resource, :class => ComputeResource do
-    sequence(:name) { |n| "compute_resource#{n}" }
-
-    trait :proxmox do
-      provider 'proxmox'
-      url 'https://192.168.56.101:8006/api2/json'
-      user 'root@pam'
-      password 'proxmox01'
-    end
-
-    factory :proxmox_cr, :class => ForemanProxmox::Proxmox, :traits => [:proxmox]
-  end
+module TheForemanProxmox
+  VERSION = '0.3.0'.freeze
 end

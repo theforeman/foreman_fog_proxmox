@@ -2,20 +2,20 @@
 
 # Copyright 2018 Tristan Robert
 
-# This file is part of ForemanProxmox.
+# This file is part of TheForemanProxmox.
 
-# ForemanProxmox is free software: you can redistribute it and/or modify
+# TheForemanProxmox is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 
-# ForemanProxmox is distributed in the hope that it will be useful,
+# TheForemanProxmox is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
+# along with TheForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 require 'test_plugin_helper'
 
@@ -31,7 +31,7 @@ class ProxmoxComputeHelperTest < ActiveSupport::TestCase
       { 'vmid' => 100, 
         'name' =>  'test', 
         'node' => 'pve',
-        'config' => { 
+        'config_attributes' => { 
           'memory' => '512', 
           'min_memory' => '', 
           'ballon' => '', 
@@ -42,7 +42,7 @@ class ProxmoxComputeHelperTest < ActiveSupport::TestCase
           'cores' => '1', 
           'sockets' => '1'
         },
-        'volumes' => { 'bus' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1', 'cache' => 'none' }, 
+        'volumes_attributes' => {'0'=> { 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => (1024*1024*1024).to_s, 'cache' => 'none' }}, 
         'interfaces_attributes' => { 
           '0' => { 'id' => 'net0', 'model' => 'virtio', 'bridge' => 'vmbr0' },
           '1' => { 'id' => 'net1', 'model' => 'e1000', 'bridge' => 'vmbr0' } 
@@ -53,19 +53,19 @@ class ProxmoxComputeHelperTest < ActiveSupport::TestCase
     let(:host_delete) do 
       { 'vmid' => 100, 
         'name' =>  'test', 
-        'volumes' => { '_delete' => '1', 'bus' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1' }, 
+        'volumes_attributes' => { '0' => { '_delete' => '1', 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => (1024*1024*1024).to_s }}, 
         'interfaces_attributes' => { '0' => { '_delete' => '1', 'id' => 'net0', 'model' => 'virtio' } } 
       }
     end
 
     test '#memory' do       
-      memory = parse_memory(host['config'])
+      memory = parse_memory(host['config_attributes'])
       assert memory.has_key?(:memory)
       assert_equal memory[:memory], 512
     end   
 
     test '#cpu' do       
-      cpu = parse_cpu(host['config'])
+      cpu = parse_cpu(host['config_attributes'])
       assert cpu.has_key?(:cpu)
       assert_equal cpu[:cpu], 'cputype=kvm64,flags=+spec-ctrl'
     end   
@@ -83,13 +83,13 @@ class ProxmoxComputeHelperTest < ActiveSupport::TestCase
     end   
 
     test '#volume with scsi 1Gb' do       
-      volume = parse_volume(host['volumes'])
+      volume = parse_volume(host['volumes_attributes'])
       assert volume.has_key?(:scsi0)
       assert_equal volume[:scsi0], 'local-lvm:1,cache=none'
     end    
     
     test '#volume delete scsi0' do       
-      volume = parse_volume(host_delete['volumes'])
+      volume = parse_volume(host_delete['volumes_attributes'])
       assert volume.has_key?(:delete)
       assert_match(/(net0,){0,1}scsi0(,net0){0,1}/, volume[:delete])
       assert_equal volume.length, 1

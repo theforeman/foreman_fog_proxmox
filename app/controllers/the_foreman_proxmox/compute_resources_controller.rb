@@ -17,8 +17,22 @@
 # You should have received a copy of the GNU General Public License
 # along with TheForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-Rails.application.routes.draw do
-    namespace :the_foreman_proxmox do
-        match 'isos/:storage', :to => 'compute_resources#isos', :via => 'get'
+module TheForemanProxmox
+  class ComputeResourcesController < ::ApplicationController
+    before_action :load_compute_resource
+
+    # GET the_foreman_proxmox/isos/:storage
+    def isos
+      volumes = @compute_resource.isos(params[:storage])
+      respond_to do |format|
+        format.json { render :json => volumes }
+      end
     end
+
+    private
+
+    def load_compute_resource
+      @compute_resource = ComputeResource.find_by(type: 'TheForemanProxmox::Proxmox')
+    end
+  end
 end

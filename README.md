@@ -19,20 +19,42 @@ Tested with:
 
 ## Installation
 
-### Gem
+### From gem
+
+See complete details in [plugin installation from gem](https://theforeman.org/plugins/#2.3AdvancedInstallationfromGems)
+
+Here is a Debian sample:
+
+* Install foreman 1.17 with [foreman-installer](https://theforeman.org/manuals/1.17/index.html#2.1Installation)
+* Use only foreman user (**not root!**)
+* In /usr/share/foreman/bundler.d directory, add Gemfile.local.rb file and add this line in it:
+
+```ruby
+gem 'the_foreman_proxmox'
+```
+
+* Install the plugin:
 
 ```shell
-gem install the_foreman_proxmox
+/usr/bin/foreman-ruby /usr/bin/bundle install
 ```
+
+* Restart the server:
+
+```shell
+touch ~foreman/tmp/restart.txt
+```
+
+See complete details in [plugin installation from gem](https://theforeman.org/plugins/#2.3.2Debiandistributions)
 
 You can see it in about foreman page:
 
 ![About resources](.github/images/about_resources.png)
 ![About greffon](.github/images/about_greffon.png)
 
-### Packages
+### From OS packages
 
-Deb, yum, rpm: work in progress...
+Deb, rpm: work in progress...
 
 Please see the Foreman manual for complete instructions:
 
@@ -45,46 +67,75 @@ Please see the Foreman manual for complete instructions:
 
 ## Development
 
+### Prerequisites
+
 You need a Proxmox VE >= 5.1 server running.
+
+You also need nodejs in your dev machine to run webpack-dev-server.
+
+### Platform
 
 * Fork this github repo.
 * Clone it on your local machine
-
-To install the plugin with foreman in a Docker container, move to the source code:
-
-```shell
-cd foreman_proxmox
-```
-
-Build a docker container:
+* Install foreman v1.17 on your machine:
 
 ```shell
-sudo docker build -t foreman .
+git clone https://github.com/theforeman/foreman
+git checkout tags/1.17
 ```
 
-If you are behind a proxy http server, add:
+* Create a Gemfile.local.rb file in foreman/bundler.d/
+* Add this line:
+
+```ruby
+gem 'the_foreman_proxmox', :path => '/your_path_to/foreman_proxmox'
+```
+
+* In foreman directory, install dependencies:
 
 ```shell
---build-arg http_proxy=http://<user>:<password>@<ip>:<port>
-...
+bundle install
 ```
 
-Run it:
+* Configure foreman settings:
 
 ```shell
-sudo docker run -it -p 3808:5000 --name foreman foreman
+cp config/settings.yaml.example config/settings.yaml
 ```
 
-Access container's bash console:
+* Install foreman database (sqlite is default in rails development):
 
 ```shell
-sudo docker exec -it foreman bash
+cp config/database.yaml.example config/database.yaml
+bundle exec rake db:migrate
+bundle exec rake db:seed
 ```
 
-The docker container use ruby 2.3.7, latest nodejs 8.x (8.11.2) and foreman 1.17.1.
+* You can reset admin password if needed:
 
-If you want to debug live. You have to clone foreman 1.17.1 repo and install foreman_proxmox plugin as gem. 
-See [how to create a foreman plugin](https://projects.theforeman.org/projects/foreman/wiki/How_to_Create_a_Plugin)
+```shell
+bundle exec rake permissions:reset
+```
+
+* In foreman directory, after you modify the_foreman_proxmox specific assets (proxmox.js, etc) you have to precompile it:
+
+```shell
+bundle plugin:assets:precompile[the_foreman_proxmox]
+```
+
+* In foreman directory, run rails server:
+
+```shell
+rails server
+```
+
+* In foreman directory, run in a new terminal the webpack-dev-server:
+
+```shell
+./node_modules/.bin/webpack-dev-server --config config/webpack.config.js
+```
+
+See details in [foreman plugin development](https://projects.theforeman.org/projects/foreman/wiki/How_to_Create_a_Plugin)
 
 ## Contributing
 

@@ -60,7 +60,7 @@ module TheForemanProxmox
       SETTINGS[:the_foreman_proxmox] = { 
         assets: { 
           precompile: assets_to_precompile 
-        }, :js_compressor => Uglifier.new(:mangle => false) }
+        } }
     end
 
     rake_tasks do

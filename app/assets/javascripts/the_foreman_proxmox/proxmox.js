@@ -60,7 +60,7 @@ function initOptions(name){
       tfm.tools.showSpinner();
       $.getJSON({
         type: 'get',
-        url: '/foreman_proxmox/isos/'+storage,
+        url: '/the_foreman_proxmox/isos/'+storage,
         complete: function(){
           tfm.tools.hideSpinner();
         },

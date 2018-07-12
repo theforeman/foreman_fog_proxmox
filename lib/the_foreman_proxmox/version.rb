@@ -18,5 +18,5 @@
 # along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 module TheForemanProxmox
-  VERSION = '0.3.4'.freeze
+  VERSION = '0.3.5'.freeze
 end

@@ -33,10 +33,38 @@ Here is a Debian sample:
 gem 'the_foreman_proxmox'
 ```
 
-* Install the plugin:
+* Install the gem plugin:
 
 ```shell
 /usr/bin/foreman-ruby /usr/bin/bundle install
+```
+
+* Install plugin assets (proxmox.js, etc):
+
+You need [nodejs](https://nodejs.org/en/download/package-manager/) installed and foreman-asset package.
+
+Edit /usr/share/foreman/config/environments/production.rb:
+
+```ruby
+config.cache_classes = false
+```
+
+* Restart the server:
+
+```shell
+touch ~foreman/tmp/restart.txt
+```
+
+Precompile plugin assets:
+
+```shell
+/usr/bin/foreman-ruby /usr/bin/bundle exec bin/rake plugin:asset:precompile[the_foreman_proxmox]
+```
+
+Edit /usr/share/foreman/config/environments/production.rb:
+
+```ruby
+config.cache_classes = true
 ```
 
 * Restart the server:

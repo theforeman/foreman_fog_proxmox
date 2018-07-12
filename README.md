@@ -19,63 +19,57 @@ Tested with:
 
 ## Installation
 
+### Prerequisites
+
+You need [nodejs](https://nodejs.org/en/download/package-manager/) installed in order to use foreman-assets package.
+
 ### From gem
 
 See complete details in [plugin installation from gem](https://theforeman.org/plugins/#2.3AdvancedInstallationfromGems)
 
 Here is a Debian sample:
 
-* Install foreman 1.17 with [foreman-installer](https://theforeman.org/manuals/1.17/index.html#2.1Installation)
-* Use only foreman user (**not root!**)
+* Install foreman 1.17 [from OS packages](https://theforeman.org/manuals/1.17/index.html#3.3InstallFromPackages):
+
+```shell
+sudo apt install -y foreman foreman-compute foreman-sqlite3 foreman-assets
+```
+
+* Use only foreman user (**not root!**) `sudo -u foreman ...`
 * In /usr/share/foreman/bundler.d directory, add Gemfile.local.rb file and add this line in it:
 
-```ruby
-gem 'the_foreman_proxmox'
+```shell
+echo "gem 'the_foreman_proxmox'" | sudo -u foreman tee /usr/share/foreman/bundler.d/Gemfile.local.rb
 ```
 
 * Install the gem plugin:
 
 ```shell
-/usr/bin/foreman-ruby /usr/bin/bundle install
+sudo -u foreman /usr/bin/foreman-ruby /usr/bin/bundle install
 ```
 
-* Install plugin assets (proxmox.js, etc):
-
-You need [nodejs](https://nodejs.org/en/download/package-manager/) installed and foreman-asset package.
-
-Edit /usr/share/foreman/config/environments/production.rb:
-
-```ruby
-config.cache_classes = false
-```
-
-* Restart the server:
+* Precompile plugin assets:
 
 ```shell
-touch ~foreman/tmp/restart.txt
+/usr/bin/foreman-ruby /usr/bin/bundle exec bin/rake plugin:assets:precompile[the_foreman_proxmox]
 ```
 
-Precompile plugin assets:
+* Complete installation of foreman 1.17 with foreman-installer:
 
 ```shell
-/usr/bin/foreman-ruby /usr/bin/bundle exec bin/rake plugin:asset:precompile[the_foreman_proxmox]
+sudo apt install -y foreman-installer
+sudo foreman-installer
 ```
 
-Edit /usr/share/foreman/config/environments/production.rb:
-
-```ruby
-config.cache_classes = true
-```
-
-* Restart the server:
+If you don't want to have HTTP 503 errors when apt is trying to install puppetserver, then add this before launching foreman-installer:
 
 ```shell
-touch ~foreman/tmp/restart.txt
+echo 'Acquire::http::User-agent "Mozilla/5.0 (Linux)";' | sudo tee /etc/apt/apt.conf.d/96useragent
 ```
 
 See complete details in [plugin installation from gem](https://theforeman.org/plugins/#2.3.2Debiandistributions)
 
-You can see it in about foreman page:
+Then you can check plugin installation after login into your new foreman server seeing the about foreman page:
 
 ![About resources](.github/images/about_resources.png)
 ![About greffon](.github/images/about_greffon.png)

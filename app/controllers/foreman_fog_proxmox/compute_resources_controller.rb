@@ -29,6 +29,14 @@ module ForemanFogProxmox
       end
     end
 
+    # GET foreman_fog_proxmox/node/statistics
+    def node_statistics
+      data = @compute_resource.node.statistics('rrd', { timetransfer: 'hour', cf: 'AVERAGE', ds: 'cpu,memused' })
+      respond_to do |format|
+        format.json { render :json => data }
+      end
+    end
+
     private
 
     def load_compute_resource

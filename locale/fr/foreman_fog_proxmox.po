@@ -1,14 +1,14 @@
-# the_foreman_proxmox
+# foreman_fog_proxmox
 #
-# This file is distributed under the same license as the_foreman_proxmox.
+# This file is distributed under the same license as foreman_fog_proxmox.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: version 0.3.5\n"
+"Project-Id-Version: version 0.4.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-08-20 08:46+0100\n"
-"PO-Revision-Date: 2018-07-12 08:46+0100\n"
+"PO-Revision-Date: 2018-07-13 08:23+0100\n"
 "Last-Translator: Foreman Team <foreman-dev@googlegroups.com>\n"
 "Language-Team: Foreman Team <foreman-dev@googlegroups.com>\n"
 "Language: \n"

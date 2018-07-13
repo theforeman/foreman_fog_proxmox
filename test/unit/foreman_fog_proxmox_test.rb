@@ -1,6 +1,6 @@
 require 'test_plugin_helper'
 
-class TheForemanProxmoxTest < ActiveSupport::TestCase
+class ForemanFogProxmoxTest < ActiveSupport::TestCase
   setup do
     User.current = User.find_by login: 'admin'
   end

@@ -2,24 +2,24 @@
 
 # Copyright 2018 Tristan Robert
 
-# This file is part of ForemanProxmox.
+# This file is part of ForemanFogProxmox.
 
-# ForemanProxmox is free software: you can redistribute it and/or modify
+# ForemanFogProxmox is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 
-# ForemanProxmox is distributed in the hope that it will be useful,
+# ForemanFogProxmox is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with ForemanProxmox. If not, see <http://www.gnu.org/licenses/>.
+# along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-module TheForemanProxmox
+module ForemanFogProxmox
   class Engine < ::Rails::Engine
-    engine_name 'the_foreman_proxmox'
+    engine_name 'foreman_fog_proxmox'
 
     config.autoload_paths += Dir["#{config.root}/app/controllers/concerns"]
     config.autoload_paths += Dir["#{config.root}/app/helpers/concerns"]
@@ -27,20 +27,20 @@ module TheForemanProxmox
     config.autoload_paths += Dir["#{config.root}/app/overrides"]
 
     # Add any db migrations
-    initializer 'the_foreman_proxmox.load_app_instance_data' do |app|
-      TheForemanProxmox::Engine.paths['db/migrate'].existent.each do |path|
+    initializer 'foreman_fog_proxmox.load_app_instance_data' do |app|
+      ForemanFogProxmox::Engine.paths['db/migrate'].existent.each do |path|
         app.config.paths['db/migrate'] << path
       end
     end
 
-    initializer 'the_foreman_proxmox.register_plugin', :before => :finisher_hook do |_app|
-      Foreman::Plugin.register :the_foreman_proxmox do
+    initializer 'foreman_fog_proxmox.register_plugin', :before => :finisher_hook do |_app|
+      Foreman::Plugin.register :foreman_fog_proxmox do
         requires_foreman '>= 1.17'
         # Register Proxmox VE compute resource in foreman
-        compute_resource TheForemanProxmox::Proxmox
+        compute_resource ForemanFogProxmox::Proxmox
         parameter_filter(ComputeResource, :uuid)
         # add dashboard widget
-        widget 'the_foreman_proxmox_widget', name: N_('Foreman Proxmox plugin template widget'), sizex: 4, sizey: 1
+        widget 'foreman_fog_proxmox_widget', name: N_('Foreman Proxmox plugin template widget'), sizex: 4, sizey: 1
       end
     end
 
@@ -53,11 +53,11 @@ module TheForemanProxmox
           f.split(File::SEPARATOR, 4).last
         end
       end
-    initializer 'the_foreman_proxmox.assets.precompile' do |app|
+    initializer 'foreman_fog_proxmox.assets.precompile' do |app|
       app.config.assets.precompile += assets_to_precompile
     end
-    initializer 'the_foreman_proxmox.configure_assets', group: :assets do
-      SETTINGS[:the_foreman_proxmox] = { 
+    initializer 'foreman_fog_proxmox.configure_assets', group: :assets do
+      SETTINGS[:foreman_fog_proxmox] = { 
         assets: { 
           precompile: assets_to_precompile 
         } }
@@ -65,13 +65,13 @@ module TheForemanProxmox
 
     rake_tasks do
       Rake::Task['db:seed'].enhance do
-        TheForemanProxmox::Engine.load_seed
+        ForemanFogProxmox::Engine.load_seed
       end
     end
 
-    initializer 'the_foreman_proxmox.register_gettext', after: :load_config_initializers do |_app|
+    initializer 'foreman_fog_proxmox.register_gettext', after: :load_config_initializers do |_app|
       locale_dir = File.join(File.expand_path('../..', __dir__), 'locale')
-      locale_domain = 'the_foreman_proxmox'
+      locale_domain = 'foreman_fog_proxmox'
       Foreman::Gettext::Support.add_text_domain locale_domain, locale_dir
     end
 
@@ -85,7 +85,7 @@ module TheForemanProxmox
       Fog::Compute::Proxmox::ServerConfig.send :include, FogExtensions::Proxmox::ServerConfig
       Fog::Compute::Proxmox::Disk.send :include, FogExtensions::Proxmox::Disk
       Fog::Compute::Proxmox::Volume.send :include, FogExtensions::Proxmox::Volume
-      ::ComputeResourcesController.send :include, TheForemanProxmox::Controller::Parameters::ComputeResource
+      ::ComputeResourcesController.send :include, ForemanFogProxmox::Controller::Parameters::ComputeResource
     end
 
   end

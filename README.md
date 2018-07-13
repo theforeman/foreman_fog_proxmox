@@ -1,10 +1,10 @@
-![ForemanProxmox](.github/images/foremanproxmox.png)
+![ForemanFogProxmox](.github/images/foremanproxmox.png)
 
 [![Build Status](https://travis-ci.com/tristanrobert/foreman_proxmox.svg?branch=master)](https://travis-ci.com/tristanrobert/foreman_proxmox)
 [![Maintainability](https://api.codeclimate.com/v1/badges/922162c278e0fa9207ba/maintainability)](https://codeclimate.com/github/tristanrobert/foreman_proxmox/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/922162c278e0fa9207ba/test_coverage)](https://codeclimate.com/github/tristanrobert/foreman_proxmox/test_coverage)
 
-# ForemanProxmox
+# ForemanFogProxmox
 
 [Foreman](http://theforeman.org/) plugin that adds [Proxmox](https://www.proxmox.com/en/proxmox-ve) compute resource: managing virtual machines and containers using the [fog-proxmox](https://github.com/fog/fog-proxmox) module.
 
@@ -39,7 +39,7 @@ sudo apt install -y foreman foreman-compute foreman-sqlite3 foreman-assets
 * In /usr/share/foreman/bundler.d directory, add Gemfile.local.rb file and add this line in it:
 
 ```shell
-echo "gem 'the_foreman_proxmox'" | sudo -u foreman tee /usr/share/foreman/bundler.d/Gemfile.local.rb
+echo "gem 'foreman_fog_proxmox'" | sudo -u foreman tee /usr/share/foreman/bundler.d/Gemfile.local.rb
 ```
 
 * Install the gem plugin:
@@ -51,7 +51,7 @@ sudo -u foreman /usr/bin/foreman-ruby /usr/bin/bundle install
 * Precompile plugin assets:
 
 ```shell
-/usr/bin/foreman-ruby /usr/bin/bundle exec bin/rake plugin:assets:precompile[the_foreman_proxmox]
+/usr/bin/foreman-ruby /usr/bin/bundle exec bin/rake plugin:assets:precompile[foreman_fog_proxmox]
 ```
 
 * Complete installation of foreman 1.17 with foreman-installer:
@@ -110,7 +110,7 @@ git checkout tags/1.17
 * Add this line:
 
 ```ruby
-gem 'the_foreman_proxmox', :path => '/your_path_to/foreman_proxmox'
+gem 'foreman_fog_proxmox', :path => '/your_path_to/foreman_proxmox'
 ```
 
 * In foreman directory, install dependencies:
@@ -139,10 +139,10 @@ bundle exec rake db:seed
 bundle exec rake permissions:reset
 ```
 
-* In foreman directory, after you modify the_foreman_proxmox specific assets (proxmox.js, etc) you have to precompile it:
+* In foreman directory, after you modify foreman_fog_proxmox specific assets (proxmox.js, etc) you have to precompile it:
 
 ```shell
-bundle plugin:assets:precompile[the_foreman_proxmox]
+bundle plugin:assets:precompile[foreman_fog_proxmox]
 ```
 
 * In foreman directory, run rails server:
@@ -162,7 +162,7 @@ See details in [foreman plugin development](https://projects.theforeman.org/proj
 ## Contributing
 
 You can reach the [contributors](CONTRIBUTORS.md).
-Bug reports and pull requests are welcome on GitHub at [ForemanProxmox](https://github.com/tristanrobert/foreman_proxmox). This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at [ForemanFogProxmox](https://github.com/tristanrobert/foreman_proxmox). This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 Please read [how to contribute](CONTRIBUTING.md).
 

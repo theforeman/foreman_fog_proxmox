@@ -1,6 +1,6 @@
-# the_foreman_proxmox
+# foreman_fog_proxmox
 #
-# This file is distributed under the same license as the_foreman_proxmox.
+# This file is distributed under the same license as foreman_fog_proxmox.
 #
 #, fuzzy
 msgid ""

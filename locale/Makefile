@@ -6,7 +6,7 @@
 # make tx-update - download and merge translations from Transifex
 # make clean - clean everything
 #
-DOMAIN = the_foreman_proxmox
+DOMAIN = foreman_fog_proxmox
 VERSION = $(shell ruby -e 'require "rubygems";spec = Gem::Specification::load(Dir.glob("../*.gemspec")[0]);puts spec.version')
 POTFILE = $(DOMAIN).pot
 MOFILE = $(DOMAIN).mo

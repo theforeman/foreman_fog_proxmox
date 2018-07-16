@@ -108,22 +108,3 @@ function computeControllerMaxDevice(controller){
       break;
   }
 }
-
-function nodeImageStatistics() {
-    $.getJSON({
-      type: 'get',
-      url: '/foreman_fog_proxmox/node/statistics',
-      complete: function(){
-        tfm.tools.hideSpinner();
-      },
-      error: function(j,status,error){
-        console.log("Error=" + error +", status=" + status + " loading isos for storage=" + storage);
-      },
-      success: function(isos) {
-        initOptions('iso');
-        $.each(isos, function(i,iso){
-          $('#host_compute_attributes_config_attributes_cdrom_iso').append($("<option></option>").val(iso.volid).text(iso.volid));
-        });
-      }
-    });
-}

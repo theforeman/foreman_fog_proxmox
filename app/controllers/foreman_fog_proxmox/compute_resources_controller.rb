@@ -31,10 +31,10 @@ module ForemanFogProxmox
 
     # GET foreman_fog_proxmox/node/statistics
     def node_statistics
-      data = @compute_resource.node.statistics('rrd', { timetransfer: 'hour', cf: 'AVERAGE', ds: 'cpu,memused' })
-      respond_to do |format|
-        format.json { render :json => data }
-      end
+      data = @compute_resource.node.statistics('rrd', { timeframe: 'hour', cf: 'AVERAGE', ds: 'cpu,memused' })
+      filename = data['filename'].scan(/.+\/(\w+.[\w]{3})/).first.first
+      img_data = data['image']
+      send_data img_data, filename: filename, type: 'image/png', disposition: 'inline', stream: 'true', buffer_size: '4096'
     end
 
     private

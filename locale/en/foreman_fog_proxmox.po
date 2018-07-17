@@ -1,19 +1,255 @@
-# foreman_fog_proxmox
+# English translations for foreman_fog_proxmox package.
+# Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the foreman_fog_proxmox package.
+# Tristan Robert <tristan.robert.44@gmail.com>, 2018.
 #
-# This file is distributed under the same license as foreman_fog_proxmox.
-#
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: version 0.4.0\n"
+"Project-Id-Version: foreman_fog_proxmox 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-20 08:46+0100\n"
-"PO-Revision-Date: 2018-07-13 08:23+0100\n"
-"Last-Translator: Foreman Team <foreman-dev@googlegroups.com>\n"
-"Language-Team: Foreman Team <foreman-dev@googlegroups.com>\n"
-"Language: \n"
+"PO-Revision-Date: 2018-07-17 15:16+0200\n"
+"Last-Translator: Tristan Robert <tristan.robert.44@gmail.com>\n"
+"Language-Team: English\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"\n"
 
+msgid "%s console is not supported at this time"
+msgstr ""
+
+msgid "Average load (x100)"
+msgstr ""
+
+msgid "Ballooning Device"
+msgstr ""
+
+msgid "Bridge"
+msgstr ""
+
+msgid "CD-ROM"
+msgstr ""
+
+msgid "CPU"
+msgstr ""
+
+msgid "CPU limit"
+msgstr ""
+
+msgid "CPU units"
+msgstr ""
+
+msgid "CPUs"
+msgstr ""
+
+msgid "Cache"
+msgstr ""
+
+msgid "Card"
+msgstr ""
+
+msgid "Config options"
+msgstr ""
+
+msgid "Controller"
+msgstr ""
+
+msgid "Cores"
+msgstr ""
+
+msgid "Create image?"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Device"
+msgstr ""
+
+msgid "Disconnect"
+msgstr ""
+
+msgid "Does this image support user data input (e.g. via cloud-init)?"
+msgstr ""
+
+msgid "Enable NUMA"
+msgstr ""
+
+msgid "Enable/disable KVM hardware virtualization"
+msgstr ""
+
+msgid "Failed retrieving proxmox vm by vmid=%{uuid}"
+msgstr ""
+
+msgid "Firewall"
+msgstr ""
+
+msgid "Foreman Fog Proxmox widget"
+msgstr ""
+
+msgid "ForemanFogProxmox plugin adds Proxmox VE compute resource to Foreman using fog-proxmox gem."
+msgstr ""
+
+msgid "General"
+msgstr ""
+
+msgid "Identifier interface[%{index}] required."
+msgstr ""
+
+msgid "Image"
+msgstr ""
+
+msgid "Image ISO"
+msgstr ""
+
+msgid "Image VMID"
+msgstr ""
+
+msgid "Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0"
+msgstr ""
+
+msgid "KVM"
+msgstr ""
+
+msgid "Keyboard"
+msgstr ""
+
+msgid "Memory"
+msgstr ""
+
+msgid "Minimum memory"
+msgstr ""
+
+msgid "Multiqueue"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Node"
+msgstr ""
+
+msgid "None"
+msgstr ""
+
+msgid "OS type"
+msgstr ""
+
+msgid "Operating System"
+msgstr ""
+
+msgid "Operating system family %{type} is not consistent with %{ostype}"
+msgstr ""
+
+msgid "Optionally provide a CA, or a correctly ordered CA chain. If left blank, disable ssl_verify_peer."
+msgstr ""
+
+msgid "PCID"
+msgstr ""
+
+msgid "Password to authenticate with - used for SSH finish step."
+msgstr ""
+
+msgid "Physical"
+msgstr ""
+
+msgid "Power"
+msgstr ""
+
+msgid "Proxmox Node Statistics: %s"
+msgstr ""
+
+msgid "Qemu Agent"
+msgstr ""
+
+msgid "Rate limit"
+msgstr ""
+
+msgid "SSL verify peer"
+msgstr ""
+
+msgid "Shares"
+msgstr ""
+
+msgid "Size"
+msgstr ""
+
+msgid "Sockets"
+msgstr ""
+
+msgid "Spectre-CTRL"
+msgstr ""
+
+msgid "Start at boot"
+msgstr ""
+
+msgid "Start/Shutdown order"
+msgstr ""
+
+msgid "Storage"
+msgstr ""
+
+msgid "Test failed"
+msgstr ""
+
+msgid "The user that is used to ssh into the instance, normally cloud-user, ubuntu, root etc"
+msgstr ""
+
+msgid "Time"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "URL"
+msgstr ""
+
+msgid "Unable to store X509 certificates"
+msgstr ""
+
+msgid "Uptime"
+msgstr ""
+
+msgid "VCPUs"
+msgstr ""
+
+msgid "VGA"
+msgstr ""
+
+msgid "VLAN tag"
+msgstr ""
+
+msgid "VM ID"
+msgstr ""
+
+msgid "X509 Certification Authorities"
+msgstr ""
+
+msgid "create_vm(): %{args}"
+msgstr ""
+
+msgid "create_vm(): clone %{image_id} in %{vmid}"
+msgstr ""
+
+msgid "e.g. https://127.0.0.1:8006/api2/json"
+msgstr ""
+
+msgid "e.g. root@pam"
+msgstr ""
+
+msgid "failed to create vm: %{e}"
+msgstr ""
+
+msgid "invalid vmid=%{vmid}"
+msgstr ""
+
+msgid "new_vm() vm.config=%{config}"
+msgstr ""
+
+msgid "save_vm(): %{attr}"
+msgstr ""
+
+msgid "vmid of template vm."
+msgstr ""

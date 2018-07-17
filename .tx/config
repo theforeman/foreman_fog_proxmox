@@ -1,0 +1,8 @@
+[main]
+host = https://www.transifex.com
+
+[foremanfogproxmox.foremanfogproxmox]
+file_filter = locale/<lang>/foreman_fog_proxmox.edit.po
+source_file = locale/foreman_fog_proxmox.pot
+source_lang = en
+type = PO

@@ -110,14 +110,14 @@ module ForemanFogProxmox
     def host_compute_attrs(host)
       super.tap do |attrs|
         ostype = host.compute_attributes['config_attributes']['ostype']
-        raise Foreman::Exception.new("Operating system family #{host.operatingsystem.type} is not consistent with #{ostype}") unless compute_os_types(host).include?(ostype)
+        raise Foreman::Exception.new(N_("Operating system family %{type} is not consistent with %{ostype}", { type: host.operatingsystem.type, ostype: ostype })) unless compute_os_types(host).include?(ostype)
       end
     end
 
     def host_interfaces_attrs(host)
       host.interfaces.select(&:physical?).each.with_index.reduce({}) do |hash, (nic, index)|
-        raise ::Foreman::Exception.new N_("Identifier interface[#{index}] required.") if nic.identifier.empty?
-        raise ::Foreman::Exception.new N_("Invalid identifier interface[#{index}]. Must be net[n] with n integer >= 0") unless Fog::Proxmox::ControllerHelper.valid?(Fog::Compute::Proxmox::Interface::NAME,nic.identifier)
+        raise ::Foreman::Exception.new N_("Identifier interface[%{index}] required.", { index: index }) if nic.identifier.empty?
+        raise ::Foreman::Exception.new N_("Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0", { index: index }) unless Fog::Proxmox::ControllerHelper.valid?(Fog::Compute::Proxmox::Interface::NAME,nic.identifier)
         hash.merge(index.to_s => nic.compute_attributes.merge(id: nic.identifier, ip: nic.ip, ip6: nic.ip6))
       end
     end
@@ -159,28 +159,28 @@ module ForemanFogProxmox
 
     def new_vm(attr = {})
       vm = node.servers.new(vm_instance_defaults.merge(parse_vm(attr)))
-      logger.debug("new_vm() vm.config=#{vm.config.inspect}")
+      logger.debug(N_("new_vm() vm.config=%{config}", { config: vm.config.inspect } ))
       vm
     end
 
     def create_vm(args = {})
       vmid = args[:vmid]
-      raise ::Foreman::Exception.new N_("invalid vmid=#{vmid}") unless node.servers.id_valid?(vmid)
+      raise ::Foreman::Exception.new N_("invalid vmid=%{vmid}", { vmid: vmid }) unless node.servers.id_valid?(vmid)
       image_id = args[:image_id]
       node = get_cluster_node args
       if image_id
-        logger.debug("create_vm(): clone #{image_id} in #{vmid}")
+        logger.debug(N_("create_vm(): clone %{image_id} in %{vmid}", { image_id: image_id, vmid: vmid }))
         image = node.servers.get image_id
         image.clone(vmid)
       else
-        logger.debug("create_vm(): #{args}")
+        logger.debug(N_("create_vm(): %{args}", { args: args }))
         convert_sizes(args)
         node.servers.create(parse_vm(args))
       end
       vm = find_vm_by_uuid(vmid)
       vm
     rescue => e
-      logger.warn "failed to create vm: #{e}"
+      logger.warn N_("failed to create vm: %{e}", { e: e })
       destroy_vm vm.id if vm
       raise e
     end
@@ -188,7 +188,7 @@ module ForemanFogProxmox
     def find_vm_by_uuid(uuid)
       node.servers.get(uuid)
     rescue Fog::Errors::Error => e
-      Foreman::Logging.exception("Failed retrieving proxmox vm by vmid=#{uuid}", e)
+      Foreman::Logging.exception(N_("Failed retrieving proxmox vm by vmid=%{uuid}", { uuid: uuid }), e)
       raise(ActiveRecord::RecordNotFound)
     end
 
@@ -224,7 +224,7 @@ module ForemanFogProxmox
 
     def save_vm(uuid, attr)
       vm = find_vm_by_uuid(uuid)
-      logger.debug("save_vm(): #{attr}")
+      logger.debug(N_("save_vm(): %{attr}", { attr: attr }))
       templated = attr[:templated]
       if (templated == '1' && !vm.templated?)
         vm.template
@@ -285,7 +285,7 @@ module ForemanFogProxmox
         vnc_console = vm.start_console(websocket: 1)  
         WsProxy.start(:host => host, :host_port => vnc_console['port'], :password => vnc_console['ticket']).merge(:name => vm.name, :type => vm.config.type_console)
       else
-        raise ::Foreman::Exception.new(N_("%s console is not supported at this time"), vm.config.type_console)
+        raise ::Foreman::Exception.new(N_("%s console is not supported at this time", vm.config.type_console))
       end
     end
 

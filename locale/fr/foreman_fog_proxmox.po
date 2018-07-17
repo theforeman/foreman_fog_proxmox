@@ -1,19 +1,255 @@
-# foreman_fog_proxmox
+# French translations for foreman_fog_proxmox package.
+# Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the foreman_fog_proxmox package.
+# Tristan Robert <tristan.robert.44@gmail.com>, 2018.
 #
-# This file is distributed under the same license as foreman_fog_proxmox.
-#
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: version 0.4.0\n"
+"Project-Id-Version: foreman_fog_proxmox 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-20 08:46+0100\n"
-"PO-Revision-Date: 2018-07-13 08:23+0100\n"
-"Last-Translator: Foreman Team <foreman-dev@googlegroups.com>\n"
-"Language-Team: Foreman Team <foreman-dev@googlegroups.com>\n"
-"Language: \n"
+"PO-Revision-Date: 2018-07-17 15:16+0200\n"
+"Last-Translator: Tristan Robert <tristan.robert.44@gmail.com>\n"
+"Language-Team: French\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n>1;\n"
+"\n"
 
+msgid "%s console is not supported at this time"
+msgstr "%s console pas encore supportée"
+
+msgid "Average load (x100)"
+msgstr "Charge moyenne du serveur (x100)"
+
+msgid "Ballooning Device"
+msgstr "Périphérique à gonflement"
+
+msgid "Bridge"
+msgstr "Pont"
+
+msgid "CD-ROM"
+msgstr ""
+
+msgid "CPU"
+msgstr ""
+
+msgid "CPU limit"
+msgstr "Limite CPU"
+
+msgid "CPU units"
+msgstr "Unités CPU"
+
+msgid "CPUs"
+msgstr ""
+
+msgid "Cache"
+msgstr ""
+
+msgid "Card"
+msgstr "Carte"
+
+msgid "Config options"
+msgstr "Options de configuration"
+
+msgid "Controller"
+msgstr "Contrôleur"
+
+msgid "Cores"
+msgstr "Coeurs"
+
+msgid "Create image?"
+msgstr "Créer image?"
+
+msgid "Description"
+msgstr ""
+
+msgid "Device"
+msgstr "Périphérque"
+
+msgid "Disconnect"
+msgstr "Se déconnecter"
+
+msgid "Does this image support user data input (e.g. via cloud-init)?"
+msgstr "Cette immage gère-t-elle les données utilisateurs (par exemple via cloud-init)?"
+
+msgid "Enable NUMA"
+msgstr "Activer NUMA"
+
+msgid "Enable/disable KVM hardware virtualization"
+msgstr "Activer/désactiver la virtualisation matérielle de KVM"
+
+msgid "Failed retrieving proxmox vm by vmid=%{uuid}"
+msgstr "Echec de la récupération dans proxmox de la vm avec vmid=%{uuid}"
+
+msgid "Firewall"
+msgstr "Pare-feu"
+
+msgid "Foreman Fog Proxmox widget"
+msgstr ""
+
+msgid "ForemanFogProxmox plugin adds Proxmox VE compute resource to Foreman using fog-proxmox gem."
+msgstr "Le plugin ForemanFogProxmox ajoute la ressource de calcul Proxmox VE à foreman en utilisant le gem fog-proxmox"
+
+msgid "General"
+msgstr "Général"
+
+msgid "Identifier interface[%{index}] required."
+msgstr "L'identifiant de interface[%{index}] est obligatoire."
+
+msgid "Image"
+msgstr ""
+
+msgid "Image ISO"
+msgstr ""
+
+msgid "Image VMID"
+msgstr ""
+
+msgid "Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0"
+msgstr "L'identifiant de interface[%{index}] est incorrect. La syntaxe correcte est net[n] avec n un entier naturel positif"
+
+msgid "KVM"
+msgstr ""
+
+msgid "Keyboard"
+msgstr "Clavier"
+
+msgid "Memory"
+msgstr "Mémoire"
+
+msgid "Minimum memory"
+msgstr "Mémoire minimale"
+
+msgid "Multiqueue"
+msgstr ""
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "Node"
+msgstr "Noeud"
+
+msgid "None"
+msgstr "Aucun"
+
+msgid "OS type"
+msgstr "Type de système d'exploitation"
+
+msgid "Operating System"
+msgstr "Système d'exploitation"
+
+msgid "Operating system family %{type} is not consistent with %{ostype}"
+msgstr ""
+
+msgid "Optionally provide a CA, or a correctly ordered CA chain. If left blank, disable ssl_verify_peer."
+msgstr "Vous pouvez éventuellement fournir un certificat ou une chaîne de certificats. Si non renseigné, alors désactivez ssl_verify_peer."
+
+msgid "PCID"
+msgstr ""
+
+msgid "Password to authenticate with - used for SSH finish step."
+msgstr "Mot de passe d'authentification - utilisé dans la dernière phase avec SSH."
+
+msgid "Physical"
+msgstr "Physique"
+
+msgid "Power"
+msgstr "Alimentation"
+
+msgid "Proxmox Node Statistics: %s"
+msgstr "Statistiques du noeud Proxmox: %s"
+
+msgid "Qemu Agent"
+msgstr "Agent Qemu"
+
+msgid "Rate limit"
+msgstr "Taux limite"
+
+msgid "SSL verify peer"
+msgstr ""
+
+msgid "Shares"
+msgstr "Partages"
+
+msgid "Size"
+msgstr "Taille"
+
+msgid "Sockets"
+msgstr ""
+
+msgid "Spectre-CTRL"
+msgstr ""
+
+msgid "Start at boot"
+msgstr "Démarrer au boot"
+
+msgid "Start/Shutdown order"
+msgstr "Ordre au démarrage/arrêt"
+
+msgid "Storage"
+msgstr "Stockage"
+
+msgid "Test failed"
+msgstr "Le test a échoué"
+
+msgid "The user that is used to ssh into the instance, normally cloud-user, ubuntu, root etc"
+msgstr "Le compte utilisé pour SSH, en général compte cloud, ubuntu ou root, etc"
+
+msgid "Time"
+msgstr "Temps"
+
+msgid "Type"
+msgstr ""
+
+msgid "URL"
+msgstr ""
+
+msgid "Unable to store X509 certificates"
+msgstr "Impossible d'enregistrer les certificats X509"
+
+msgid "Uptime"
+msgstr "En marche depuis (s)"
+
+msgid "VCPUs"
+msgstr ""
+
+msgid "VGA"
+msgstr ""
+
+msgid "VLAN tag"
+msgstr "Etiquette VLAN"
+
+msgid "VM ID"
+msgstr ""
+
+msgid "X509 Certification Authorities"
+msgstr "Autorités de certification X509"
+
+msgid "create_vm(): %{args}"
+msgstr ""
+
+msgid "create_vm(): clone %{image_id} in %{vmid}"
+msgstr ""
+
+msgid "e.g. https://127.0.0.1:8006/api2/json"
+msgstr "par exemple https://127.0.0.1:8006/api2/json"
+
+msgid "e.g. root@pam"
+msgstr "par exemple root@pam"
+
+msgid "failed to create vm: %{e}"
+msgstr "échec à la création de la VM: %{e}"
+
+msgid "invalid vmid=%{vmid}"
+msgstr "vmid=%{vmid} incorrect"
+
+msgid "new_vm() vm.config=%{config}"
+msgstr ""
+
+msgid "save_vm(): %{attr}"
+msgstr ""
+
+msgid "vmid of template vm."
+msgstr "vmid de la VM modèle."

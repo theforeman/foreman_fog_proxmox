@@ -17,5 +17,5 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <% data = ForemanFogProxmox::NodeDashboard::Data.new() %>
 <% node = data.node.to_s %>
-<h4 class="header ca"><%= _("Proxmox Node (#{node}) Statistics") %></h4>
+<h4 class="header ca"><%= _("Proxmox Node Statistics: %s") % node %></h4>
 <%= render_node_statistics(data.statistics, :class => 'statistics-bar') %>

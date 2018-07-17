@@ -40,7 +40,7 @@ module ForemanFogProxmox
         compute_resource ForemanFogProxmox::Proxmox
         parameter_filter(ComputeResource, :uuid)
         # add dashboard widget
-        widget 'foreman_fog_proxmox_widget', name: N_('Foreman Fog Proxmox widget'), sizex: 4, sizey: 1
+        widget 'foreman_fog_proxmox_widget', name: N_('Foreman Fog Proxmox widget'), sizex: 8, sizey: 1
       end
     end
 

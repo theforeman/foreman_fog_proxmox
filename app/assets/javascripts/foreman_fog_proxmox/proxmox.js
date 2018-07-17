@@ -108,3 +108,20 @@ function computeControllerMaxDevice(controller){
       break;
   }
 }
+
+function showNodeStatistics(){
+  tfm.tools.showSpinner();
+  $.getJSON({
+    type: 'get',
+    url: '/foreman_fog_proxmox/node/statistics',
+    complete: function(){
+      tfm.tools.hideSpinner();
+    },
+    error: function(j,status,error){
+      console.log("Error=" + error +", status=" + status + " loading rrd node");
+    },
+    success: function(image) {      
+      $('#node_statistics').attr('src','data:image/png;base64,'+image['data']).attr('alt',image['filename']);
+    }
+  });
+}

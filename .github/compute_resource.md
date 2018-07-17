@@ -23,6 +23,10 @@ You can see it in about page:
 
 ![About compute](images/about_compute.png)
 
+You can see in welcome page this widget which shows node average load through time:
+
+![Widget](images/widget_node_loadavg.png)
+
 ## Host group, profiles
 
 To ease hosts management you can create a host group.

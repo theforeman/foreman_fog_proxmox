@@ -108,3 +108,13 @@ function computeControllerMaxDevice(controller){
       break;
   }
 }
+
+function sslVerifyPeerSelected(item){
+  var selected = $(item).is(':checked');
+  var ssl_certs_form = $('#compute_resource_ssl_certs').parents('.clearfix');
+  if (selected) {
+    ssl_certs_form.show();
+  } else {
+    ssl_certs_form.hide();
+  }
+}

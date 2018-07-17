@@ -15,10 +15,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
+<%= javascript_include_tag 'foreman_fog_proxmox/proxmox' %>
+
 <% node = f.object.node rescue nil %>
 <%= text_f f, :url, :help_block => _("e.g. https://127.0.0.1:8006/api2/json"), :help_inline_permanent => load_button_f(f, !!node, _("Test failed")) %>
 <%= text_f f, :user , :help_block => _("e.g. root@pam") %>
 <%= password_f f, :password, :keep_value => true, :unset => unset_password? %>
-<%= checkbox_f f, :ssl_verify_peer, :label => _("SSL verify peer") %>
+<%= checkbox_f f, :ssl_verify_peer, :label => _("SSL verify peer"), :onchange => 'sslVerifyPeerSelected(this)' %>
 <%= textarea_f f, :ssl_certs, :label => _("X509 Certification Authorities"), :size => "col-md-8",
   :placeholder => _("Optionally provide a CA, or a correctly ordered CA chain. If left blank, disable ssl_verify_peer.") %>

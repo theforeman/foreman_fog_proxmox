@@ -110,7 +110,7 @@ git checkout tags/1.17
 * Add this line:
 
 ```ruby
-gem 'foreman_fog_proxmox', :path => '/your_path_to/foreman_proxmox'
+gem 'foreman_fog_proxmox', :path => '/your_path_to/foreman_fog_proxmox'
 ```
 
 * In foreman directory, install dependencies:

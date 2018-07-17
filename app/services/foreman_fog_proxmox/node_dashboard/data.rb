@@ -1,3 +1,4 @@
+
 # frozen_string_literal: true
 
 # Copyright 2018 Tristan Robert
@@ -17,8 +18,20 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-Rails.application.routes.draw do
-    namespace :foreman_fog_proxmox do
-        match 'isos/:storage', :to => 'compute_resources#isos', :via => 'get'
+module ForemanFogProxmox::NodeDashboard
+    class Data
+
+        def initialize(filter="")
+            @filter = filter
+        end
+
+        def node
+            @compute_resource = ComputeResource.find_by(type: 'ForemanFogProxmox::Proxmox')
+            @compute_resource.node
+        end
+
+        def statistics            
+            node.statistics('rrddata', { timeframe: 'hour', cf: 'AVERAGE' })
+        end
     end
 end

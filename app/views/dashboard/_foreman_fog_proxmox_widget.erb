@@ -15,11 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-<h4 class="header ca"><%= _('Proxmox Node Statistics') %></h4>
-<%= javascript_include_tag "foreman_fog_proxmox/proxmox" %>
-<script type="text/javascript">
-$(function() {
-    showNodeStatistics();
-});
-</script>
-<img id="node_statistics" />
+<% data = ForemanFogProxmox::NodeDashboard::Data.new() %>
+<% node = data.node.to_s %>
+<h4 class="header ca"><%= _("Proxmox Node (#{node}) Statistics") %></h4>
+<%= render_node_statistics(data.statistics, :class => 'statistics-bar') %>

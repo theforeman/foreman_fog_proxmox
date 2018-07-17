@@ -29,17 +29,6 @@ module ForemanFogProxmox
       end
     end
 
-    # GET foreman_fog_proxmox/node/statistics
-    def node_statistics
-      data = @compute_resource.node.statistics('rrd', { timeframe: 'hour', cf: 'AVERAGE', ds: 'loadavg' })
-      filename = data['filename'].scan(/.+\/(\w+.[\w]{3})/).first.first
-      img_data = Base64.encode64(data['image'])
-      image = { filename: filename, data: img_data }
-      respond_to do |format|
-        format.json { render :json => image }
-      end
-    end
-
     private
 
     def load_compute_resource

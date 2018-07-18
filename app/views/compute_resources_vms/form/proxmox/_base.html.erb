@@ -19,7 +19,7 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <!-- VM General Settings -->
 <%= field_set_tag _("General"), :id => "general" do %>
-  <%= checkbox_f f, :templated, :label => _('Create image?'), :disabled => new_vm || f.object.templated? %>
+  <%= checkbox_f f, :templated, :label => _('Create image?'), :disabled => new_vm || f.object.templated?, :class => 'hide' if new_vm || f.object.templated? %>
   <%= counter_f f, :vmid, :label => _('VM ID'), :label_size => "col-md-2", :required => true, :disabled => !new_vm %>
   <%= select_f f, :node, compute_resource.nodes, :node, :node, { }, :label => _('Node'), :label_size => "col-md-2", :required => true, :disabled => !new_vm %>
   <% unless local_assigns[:hide_image] && !new_vm %>
@@ -35,6 +35,19 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
       :label_size => "col-md-2" %>
     </div>
   <% end %>
+<% end %>
+
+<%= field_set_tag _("Advanced options"), :id => "advanced_options" do %>
+  <%= label_tag 'show_config_options', _("Main") %>
+  <%= check_box_tag 'show_config_options', '1', false, :onclick => "dropDown('#config_options')" %>
+  <%= label_tag 'show_cpu', _("CPU") %>
+  <%= check_box_tag 'show_cpu', '1', false, :onclick => "dropDown('#cpu')" %>
+  <%= label_tag 'show_memory', _("Memory") %>
+  <%= check_box_tag 'show_memory', '1', false, :onclick => "dropDown('#memory')" %>
+  <%= label_tag 'show_cdrom', _("CDROM") %>
+  <%= check_box_tag 'show_cdrom', '1', false, :onclick => "dropDown('#cdrom')" %>
+  <%= label_tag 'show_config_os', _("OS") %>
+  <%= check_box_tag 'show_config_os', '1', false, :onclick => "dropDown('#config_os')" %>
 <% end %>
 
 <!-- Config -->

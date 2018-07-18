@@ -17,6 +17,16 @@
 
 $(document).on('ContentLoad', tfm.numFields.initAll);
 
+function dropDown(id){
+  var item = $(id);
+  var hidden = item.css('display') == 'none';
+  if (hidden) {
+    item.show();
+  } else {
+    item.hide();
+  }
+}
+
 function cdromSelected(item) {
   var selected = $(item).val();
   var cdrom_image_form = $('#cdrom_image_form');

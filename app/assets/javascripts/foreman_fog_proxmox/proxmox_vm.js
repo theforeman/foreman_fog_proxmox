@@ -15,6 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
+$(document).on('ContentLoad', tfm.numFields.initAll);
+
 function cdromSelected(item) {
   var selected = $(item).val();
   var cdrom_image_form = $('#cdrom_image_form');
@@ -106,15 +108,5 @@ function computeControllerMaxDevice(controller){
     default:
       return 1;
       break;
-  }
-}
-
-function sslVerifyPeerSelected(item){
-  var selected = $(item).is(':checked');
-  var ssl_certs_form = $('#compute_resource_ssl_certs').parents('.clearfix');
-  if (selected) {
-    ssl_certs_form.show();
-  } else {
-    ssl_certs_form.hide();
   }
 }

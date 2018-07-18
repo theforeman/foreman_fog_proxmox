@@ -50,7 +50,7 @@ module ForemanFogProxmox
     # content twice.
     assets_to_precompile =
       Dir.chdir(root) do
-        Dir['app/assets/javascripts/**/*', 'app/assets/stylesheets/**/*'].map do |f|
+        Dir['app/assets/javascripts/foreman_fog_proxmox/**/*', 'app/assets/stylesheets/foreman_fog_proxmox/**/*'].map do |f|
           f.split(File::SEPARATOR, 4).last
         end
       end

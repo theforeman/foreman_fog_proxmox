@@ -15,9 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-<%= javascript_include_tag 'foreman_fog_proxmox/proxmox' %>
-
-<%= javascript_tag("$(document).on('ContentLoad', tfm.numFields.initAll)"); %>
+<%= javascript_include_tag 'foreman_fog_proxmox/proxmox_vm', "data-turbolinks-track" => true %>
 
 <!-- VM General Settings -->
 <%= field_set_tag _("General"), :id => "general" do %>

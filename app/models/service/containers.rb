@@ -17,10 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-Rails.application.routes.draw do
-    namespace :foreman_fog_proxmox do
-        match 'isos/:storage', :to => 'compute_resources#isos', :via => 'get'
-        match 'containers', :to => 'containers#index', :via => 'get'
-        match 'containers/new', :to => 'containers#new', :via => 'get'
+module Service
+  class Containers
+    def create_container!(attributes)
+      ActiveRecord::Base.transaction do
+        container = Container.new(attributes)
+        container.save!
+        container
+      end
     end
+  end
 end

@@ -17,10 +17,22 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-Rails.application.routes.draw do
-    namespace :foreman_fog_proxmox do
-        match 'isos/:storage', :to => 'compute_resources#isos', :via => 'get'
-        match 'containers', :to => 'containers#index', :via => 'get'
-        match 'containers/new', :to => 'containers#new', :via => 'get'
+module ForemanFogProxmox
+  class ContainersController < ::ApplicationController
+    before_action :load_compute_resource
+
+    def new
+      redirect_to_new_container_path
     end
+
+    def index
+      redirect_to_new_container_path
+    end
+
+    private
+
+    def load_compute_resource
+      @compute_resource = ComputeResource.find_by(type: 'ForemanFogProxmox::Proxmox')
+    end
+  end
 end

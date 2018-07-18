@@ -17,10 +17,20 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-Rails.application.routes.draw do
-    namespace :foreman_fog_proxmox do
-        match 'isos/:storage', :to => 'compute_resources#isos', :via => 'get'
-        match 'containers', :to => 'containers#index', :via => 'get'
-        match 'containers/new', :to => 'containers#new', :via => 'get'
+require 'fog/proxmox'
+
+module ForemanFogProxmox
+    class Container < ActiveRecord::Base
+        include Taxonomix
+        include Authorizable
+        belongs_to :compute_resource
+        validates :name, :uniqueness => { :scope => :compute_resource_id }
+        scoped_search :on => :name
+        def in_fog
+            @fog_container ||= compute_resource.containers.get(uuid)
+        end
+        def self.humanize_class_name(_name = nil)
+            _("Container")
+        end
     end
 end

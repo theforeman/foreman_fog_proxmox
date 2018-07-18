@@ -163,6 +163,12 @@ module ForemanFogProxmox
       vm
     end
 
+    def new_container(attr = {})
+      vm = node.containers.new(container_instance_defaults.merge(parse_container(attr)))
+      logger.debug(_("new_container() container.config=%{config}") % { config: container.config.inspect })
+      vm
+    end
+
     def create_vm(args = {})
       vmid = args[:vmid]
       raise ::Foreman::Exception.new N_("invalid vmid=%{vmid}", { vmid: vmid }) unless node.servers.id_valid?(vmid)

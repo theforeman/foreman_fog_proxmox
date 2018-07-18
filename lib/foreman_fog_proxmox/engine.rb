@@ -42,6 +42,17 @@ module ForemanFogProxmox
         parameter_filter(ComputeResource, :uuid)
         # add dashboard widget
         widget 'foreman_fog_proxmox_widget', name: N_('Foreman Fog Proxmox widget'), sizex: 8, sizey: 1
+        # add containers menu
+        sub_menu :top_menu, :containers_menu, :caption => N_('Containers'), :icon => 'fa fa-cube', :after => :monitor_menu do
+          menu :top_menu, :containers, :caption => N_('All Containers'), :url_hash => { :controller => 'foreman_fog_proxmox/containers', :action => :index }
+          menu :top_menu, :new_container, :caption => N_('Create Container'), :url_hash => { :controller => 'foreman_fog_proxmox/containers', :action => :new }
+        end
+        security_block :containers do |map|
+          permission :create_containers, {:'foreman_fog_proxmox/containers' => [:new, :create]}, :resource_type => "ForemanFogProxmox::Container"
+          permission :view_containers, {:'foreman_fog_proxmox/containers' => [:index, :show, :auto_complete_search]}, :resource_type => "ForemanFogProxmox::Container"
+          permission :edit_containers, {:'foreman_fog_proxmox/containers' => [:update, :edit]},:resource_type => "ForemanFogProxmox::Container"
+          permission :destroy_containers, {:'foreman_fog_proxmox/containers' => [:destroy]}, :resource_type => "ForemanFogProxmox::Container"
+        end
       end
     end
 

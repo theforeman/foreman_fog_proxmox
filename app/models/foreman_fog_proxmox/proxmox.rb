@@ -224,7 +224,7 @@ module ForemanFogProxmox
 
     def save_vm(uuid, attr)
       vm = find_vm_by_uuid(uuid)
-      logger.debug(N_("save_vm(): %{attr}", { attr: attr }))
+      logger.debug(N_("save_vm(): %{attr}") % { attr: attr })
       templated = attr[:templated]
       if (templated == '1' && !vm.templated?)
         vm.template

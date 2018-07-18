@@ -6,6 +6,28 @@ VM Proxmox config tab:
 
 ![Create host](images/create_host.png)
 
+Advanced options could also be modified in VM Proxmox config tab.
+
+Main options:
+
+![Create host](images/create_host_advanced_main_options.png)
+
+CPU options:
+
+![Create host](images/create_host_advanced_cpu.png)
+
+Memory options:
+
+![Create host](images/create_host_advanced_memory.png)
+
+CDROM options:
+
+![Create host](images/create_host_advanced_cdrom.png)
+
+OS options:
+
+![Create host](images/create_host_advanced_os.png)
+
 OS tab with build from network (default):
 
 ![Build from network](images/create_host_os_network.png)

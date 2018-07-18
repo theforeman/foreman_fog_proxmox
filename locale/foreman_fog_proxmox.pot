@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: foreman_fog_proxmox 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-17 16:02+0200\n"
-"PO-Revision-Date: 2018-07-17 16:02+0200\n"
+"POT-Creation-Date: 2018-07-18 13:41+0200\n"
+"PO-Revision-Date: 2018-07-18 13:41+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -74,27 +74,27 @@ msgstr ""
 msgid "%s console is not supported at this time"
 msgstr ""
 
-#: ../app/views/compute_resources/form/_proxmox.html.erb:4
+#: ../app/views/compute_resources/form/_proxmox.html.erb:6
 msgid "e.g. https://127.0.0.1:8006/api2/json"
 msgstr ""
 
-#: ../app/views/compute_resources/form/_proxmox.html.erb:4
+#: ../app/views/compute_resources/form/_proxmox.html.erb:6
 msgid "Test failed"
 msgstr ""
 
-#: ../app/views/compute_resources/form/_proxmox.html.erb:5
+#: ../app/views/compute_resources/form/_proxmox.html.erb:7
 msgid "e.g. root@pam"
 msgstr ""
 
-#: ../app/views/compute_resources/form/_proxmox.html.erb:7
+#: ../app/views/compute_resources/form/_proxmox.html.erb:9
 msgid "SSL verify peer"
 msgstr ""
 
-#: ../app/views/compute_resources/form/_proxmox.html.erb:8
+#: ../app/views/compute_resources/form/_proxmox.html.erb:10
 msgid "X509 Certification Authorities"
 msgstr ""
 
-#: ../app/views/compute_resources/form/_proxmox.html.erb:9
+#: ../app/views/compute_resources/form/_proxmox.html.erb:11
 msgid ""
 "Optionally provide a CA, or a correctly ordered CA chain. If left blank, disab"
 "le ssl_verify_peer."
@@ -104,25 +104,53 @@ msgstr ""
 msgid "URL"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:8
+#: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:6
 msgid "General"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:9
+#: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:7
 msgid "Create image?"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:10
+#: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:8
 msgid "VM ID"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:11
+#: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:9
 msgid "Node"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:21
+#: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:19
 #: ../app/views/compute_resources_vms/form/proxmox/_config.html.erb:32
 msgid "Image"
+msgstr ""
+
+#: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:25
+msgid "Advanced options"
+msgstr ""
+
+#: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:26
+msgid "Main"
+msgstr ""
+
+#: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:28
+#: ../app/views/compute_resources_vms/form/proxmox/_config.html.erb:12
+msgid "CPU"
+msgstr ""
+
+#: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:30
+#: ../app/views/compute_resources_vms/form/proxmox/_config.html.erb:23
+#: ../app/views/compute_resources_vms/form/proxmox/_config.html.erb:24
+#: ../app/views/compute_resources_vms/index/_proxmox.html.erb:8
+msgid "Memory"
+msgstr ""
+
+#: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:32
+msgid "CDROM"
+msgstr ""
+
+#: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:34
+msgid "OS"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/_config.html.erb:3
@@ -161,10 +189,6 @@ msgstr ""
 msgid "VGA"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_config.html.erb:12
-msgid "CPU"
-msgstr ""
-
 #: ../app/views/compute_resources_vms/form/proxmox/_config.html.erb:13
 msgid "Type"
 msgstr ""
@@ -199,12 +223,6 @@ msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/_config.html.erb:21
 msgid "Spectre-CTRL"
-msgstr ""
-
-#: ../app/views/compute_resources_vms/form/proxmox/_config.html.erb:23
-#: ../app/views/compute_resources_vms/form/proxmox/_config.html.erb:24
-#: ../app/views/compute_resources_vms/index/_proxmox.html.erb:8
-msgid "Memory"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/_config.html.erb:25
@@ -312,25 +330,25 @@ msgstr ""
 msgid "Proxmox Node Statistics: %s"
 msgstr ""
 
-#: ../app/views/images/form/_proxmox.html.erb:1
+#: ../app/views/images/form/_proxmox.html.erb:3
 msgid ""
 "The user that is used to ssh into the instance, normally cloud-user, ubuntu, r"
 "oot etc"
 msgstr ""
 
-#: ../app/views/images/form/_proxmox.html.erb:2
+#: ../app/views/images/form/_proxmox.html.erb:4
 msgid "Password to authenticate with - used for SSH finish step."
 msgstr ""
 
-#: ../app/views/images/form/_proxmox.html.erb:3
+#: ../app/views/images/form/_proxmox.html.erb:5
 msgid "Does this image support user data input (e.g. via cloud-init)?"
 msgstr ""
 
-#: ../app/views/images/form/_proxmox.html.erb:4
+#: ../app/views/images/form/_proxmox.html.erb:6
 msgid "Image VMID"
 msgstr ""
 
-#: ../app/views/images/form/_proxmox.html.erb:4
+#: ../app/views/images/form/_proxmox.html.erb:6
 msgid "vmid of template vm."
 msgstr ""
 

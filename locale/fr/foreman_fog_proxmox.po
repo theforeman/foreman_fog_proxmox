@@ -20,6 +20,9 @@ msgstr ""
 msgid "%s console is not supported at this time"
 msgstr "%s console pas encore supportée"
 
+msgid "Advanced options"
+msgstr "Options avancées"
+
 msgid "Average load (x100)"
 msgstr "Charge moyenne du serveur (x100)"
 
@@ -30,6 +33,9 @@ msgid "Bridge"
 msgstr "Pont"
 
 msgid "CD-ROM"
+msgstr ""
+
+msgid "CDROM"
 msgstr ""
 
 msgid "CPU"
@@ -116,6 +122,9 @@ msgstr ""
 msgid "Keyboard"
 msgstr "Clavier"
 
+msgid "Main"
+msgstr ""
+
 msgid "Memory"
 msgstr "Mémoire"
 
@@ -134,6 +143,9 @@ msgstr "Noeud"
 msgid "None"
 msgstr "Aucun"
 
+msgid "OS"
+msgstr "Système d'exploitation"
+
 msgid "OS type"
 msgstr "Type de système d'exploitation"
 
@@ -141,7 +153,7 @@ msgid "Operating System"
 msgstr "Système d'exploitation"
 
 msgid "Operating system family %{type} is not consistent with %{ostype}"
-msgstr ""
+msgstr "La famille %{type} du système d'exploitation n'est pas cohérente avec %{ostype}"
 
 msgid "Optionally provide a CA, or a correctly ordered CA chain. If left blank, disable ssl_verify_peer."
 msgstr "Vous pouvez éventuellement fournir un certificat ou une chaîne de certificats. Si non renseigné, alors désactivez ssl_verify_peer."

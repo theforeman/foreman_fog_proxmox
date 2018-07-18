@@ -20,6 +20,9 @@ msgstr ""
 msgid "%s console is not supported at this time"
 msgstr ""
 
+msgid "Advanced options"
+msgstr ""
+
 msgid "Average load (x100)"
 msgstr ""
 
@@ -30,6 +33,9 @@ msgid "Bridge"
 msgstr ""
 
 msgid "CD-ROM"
+msgstr ""
+
+msgid "CDROM"
 msgstr ""
 
 msgid "CPU"
@@ -116,6 +122,9 @@ msgstr ""
 msgid "Keyboard"
 msgstr ""
 
+msgid "Main"
+msgstr ""
+
 msgid "Memory"
 msgstr ""
 
@@ -132,6 +141,9 @@ msgid "Node"
 msgstr ""
 
 msgid "None"
+msgstr ""
+
+msgid "OS"
 msgstr ""
 
 msgid "OS type"

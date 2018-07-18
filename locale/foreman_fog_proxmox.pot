@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: foreman_fog_proxmox 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-18 14:18+0200\n"
-"PO-Revision-Date: 2018-07-18 14:18+0200\n"
+"POT-Creation-Date: 2018-07-18 14:57+0200\n"
+"PO-Revision-Date: 2018-07-18 14:57+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -126,12 +126,13 @@ msgid "Image"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:25
-msgid "Advanced options"
+msgid "Advanced"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:26
-msgid "Main"
-msgid_plural "Main"
+#: ../app/views/compute_resources_vms/form/proxmox/_config.html.erb:3
+msgid "Main option"
+msgid_plural "Main options"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -153,10 +154,6 @@ msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:34
 msgid "OS"
-msgstr ""
-
-#: ../app/views/compute_resources_vms/form/proxmox/_config.html.erb:3
-msgid "Config options"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/_config.html.erb:4

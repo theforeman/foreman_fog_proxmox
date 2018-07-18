@@ -20,8 +20,8 @@ msgstr ""
 msgid "%s console is not supported at this time"
 msgstr "%s console pas encore supportée"
 
-msgid "Advanced options"
-msgstr "Options avancées"
+msgid "Advanced"
+msgstr "Avancé"
 
 msgid "Average load (x100)"
 msgstr "Charge moyenne du serveur (x100)"
@@ -55,9 +55,6 @@ msgstr ""
 
 msgid "Card"
 msgstr "Carte"
-
-msgid "Config options"
-msgstr "Options de configuration"
 
 msgid "Controller"
 msgstr "Contrôleur"
@@ -122,10 +119,10 @@ msgstr ""
 msgid "Keyboard"
 msgstr "Clavier"
 
-msgid "Main"
-msgid_plural "Main"
-msgstr[0] ""
-msgstr[1] ""
+msgid "Main option"
+msgid_plural "Main options"
+msgstr[0] "Option principale"
+msgstr[1] "Options principales"
 
 msgid "Memory"
 msgstr "Mémoire"

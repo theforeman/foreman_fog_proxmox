@@ -54,6 +54,12 @@ sudo -u foreman /usr/bin/foreman-ruby /usr/bin/bundle install
 /usr/bin/foreman-ruby /usr/bin/bundle exec bin/rake plugin:assets:precompile[foreman_fog_proxmox]
 ```
 
+* Compile plugin translations if (french) needed :
+
+```shell
+/usr/bin/foreman-ruby /usr/bin/bundle exec bin/rake plugin:gettext[foreman_fog_proxmox]
+```
+
 * Complete installation of foreman 1.17 with foreman-installer:
 
 ```shell
@@ -129,20 +135,26 @@ cp config/settings.yaml.example config/settings.yaml
 
 ```shell
 cp config/database.yaml.example config/database.yaml
-bundle exec rake db:migrate
-bundle exec rake db:seed
+bundle exec bin/rake db:migrate
+bundle exec bin/rake db:seed
 ```
 
 * You can reset admin password if needed:
 
 ```shell
-bundle exec rake permissions:reset
+bundle exec bin/rake permissions:reset
 ```
 
 * In foreman directory, after you modify foreman_fog_proxmox specific assets (proxmox.js, etc) you have to precompile it:
 
 ```shell
-bundle plugin:assets:precompile[foreman_fog_proxmox]
+bundle exec bin/rake plugin:assets:precompile[foreman_fog_proxmox]
+```
+
+* In foreman directory, after you modify foreman_fog_proxmox translations (language, texts in new files, etc) you have to compile it:
+
+```shell
+bundle exec bin/rake plugin:gettext[foreman_fog_proxmox]
 ```
 
 * In foreman directory, run rails server:

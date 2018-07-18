@@ -159,7 +159,7 @@ module ForemanFogProxmox
 
     def new_vm(attr = {})
       vm = node.servers.new(vm_instance_defaults.merge(parse_vm(attr)))
-      logger.debug(N_("new_vm() vm.config=%{config}", { config: vm.config.inspect } ))
+      logger.debug(_("new_vm() vm.config=%{config}") % { config: vm.config.inspect })
       vm
     end
 
@@ -169,11 +169,11 @@ module ForemanFogProxmox
       image_id = args[:image_id]
       node = get_cluster_node args
       if image_id
-        logger.debug(N_("create_vm(): clone %{image_id} in %{vmid}", { image_id: image_id, vmid: vmid }))
+        logger.debug(_("create_vm(): clone %{image_id} in %{vmid}") % { image_id: image_id, vmid: vmid })
         image = node.servers.get image_id
         image.clone(vmid)
       else
-        logger.debug(N_("create_vm(): %{args}", { args: args }))
+        logger.debug(_("create_vm(): %{args}") % { args: args })
         convert_sizes(args)
         node.servers.create(parse_vm(args))
       end
@@ -188,7 +188,7 @@ module ForemanFogProxmox
     def find_vm_by_uuid(uuid)
       node.servers.get(uuid)
     rescue Fog::Errors::Error => e
-      Foreman::Logging.exception(N_("Failed retrieving proxmox vm by vmid=%{uuid}", { uuid: uuid }), e)
+      Foreman::Logging.exception(_("Failed retrieving proxmox vm by vmid=%{uuid}") % { uuid: uuid }, e)
       raise(ActiveRecord::RecordNotFound)
     end
 
@@ -285,7 +285,7 @@ module ForemanFogProxmox
         vnc_console = vm.start_console(websocket: 1)  
         WsProxy.start(:host => host, :host_port => vnc_console['port'], :password => vnc_console['ticket']).merge(:name => vm.name, :type => vm.config.type_console)
       else
-        raise ::Foreman::Exception.new(N_("%s console is not supported at this time", vm.config.type_console))
+        raise ::Foreman::Exception.new(_("%s console is not supported at this time") % vm.config.type_console)
       end
     end
 

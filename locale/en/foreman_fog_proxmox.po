@@ -123,7 +123,9 @@ msgid "Keyboard"
 msgstr ""
 
 msgid "Main"
-msgstr ""
+msgid_plural "Main"
+msgstr[0] "Principal"
+msgstr[1] "Principales"
 
 msgid "Memory"
 msgstr ""

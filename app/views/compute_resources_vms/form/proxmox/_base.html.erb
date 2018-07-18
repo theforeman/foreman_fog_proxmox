@@ -38,7 +38,7 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% end %>
 
 <%= field_set_tag _("Advanced options"), :id => "advanced_options" do %>
-  <%= label_tag 'show_config_options', _("Main") %>
+  <%= label_tag 'show_config_options', n_("Main", "Main", 2) %>
   <%= check_box_tag 'show_config_options', '1', false, :onclick => "dropDown('#config_options')" %>
   <%= label_tag 'show_cpu', _("CPU") %>
   <%= check_box_tag 'show_cpu', '1', false, :onclick => "dropDown('#cpu')" %>

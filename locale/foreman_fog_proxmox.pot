@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: foreman_fog_proxmox 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-18 13:41+0200\n"
-"PO-Revision-Date: 2018-07-18 13:41+0200\n"
+"POT-Creation-Date: 2018-07-18 14:18+0200\n"
+"PO-Revision-Date: 2018-07-18 14:18+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -131,7 +131,9 @@ msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:26
 msgid "Main"
-msgstr ""
+msgid_plural "Main"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:28
 #: ../app/views/compute_resources_vms/form/proxmox/_config.html.erb:12

@@ -17,22 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-module ForemanFogProxmox
-  class ContainersController < ::ApplicationController
-    before_action :load_compute_resource
-
-    def new
-      redirect_to_new_container_path
-    end
-
-    def index
-      redirect_to_new_container_path
-    end
-
-    private
-
-    def load_compute_resource
-      @compute_resource = ComputeResource.find_by(type: 'ForemanFogProxmox::Proxmox')
-    end
-  end
-end
+Deface::Override.new(:virtual_path => "hosts/_form", 
+        :name => "add_vm_type",
+        :insert_before => "div#compute_profile", 
+        :partial => "hosts/_form_proxmox")

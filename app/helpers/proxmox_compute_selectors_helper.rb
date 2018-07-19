@@ -18,6 +18,12 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 module ProxmoxComputeSelectorsHelper
+
+  def proxmox_types_map
+    [OpenStruct.new(id: 'qemu', name: 'KVM/Qemu'),
+     OpenStruct.new(id: 'lxc', name: 'LXC')]
+  end
+
   def proxmox_controllers_map
     [ForemanFogProxmox::OptionsSelect.new(id:'ide', name: 'IDE', range: 3), 
       ForemanFogProxmox::OptionsSelect.new(id:'sata', name: 'SATA', range: 5), 

@@ -15,6 +15,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
+<%= javascript_include_tag 'foreman_fog_proxmox/proxmox_vm_container', "data-turbolinks-track" => true %>
+
 <%= field_set_tag n_("Main option","Main options",2), :id => "config_options", :class => 'hide' do %>
   <%= textarea_f f, :description, :label => _('Description'), :label_size => "col-md-2" %>
   <%= text_f f, :boot, :label => _('Start/Shutdown order'), :label_size => "col-md-2" %>
@@ -40,16 +42,4 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= byte_size_f f, :min_memory, :class => "input-mini", :label => _('Minimum memory'), :label_size => "col-md-2" %>
   <%= counter_f f, :shares, :class => "input-mini", :label => _('Shares'), :label_size => "col-md-2" %>
   <%= checkbox_f f, :balloon, :label => _('Ballooning Device') %>
-<% end %>
-<%= field_set_tag _("CD-ROM"), :id => "cdrom", :class => 'hide' do %>
-  <%= radio_button_f f, :cdrom, :value => 'none', :text => _('None'), :onclick => 'cdromSelected(this)' %>
-  <%= radio_button_f f, :cdrom, :value => 'cdrom' , :text => _('Physical'), :onclick => 'cdromSelected(this)' %>
-  <%= radio_button_f f, :cdrom, :value => 'image' , :text => _('Image'), :onclick => 'cdromSelected(this)' %>
-  <div id='cdrom_image_form' class='<%= 'hide' if %[none cdrom].include? f.object.cdrom %>'>
-    <%= select_f f, :cdrom_storage, compute_resource.storages_isos, :storage, :storage, { :include_blank => true }, :label => _('Storage'), :label_size => "col-md-2", :onchange => 'storageIsoSelected(this)' %>
-    <%= select_f f, :cdrom_iso, compute_resource.isos(f.object.cdrom_storage), :volid, :volid, { :include_blank => true }, :label => _('Image ISO'), :label_size => "col-md-2" %>
-  </div>
-<% end %>
-<%= field_set_tag _("Operating System"), :id => "config_os", :class => 'hide' do %>
-  <%= select_f f, :ostype, proxmox_operating_systems_map, :id, :name, { :include_blank => true }, :label => _('OS type'), :label_size => "col-md-2" %>
 <% end %>

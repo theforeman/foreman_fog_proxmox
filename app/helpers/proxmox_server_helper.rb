@@ -20,13 +20,13 @@
 require 'fog/proxmox/helpers/disk_helper'
 require 'fog/proxmox/helpers/nic_helper'
 
-module ProxmoxComputeHelper
+module ProxmoxServerHelper
 
   KILO = 1024
   MEGA = KILO * KILO
   GIGA = KILO * MEGA
 
-  def parse_vm(args)
+  def parse_server_vm(args)
     return {} unless args
     return {} if args.empty?
     config = args['config_attributes']
@@ -55,7 +55,7 @@ module ProxmoxComputeHelper
     parsed_vm
   end
 
-  def parse_memory(args)
+  def parse_server_memory(args)
     memory = { memory: args['memory'].to_i }
     ballooned = args['balloon'].to_i == 1
     if ballooned
@@ -68,7 +68,7 @@ module ProxmoxComputeHelper
     memory
   end
 
-  def parse_cpu(args)
+  def parse_server_cpu(args)
     cpu = "cputype=#{args['cpu_type']}"
     spectre = args['spectre'].to_i == 1
     pcid = args['pcid'].to_i == 1
@@ -83,7 +83,7 @@ module ProxmoxComputeHelper
     parsed_cpu
   end
 
-  def parse_cdrom(args)
+  def parse_server_cdrom(args)
     cdrom = args['cdrom']
     cdrom_image = args['cdrom_iso']
     volid = cdrom_image.empty? ? cdrom : cdrom_image
@@ -91,7 +91,7 @@ module ProxmoxComputeHelper
     {ide2: cdrom}
   end
 
-  def parse_volume(args)
+  def parse_server_volume(args)
     disk = {}
     id = args['id']
     id = "#{args['controller']}#{args['device']}" unless id
@@ -113,21 +113,21 @@ module ProxmoxComputeHelper
     end 
   end
 
-  def parse_volumes(args)
+  def parse_server_volumes(args)
     volumes = []
     args.each_value { |value| volumes.push(parse_volume(value))} if args
     logger.debug("parse_volumes(): volumes=#{volumes}")
     volumes
   end
 
-  def parse_interfaces(args)
+  def parse_server_interfaces(args)
     nics = []
     args.each_value { |value| nics.push(parse_interface(value))} if args
     logger.debug("parse_interfaces(): nics=#{nics}")
     nics
   end
 
-  def parse_interface(args)
+  def parse_server_interface(args)
     args.delete_if { |_key,value| value.empty? }
     nic = {}
     id = args['id']

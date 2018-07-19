@@ -20,7 +20,5 @@
 Rails.application.routes.draw do
     namespace :foreman_fog_proxmox do
         match 'isos/:storage', :to => 'compute_resources#isos', :via => 'get'
-        match 'containers', :to => 'containers#index', :via => 'get'
-        match 'containers/new', :to => 'containers#new', :via => 'get'
     end
 end

@@ -16,10 +16,14 @@ You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <%= javascript_include_tag 'foreman_fog_proxmox/proxmox_vm', "data-turbolinks-track" => true %>
+<% server = f.object.type == 'qemu' %>
+<% container = f.object.type == 'lxc' %>  
+<% untemplatable = new_vm || f.object.templated? %>
 
 <!-- VM General Settings -->
 <%= field_set_tag _("General"), :id => "general" do %>
-  <%= checkbox_f f, :templated, :label => _('Create image?'), :disabled => new_vm || f.object.templated? %>
+  <%= select_f f, :type, proxmox_types_map, :id, :name, { }, :label => _('Type'), :label_size => "col-md-2", :onchange => "vmTypeSelected(this)" %>
+  <%= checkbox_f f, :templated, :label => _('Create image?'), :disabled => untemplatable, :class => ('hide' if untemplatable), :no_label => untemplatable %>
   <%= counter_f f, :vmid, :label => _('VM ID'), :label_size => "col-md-2", :required => true, :disabled => !new_vm %>
   <%= select_f f, :node, compute_resource.nodes, :node, :node, { }, :label => _('Node'), :label_size => "col-md-2", :required => true, :disabled => !new_vm %>
   <% unless local_assigns[:hide_image] && !new_vm %>
@@ -44,13 +48,17 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= check_box_tag 'show_cpu', '1', false, :onclick => "dropDown('#cpu')" %>
   <%= label_tag 'show_memory', _("Memory") %>
   <%= check_box_tag 'show_memory', '1', false, :onclick => "dropDown('#memory')" %>
-  <%= label_tag 'show_cdrom', _("CDROM") %>
-  <%= check_box_tag 'show_cdrom', '1', false, :onclick => "dropDown('#cdrom')" %>
-  <%= label_tag 'show_config_os', _("OS") %>
-  <%= check_box_tag 'show_config_os', '1', false, :onclick => "dropDown('#config_os')" %>
+  <% if server %>
+    <%= label_tag 'show_cdrom', _("CDROM") %>
+    <%= check_box_tag 'show_cdrom', '1', false, :onclick => "dropDown('#cdrom')" %>
+    <%= label_tag 'show_config_os', _("OS") %>
+    <%= check_box_tag 'show_config_os', '1', false, :onclick => "dropDown('#config_os')" %>
+  <% end %>
 <% end %>
+
+<% type = container ? 'container' : 'server' %>
 
 <!-- Config -->
 <%= f.fields_for :config do |config_f|%>
-  <%= render :partial => 'compute_resources_vms/form/proxmox/config', :locals => { :f => config_f, :compute_resource =>  compute_resource, :host => @host, :new_vm => new_vm, :item_layout => 'removable' } %>
+  <%= render :partial => "compute_resources_vms/form/proxmox/config_#{type}", :locals => { :f => config_f, :compute_resource =>  compute_resource, :host => @host, :new_vm => new_vm, :item_layout => 'removable' } %>
 <% end %>

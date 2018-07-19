@@ -21,7 +21,8 @@ require 'fog/proxmox'
 
 module ForemanFogProxmox
   class Proxmox < ComputeResource
-    include ProxmoxComputeHelper
+    include ProxmoxServerHelper
+    include ProxmoxContainerHelper
     validates :url, :format => { :with => URI::DEFAULT_PARSER.make_regexp }, :presence => true
     validates :user, :format => { :with => /(\w+)[@]{1}(\w+)/ }, :presence => true
     validates :password, :presence => true
@@ -78,6 +79,11 @@ module ForemanFogProxmox
       storages.sort_by(&:storage)
     end
 
+    def storages_containers
+      storages = node.storages.list_by_content_type 'rootdir'
+      storages.sort_by(&:storage)
+    end
+
     def isos(storage_id)
       storage = node.storages.find_by_id storage_id if storage_id
       storage.volumes.list_by_content_type('iso').sort_by(&:volid) if storage
@@ -123,13 +129,13 @@ module ForemanFogProxmox
     end
 
     def new_volume(attr = {})     
-      opts = volume_defaults('scsi',1).merge(attr.to_h).deep_symbolize_keys
+      opts = volume_server_defaults.merge(attr.to_h).deep_symbolize_keys
       opts[:size] = opts[:size].to_s
       Fog::Compute::Proxmox::Disk.new(opts)
     end
 
     def new_interface(attr = {})
-      opts = interface_defaults.merge(attr.to_h).deep_symbolize_keys
+      opts = interface_server_defaults.merge(attr.to_h).deep_symbolize_keys
       Fog::Compute::Proxmox::Interface.new(opts)
     end
 
@@ -158,20 +164,32 @@ module ForemanFogProxmox
     end
 
     def new_vm(attr = {})
-      vm = node.servers.new(vm_instance_defaults.merge(parse_vm(attr)))
+      type = attr['type']
+      case type
+      when 'lxc'
+        vm = new_container_vm(attr)
+      else
+        vm = new_server_vm(attr)
+      end
       logger.debug(_("new_vm() vm.config=%{config}") % { config: vm.config.inspect })
       vm
     end
 
-    def new_container(attr = {})
-      vm = node.containers.new(container_instance_defaults.merge(parse_container(attr)))
-      logger.debug(_("new_container() container.config=%{config}") % { config: container.config.inspect })
+    def new_container_vm(attr = {})
+      vm = node.containers.new(vm_container_instance_defaults.merge(parse_container_vm(attr)))
+      logger.debug(_("new_container_vm() vm.config=%{config}") % { config: vm.config.inspect })
+      vm
+    end
+
+    def new_server_vm(attr = {})
+      vm = node.servers.new(vm_server_instance_defaults.merge(parse_server_vm(attr)))
+      logger.debug(_("new_server_vm() vm.config=%{config}") % { config: vm.config.inspect })
       vm
     end
 
     def create_vm(args = {})
       vmid = args[:vmid]
-      raise ::Foreman::Exception.new N_("invalid vmid=%{vmid}", { vmid: vmid }) unless node.servers.id_valid?(vmid)
+      raise ::Foreman::Exception.new N_("invalid vmid=%{vmid}") % { vmid: vmid } unless node.servers.id_valid?(vmid)
       image_id = args[:image_id]
       node = get_cluster_node args
       if image_id
@@ -325,8 +343,9 @@ module ForemanFogProxmox
       @network_client = nil
     end
 
-    def vm_instance_defaults
-      super.merge(
+    def vm_server_instance_defaults
+      ActiveSupport::HashWithIndifferentAccess.new(
+        name: "foreman_#{Time.now.to_i}",
         vmid: next_vmid, 
         type: 'qemu', 
         node: node.to_s, 
@@ -340,17 +359,37 @@ module ForemanFogProxmox
         cpu: 'kvm64',
         scsihw: 'virtio-scsi-pci',
         ide2: "none,media=cdrom",
-        templated: 0
-      ).merge(Fog::Proxmox::DiskHelper.flatten(volume_defaults)).merge(Fog::Proxmox::NicHelper.flatten(interface_defaults))
+        templated: 0).merge(Fog::Proxmox::DiskHelper.flatten(volume_server_defaults)).merge(Fog::Proxmox::NicHelper.flatten(interface_server_defaults))
     end
 
-    def volume_defaults(controller = 'scsi', device = 0)
+    def vm_container_instance_defaults
+      ActiveSupport::HashWithIndifferentAccess.new(
+        name: "foreman_#{Time.now.to_i}",
+        vmid: next_vmid, 
+        type: 'lxc', 
+        node: node.to_s).merge(Fog::Proxmox::DiskHelper.flatten(volume_container_defaults)).merge(Fog::Proxmox::NicHelper.flatten(interface_container_defaults))
+    end
+
+    def vm_instance_defaults
+      super.merge(vmid: next_vmid, node: node.to_s)
+    end
+
+    def volume_server_defaults(controller = 'scsi', device = 0)
       id = "#{controller}#{device}"
       { id: id, storage: storages.first.to_s, size: (8 * GIGA), options: { cache: 'none' } }
     end
 
-    def interface_defaults(id = 'net0')
+    def volume_container_defaults(device = 0)
+      id = "mp#{device}"
+      { id: id, storage: storages.first.to_s, size: (8 * GIGA), options: { cache: 'none' } }
+    end
+
+    def interface_server_defaults(id = 'net0')
       { id: id, model: 'virtio', bridge: bridges.first.to_s }
+    end
+
+    def interface_container_defaults(id = 'net0')
+      { id: id, name: 'eth0', bridge: bridges.first.to_s, ip: 'dhcp', ip6: 'dhcp' }
     end
 
     def get_cluster_node(args = {})

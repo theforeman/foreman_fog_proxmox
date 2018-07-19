@@ -15,35 +15,3 @@
 // You should have received a copy of the GNU General Public License
 // along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-$(document).on('ContentLoad', tfm.numFields.initAll);
-
-function dropDown(id){
-  var item = $(id);
-  var hidden = item.css('display') == 'none';
-  if (hidden) {
-    item.show();
-  } else {
-    item.hide();
-  }
-}
-
-function vmTypeSelected(item) {
-  var selected = $(item).val();
-  var server_form = $('#cdrom_image_form');
-
-  switch (selected) {
-    case 'qemu':
-      initStorage();
-      initOptions('iso');
-      cdrom_image_form.hide();
-      break;
-    case 'lxc':
-      initStorage();
-      initOptions('iso');
-      cdrom_image_form.hide();
-      break;
-    default:
-      break;
-  }
-  return false;
-}

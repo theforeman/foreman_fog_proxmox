@@ -235,6 +235,9 @@ msgstr ""
 msgid "VM ID"
 msgstr ""
 
+msgid "VM Type"
+msgstr ""
+
 msgid "X509 Certification Authorities"
 msgstr ""
 
@@ -254,6 +257,12 @@ msgid "failed to create vm: %{e}"
 msgstr ""
 
 msgid "invalid vmid=%{vmid}"
+msgstr ""
+
+msgid "new_container_vm() vm.config=%{config}"
+msgstr ""
+
+msgid "new_server_vm() vm.config=%{config}"
 msgstr ""
 
 msgid "new_vm() vm.config=%{config}"

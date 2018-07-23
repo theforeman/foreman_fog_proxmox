@@ -235,6 +235,9 @@ msgstr "Etiquette VLAN"
 msgid "VM ID"
 msgstr ""
 
+msgid "VM Type"
+msgstr ""
+
 msgid "X509 Certification Authorities"
 msgstr "Autorités de certification X509"
 
@@ -255,6 +258,12 @@ msgstr "échec à la création de la VM: %{e}"
 
 msgid "invalid vmid=%{vmid}"
 msgstr "vmid=%{vmid} incorrect"
+
+msgid "new_container_vm() vm.config=%{config}"
+msgstr ""
+
+msgid "new_server_vm() vm.config=%{config}"
+msgstr ""
 
 msgid "new_vm() vm.config=%{config}"
 msgstr ""

@@ -15,4 +15,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-<%= select_f f, :vm_type, proxmox_types_map, :id, :name, { }, :required => true, :label => _('VM Type'), :label_size => 'col-md-2' %>
+<div class='tab-pane' id='vm_type'>
+    <%= select_f f, :vm_type, proxmox_types_map, :id, :name, { }, :required => true, :label => _('VM Type') %>
+</div>

@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
+require 'deface'
+
 module ForemanFogProxmox
   class Engine < ::Rails::Engine
     engine_name 'foreman_fog_proxmox'
@@ -88,7 +90,7 @@ module ForemanFogProxmox
       Fog::Compute::Proxmox::Volume.send :include, FogExtensions::Proxmox::Volume
       ::ComputeResourcesController.send :include, ForemanFogProxmox::Controller::Parameters::ComputeResource
       ::Host.send :include, ForemanFogProxmox::Controller::Parameters::HostProxmox
-      ::HostsController.send :include, ForemanFogProxmox::Controller::HostsControllerExt
+      ::HostsController.send :include, ForemanFogProxmox::Controller::HostsControllerExtensions
     end
 
   end

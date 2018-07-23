@@ -17,7 +17,18 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-Deface::Override.new(:virtual_path => "hosts/_form", 
-        :name => "add_vm_type",
-        :insert_before => "div#compute_profile", 
-        :partial => "hosts/_form_proxmox")
+# Displays Proxmox vm type select tab on Host form
+
+Deface::Override.new(
+        :virtual_path => 'hosts/_form',
+        :name => 'vm_type_tab',
+        :insert_after => 'li.active',
+        :partial => 'foreman_fog_proxmox/vm_type/select_tab_title'
+)
+      
+Deface::Override.new(
+        :virtual_path => 'hosts/_form',
+        :name => 'vm_type_tab_content',
+        :insert_after => 'div.tab-pane.active',
+        :partial => 'foreman_fog_proxmox/vm_type/select_tab_content'
+)

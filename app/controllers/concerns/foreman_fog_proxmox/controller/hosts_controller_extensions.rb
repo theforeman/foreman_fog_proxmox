@@ -19,7 +19,7 @@
 
 module ForemanFogProxmox
   module Controller
-      module HostsControllerExt
+      module HostsControllerExtensions
         extend ActiveSupport::Concern
 
         module Overrides
@@ -30,8 +30,8 @@ module ForemanFogProxmox
               compute_resource = ComputeResource.authorized(:view_compute_resources).find_by_id(id)
               compute_resource_type = compute_resource.type
               vm_type = params[:host][:vm_type]
-              unless (compute_resource_type != 'ForemanFogProxmox::Proxmox' || !vm_type)
-                render :partial => "form_proxmox"
+              unless (compute_resource_type != 'ForemanFogProxmox::Proxmox' || vm_type)
+                render :partial => "foreman_fog_proxmox/vm_type/select_tab_content", :locals => { :compute_resource => compute_resource, :vm_type => nil }
               else
                 render :partial => "compute", :locals => { :compute_resource => compute_resource,
                                                          :vm_attrs         => compute_resource.compute_profile_attributes_for(compute_profile_id) }

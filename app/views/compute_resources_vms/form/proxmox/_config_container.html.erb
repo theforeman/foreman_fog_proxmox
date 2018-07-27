@@ -16,30 +16,26 @@ You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <%= javascript_include_tag 'foreman_fog_proxmox/proxmox_vm_container', "data-turbolinks-track" => true %>
-
-<%= field_set_tag n_("Main option","Main options",2), :id => "config_options", :class => 'hide' do %>
+<% container = type == 'lxc' %>
+<%= field_set_tag n_("Main option", "Main options", 2), :id => "container_config_options", :class => 'hide', :disabled => !container do %>
   <%= textarea_f f, :description, :label => _('Description'), :label_size => "col-md-2" %>
   <%= text_f f, :boot, :label => _('Start/Shutdown order'), :label_size => "col-md-2" %>
   <%= checkbox_f f, :onboot, :label => _('Start at boot') %>
-  <%= checkbox_f f, :agent, :label => _('Qemu Agent') %>
-  <%= checkbox_f f, :kvm, :label => _('KVM'), :label_help => _('Enable/disable KVM hardware virtualization') %>
-  <%= select_f f, :keyboard, proxmox_keyboards_map, :id, :name, { }, :label => _('Keyboard'), :label_size => "col-md-2" %>
-  <%= select_f f, :vga, proxmox_vgas_map, :id, :name, { :include_blank => true }, :label => _('VGA'), :label_size => "col-md-2" %>
+  <%= checkbox_f f, :onboot, :label => _('Start at boot') %>
 <% end %>
-<%= field_set_tag _("CPU"), :id => "cpu", :class => 'hide' do %>
-  <%= select_f f, :cpu_type, proxmox_cpus_map, :id, :name, { }, :label => _('Type'), :label_size => "col-md-2" %>
-  <%= counter_f f, :sockets, :class => "input-mini", :label => _('Sockets'), :label_size => "col-md-2" %>
+<%= field_set_tag _("CPU"), :id => "container_config_cpu", :class => 'hide', :disabled => !container do %>
+  <%= select_f f, :arch, proxmox_archs_map, :id, :name, { }, :label => _('Architecture'), :label_size => "col-md-2" %>
   <%= counter_f f, :cores, :class => "input-mini", :label => _('Cores'), :label_size => "col-md-2" %>
-  <%= counter_f f, :vcpus, :class => "input-mini", :label => _('VCPUs'), :label_size => "col-md-2" %>
   <%= counter_f f, :cpulimit, :class => "input-mini", :label => _('CPU limit'), :label_size => "col-md-2" %>
   <%= counter_f f, :cpuunits, :class => "input-mini", :label => _('CPU units'), :label_size => "col-md-2" %>
-  <%= checkbox_f f, :numa, :label => _('Enable NUMA') %>
-  <%= checkbox_f f, :pcid, :label => _('PCID') %>
-  <%= checkbox_f f, :spectre, :label => _('Spectre-CTRL') %>
 <% end %>
-<%= field_set_tag _("Memory"), :id => "memory", :class => 'hide' do %>
+<%= field_set_tag _("Memory"), :id => "container_config_memory", :class => 'hide', :disabled => !container do %>
   <%= byte_size_f f, :memory, :class => "input-mini", :label => _('Memory'), :label_size => "col-md-2" %>
-  <%= byte_size_f f, :min_memory, :class => "input-mini", :label => _('Minimum memory'), :label_size => "col-md-2" %>
-  <%= counter_f f, :shares, :class => "input-mini", :label => _('Shares'), :label_size => "col-md-2" %>
-  <%= checkbox_f f, :balloon, :label => _('Ballooning Device') %>
+  <%= byte_size_f f, :swap, :class => "input-mini", :label => _('Swap'), :label_size => "col-md-2" %>
+<% end %>
+<%= field_set_tag _("DNS"), :id => "container_config_dns", :class => 'hide', :disabled => !container do %>
+  <%= text_f f, :hostname, :label => _('Hostname'), :label_size => "col-md-2" %>
+<% end %>
+<%= field_set_tag _("Operating System"), :id => "server_config_os", :class => 'hide', :disabled => !server do %>
+  <%= select_f f, :ostype, proxmox_ostypes_map, :id, :name, { }, :label => _('OS type'), :label_size => "col-md-2" %>
 <% end %>

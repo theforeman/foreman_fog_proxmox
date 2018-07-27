@@ -16,49 +16,18 @@ You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <%= javascript_include_tag 'foreman_fog_proxmox/proxmox_vm', "data-turbolinks-track" => true %>
-<% server = f.object.type == 'qemu' %>
-<% container = f.object.type == 'lxc' %>  
-<% untemplatable = new_vm || f.object.templated? %>
+
+<%= select_f f, :type, proxmox_types_map, :id, :name, { }, :label => _('Type'), :label_size => "col-md-2", :onchange => "vmTypeSelected(this)" %>
 
 <!-- VM General Settings -->
-<%= field_set_tag _("General"), :id => "general" do %>
-  <%= select_f f, :type, proxmox_types_map, :id, :name, { }, :label => _('Type'), :label_size => "col-md-2", :onchange => "vmTypeSelected(this)" %>
-  <%= checkbox_f f, :templated, :label => _('Create image?'), :disabled => untemplatable, :class => ('hide' if untemplatable), :no_label => untemplatable %>
-  <%= counter_f f, :vmid, :label => _('VM ID'), :label_size => "col-md-2", :required => true, :disabled => !new_vm %>
-  <%= select_f f, :node, compute_resource.nodes, :node, :node, { }, :label => _('Node'), :label_size => "col-md-2", :required => true, :disabled => !new_vm %>
-  <% unless local_assigns[:hide_image] && !new_vm %>
-    <%
-      arch ||= nil ; os ||= nil
-      images = possible_images(compute_resource, arch, os)
-    -%>
-    <div id='image_selection'>
-    <%= select_f f, :image_id, images, :uuid, :name, { :include_blank => true }, 
-      :disabled => true,
-      :help_inline => :indicator,
-      :label => _('Image'), 
-      :label_size => "col-md-2" %>
-    </div>
-  <% end %>
-<% end %>
+<%= render :partial => "compute_resources_vms/form/proxmox/general_server", :locals => { :f => f, :compute_resource =>  compute_resource, :new_vm => new_vm } %>
+<%= render :partial => "compute_resources_vms/form/proxmox/general_container", :locals => { :f => f, :compute_resource =>  compute_resource, :new_vm => new_vm } %>
 
-<%= field_set_tag _("Advanced"), :id => "advanced_options" do %>
-  <%= label_tag 'show_config_options', n_("Main option", "Main options", 2) %>
-  <%= check_box_tag 'show_config_options', '1', false, :onclick => "dropDown('#config_options')" %>
-  <%= label_tag 'show_cpu', _("CPU") %>
-  <%= check_box_tag 'show_cpu', '1', false, :onclick => "dropDown('#cpu')" %>
-  <%= label_tag 'show_memory', _("Memory") %>
-  <%= check_box_tag 'show_memory', '1', false, :onclick => "dropDown('#memory')" %>
-  <% if server %>
-    <%= label_tag 'show_cdrom', _("CDROM") %>
-    <%= check_box_tag 'show_cdrom', '1', false, :onclick => "dropDown('#cdrom')" %>
-    <%= label_tag 'show_config_os', _("OS") %>
-    <%= check_box_tag 'show_config_os', '1', false, :onclick => "dropDown('#config_os')" %>
-  <% end %>
-<% end %>
-
-<% type = container ? 'container' : 'server' %>
 
 <!-- Config -->
-<%= f.fields_for :config do |config_f|%>
-  <%= render :partial => "compute_resources_vms/form/proxmox/config_#{type}", :locals => { :f => config_f, :compute_resource =>  compute_resource, :host => @host, :new_vm => new_vm, :item_layout => 'removable' } %>
+<%= f.fields_for :config, compute_resource.new_server_vm(object_to_hash(f.object)).config do |server_config|%>
+  <%= render :partial => "compute_resources_vms/form/proxmox/config_server", :locals => { :f => server_config, :compute_resource =>  compute_resource, :host => @host, :new_vm => new_vm, :item_layout => 'removable', :type => f.object.type } %>
+<% end %>
+<%= f.fields_for :config, compute_resource.new_container_vm(object_to_hash(f.object)).config do |container_config|%>
+  <%= render :partial => "compute_resources_vms/form/proxmox/config_container", :locals => { :f => container_config, :compute_resource =>  compute_resource, :host => @host, :new_vm => new_vm, :item_layout => 'removable', :type => f.object.type } %>
 <% end %>

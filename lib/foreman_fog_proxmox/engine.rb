@@ -89,8 +89,6 @@ module ForemanFogProxmox
       Fog::Compute::Proxmox::Disk.send :include, FogExtensions::Proxmox::Disk
       Fog::Compute::Proxmox::Volume.send :include, FogExtensions::Proxmox::Volume
       ::ComputeResourcesController.send :include, ForemanFogProxmox::Controller::Parameters::ComputeResource
-      ::Host.send :include, ForemanFogProxmox::Controller::Parameters::HostProxmox
-      ::HostsController.send :include, ForemanFogProxmox::Controller::HostsControllerExtensions
     end
 
   end

@@ -17,33 +17,38 @@
 
 $(document).on('ContentLoad', tfm.numFields.initAll);
 
-function dropDown(id){
-  var item = $(id);
-  var hidden = item.css('display') == 'none';
-  if (hidden) {
-    item.show();
-  } else {
-    item.hide();
-  }
-}
-
 function vmTypeSelected(item) {
   var selected = $(item).val();
-  var server_form = $('#cdrom_image_form');
+  disableFieldset(selected,'advanced_options',true);
+  var fieldsets = ['options','cpu','memory','cdrom','os','dns'];
+  for (i=0;i<fieldsets.length;i++){
+    toggleFieldset(selected,fieldsets[i],false);
+  }
 
+  return false;
+}
+
+function disableFieldset(selected,fieldset,toggle){
+  var server_fieldset = $('#server_config_'+fieldset);
+  var container_fieldset = $('#container_config_'+fieldset);
   switch (selected) {
     case 'qemu':
-      initStorage();
-      initOptions('iso');
-      cdrom_image_form.hide();
+      if (toggle){
+        server_fieldset.toggle();
+        container_fieldset.toggle();
+      }
+      server_fieldset.removeAttr('disabled');
+      container_fieldset.attr('disabled','disabled');
       break;
     case 'lxc':
-      initStorage();
-      initOptions('iso');
-      cdrom_image_form.hide();
+      if (toggle){
+        server_fieldset.toggle();
+        container_fieldset.toggle();
+      }
+      server_fieldset.attr('disabled','disabled');
+      container_fieldset.removeAttr('disabled');
       break;
     default:
       break;
   }
-  return false;
 }

@@ -16,8 +16,9 @@ You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <%= javascript_include_tag 'foreman_fog_proxmox/proxmox_vm_server', "data-turbolinks-track" => true %>
+<% server = type == 'qemu' %>
 
-<%= field_set_tag n_("Main option","Main options",2), :id => "config_options", :class => 'hide' do %>
+<%= field_set_tag n_("Main option", "Main options", 2), :id => "server_config_options", :class => 'hide', :disabled => !server do %>
   <%= textarea_f f, :description, :label => _('Description'), :label_size => "col-md-2" %>
   <%= text_f f, :boot, :label => _('Start/Shutdown order'), :label_size => "col-md-2" %>
   <%= checkbox_f f, :onboot, :label => _('Start at boot') %>
@@ -26,7 +27,7 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= select_f f, :keyboard, proxmox_keyboards_map, :id,  :name, { }, :label => _('Keyboard'), :label_size => "col-md-2" %>
   <%= select_f f, :vga, proxmox_vgas_map, :id, :name, { :include_blank => true }, :label => _('VGA'), :label_size => "col-md-2" %>
 <% end %>
-<%= field_set_tag _("CPU"), :id => "cpu", :class => 'hide' do %>
+<%= field_set_tag _("CPU"), :id => "server_config_cpu", :class => 'hide', :disabled => !server do %>
   <%= select_f f, :cpu_type, proxmox_cpus_map, :id, :name, { }, :label => _('Type'), :label_size => "col-md-2" %>
   <%= counter_f f, :sockets, :class => "input-mini", :label => _('Sockets'), :label_size => "col-md-2" %>
   <%= counter_f f, :cores, :class => "input-mini", :label => _('Cores'), :label_size => "col-md-2" %>
@@ -37,13 +38,13 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= checkbox_f f, :pcid, :label => _('PCID') %>
   <%= checkbox_f f, :spectre, :label => _('Spectre-CTRL') %>
 <% end %>
-<%= field_set_tag _("Memory"), :id => "memory", :class => 'hide' do %>
+<%= field_set_tag _("Memory"), :id => "server_config_memory", :class => 'hide', :disabled => !server do %>
   <%= byte_size_f f, :memory, :class => "input-mini", :label => _('Memory'), :label_size => "col-md-2" %>
   <%= byte_size_f f, :min_memory, :class => "input-mini", :label => _('Minimum memory'), :label_size => "col-md-2" %>
   <%= counter_f f, :shares, :class => "input-mini", :label => _('Shares'), :label_size => "col-md-2" %>
   <%= checkbox_f f, :balloon, :label => _('Ballooning Device') %>
 <% end %>
-<%= field_set_tag _("CD-ROM"), :id => "cdrom", :class => 'hide' do %>
+<%= field_set_tag _("CD-ROM"), :id => "server_config_cdrom", :class => 'hide', :disabled => !server do %>
   <%= radio_button_f f, :cdrom, :value => 'none', :text => _('None'), :onclick => 'cdromSelected(this)' %>
   <%= radio_button_f f, :cdrom, :value => 'cdrom' , :text => _('Physical'), :onclick => 'cdromSelected(this)' %>
   <%= radio_button_f f, :cdrom, :value => 'image' , :text => _('Image'), :onclick => 'cdromSelected(this)' %>
@@ -52,6 +53,6 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     <%= select_f f, :cdrom_iso, compute_resource.isos(f.object.cdrom_storage), :volid, :volid, { :include_blank => true }, :label => _('Image ISO'), :label_size => "col-md-2" %>
   </div>
 <% end %>
-<%= field_set_tag _("Operating System"), :id => "config_os", :class => 'hide' do %>
+<%= field_set_tag _("Operating System"), :id => "server_config_os", :class => 'hide', :disabled => !server do %>
   <%= select_f f, :ostype, proxmox_operating_systems_map, :id, :name, { :include_blank => true }, :label => _('OS type'), :label_size => "col-md-2" %>
 <% end %>

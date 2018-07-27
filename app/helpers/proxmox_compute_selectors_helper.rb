@@ -24,6 +24,23 @@ module ProxmoxComputeSelectorsHelper
      OpenStruct.new(id: 'lxc', name: 'LXC container')]
   end
 
+  def proxmox_archs_map
+    [OpenStruct.new(id: 'amd64', name: '64 bits'),
+     OpenStruct.new(id: 'i386', name: '32 bits')]
+  end
+  
+  def proxmox_ostypes_map
+    [OpenStruct.new(id: 'debian', name: 'Debian'),
+     OpenStruct.new(id: 'ubuntu', name: 'Ubuntu'),
+     OpenStruct.new(id: 'centos', name: 'CentOS'),
+     OpenStruct.new(id: 'fedora', name: 'Fedora'),
+     OpenStruct.new(id: 'opensuse', name: 'OpenSuse'),
+     OpenStruct.new(id: 'archlinux', name: 'ArchLinux'),
+     OpenStruct.new(id: 'gentoo', name: 'Gentoo'),
+     OpenStruct.new(id: 'alpine', name: 'Alpine'),
+     OpenStruct.new(id: 'unmanaged', name: 'Unmanaged')]
+  end
+
   def proxmox_controllers_map
     [ForemanFogProxmox::OptionsSelect.new(id:'ide', name: 'IDE', range: 3), 
       ForemanFogProxmox::OptionsSelect.new(id:'sata', name: 'SATA', range: 5), 

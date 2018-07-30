@@ -29,29 +29,27 @@ module ProxmoxContainerHelper
   def parse_container_vm(args)
     return {} unless args
     return {} if args.empty?
+    return {} unless args['type'] == 'lxc'
     config = args['config_attributes']
-    cdrom_a = %w[cdrom cdrom_storage cdrom_iso]
-    cdrom = parse_cdrom(config.select { |key,_value| cdrom_a.include? key })
-    volumes = parse_volumes(args['volumes_attributes'])
+    volumes = parse_container_volumes(args['volumes_attributes'])
     cpu_a = %w[cpu_type spectre pcid vcpus cpulimit cpuunits cores sockets numa]
-    cpu = parse_cpu(config.select { |key,_value| cpu_a.include? key })
+    cpu = parse_container_cpu(config.select { |key,_value| cpu_a.include? key })
     memory_a = %w[memory min_memory balloon shares]
-    memory = parse_memory(config.select { |key,_value| memory_a.include? key })
+    memory = parse_container_memory(config.select { |key,_value| memory_a.include? key })
     interfaces_attributes = args['interfaces_attributes']
-    networks = parse_interfaces(interfaces_attributes)
+    networks = parse_container_interfaces(interfaces_attributes)
     general_a = %w[node config_attributes volumes_attributes interfaces_attributes firmware_type provision_method]
     logger.debug("general_a: #{general_a}")
     parsed_vm = args.reject { |key,value| general_a.include?(key) || value.empty? }
     config_a = []
     config_a += cpu_a
-    config_a += cdrom_a
     config_a += memory_a
     parsed_config = config.reject { |key,value| config_a.include?(key) || value.empty? }
-    logger.debug("parse_config(): #{parsed_config}")
-    parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory).merge(cdrom)
+    logger.debug("parse_container_config(): #{parsed_config}")
+    parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory)
     networks.each { |network| parsed_vm = parsed_vm.merge(network) }
     volumes.each { |volume| parsed_vm = parsed_vm.merge(volume) }
-    logger.debug("parse_vm(): #{parsed_vm}")
+    logger.debug("parse_container_vm(): #{parsed_vm}")
     parsed_vm
   end
 
@@ -64,7 +62,7 @@ module ProxmoxContainerHelper
     else
       memory.store(:balloon,args['balloon'].to_i)
     end
-    logger.debug("parse_memory(): #{memory}")
+    logger.debug("parse_container_memory(): #{memory}")
     memory
   end
 
@@ -79,16 +77,8 @@ module ProxmoxContainerHelper
     args.delete_if { |key,value| %w[cpu_type spectre pcid].include?(key) || value.empty? }
     args.each_value { |value| value.to_i }
     parsed_cpu = { cpu: cpu }.merge(args)
-    logger.debug("parse_cpu(): #{parsed_cpu}")
+    logger.debug("parse_container_cpu(): #{parsed_cpu}")
     parsed_cpu
-  end
-
-  def parse_container_cdrom(args)
-    cdrom = args['cdrom']
-    cdrom_image = args['cdrom_iso']
-    volid = cdrom_image.empty? ? cdrom : cdrom_image
-    cdrom = "#{volid},media=cdrom"
-    {ide2: cdrom}
   end
 
   def parse_container_volume(args)
@@ -98,7 +88,7 @@ module ProxmoxContainerHelper
     delete = args['_delete'].to_i == 1
     args.delete_if { |_key,value| value.empty? }
     if delete
-      logger.debug("parse_volume(): delete id=#{id}")
+      logger.debug("parse_container_volume(): delete id=#{id}")
       disk.store(:delete, id)
       disk
     else
@@ -108,22 +98,22 @@ module ProxmoxContainerHelper
       disk.store(:size, args['size'])
       options = args.reject { |key,_value| %w[id volid controller device storage size _delete].include? key}
       disk.store(:options, options)
-      logger.debug("parse_volume(): add disk=#{disk}")
+      logger.debug("parse_container_volume(): add disk=#{disk}")
       Fog::Proxmox::DiskHelper.flatten(disk)
     end 
   end
 
   def parse_container_volumes(args)
     volumes = []
-    args.each_value { |value| volumes.push(parse_volume(value))} if args
-    logger.debug("parse_volumes(): volumes=#{volumes}")
+    args.each_value { |value| volumes.push(parse_container_volume(value))} if args
+    logger.debug("parse_container_volumes(): volumes=#{volumes}")
     volumes
   end
 
   def parse_container_interfaces(args)
     nics = []
-    args.each_value { |value| nics.push(parse_interface(value))} if args
-    logger.debug("parse_interfaces(): nics=#{nics}")
+    args.each_value { |value| nics.push(parse_container_interface(value))} if args
+    logger.debug("parse_container_interfaces(): nics=#{nics}")
     nics
   end
 
@@ -131,10 +121,10 @@ module ProxmoxContainerHelper
     args.delete_if { |_key,value| value.empty? }
     nic = {}
     id = args['id']
-    logger.debug("parse_interface(): id=#{id}")
+    logger.debug("parse_container_interface(): id=#{id}")
     delete = args['_delete'].to_i == 1
     if delete
-      logger.debug("parse_interface(): delete id=#{id}")
+      logger.debug("parse_container_interface(): delete id=#{id}")
       nic.store(:delete, id)
       nic
     else
@@ -146,7 +136,7 @@ module ProxmoxContainerHelper
       nic.store(:rate, args['rate'].to_i) if args['rate']
       nic.store(:link_down, args['disconnect'].to_i) if args['disconnect']
       nic.store(:queues, args['queues'].to_i) if args['queues']
-      logger.debug("parse_interface(): add nic=#{nic}")
+      logger.debug("parse_container_interface(): add nic=#{nic}")
       Fog::Proxmox::NicHelper.flatten(nic)
     end 
   end

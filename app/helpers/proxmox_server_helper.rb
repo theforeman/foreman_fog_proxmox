@@ -29,6 +29,7 @@ module ProxmoxServerHelper
   def parse_server_vm(args)
     return {} unless args
     return {} if args.empty?
+    return {} unless args['type'] == 'qemu'
     config = args['config_attributes']
     main_a = %w[name type node vmid]
     config = args.reject { |key,_value| main_a.include? key } unless config
@@ -98,6 +99,7 @@ module ProxmoxServerHelper
     disk = {}
     id = args['id']
     id = "#{args['controller']}#{args['device']}" unless id
+    return args if id.empty?
     delete = args['_delete'].to_i == 1
     args.delete_if { |_key,value| value.to_s.empty? }
     if delete
@@ -118,14 +120,14 @@ module ProxmoxServerHelper
 
   def parse_server_volumes(args)
     volumes = []
-    args.each_value { |value| volumes.push(parse_volume(value))} if args
+    args.each_value { |value| volumes.push(parse_server_volume(value))} if args
     logger.debug("parse_server_volumes(): volumes=#{volumes}")
     volumes
   end
 
   def parse_server_interfaces(args)
     nics = []
-    args.each_value { |value| nics.push(parse_interface(value))} if args
+    args.each_value { |value| nics.push(parse_server_interface(value))} if args
     logger.debug("parse_server_interfaces(): nics=#{nics}")
     nics
   end
@@ -134,6 +136,7 @@ module ProxmoxServerHelper
     args.delete_if { |_key,value| value.to_s.empty? }
     nic = {}
     id = args['id']
+    return args unless id
     logger.debug("parse_server_interface(): id=#{id}")
     delete = args['_delete'].to_i == 1
     if delete

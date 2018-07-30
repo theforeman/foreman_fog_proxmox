@@ -32,14 +32,31 @@ module ProxmoxVmHelper
     main_a += %w[templated]
     config = vm.config.attributes.reject { |key,_value| main_a.include?(key) || disks_regexp.match(key) || nics_regexp.match(key)  }
     vm_h = vm_h.merge(main)
-    vm_h = vm_h.merge({'config_attributes': config})
-    interfaces = []
-    vm.config.interfaces.each { |interface| interfaces.push(Fog::Proxmox::NicHelper.flatten(interface.attributes)) }
+    interfaces = {}
+    vm.config.interfaces.each.each_with_index { |interface,i| interfaces.store(i.to_s, Fog::Proxmox::NicHelper.flatten(interface.attributes)) }
     vm_h = vm_h.merge({'interfaces_attributes': interfaces})
-    volumes = []
-    vm.config.disks.each { |disk| volumes.push(Fog::Proxmox::DiskHelper.flatten(disk.attributes)) unless disk.id == 'ide2' }
+    volumes = {}
+    disks_volumes = vm.config.disks.reject { |disk| disk.id == 'ide2' }
+    disks_volumes.each.each_with_index { |disk,i| volumes.store(i.to_s, Fog::Proxmox::DiskHelper.flatten(disk.attributes)) }
     vm_h = vm_h.merge({'volumes_attributes': volumes})
+    cd_disks = vm.config.disks.select { |disk| disk.id == 'ide2' }
+    cdrom = {}
+    disk_to_cdrom(cd_disks.first,cdrom)
+    config = config.merge(cdrom)
+    vm_h = vm_h.merge({'config_attributes': config})
     vm_h
+  end
+
+  def disk_to_cdrom(disk,cdrom)
+    volid = disk.volid  
+    cdrom_a = %w[none cdrom]  
+    if cdrom_a.include? volid
+      cdrom.store('cdrom',volid)
+    else
+      cdrom.store('cdrom','image')
+      cdrom.store('cdrom_iso',volid)
+      cdrom.store('cdrom_storage',disk.storage)
+    end
   end
 
 end

@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: foreman_fog_proxmox 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-24 13:14+0200\n"
-"PO-Revision-Date: 2018-07-24 13:14+0200\n"
+"POT-Creation-Date: 2018-07-30 09:31+0200\n"
+"PO-Revision-Date: 2018-07-30 09:31+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -112,101 +112,101 @@ msgstr ""
 msgid "URL"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:8
+#: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:5
 #: ../app/views/compute_resources_vms/form/proxmox/_config_server.html.erb:16
 msgid "Type"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:6
+#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:5
 #: ../app/views/compute_resources_vms/form/proxmox/_config_server.html.erb:6
-#: ../app/views/compute_resources_vms/form/proxmox/_general_container.html.erb:23
-#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:23
+#: ../app/views/compute_resources_vms/form/proxmox/_general_container.html.erb:26
+#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:26
 msgid "Main option"
 msgid_plural "Main options"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:7
+#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:6
 #: ../app/views/compute_resources_vms/form/proxmox/_config_server.html.erb:7
 msgid "Description"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:8
+#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:7
 #: ../app/views/compute_resources_vms/form/proxmox/_config_server.html.erb:8
 msgid "Start/Shutdown order"
 msgstr ""
 
+#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:8
 #: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:9
-#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:10
 #: ../app/views/compute_resources_vms/form/proxmox/_config_server.html.erb:9
 msgid "Start at boot"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:12
+#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:11
 #: ../app/views/compute_resources_vms/form/proxmox/_config_server.html.erb:15
-#: ../app/views/compute_resources_vms/form/proxmox/_general_container.html.erb:25
-#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:25
+#: ../app/views/compute_resources_vms/form/proxmox/_general_container.html.erb:28
+#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:28
 msgid "CPU"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:13
+#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:12
 msgid "Architecture"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:14
+#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:13
 #: ../app/views/compute_resources_vms/form/proxmox/_config_server.html.erb:18
 msgid "Cores"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:15
+#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:14
 #: ../app/views/compute_resources_vms/form/proxmox/_config_server.html.erb:20
 msgid "CPU limit"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:16
+#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:15
 #: ../app/views/compute_resources_vms/form/proxmox/_config_server.html.erb:21
 msgid "CPU units"
 msgstr ""
 
 #:
+#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:17
 #: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:18
-#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:19
 #: ../app/views/compute_resources_vms/form/proxmox/_config_server.html.erb:26
 #: ../app/views/compute_resources_vms/form/proxmox/_config_server.html.erb:27
-#: ../app/views/compute_resources_vms/form/proxmox/_general_container.html.erb:27
-#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:27
+#: ../app/views/compute_resources_vms/form/proxmox/_general_container.html.erb:30
+#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:30
 #: ../app/views/compute_resources_vms/index/_proxmox.html.erb:8
 msgid "Memory"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:20
+#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:19
 msgid "Swap"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:22
+#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:21
 msgid "DNS"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:23
+#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:22
 msgid "Hostname"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:25
+#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:24
 #: ../app/views/compute_resources_vms/form/proxmox/_config_server.html.erb:41
 msgid "Operating System"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:26
+#: ../app/views/compute_resources_vms/form/proxmox/_config_container.html.erb:25
 #: ../app/views/compute_resources_vms/form/proxmox/_config_server.html.erb:42
 msgid "OS type"
 msgstr ""
@@ -276,8 +276,8 @@ msgid "Physical"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/_config_server.html.erb:35
-#: ../app/views/compute_resources_vms/form/proxmox/_general_container.html.erb:16
-#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:16
+#: ../app/views/compute_resources_vms/form/proxmox/_general_container.html.erb:19
+#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:19
 msgid "Image"
 msgstr ""
 
@@ -291,40 +291,40 @@ msgid "Image ISO"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/_general_container.html.erb:3
-#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:3
+#: ../app/views/compute_resources_vms/form/proxmox/_general_container.html.erb:6
+#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:6
 msgid "General"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/_general_container.html.erb:4
-#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:4
+#: ../app/views/compute_resources_vms/form/proxmox/_general_container.html.erb:7
+#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:7
 msgid "Create image?"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/_general_container.html.erb:5
-#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:5
+#: ../app/views/compute_resources_vms/form/proxmox/_general_container.html.erb:8
+#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:8
 msgid "VM ID"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/_general_container.html.erb:6
-#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:6
+#: ../app/views/compute_resources_vms/form/proxmox/_general_container.html.erb:9
+#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:9
 msgid "Node"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/_general_container.html.erb:22
-#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:22
+#: ../app/views/compute_resources_vms/form/proxmox/_general_container.html.erb:25
+#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:25
 msgid "Advanced"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:29
+#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:32
 msgid "CDROM"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:31
+#: ../app/views/compute_resources_vms/form/proxmox/_general_server.html.erb:34
 msgid "OS"
 msgstr ""
 

@@ -367,7 +367,7 @@ module ForemanFogProxmox
         name: "foreman_#{Time.now.to_i}",
         vmid: next_vmid, 
         type: 'lxc', 
-        node: node.to_s).merge(Fog::Proxmox::DiskHelper.flatten(volume_container_defaults)).merge(Fog::Proxmox::NicHelper.flatten(interface_container_defaults))
+        node: node.to_s).merge(Fog::Proxmox::DiskHelper.flatten(volume_container_defaults)).merge(Fog::Proxmox::NicHelper.container_flatten(interface_container_defaults))
     end
 
     def vm_instance_defaults
@@ -379,9 +379,9 @@ module ForemanFogProxmox
       { id: id, storage: storages.first.to_s, size: (8 * GIGA), options: { cache: 'none' } }
     end
 
-    def volume_container_defaults(device = 0)
-      id = "mp#{device}"
-      { id: id, storage: storages.first.to_s, size: (8 * GIGA), options: { cache: 'none' } }
+    def volume_container_defaults
+      id = "rootfs"
+      { id: id, storage: storages_containers.first.to_s, size: (8 * GIGA), options: {  } }
     end
 
     def interface_server_defaults(id = 'net0')

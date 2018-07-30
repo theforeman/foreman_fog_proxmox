@@ -19,8 +19,9 @@ $(document).on('ContentLoad', tfm.numFields.initAll);
 
 function vmTypeSelected(item) {
   var selected = $(item).val();
-  disableFieldset(selected,'advanced_options',true);
-  var fieldsets = ['options','cpu','memory','cdrom','os','dns'];
+  toggleFieldset(selected,'general',true);
+  toggleFieldset(selected,'config_advanced_options',true);
+  var fieldsets = ['config_options','config_cpu','config_memory','config_cdrom','config_os','config_dns'];
   for (i=0;i<fieldsets.length;i++){
     toggleFieldset(selected,fieldsets[i],false);
   }
@@ -28,9 +29,9 @@ function vmTypeSelected(item) {
   return false;
 }
 
-function disableFieldset(selected,fieldset,toggle){
-  var server_fieldset = $('#server_config_'+fieldset);
-  var container_fieldset = $('#container_config_'+fieldset);
+function toggleFieldset(selected,fieldset,toggle){
+  var server_fieldset = $('#server_'+fieldset);
+  var container_fieldset = $('#container_'+fieldset);
   switch (selected) {
     case 'qemu':
       if (toggle){

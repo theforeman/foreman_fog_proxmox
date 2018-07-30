@@ -71,6 +71,9 @@ msgstr ""
 msgid "DNS"
 msgstr ""
 
+msgid "DNS server"
+msgstr ""
+
 msgid "Description"
 msgstr ""
 
@@ -187,7 +190,13 @@ msgstr ""
 msgid "Rate limit"
 msgstr ""
 
+msgid "Root password"
+msgstr ""
+
 msgid "SSL verify peer"
+msgstr ""
+
+msgid "Search domain"
 msgstr ""
 
 msgid "Shares"

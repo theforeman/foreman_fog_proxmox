@@ -17,30 +17,20 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-module ForemanFogProxmox
-  class ComputeResourcesController < ::ApplicationController
-    before_action :load_compute_resource
+require 'fog/proxmox/helpers/disk_helper'
 
-    # GET foreman_fog_proxmox/isos/:storage
-    def isos
-      volumes = @compute_resource.images('iso',params[:storage])
-      respond_to do |format|
-        format.json { render :json => volumes }
-      end
+module FogExtensions
+    module Proxmox
+        module ContainerConfig
+            extend ActiveSupport::Concern
+
+            def rootfs_storage
+                disks.rootfs.storage
+            end
+            def rootfs_file
+                disks.rootfs.volid
+            end
+
+        end
     end
-
-    # GET foreman_fog_proxmox/ostemplates/:storage
-    def ostemplates
-      volumes = @compute_resource.images('vztmpl',params[:storage])
-      respond_to do |format|
-        format.json { render :json => volumes }
-      end
-    end
-
-    private
-
-    def load_compute_resource
-      @compute_resource = ComputeResource.find_by(type: 'ForemanFogProxmox::Proxmox')
-    end
-  end
-end
+end   

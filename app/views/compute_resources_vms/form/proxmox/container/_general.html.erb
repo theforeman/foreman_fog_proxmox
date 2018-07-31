@@ -22,10 +22,15 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= checkbox_f f, :templated, :label => _('Create image?'), :disabled => untemplatable, :class => ('hide' if untemplatable), :no_label => untemplatable %>
   <%= counter_f f, :vmid, :label => _('VM ID'), :label_size => "col-md-2", :required => true, :disabled => !new_vm %>
   <%= select_f f, :node, compute_resource.nodes, :node, :node, { }, :label => _('Node'), :label_size => "col-md-2", :required => true, :disabled => !new_vm %>
-  <div id='ostemplate_form' class='<%= 'hide' if %[none cdrom].include? f.object.ostemplate %>'>
-    <%= select_f f, :ostemplate_storage, compute_resource.storages_ostemplates, :storage, :storage, { :include_blank => true }, :label => _('Storage'), :label_size => "col-md-2", :onchange => 'storageOstemplateSelected(this)' %>
-    <%= select_f f, :ostemplate_iso, compute_resource.ostemplates(f.object.ostemplate_storage), :volid, :volid, { :include_blank => true }, :label => _('OS Template'), :label_size => "col-md-2" %>
+<% end %>
+
+<%= field_set_tag _("Extended"), :id => "container_config_ext", :class => ('hide' unless (new_vm && container)), :disabled => (!container || !new_vm) do %>
+  <div id="ostemplate_form">
+    <%= select_f f, :ostemplate_storage, compute_resource.storages('vztmpl'), :storage, :storage, { :include_blank => true }, :disabled => !new_vm, :class => ('hide' unless new_vm), :label => _('Template storage'), :label_size => "col-md-2", :onchange => 'storageOstemplateSelected(this)' %>
+    <%= select_f f, :ostemplate_file, compute_resource.images('vztmpl',f.object.ostemplate_storage), :volid, :volid, { :include_blank => true }, :disabled => !new_vm, :class => ('hide' unless new_vm), :label => _('OS Template'), :label_size => "col-md-2", :required => true %>
   </div>
+  <%= password_proxmox_f f, :password, :label => _("Root password"), :required => true %>
+<% end %>
 
 <%= field_set_tag _("Advanced"), :id => "container_config_advanced_options", :class => ('hide' unless container) do %>
   <%= label_tag 'show_container_config_options', n_("Main option", "Main options", 2) %>

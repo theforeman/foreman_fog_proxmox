@@ -21,18 +21,18 @@ function cdromSelected(item) {
 
   switch (selected) {
     case 'none':
-      initStorage();
-      initOptions('iso');
+      initCdromStorage();
+      initCdromOptions('iso');
       cdrom_image_form.hide();
       break;
     case 'cdrom':
-      initStorage();
-      initOptions('iso');
+      initCdromStorage();
+      initCdromOptions('iso');
       cdrom_image_form.hide();
       break;
     case 'image':
-      initStorage();
-      initOptions('iso');
+      initCdromStorage();
+      initCdromOptions('iso');
       cdrom_image_form.show();
       break;
     default:
@@ -41,13 +41,13 @@ function cdromSelected(item) {
   return false;
 }
 
-function initStorage(){
+function initCdromStorage(){
   var select = '#host_compute_attributes_config_attributes_cdrom_storage';
   $(select + ' option:selected').prop('selected',false);
   $(select).val('');
 }
 
-function initOptions(name){
+function initCdromOptions(name){
   var select = '#host_compute_attributes_config_attributes_cdrom_'+name;
   $(select).empty();
   $(select).append($("<option></option>").val('').text(''));
@@ -68,14 +68,14 @@ function initOptions(name){
           console.log("Error=" + error +", status=" + status + " loading isos for storage=" + storage);
         },
         success: function(isos) {
-          initOptions('iso');
+          initCdromOptions('iso');
           $.each(isos, function(i,iso){
             $('#host_compute_attributes_config_attributes_cdrom_iso').append($("<option></option>").val(iso.volid).text(iso.volid));
           });
         }
       });
     } else {
-      initOptions('iso');
+      initCdromOptions('iso');
     }
   }
 

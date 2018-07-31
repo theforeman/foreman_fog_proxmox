@@ -20,7 +20,6 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <%= field_set_tag n_("Main option", "Main options", 2), :id => "container_config_options", :class => 'hide', :disabled => !container do %>
   <%= textarea_f f, :description, :label => _('Description'), :label_size => "col-md-2" %>
   <%= checkbox_f f, :onboot, :label => _('Start at boot') %>
-  <%= password_proxmox_f f, :password, :label => _("Root password") %>
 <% end %>
 <%= field_set_tag _("CPU"), :id => "container_config_cpu", :class => 'hide', :disabled => !container do %>
   <%= select_f f, :arch, proxmox_archs_map, :id, :name, { }, :label => _('Architecture'), :label_size => "col-md-2" %>

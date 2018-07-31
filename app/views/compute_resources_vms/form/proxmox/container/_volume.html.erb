@@ -17,9 +17,9 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <% container = type == 'lxc' %>
 
-<%= field_set_tag _("Mount point"), :id => "container_volume_#{f.index}", :class => ('hide' unless container), :disabled => !container do %> 
+<%= field_set_tag (f.object.rootfs? ? _("Rootfs") : _("Mount point")), :id => "container_volume_#{f.index}", :class => ('hide' unless container), :disabled => !container do %> 
     <%= f.hidden_field :volid if !new_vm %>
-    <%= select_f f, :storage, compute_resource.storages_containers, :storage, :storage, { }, :label => _('Storage'), :label_size => "col-md-2", :disabled => !new_vm %>
-    <%= counter_f f, :device, :label => _('Device'), :label_size => "col-md-2", :disabled => !new_vm, :'data-soft-max' => 10 %>
+    <%= select_f f, :storage, compute_resource.storages, :storage, :storage, { }, :label => _('Storage'), :label_size => "col-md-2", :disabled => !new_vm %>
+    <%= counter_f f, :device, :label => _('Device'), :label_size => "col-md-2", :class => ('hide' if f.object.rootfs?), :disabled => (!new_vm || f.object.rootfs?), :'data-soft-max' => 10 %>
     <%= byte_size_f f, :size, :class => "input-mini", :label => _("Size"), :label_size => "col-md-2", :disabled => !new_vm %>
 <% end %>

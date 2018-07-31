@@ -20,5 +20,6 @@
 Rails.application.routes.draw do
     namespace :foreman_fog_proxmox do
         match 'isos/:storage', :to => 'compute_resources#isos', :via => 'get'
+        match 'ostemplates/:storage', :to => 'compute_resources#ostemplates', :via => 'get'
     end
 end

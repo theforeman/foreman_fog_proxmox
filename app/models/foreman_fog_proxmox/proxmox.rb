@@ -69,24 +69,14 @@ module ForemanFogProxmox
       pools.sort_by(&:poolid)
     end
 
-    def storages
-      storages = node.storages.list_by_content_type 'images'
+    def storages(type = 'images')
+      storages = node.storages.list_by_content_type type
       storages.sort_by(&:storage)
     end
 
-    def storages_isos
-      storages = node.storages.list_by_content_type 'iso'
-      storages.sort_by(&:storage)
-    end
-
-    def storages_containers
-      storages = node.storages.list_by_content_type 'rootdir'
-      storages.sort_by(&:storage)
-    end
-
-    def isos(storage_id)
+    def images(type = 'iso', storage_id)
       storage = node.storages.find_by_id storage_id if storage_id
-      storage.volumes.list_by_content_type('iso').sort_by(&:volid) if storage
+      storage.volumes.list_by_content_type(type).sort_by(&:volid) if storage
     end
 
     def associated_host(vm)
@@ -199,7 +189,13 @@ module ForemanFogProxmox
       else
         logger.debug(_("create_vm(): %{args}") % { args: args })
         convert_sizes(args)
-        node.servers.create(parse_vm(args))
+        type = args[:type]
+        case type
+          when 'qemu'
+            node.servers.create(parse_server_vm(args))
+          when 'lxc'
+            node.containers.create(parse_container_vm(args))
+        end
       end
       vm = find_vm_by_uuid(vmid)
       vm
@@ -381,7 +377,7 @@ module ForemanFogProxmox
 
     def volume_container_defaults
       id = "rootfs"
-      { id: id, storage: storages_containers.first.to_s, size: (8 * GIGA), options: {  } }
+      { id: id, storage: storages.first.to_s, size: (8 * GIGA), options: {  } }
     end
 
     def interface_server_defaults(id = 'net0')

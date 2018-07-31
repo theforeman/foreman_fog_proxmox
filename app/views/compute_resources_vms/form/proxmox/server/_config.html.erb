@@ -49,8 +49,8 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= radio_button_f f, :cdrom, :value => 'cdrom' , :text => _('Physical'), :onclick => 'cdromSelected(this)' %>
   <%= radio_button_f f, :cdrom, :value => 'image' , :text => _('Image'), :onclick => 'cdromSelected(this)' %>
   <div id='cdrom_image_form' class='<%= 'hide' if %[none cdrom].include? f.object.cdrom %>'>
-    <%= select_f f, :cdrom_storage, compute_resource.storages_isos, :storage, :storage, { :include_blank => true }, :label => _('Storage'), :label_size => "col-md-2", :onchange => 'storageIsoSelected(this)' %>
-    <%= select_f f, :cdrom_iso, compute_resource.isos(f.object.cdrom_storage), :volid, :volid, { :include_blank => true }, :label => _('Image ISO'), :label_size => "col-md-2" %>
+    <%= select_f f, :cdrom_storage, compute_resource.storages('iso'), :storage, :storage, { :include_blank => true }, :label => _('Storage'), :label_size => "col-md-2", :onchange => 'storageIsoSelected(this)' %>
+    <%= select_f f, :cdrom_iso, compute_resource.images('iso',f.object.cdrom_storage), :volid, :volid, { :include_blank => true }, :label => _('Image ISO'), :label_size => "col-md-2" %>
   </div>
 <% end %>
 <%= field_set_tag _("Operating System"), :id => "server_config_os", :class => 'hide', :disabled => !server do %>

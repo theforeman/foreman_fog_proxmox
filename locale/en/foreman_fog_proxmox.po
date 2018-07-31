@@ -101,6 +101,9 @@ msgstr ""
 msgid "Enable/disable KVM hardware virtualization"
 msgstr ""
 
+msgid "Extended"
+msgstr ""
+
 msgid "Failed retrieving proxmox vm by vmid=%{uuid}"
 msgstr ""
 
@@ -172,6 +175,9 @@ msgstr ""
 msgid "OS"
 msgstr ""
 
+msgid "OS Template"
+msgstr ""
+
 msgid "OS type"
 msgstr ""
 
@@ -208,6 +214,9 @@ msgstr ""
 msgid "Root password"
 msgstr ""
 
+msgid "Rootfs"
+msgstr ""
+
 msgid "SSL verify peer"
 msgstr ""
 
@@ -236,6 +245,9 @@ msgid "Storage"
 msgstr ""
 
 msgid "Swap"
+msgstr ""
+
+msgid "Template storage"
 msgstr ""
 
 msgid "Test failed"

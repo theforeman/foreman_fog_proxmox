@@ -20,14 +20,13 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <%= select_f f, :type, proxmox_types_map, :id, :name, { }, :label => _('Type'), :label_size => "col-md-2", :onchange => "vmTypeSelected(this)" %>
 
 <!-- VM General Settings -->
-<%= render :partial => "compute_resources_vms/form/proxmox/general_server", :locals => { :f => f, :compute_resource =>  compute_resource, :new_vm => new_vm } %>
-<%= render :partial => "compute_resources_vms/form/proxmox/general_container", :locals => { :f => f, :compute_resource =>  compute_resource, :new_vm => new_vm } %>
-
+<%= render :partial => "compute_resources_vms/form/proxmox/server/general", :locals => { :f => f, :compute_resource =>  compute_resource, :new_vm => new_vm } %>
+<%= render :partial => "compute_resources_vms/form/proxmox/container/general", :locals => { :f => f, :compute_resource =>  compute_resource, :new_vm => new_vm } %>
 
 <!-- Config -->
 <%= f.fields_for :config, compute_resource.new_server_vm(object_to_hash(f.object)).config do |server_config|%>
-  <%= render :partial => "compute_resources_vms/form/proxmox/config_server", :locals => { :f => server_config, :compute_resource =>  compute_resource, :host => @host, :new_vm => new_vm, :item_layout => 'removable', :type => f.object.type } %>
+  <%= render :partial => "compute_resources_vms/form/proxmox/server/config", :locals => { :f => server_config, :compute_resource =>  compute_resource, :host => @host, :new_vm => new_vm, :item_layout => 'removable', :type => f.object.type } %>
 <% end %>
 <%= f.fields_for :config, compute_resource.new_container_vm(object_to_hash(f.object)).config do |container_config|%>
-  <%= render :partial => "compute_resources_vms/form/proxmox/config_container", :locals => { :f => container_config, :compute_resource =>  compute_resource, :host => @host, :new_vm => new_vm, :item_layout => 'removable', :type => f.object.type } %>
+  <%= render :partial => "compute_resources_vms/form/proxmox/container/config", :locals => { :f => container_config, :compute_resource =>  compute_resource, :host => @host, :new_vm => new_vm, :item_layout => 'removable', :type => f.object.type } %>
 <% end %>

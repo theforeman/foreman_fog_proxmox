@@ -31,6 +31,8 @@ module ProxmoxContainerHelper
     return {} if args.empty?
     return {} unless args['type'] == 'lxc'
     config = args['config_attributes']
+    ostemplate_a = %w[ostemplate_storage ostemplate_file]
+    ostemplate = parse_container_ostemplate(config.select { |key,_value| ostemplate_a.include? key })
     volumes = parse_container_volumes(args['volumes_attributes'])
     cpu_a = %w[arch cpulimit cpuunits cores]
     cpu = parse_container_cpu(config.select { |key,_value| cpu_a.include? key })
@@ -43,10 +45,11 @@ module ProxmoxContainerHelper
     parsed_vm = args.reject { |key,value| general_a.include?(key) || value.empty? }
     config_a = []
     config_a += cpu_a
+    config_a += ostemplate_a
     config_a += memory_a
     parsed_config = config.reject { |key,value| config_a.include?(key) || value.empty? }
     logger.debug("parse_container_config(): #{parsed_config}")
-    parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory)
+    parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory).merge(ostemplate)
     networks.each { |network| parsed_vm = parsed_vm.merge(network) }
     volumes.each { |volume| parsed_vm = parsed_vm.merge(volume) }
     logger.debug("parse_container_vm(): #{parsed_vm}")
@@ -66,6 +69,13 @@ module ProxmoxContainerHelper
     parsed_cpu = { cpu: cpu }.merge(args)
     logger.debug("parse_container_cpu(): #{parsed_cpu}")
     parsed_cpu
+  end
+
+  def parse_container_ostemplate(args)
+    ostemplate_storage = args['ostemplate_storage']
+    ostemplate_file = args['ostemplate_file']
+    volid = "#{ostemplate_storage}:#{ostemplate_file}"
+    {ostemplate: volid}
   end
 
   def parse_container_volume(args)

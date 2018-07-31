@@ -22,6 +22,7 @@ function vmTypeSelected(item) {
   var fieldsets = [];
   fieldsets.push({id: 'general', toggle: true, selected: selected});
   fieldsets.push({id: 'config_advanced_options', toggle: true, selected: selected});
+  fieldsets.push({id: 'config_ext', toggle: true, selected: selected});
   fieldsets.push({id: 'volume', toggle: true, selected: selected});
   fieldsets.push({id: 'network', toggle: true, selected: selected});
   fieldsets.push({id: 'config_options', toggle: false, selected: selected});

@@ -101,6 +101,9 @@ msgstr "Activer NUMA"
 msgid "Enable/disable KVM hardware virtualization"
 msgstr "Activer/désactiver la virtualisation matérielle de KVM"
 
+msgid "Extended"
+msgstr ""
+
 msgid "Failed retrieving proxmox vm by vmid=%{uuid}"
 msgstr "Echec de la récupération dans proxmox de la vm avec vmid=%{uuid}"
 
@@ -172,6 +175,9 @@ msgstr "Aucun"
 msgid "OS"
 msgstr "Système d'exploitation"
 
+msgid "OS Template"
+msgstr ""
+
 msgid "OS type"
 msgstr "Type de système d'exploitation"
 
@@ -208,6 +214,9 @@ msgstr "Taux limite"
 msgid "Root password"
 msgstr ""
 
+msgid "Rootfs"
+msgstr ""
+
 msgid "SSL verify peer"
 msgstr ""
 
@@ -236,6 +245,9 @@ msgid "Storage"
 msgstr "Stockage"
 
 msgid "Swap"
+msgstr ""
+
+msgid "Template storage"
 msgstr ""
 
 msgid "Test failed"

@@ -1,0 +1,26 @@
+<%# Copyright 2018 Tristan Robert
+
+This file is part of ForemanFogProxmox.
+
+ForemanFogProxmox is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+ForemanFogProxmox is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
+
+<% container = f.object.type == 'lxc' %>  
+
+<%= field_set_tag _("Extended"), :id => "container_config_ext", :class => ('hide' unless (new_vm && container)), :disabled => (!container || !new_vm) do %>
+  <div id="ostemplate_form">
+    <%= select_f f, :ostemplate_storage, compute_resource.storages('vztmpl'), :storage, :storage, { :include_blank => true }, :disabled => !new_vm, :class => ('hide' unless new_vm), :label => _('Template storage'), :label_size => "col-md-2", :onchange => 'storageOstemplateSelected(this)' %>
+    <%= select_f f, :ostemplate_file, compute_resource.images('vztmpl',f.object.ostemplate_storage), :volid, :volid, { :include_blank => true }, :disabled => !new_vm, :class => ('hide' unless new_vm), :label => _('OS Template'), :label_size => "col-md-2", :required => true %>
+  </div>
+  <%= password_proxmox_f f, :password, :label => _("Root password"), :required => true %>
+<% end %>

@@ -16,9 +16,8 @@ You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <% untemplatable = new_vm || f.object.templated? %>
-<% server = f.object.type == 'qemu' %>
 
-<%= field_set_tag _("General"), :id => "server_general", :class => ('hide' unless server) do %>
+<%= field_set_tag _("General"), :id => "general" do %>
   <%= checkbox_f f, :templated, :label => _('Create image?'), :disabled => untemplatable, :class => ('hide' if untemplatable), :no_label => untemplatable %>
   <%= counter_f f, :vmid, :label => _('VM ID'), :label_size => "col-md-2", :required => true, :disabled => !new_vm %>
   <%= select_f f, :node, compute_resource.nodes, :node, :node, { }, :label => _('Node'), :label_size => "col-md-2", :required => true, :disabled => !new_vm %>
@@ -35,17 +34,4 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
       :label_size => "col-md-2" %>
     </div>
   <% end %>
-<% end %>
-
-<%= field_set_tag _("Advanced"), :id => "server_config_advanced_options", :class => ('hide' unless server) do %>
-  <%= label_tag 'show_server_config_options', n_("Main option", "Main options", 2) %>
-  <%= check_box_tag 'show_server_config_options', '1', false, :onclick => "$('#server_config_options').toggle()" %>
-  <%= label_tag 'show_server_config_cpu', _("CPU") %>
-  <%= check_box_tag 'show_server_config_cpu', '1', false, :onclick => "$('#server_config_cpu').toggle()" %>
-  <%= label_tag 'show_server_config_memory', _("Memory") %>
-  <%= check_box_tag 'show_server_config_memory', '1', false, :onclick => "$('#server_config_memory').toggle()" %>
-  <%= label_tag 'show_server_config_cdrom', _("CDROM") %>
-  <%= check_box_tag 'show_server_config_cdrom', '1', false, :onclick => "$('#server_config_cdrom').toggle()" %>
-  <%= label_tag 'show_server_config_os', _("OS") %>
-  <%= check_box_tag 'show_server_config_os', '1', false, :onclick => "$('#server_config_os').toggle()" %>
 <% end %>

@@ -20,7 +20,6 @@ $(document).on('ContentLoad', tfm.numFields.initAll);
 function vmTypeSelected(item) {
   var selected = $(item).val();
   var fieldsets = [];
-  fieldsets.push({id: 'general', toggle: true, selected: selected});
   fieldsets.push({id: 'config_advanced_options', toggle: true, selected: selected});
   fieldsets.push({id: 'config_ext', toggle: true, selected: selected});
   fieldsets.push({id: 'volume', toggle: true, selected: selected});

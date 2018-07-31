@@ -22,20 +22,10 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= checkbox_f f, :templated, :label => _('Create image?'), :disabled => untemplatable, :class => ('hide' if untemplatable), :no_label => untemplatable %>
   <%= counter_f f, :vmid, :label => _('VM ID'), :label_size => "col-md-2", :required => true, :disabled => !new_vm %>
   <%= select_f f, :node, compute_resource.nodes, :node, :node, { }, :label => _('Node'), :label_size => "col-md-2", :required => true, :disabled => !new_vm %>
-  <% unless local_assigns[:hide_image] && !new_vm %>
-    <%
-      arch ||= nil ; os ||= nil
-      images = possible_images(compute_resource, arch, os)
-    -%>
-    <div id='image_selection'>
-    <%= select_f f, :image_id, images, :uuid, :name, { :include_blank => true }, 
-      :disabled => true,
-      :help_inline => :indicator,
-      :label => _('Image'), 
-      :label_size => "col-md-2" %>
-    </div>
-  <% end %>
-<% end %>
+  <div id='ostemplate_form' class='<%= 'hide' if %[none cdrom].include? f.object.ostemplate %>'>
+    <%= select_f f, :ostemplate_storage, compute_resource.storages_ostemplates, :storage, :storage, { :include_blank => true }, :label => _('Storage'), :label_size => "col-md-2", :onchange => 'storageOstemplateSelected(this)' %>
+    <%= select_f f, :ostemplate_iso, compute_resource.ostemplates(f.object.ostemplate_storage), :volid, :volid, { :include_blank => true }, :label => _('OS Template'), :label_size => "col-md-2" %>
+  </div>
 
 <%= field_set_tag _("Advanced"), :id => "container_config_advanced_options", :class => ('hide' unless container) do %>
   <%= label_tag 'show_container_config_options', n_("Main option", "Main options", 2) %>

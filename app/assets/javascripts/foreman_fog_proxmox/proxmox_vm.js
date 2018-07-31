@@ -19,22 +19,27 @@ $(document).on('ContentLoad', tfm.numFields.initAll);
 
 function vmTypeSelected(item) {
   var selected = $(item).val();
-  toggleFieldset(selected,'general',true);
-  toggleFieldset(selected,'config_advanced_options',true);
-  var fieldsets = ['config_options','config_cpu','config_memory','config_cdrom','config_os','config_dns'];
-  for (i=0;i<fieldsets.length;i++){
-    toggleFieldset(selected,fieldsets[i],false);
-  }
-
+  var fieldsets = [];
+  fieldsets.push({id: 'general', toggle: true, selected: selected});
+  fieldsets.push({id: 'config_advanced_options', toggle: true, selected: selected});
+  fieldsets.push({id: 'volume', toggle: true, selected: selected});
+  fieldsets.push({id: 'network', toggle: true, selected: selected});
+  fieldsets.push({id: 'config_options', toggle: false, selected: selected});
+  fieldsets.push({id: 'config_cpu', toggle: false, selected: selected});
+  fieldsets.push({id: 'config_memory', toggle: false, selected: selected});
+  fieldsets.push({id: 'config_cdrom', toggle: false, selected: selected});
+  fieldsets.push({id: 'config_os', toggle: false, selected: selected});
+  fieldsets.push({id: 'config_dns', toggle: false, selected: selected});
+  fieldsets.forEach(toggleFieldset);
   return false;
 }
 
-function toggleFieldset(selected,fieldset,toggle){
-  var server_fieldset = $('#server_'+fieldset);
-  var container_fieldset = $('#container_'+fieldset);
-  switch (selected) {
+function toggleFieldset(fieldset, index, fieldsets){
+  var server_fieldset = $("fieldset[id^='server_"+fieldset.id+"']");
+  var container_fieldset = $("fieldset[id^='container_"+fieldset.id+"']");
+  switch (fieldset.selected) {
     case 'qemu':
-      if (toggle){
+      if (fieldset.toggle){
         server_fieldset.toggle();
         container_fieldset.toggle();
       }
@@ -42,7 +47,7 @@ function toggleFieldset(selected,fieldset,toggle){
       container_fieldset.attr('disabled','disabled');
       break;
     case 'lxc':
-      if (toggle){
+      if (fieldset.toggle){
         server_fieldset.toggle();
         container_fieldset.toggle();
       }

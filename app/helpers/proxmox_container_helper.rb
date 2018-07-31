@@ -32,9 +32,9 @@ module ProxmoxContainerHelper
     return {} unless args['type'] == 'lxc'
     config = args['config_attributes']
     volumes = parse_container_volumes(args['volumes_attributes'])
-    cpu_a = %w[cpu_type spectre pcid vcpus cpulimit cpuunits cores sockets numa]
+    cpu_a = %w[arch cpulimit cpuunits cores]
     cpu = parse_container_cpu(config.select { |key,_value| cpu_a.include? key })
-    memory_a = %w[memory min_memory balloon shares]
+    memory_a = %w[memory swap]
     memory = parse_container_memory(config.select { |key,_value| memory_a.include? key })
     interfaces_attributes = args['interfaces_attributes']
     networks = parse_container_interfaces(interfaces_attributes)
@@ -54,27 +54,14 @@ module ProxmoxContainerHelper
   end
 
   def parse_container_memory(args)
-    memory = { memory: args['memory'].to_i }
-    ballooned = args['balloon'].to_i == 1
-    if ballooned
-      memory.store(:shares,args['shares'].to_i)
-      memory.store(:balloon,args['min_memory'].to_i)
-    else
-      memory.store(:balloon,args['balloon'].to_i)
-    end
+    memory = { memory: args['memory'].to_i, swap: args['swap'].to_i }
     logger.debug("parse_container_memory(): #{memory}")
     memory
   end
 
   def parse_container_cpu(args)
-    cpu = "cputype=#{args['cpu_type']}"
-    spectre = args['spectre'].to_i == 1
-    pcid = args['pcid'].to_i == 1
-    cpu += ",flags=" if spectre || pcid
-    cpu += "+spec-ctrl" if spectre
-    cpu += ";" if spectre && pcid
-    cpu += "+pcid" if pcid      
-    args.delete_if { |key,value| %w[cpu_type spectre pcid].include?(key) || value.empty? }
+    cpu = "arch=#{args['arch']}"
+    args.delete_if { |key,value| %w[arch].include?(key) || value.empty? }
     args.each_value { |value| value.to_i }
     parsed_cpu = { cpu: cpu }.merge(args)
     logger.debug("parse_container_cpu(): #{parsed_cpu}")
@@ -84,7 +71,7 @@ module ProxmoxContainerHelper
   def parse_container_volume(args)
     disk = {}
     id = args['id']
-    id = "#{args['controller']}#{args['device']}" unless id
+    id = "mp#{args['device']}" unless id
     delete = args['_delete'].to_i == 1
     args.delete_if { |_key,value| value.empty? }
     if delete
@@ -96,7 +83,7 @@ module ProxmoxContainerHelper
       disk.store(:volid, args['volid'])
       disk.store(:storage, args['storage'].to_s)
       disk.store(:size, args['size'])
-      options = args.reject { |key,_value| %w[id volid controller device storage size _delete].include? key}
+      options = args.reject { |key,_value| %w[id volid device storage size _delete].include? key}
       disk.store(:options, options)
       logger.debug("parse_container_volume(): add disk=#{disk}")
       Fog::Proxmox::DiskHelper.flatten(disk)
@@ -129,10 +116,10 @@ module ProxmoxContainerHelper
       nic
     else
       nic.store(:id, id)
-      nic.store(:tag, args['vlan'].to_i) if args['vlan']
-      nic.store(:model, args['model'].to_s)
+      nic.store(:name, args['name'].to_s)
       nic.store(:bridge, args['bridge'].to_s) if args['bridge']
-      nic.store(:firewall, args['firewall'].to_i) if args['firewall']
+      nic.store(:ip, args['ip'].to_s) if args['ip']
+      nic.store(:ip6, args['ip6'].to_s) if args['ip6']
       nic.store(:rate, args['rate'].to_i) if args['rate']
       nic.store(:link_down, args['disconnect'].to_i) if args['disconnect']
       nic.store(:queues, args['queues'].to_i) if args['queues']

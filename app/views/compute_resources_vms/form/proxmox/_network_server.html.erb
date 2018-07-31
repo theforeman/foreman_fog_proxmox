@@ -1,0 +1,29 @@
+<%# Copyright 2018 Tristan Robert
+
+This file is part of ForemanFogProxmox.
+
+ForemanFogProxmox is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+ForemanFogProxmox is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
+
+
+<% server = type == 'qemu' %>
+
+<%= field_set_tag _("Nic"), :id => "server_network", :class => 'hide', :disabled => !server do %> 
+    <%= select_f f, :model, proxmox_networkcards_map, :id, :name, { }, :label => _('Card'), :label_size => "col-md-2" %>
+    <%= select_f f, :bridge, compute_resource.bridges, :iface, :iface, { }, :label => _('Bridge'), :label_size => "col-md-2" %>
+    <%= counter_f f, :tag, :class => "input-mini", :label => _('VLAN tag'), :label_size => "col-md-2" %>
+    <%= counter_f f, :rate, :class => "input-mini", :label => _('Rate limit'), :label_size => "col-md-2" %>
+    <%= counter_f f, :queues, :class => "input-mini", :label => _('Multiqueue'), :label_size => "col-md-2" %>
+    <%= checkbox_f f, :firewall, :label => _('Firewall') %>
+    <%= checkbox_f f, :link_down, :label => _('Disconnect') %>
+<% end %>

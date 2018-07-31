@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: foreman_fog_proxmox 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-30 16:35+0200\n"
-"PO-Revision-Date: 2018-07-30 16:35+0200\n"
+"POT-Creation-Date: 2018-07-31 11:11+0200\n"
+"PO-Revision-Date: 2018-07-31 11:11+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -24,6 +24,14 @@ msgstr ""
 
 #: ../app/helpers/node_dashboard_helper.rb:34
 msgid "Average load (x100)"
+msgstr ""
+
+#: ../app/helpers/proxmox_vm_helper.rb:74
+msgid "Caps lock ON"
+msgstr ""
+
+#: ../app/helpers/proxmox_vm_helper.rb:77
+msgid "Change the password"
 msgstr ""
 
 #: ../app/models/foreman_fog_proxmox/proxmox.rb:119
@@ -110,6 +118,12 @@ msgstr ""
 
 #: ../app/views/compute_resources/show/_proxmox.html.erb:4
 msgid "URL"
+msgstr ""
+
+#:
+#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_new.html.erb:6
+#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_render.html.erb:3
+msgid "remove storage volume"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:5
@@ -295,7 +309,8 @@ msgid "Image"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/_config_server.html.erb:37
-#: ../app/views/compute_resources_vms/form/proxmox/_volume.html.erb:4
+#: ../app/views/compute_resources_vms/form/proxmox/_volume_container.html.erb:7
+#: ../app/views/compute_resources_vms/form/proxmox/_volume_server.html.erb:7
 msgid "Storage"
 msgstr ""
 
@@ -343,48 +358,66 @@ msgstr ""
 msgid "CDROM"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_network.html.erb:3
-msgid "Card"
+#:
+#: ../app/views/compute_resources_vms/form/proxmox/_network_container.html.erb:5
+#: ../app/views/compute_resources_vms/form/proxmox/_network_server.html.erb:6
+msgid "Nic"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_network.html.erb:4
+#:
+#: ../app/views/compute_resources_vms/form/proxmox/_network_container.html.erb:6
+#: ../app/views/compute_resources_vms/form/proxmox/_network_server.html.erb:8
 msgid "Bridge"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_network.html.erb:5
+#: ../app/views/compute_resources_vms/form/proxmox/_network_server.html.erb:7
+msgid "Card"
+msgstr ""
+
+#: ../app/views/compute_resources_vms/form/proxmox/_network_server.html.erb:9
 msgid "VLAN tag"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_network.html.erb:6
+#: ../app/views/compute_resources_vms/form/proxmox/_network_server.html.erb:10
 msgid "Rate limit"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_network.html.erb:7
+#: ../app/views/compute_resources_vms/form/proxmox/_network_server.html.erb:11
 msgid "Multiqueue"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_network.html.erb:8
+#: ../app/views/compute_resources_vms/form/proxmox/_network_server.html.erb:12
 msgid "Firewall"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_network.html.erb:9
+#: ../app/views/compute_resources_vms/form/proxmox/_network_server.html.erb:13
 msgid "Disconnect"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_volume.html.erb:5
-msgid "Controller"
+#: ../app/views/compute_resources_vms/form/proxmox/_volume_container.html.erb:5
+msgid "Mount point"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_volume.html.erb:6
+#: ../app/views/compute_resources_vms/form/proxmox/_volume_container.html.erb:8
+#: ../app/views/compute_resources_vms/form/proxmox/_volume_server.html.erb:9
 msgid "Device"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_volume.html.erb:7
-msgid "Cache"
+#: ../app/views/compute_resources_vms/form/proxmox/_volume_container.html.erb:9
+#: ../app/views/compute_resources_vms/form/proxmox/_volume_server.html.erb:11
+msgid "Size"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_volume.html.erb:8
-msgid "Size"
+#: ../app/views/compute_resources_vms/form/proxmox/_volume_server.html.erb:5
+msgid "Disk"
+msgstr ""
+
+#: ../app/views/compute_resources_vms/form/proxmox/_volume_server.html.erb:8
+msgid "Controller"
+msgstr ""
+
+#: ../app/views/compute_resources_vms/form/proxmox/_volume_server.html.erb:10
+msgid "Cache"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/index/_proxmox.html.erb:6

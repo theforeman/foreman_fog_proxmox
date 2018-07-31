@@ -15,5 +15,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-<%= render :partial => "compute_resources_vms/form/proxmox/volume_server", :locals => { :f => f, :type => type, :compute_resource =>  compute_resource, :new_vm => new_vm } %>
-<%= render :partial => "compute_resources_vms/form/proxmox/volume_container", :locals => { :f => f, :type => type, :compute_resource =>  compute_resource, :new_vm => new_vm } %>
+<%= new_child_fields_template(f, :volumes, {
+              :object  => volume,
+              :partial => provider_partial(compute_resource, 'volume'),
+              :form_builder_attrs => { :type => f.object.type, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume') },
+              :layout => "compute_resources_vms/form/#{item_layout}_layout" }) %>

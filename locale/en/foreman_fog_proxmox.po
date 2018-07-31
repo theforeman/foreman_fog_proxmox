@@ -56,7 +56,13 @@ msgstr ""
 msgid "Cache"
 msgstr ""
 
+msgid "Caps lock ON"
+msgstr ""
+
 msgid "Card"
+msgstr ""
+
+msgid "Change the password"
 msgstr ""
 
 msgid "Controller"
@@ -81,6 +87,9 @@ msgid "Device"
 msgstr ""
 
 msgid "Disconnect"
+msgstr ""
+
+msgid "Disk"
 msgstr ""
 
 msgid "Does this image support user data input (e.g. via cloud-init)?"
@@ -142,10 +151,16 @@ msgstr ""
 msgid "Minimum memory"
 msgstr ""
 
+msgid "Mount point"
+msgstr ""
+
 msgid "Multiqueue"
 msgstr ""
 
 msgid "Name"
+msgstr ""
+
+msgid "Nic"
 msgstr ""
 
 msgid "Node"
@@ -284,6 +299,9 @@ msgid "new_server_vm() vm.config=%{config}"
 msgstr ""
 
 msgid "new_vm() vm.config=%{config}"
+msgstr ""
+
+msgid "remove storage volume"
 msgstr ""
 
 msgid "save_vm(): %{attr}"

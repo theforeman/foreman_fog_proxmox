@@ -40,7 +40,7 @@ module ProxmoxContainerHelper
     memory = parse_container_memory(config.select { |key,_value| memory_a.include? key })
     interfaces_attributes = args['interfaces_attributes']
     networks = parse_container_interfaces(interfaces_attributes)
-    general_a = %w[node config_attributes volumes_attributes interfaces_attributes firmware_type provision_method]
+    general_a = %w[node type config_attributes volumes_attributes interfaces_attributes firmware_type provision_method]
     logger.debug("general_a: #{general_a}")
     parsed_vm = args.reject { |key,value| general_a.include?(key) || value.empty? }
     config_a = []

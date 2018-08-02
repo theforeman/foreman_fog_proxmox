@@ -27,7 +27,7 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
               :layout => "compute_resources_vms/form/#{item_layout}_layout" }) %>
 
 <div id="server_volumes">
-    <%= f.fields_for :volumes do |i| %>
+    <%= f.fields_for :volumes, {include_id: false} do |i| %>
         <%= render :partial => provider_partial(compute_resource, 'server/volume'), :locals => { :f => i, :type => f.object.type, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume') }, :layout => "compute_resources_vms/form/#{item_layout}_layout" %>
     <% end %>
 </div>

@@ -106,14 +106,14 @@ module ForemanFogProxmox
     def host_compute_attrs(host)
       super.tap do |attrs|
         ostype = host.compute_attributes['config_attributes']['ostype']
-        raise Foreman::Exception.new(N_("Operating system family %{type} is not consistent with %{ostype}", { type: host.operatingsystem.type, ostype: ostype })) unless compute_os_types(host).include?(ostype)
+        raise Foreman::Exception.new(N_("Operating system family %{type} is not consistent with %{ostype}") % { type: host.operatingsystem.type, ostype: ostype }) unless compute_os_types(host).include?(ostype)
       end
     end
 
     def host_interfaces_attrs(host)
       host.interfaces.select(&:physical?).each.with_index.reduce({}) do |hash, (nic, index)|
         raise ::Foreman::Exception.new N_("Identifier interface[%{index}] required.", { index: index }) if nic.identifier.empty?
-        raise ::Foreman::Exception.new N_("Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0", { index: index }) unless Fog::Proxmox::ControllerHelper.valid?(Fog::Compute::Proxmox::Interface::NAME,nic.identifier)
+        raise ::Foreman::Exception.new N_("Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0", { index: index }) unless Fog::Proxmox::NicHelper.valid?(nic.identifier)
         hash.merge(index.to_s => nic.compute_attributes.merge(id: nic.identifier, ip: nic.ip, ip6: nic.ip6))
       end
     end
@@ -219,7 +219,7 @@ module ForemanFogProxmox
       vm = find_vm_by_uuid(vmid)
       vm
     rescue => e
-      logger.warn N_("failed to create vm: %{e}", { e: e })
+      logger.warn(_("failed to create vm: %{e}") % { e: e })
       destroy_vm vm.id if vm
       raise e
     end

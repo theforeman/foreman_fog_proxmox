@@ -40,9 +40,9 @@ function toggleVolumes(){
   div_container.toggle();
   var div_server = $("div[id^='server_volumes']");
   div_server.toggle();
-  var a_container = $("a[data-association^='container_']");
+  var a_container = $("a[data-association='container_volumes']");
   a_container.toggle();
-  var a_server = $("a[data-association^='server_']");
+  var a_server = $("a[data-association='server_volumes']");
   a_server.toggle();
 }
 

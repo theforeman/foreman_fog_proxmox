@@ -17,6 +17,6 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <% container = type == 'lxc' %>
 
-<%= field_set_tag _("Nic"), :id => "container_network", :class => 'hide', :disabled => !container do %> 
+<%= field_set_tag _("Nic"), :id => "container_network", :class => ('hide' unless container), :disabled => !container do %> 
     <%= select_f f, :bridge, compute_resource.bridges, :iface, :iface, { }, :label => _('Bridge'), :label_size => "col-md-2" %>
 <% end %>

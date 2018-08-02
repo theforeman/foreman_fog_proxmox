@@ -57,7 +57,7 @@ end
     options[:form_builder_attrs] ||= {}
 
     content_tag(:div, :id => "#{options[:type]}_#{association}", :style => 'display: none') do
-      form_builder.fields_for(association, options[:object], :include_id => false, :child_index => "0") do |f|
+      form_builder.fields_for(association, options[:object], :child_index => "0") do |f|
         render(:partial => options[:partial], :layout => options[:layout],
                :locals => { options[:form_builder_local] => f }.merge(options[:form_builder_attrs]))
       end

@@ -72,10 +72,8 @@ module ProxmoxContainerHelper
   end
 
   def parse_container_ostemplate(args)
-    ostemplate_storage = args['ostemplate_storage']
     ostemplate_file = args['ostemplate_file']
-    volid = "#{ostemplate_storage}:#{ostemplate_file}"
-    {ostemplate: volid}
+    {ostemplate: ostemplate_file}
   end
 
   def parse_container_volume(args)

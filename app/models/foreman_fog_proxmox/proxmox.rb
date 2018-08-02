@@ -423,7 +423,7 @@ module ForemanFogProxmox
     end
 
     def available_linux_operating_systems
-      %w[l24 l26]
+      %w[l24 l26 debian ubuntu centos fedora opensuse archlinux gentoo alpine]
     end
 
     def available_windows_operating_systems

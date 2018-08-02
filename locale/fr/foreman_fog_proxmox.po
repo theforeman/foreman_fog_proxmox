@@ -20,6 +20,9 @@ msgstr ""
 msgid "%s console is not supported at this time"
 msgstr "%s console pas encore supportée"
 
+msgid "Add Volume"
+msgstr ""
+
 msgid "Advanced"
 msgstr "Avancé"
 
@@ -285,6 +288,9 @@ msgstr ""
 
 msgid "X509 Certification Authorities"
 msgstr "Autorités de certification X509"
+
+msgid "add new storage volume"
+msgstr ""
 
 msgid "create_vm(): %{args}"
 msgstr ""

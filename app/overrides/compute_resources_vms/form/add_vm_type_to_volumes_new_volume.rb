@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Copyright 2018 Tristan Robert
 
 # This file is part of ForemanFogProxmox.
@@ -19,7 +17,8 @@
 
 Deface::Override.new(
     :virtual_path => "compute_resources_vms/form/_volumes",
-    :name => "add_vm_type_to_volumes_new",
-    :replace => "erb[loud]:contains('new_child_fields_template')",
-    :partial => "compute_resources_vms/form/proxmox/add_vm_type_to_volumes_new"
+    :name => "add_vm_type_to_volumes_new_volume",
+    :replace => "erb[silent]:contains('volume = compute_resource.new_volume')",
+    :text => "<% volume = compute_resource.new_volume(type: f.object.type) %>",
+    :original => "<% volume = compute_resource.new_volume %>"
 )

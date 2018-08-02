@@ -26,6 +26,7 @@ module ProxmoxVmHelper
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
     main_a = %w[name type node vmid]
     main_a += [:name, :type, :node, :vmid]
+    type = vm.config.attributes['type']
     main = vm.config.attributes.select { |key,_value| main_a.include? key }
     disks_regexp = /^(scsi|sata|mp|rootfs|virtio|ide)(\d+)/
     nics_regexp = /^(net)(\d+)/
@@ -35,16 +36,38 @@ module ProxmoxVmHelper
     interfaces = {}
     vm.config.interfaces.each.each_with_index { |interface,i| interfaces.store(i.to_s, Fog::Proxmox::NicHelper.flatten(interface.attributes)) }
     vm_h = vm_h.merge({'interfaces_attributes': interfaces})
+    case type
+    when 'qemu'
+      volumes = compute_volumes_server(vm)
+      config = add_cdrom_to_config_server(vm,config)
+    when 'lxc'
+      volumes = compute_volumes_container(vm)
+    end
+    vm_h = vm_h.merge({'volumes_attributes': volumes})
+    vm_h = vm_h.merge({'config_attributes': config})
+    vm_h
+  end
+
+  def compute_volumes_server(vm)
     volumes = {}
     disks_volumes = vm.config.disks.reject { |disk| disk.id == 'ide2' }
     disks_volumes.each.each_with_index { |disk,i| volumes.store(i.to_s, Fog::Proxmox::DiskHelper.flatten(disk.attributes)) }
-    vm_h = vm_h.merge({'volumes_attributes': volumes})
+    volumes
+  end
+
+  def compute_volumes_container(vm)
+    volumes = {}
+    mp_volumes = vm.config.mount_points
+    mp_volumes.each.each_with_index { |mp,i| volumes.store(i.to_s, Fog::Proxmox::DiskHelper.container_flatten(mp.attributes)) }
+    volumes
+  end
+
+  def add_cdrom_to_config_server(vm,config)
     cd_disks = vm.config.disks.select { |disk| disk.id == 'ide2' }
     cdrom = {}
     disk_to_cdrom(cd_disks.first,cdrom)
     config = config.merge(cdrom)
-    vm_h = vm_h.merge({'config_attributes': config})
-    vm_h
+    config
   end
 
   def disk_to_cdrom(disk,cdrom)
@@ -58,34 +81,5 @@ module ProxmoxVmHelper
       cdrom.store('cdrom_storage',disk.storage)
     end
   end
-
-  def password_proxmox_f(f, attr, options = {})
-    unset_button = options.delete(:unset)
-    value = f.object[attr] if options.delete(:keep_value)
-    password_field_tag(:fakepassword, value, :style => 'display: none', :autocomplete => 'new-password-fake') +
-        field(f, attr, options) do
-          options[:autocomplete]   ||= 'new-password'
-          options[:placeholder]    ||= password_proxmox_placeholder(f.object, attr)
-          options[:disabled] = true if unset_button
-          options[:value] = value if value.present?
-          addClass options, 'form-control'
-          pass = f.password_field(attr, options) +
-              '<span class="glyphicon glyphicon-warning-sign input-addon"
-             title="'.html_safe + _('Caps lock ON') +
-              '" style="display:none"></span>'.html_safe
-          if unset_button
-            button = link_to_function(icon_text("edit", "", :kind => "pficon"), 'toggle_input_group(this)', {:id => 'disable-pass-btn', :class => 'btn btn-default', :title => _("Change the password")})
-            input_group(pass, input_group_btn(button))
-          else
-            pass
-          end
-        end
-  end
-
-  def password_proxmox_placeholder(obj, attr = nil)
-    pass = obj.attributes.has_key?(attr)
-    pass ? "********" : ''
-  end
-
 
 end

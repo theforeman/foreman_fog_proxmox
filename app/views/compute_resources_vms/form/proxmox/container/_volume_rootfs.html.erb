@@ -15,8 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-<%= new_child_fields_template(f, :volumes, {
-              :object  => volume,
-              :partial => provider_partial(compute_resource, 'volume'),
-              :form_builder_attrs => { :type => f.object.type, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume') },
-              :layout => "compute_resources_vms/form/#{item_layout}_layout" }) %>
+<% container = type == 'lxc' %>
+
+<%= field_set_tag _("Rootfs"), :id => "container_volume_#{f.index}", :class => ('hide' unless container), :disabled => !container do %> 
+    <%= f.hidden_field :volid if !new_vm %>
+    <%= select_f f, :storage, compute_resource.storages, :storage, :storage, { }, :label => _('Storage'), :label_size => "col-md-2", :disabled => !new_vm %>
+    <%= byte_size_f f, :size, :class => "input-mini", :label => _("Size"), :label_size => "col-md-2", :disabled => !new_vm %>
+<% end %>

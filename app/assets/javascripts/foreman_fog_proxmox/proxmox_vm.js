@@ -31,26 +31,34 @@ function vmTypeSelected(item) {
   fieldsets.push({id: 'config_os', toggle: false, selected: selected});
   fieldsets.push({id: 'config_dns', toggle: false, selected: selected});
   fieldsets.forEach(toggleFieldset);
+  toggleVolumes();
   return false;
+}
+
+function toggleVolumes(){
+  var div_container = $("div[id^='container_volumes']");
+  div_container.toggle();
+  var div_server = $("div[id^='server_volumes']");
+  div_server.toggle();
+  var a_container = $("a[data-association^='container_']");
+  a_container.toggle();
+  var a_server = $("a[data-association^='server_']");
+  a_server.toggle();
 }
 
 function toggleFieldset(fieldset, index, fieldsets){
   var server_fieldset = $("fieldset[id^='server_"+fieldset.id+"']");
   var container_fieldset = $("fieldset[id^='container_"+fieldset.id+"']");
+  if (fieldset.toggle){
+    server_fieldset.toggle();
+    container_fieldset.toggle();
+  }
   switch (fieldset.selected) {
     case 'qemu':
-      if (fieldset.toggle){
-        server_fieldset.toggle();
-        container_fieldset.toggle();
-      }
       server_fieldset.removeAttr('disabled');
       container_fieldset.attr('disabled','disabled');
       break;
     case 'lxc':
-      if (fieldset.toggle){
-        server_fieldset.toggle();
-        container_fieldset.toggle();
-      }
       server_fieldset.attr('disabled','disabled');
       container_fieldset.removeAttr('disabled');
       break;

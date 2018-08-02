@@ -119,7 +119,25 @@ module ForemanFogProxmox
     end
 
     def new_volume(attr = {})     
+      type = attr['type']
+      type = 'qemu' unless type
+      case type
+      when 'lxc'
+        return new_volume_server(attr)
+      when 'qemu'
+        return new_volume_container(attr)
+      end
+    end
+
+    def new_volume_server(attr = {})
       opts = volume_server_defaults.merge(attr.to_h).deep_symbolize_keys
+      opts[:size] = opts[:size].to_s
+      Fog::Compute::Proxmox::Disk.new(opts)
+    end
+
+    def new_volume_container(attr = {})
+      id = attr[:id]
+      opts = volume_container_defaults(id).merge(attr.to_h).deep_symbolize_keys
       opts[:size] = opts[:size].to_s
       Fog::Compute::Proxmox::Disk.new(opts)
     end
@@ -155,10 +173,11 @@ module ForemanFogProxmox
 
     def new_vm(attr = {})
       type = attr['type']
+      type = 'qemu' unless type
       case type
       when 'lxc'
         vm = new_container_vm(attr)
-      else
+      when 'qemu'
         vm = new_server_vm(attr)
       end
       logger.debug(_("new_vm() vm.config=%{config}") % { config: vm.config.inspect })
@@ -375,8 +394,7 @@ module ForemanFogProxmox
       { id: id, storage: storages.first.to_s, size: (8 * GIGA), options: { cache: 'none' } }
     end
 
-    def volume_container_defaults
-      id = "rootfs"
+    def volume_container_defaults(id='rootfs')
       { id: id, storage: storages.first.to_s, size: (8 * GIGA), options: {  } }
     end
 

@@ -28,6 +28,9 @@ module FogExtensions
             def identity
                 "#{type}_#{vmid}"
             end
+            def container?
+                type == 'lxc'
+            end
             def persisted?
                 !!identity && !!uptime
             end
@@ -46,6 +49,9 @@ module FogExtensions
             end
             def mac
                 config.mac_addresses.first
+            end
+            def memory
+                maxmem
             end
             def state
                 qmpstatus

@@ -24,6 +24,12 @@ module FogExtensions
             def volumes
                 config.mount_points
             end
+            def mount_points
+                config.mount_points.collect { |mp| mp.id+': '+mp.volid }
+            end
+            def memory
+                maxmem
+            end
             def interfaces
                 config.interfaces
             end

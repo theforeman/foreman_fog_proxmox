@@ -26,12 +26,18 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     <%= prop :type %>
     <%= prop :templated? %>
     <%= prop :mac %>
-    <%= prop :maxmem %>
-    <%= prop :vga if type == 'qemu' %>
-    <%= prop :maxcpu %>
+    <%= prop :memory %>
+    <% unless @vm.container? %>
+      <%= prop :vga %>
+    <% end %>
+    <%= prop :cpus %>
     <%= prop :uptime %>
     <%= prop :vmid %>
     <%= prop :description %>
-    <%= prop :disks %>
+    <% if @vm.container? %>
+      <%= prop :mount_points %>
+    <% else %>
+      <%= prop :disks %>
+    <% end %>
   </table>
 </div>

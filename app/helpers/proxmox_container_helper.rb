@@ -31,8 +31,10 @@ module ProxmoxContainerHelper
     return {} if args.empty?
     return {} unless args['type'] == 'lxc'
     config = args['config_attributes']
+    hostname = args['name']
+    config.merge('hostname': hostname)
     ostemplate_a = %w[ostemplate_storage ostemplate_file]
-    ostemplate = parse_container_ostemplate(config.select { |key,_value| ostemplate_a.include? key })
+    ostemplate = parse_container_ostemplate(args.select { |key,_value| ostemplate_a.include? key })
     volumes = parse_container_volumes(args['volumes_attributes'])
     cpu_a = %w[arch cpulimit cpuunits cores]
     cpu = parse_container_cpu(config.select { |key,_value| cpu_a.include? key })
@@ -40,12 +42,11 @@ module ProxmoxContainerHelper
     memory = parse_container_memory(config.select { |key,_value| memory_a.include? key })
     interfaces_attributes = args['interfaces_attributes']
     networks = parse_container_interfaces(interfaces_attributes)
-    general_a = %w[node type config_attributes volumes_attributes interfaces_attributes firmware_type provision_method]
+    general_a = %w[node name type config_attributes volumes_attributes interfaces_attributes firmware_type provision_method]
     logger.debug("general_a: #{general_a}")
-    parsed_vm = args.reject { |key,value| general_a.include?(key) || value.empty? }
+    parsed_vm = args.reject { |key,value| general_a.include?(key) || ostemplate_a.include?(key) || value.empty? }
     config_a = []
     config_a += cpu_a
-    config_a += ostemplate_a
     config_a += memory_a
     parsed_config = config.reject { |key,value| config_a.include?(key) || value.empty? }
     logger.debug("parse_container_config(): #{parsed_config}")
@@ -57,23 +58,30 @@ module ProxmoxContainerHelper
   end
 
   def parse_container_memory(args)
-    memory = { memory: args['memory'].to_i, swap: args['swap'].to_i }
+    memory = {} 
+    args.delete_if { |_key,value| value.empty? }
+    memory.store(:memory, args['memory'].to_i) if args['memory']
+    memory.store(:swap, args['swap'].to_i) if args['swap']
     logger.debug("parse_container_memory(): #{memory}")
     memory
   end
 
   def parse_container_cpu(args)
-    cpu = "arch=#{args['arch']}"
-    args.delete_if { |key,value| %w[arch].include?(key) || value.empty? }
-    args.each_value { |value| value.to_i }
-    parsed_cpu = { cpu: cpu }.merge(args)
-    logger.debug("parse_container_cpu(): #{parsed_cpu}")
-    parsed_cpu
+    cpu = {}
+    args.delete_if { |_key,value| value.empty? }
+    cpu.store(:arch, args['arch'].to_s) if args['arch']
+    cpu.store(:cpulimit, args['cpulimit'].to_i) if args['cpulimit']
+    cpu.store(:cpuunits, args['cpuunits'].to_i) if args['cpuunits']
+    cpu.store(:cores, args['cores'].to_i) if args['cores']
+    logger.debug("parse_container_cpu(): #{cpu}")
+    cpu
   end
 
   def parse_container_ostemplate(args)
     ostemplate_file = args['ostemplate_file']
-    {ostemplate: ostemplate_file}
+    parsed_ostemplate = {ostemplate: ostemplate_file}
+    logger.debug("parse_container_ostemplate(): #{parsed_ostemplate}")
+    parsed_ostemplate
   end
 
   def parse_container_volume(args)
@@ -129,10 +137,9 @@ module ProxmoxContainerHelper
       nic.store(:ip, args['ip'].to_s) if args['ip']
       nic.store(:ip6, args['ip6'].to_s) if args['ip6']
       nic.store(:rate, args['rate'].to_i) if args['rate']
-      nic.store(:link_down, args['disconnect'].to_i) if args['disconnect']
-      nic.store(:queues, args['queues'].to_i) if args['queues']
+      nic.store(:tag, args['tag'].to_i) if args['tag']
       logger.debug("parse_container_interface(): add nic=#{nic}")
-      Fog::Proxmox::NicHelper.flatten(nic)
+      Fog::Proxmox::NicHelper.container_flatten(nic)
     end 
   end
 

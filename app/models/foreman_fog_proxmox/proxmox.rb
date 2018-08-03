@@ -114,7 +114,7 @@ module ForemanFogProxmox
       host.interfaces.select(&:physical?).each.with_index.reduce({}) do |hash, (nic, index)|
         raise ::Foreman::Exception.new N_("Identifier interface[%{index}] required.", { index: index }) if nic.identifier.empty?
         raise ::Foreman::Exception.new N_("Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0", { index: index }) unless Fog::Proxmox::NicHelper.valid?(nic.identifier)
-        hash.merge(index.to_s => nic.compute_attributes.merge(id: nic.identifier, ip: nic.ip, ip6: nic.ip6))
+        hash.merge(index.to_s => nic.compute_attributes.merge!(id: nic.identifier, ip: nic.ip, ip6: nic.ip6))
       end
     end
 
@@ -216,7 +216,7 @@ module ForemanFogProxmox
             node.containers.create(parse_container_vm(args))
         end
       end
-      vm = find_vm_by_uuid(vmid)
+      vm = find_vm_by_uuid_and_type(vmid,type)
       vm
     rescue => e
       logger.warn(_("failed to create vm: %{e}") % { e: e })
@@ -225,9 +225,17 @@ module ForemanFogProxmox
     end
 
     def find_vm_by_uuid(uuid)
-      node.servers.get(uuid)
+      id_a = uuid.scan(/^(lxc|qemu)\_(\d+)$/).first
+      type = id_a[0]
+      vmid = id_a[1]
+      case type
+      when 'qemu'
+        node.servers.get(vmid)
+      when 'lxc'
+        node.containers.get(vmid)
+      end
     rescue Fog::Errors::Error => e
-      Foreman::Logging.exception(_("Failed retrieving proxmox vm by vmid=%{uuid}") % { uuid: uuid }, e)
+      Foreman::Logging.exception(_("Failed retrieving proxmox vm by vmid=%{vmid} and type=%{type}") % { vmid: vmid, type: type }, e)
       raise(ActiveRecord::RecordNotFound)
     end
 
@@ -382,7 +390,9 @@ module ForemanFogProxmox
         name: "foreman_#{Time.now.to_i}",
         vmid: next_vmid, 
         type: 'lxc', 
-        node: node.to_s).merge(Fog::Proxmox::DiskHelper.flatten(volume_container_defaults)).merge(Fog::Proxmox::NicHelper.container_flatten(interface_container_defaults))
+        node: node.to_s,
+        memory: 512 * MEGA, 
+        templated: 0).merge(Fog::Proxmox::DiskHelper.flatten(volume_container_defaults)).merge(Fog::Proxmox::NicHelper.container_flatten(interface_container_defaults))
     end
 
     def vm_instance_defaults
@@ -439,10 +449,13 @@ module ForemanFogProxmox
     end
 
     def convert_sizes(args)
-      args['config_attributes']['memory'] = (args['config_attributes']['memory'].to_i / MEGA).to_s
-      args['config_attributes']['min_memory'] = (args['config_attributes']['min_memory'].to_i / MEGA).to_s
-      args['config_attributes']['shares'] = (args['config_attributes']['shares'].to_i / MEGA).to_s
-      args['volumes_attributes'].each_value { |value| value['size'] = (value['size'].to_i / GIGA).to_s }
+      memory = args['config_attributes']['memory']
+      min_memory = args['config_attributes']['min_memory']
+      shares = args['config_attributes']['shares']
+      memory = (memory.to_i / MEGA).to_s unless memory.empty?
+      min_memory = (min_memory.to_i / MEGA).to_s unless min_memory.empty?
+      shares = (shares.to_i / MEGA).to_s unless shares.empty?
+      args['volumes_attributes'].each_value { |value| value['size'] = (value['size'].to_i / GIGA).to_s unless value['size'].empty? }
     end
 
     def host

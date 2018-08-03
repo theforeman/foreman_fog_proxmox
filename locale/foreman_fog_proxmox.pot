@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: foreman_fog_proxmox 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-02 17:07+0200\n"
-"PO-Revision-Date: 2018-08-02 17:07+0200\n"
+"POT-Creation-Date: 2018-08-03 08:37+0200\n"
+"PO-Revision-Date: 2018-08-03 08:37+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -142,6 +142,7 @@ msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:5
 #: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:16
+#: ../app/views/compute_resources_vms/index/_proxmox.html.erb:7
 msgid "Type"
 msgstr ""
 
@@ -197,7 +198,7 @@ msgstr ""
 #: ../app/views/compute_resources_vms/form/proxmox/server/_advanced.html.erb:10
 #: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:26
 #: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:27
-#: ../app/views/compute_resources_vms/index/_proxmox.html.erb:8
+#: ../app/views/compute_resources_vms/index/_proxmox.html.erb:9
 msgid "Memory"
 msgstr ""
 
@@ -457,15 +458,15 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/index/_proxmox.html.erb:7
+#: ../app/views/compute_resources_vms/index/_proxmox.html.erb:8
 msgid "CPUs"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/index/_proxmox.html.erb:9
+#: ../app/views/compute_resources_vms/index/_proxmox.html.erb:10
 msgid "Power"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/index/_proxmox.html.erb:10
+#: ../app/views/compute_resources_vms/index/_proxmox.html.erb:11
 msgid "Uptime"
 msgstr ""
 

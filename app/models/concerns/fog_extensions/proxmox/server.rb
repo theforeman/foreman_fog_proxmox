@@ -25,6 +25,9 @@ module FogExtensions
             def to_s
                 name
             end
+            def identity
+                "#{type}_#{vmid}"
+            end
             def persisted?
                 !!identity && !!uptime
             end
@@ -43,9 +46,6 @@ module FogExtensions
             end
             def mac
                 config.mac_addresses.first
-            end
-            def memory
-                config.memory * 1024 * 1024
             end
             def state
                 qmpstatus

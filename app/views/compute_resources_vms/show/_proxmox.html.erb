@@ -26,9 +26,9 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     <%= prop :type %>
     <%= prop :templated? %>
     <%= prop :mac %>
-    <%= prop :memory %>
-    <%= prop :vga %>
-    <%= prop :cpus %>
+    <%= prop :maxmem %>
+    <%= prop :vga if type == 'qemu' %>
+    <%= prop :maxcpu %>
     <%= prop :uptime %>
     <%= prop :vmid %>
     <%= prop :description %>

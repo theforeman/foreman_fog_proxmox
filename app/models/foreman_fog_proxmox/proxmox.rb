@@ -114,7 +114,10 @@ module ForemanFogProxmox
       host.interfaces.select(&:physical?).each.with_index.reduce({}) do |hash, (nic, index)|
         raise ::Foreman::Exception.new N_("Identifier interface[%{index}] required.", { index: index }) if nic.identifier.empty?
         raise ::Foreman::Exception.new N_("Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0", { index: index }) unless Fog::Proxmox::NicHelper.valid?(nic.identifier)
-        hash.merge(index.to_s => nic.compute_attributes.merge!(id: nic.identifier, ip: nic.ip, ip6: nic.ip6))
+        nic_compute_attributes = nic.compute_attributes.merge(id: nic.identifier)
+        nic_compute_attributes.store(:ip, nic.ip) if (nic.ip && !nic.ip.empty?)
+        nic_compute_attributes.store(:ip6, nic.ip6) if (nic.ip6 && !nic.ip6.empty?)
+        hash.merge(index.to_s => nic_compute_attributes)
       end
     end
 
@@ -216,7 +219,7 @@ module ForemanFogProxmox
             node.containers.create(parse_container_vm(args))
         end
       end
-      vm = find_vm_by_uuid_and_type(vmid,type)
+      vm = find_vm_by_uuid("#{type}_#{vmid}")
       vm
     rescue => e
       logger.warn(_("failed to create vm: %{e}") % { e: e })

@@ -31,8 +31,6 @@ module ProxmoxContainerHelper
     return {} if args.empty?
     return {} unless args['type'] == 'lxc'
     config = args['config_attributes']
-    hostname = args['name']
-    config.merge('hostname': hostname)
     ostemplate_a = %w[ostemplate_storage ostemplate_file]
     ostemplate = parse_container_ostemplate(args.select { |key,_value| ostemplate_a.include? key })
     volumes = parse_container_volumes(args['volumes_attributes'])

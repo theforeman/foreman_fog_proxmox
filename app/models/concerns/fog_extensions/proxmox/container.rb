@@ -22,6 +22,15 @@ module FogExtensions
         module Container
             extend ActiveSupport::Concern
             attr_accessor :ostemplate_storage, :ostemplate_file, :password
+            def to_s
+                name
+            end
+            def persisted?
+                !!identity && !!uptime
+            end
+            def identity
+                "#{type}_#{vmid}"
+            end
             def volumes
                 config.mount_points
             end

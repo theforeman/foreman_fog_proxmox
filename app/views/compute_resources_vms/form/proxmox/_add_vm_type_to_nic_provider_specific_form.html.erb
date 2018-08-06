@@ -14,8 +14,8 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
-<% logger.debug("f.options[:parent_builder].object.compute_attributes=#{f.options[:parent_builder].object.compute_attributes}") %>
-<% vm_type = f.options[:parent_builder].object.compute_attributes['type'] %>
+<% compute_attributes = f.options[:parent_builder].object.compute_attributes %>
+<% vm_type = compute_attributes ? compute_attributes['type'] : f.object.type %>
 
 <%= f.fields_for 'compute_attributes', OpenStruct.new(f.object.compute_attributes) do |f| %>
     <%= render provider_partial(@host.compute_resource, 'network'), :f => f, :vm_type => vm_type, :disabled => f.object.persisted?, :compute_resource => @host.compute_resource, :new_host => new_vm?(@host), :new_vm => new_vm?(@host) %>

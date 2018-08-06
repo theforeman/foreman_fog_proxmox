@@ -20,18 +20,21 @@ $(document).ready(vmTypeSelected);
 
 function vmTypeSelected() {
   var selected = $("#host_compute_attributes_type").val();
+  var host_uuid = $("#host_uuid").val();
+  var new_vm =  host_uuid == "";
+  console.log("new_vm="+new_vm);
   console.log("selected="+selected);
   var fieldsets = [];
-  fieldsets.push({id: 'config_advanced_options', toggle: true, selected: selected});
-  fieldsets.push({id: 'config_ext', toggle: true, selected: selected});
-  fieldsets.push({id: 'volume', toggle: true, selected: selected});
-  fieldsets.push({id: 'network', toggle: true, selected: selected});
-  fieldsets.push({id: 'config_options', toggle: false, selected: selected});
-  fieldsets.push({id: 'config_cpu', toggle: false, selected: selected});
-  fieldsets.push({id: 'config_memory', toggle: false, selected: selected});
-  fieldsets.push({id: 'config_cdrom', toggle: false, selected: selected});
-  fieldsets.push({id: 'config_os', toggle: false, selected: selected});
-  fieldsets.push({id: 'config_dns', toggle: false, selected: selected});
+  fieldsets.push({id: 'config_advanced_options', toggle: true, new_vm: new_vm, selected: selected});
+  fieldsets.push({id: 'config_ext', toggle: true, new_vm: new_vm, selected: selected});
+  fieldsets.push({id: 'volume', toggle: true, new_vm: new_vm, selected: selected});
+  fieldsets.push({id: 'network', toggle: true, new_vm: new_vm, selected: selected});
+  fieldsets.push({id: 'config_options', toggle: false, new_vm: new_vm, selected: selected});
+  fieldsets.push({id: 'config_cpu', toggle: false, new_vm: new_vm, selected: selected});
+  fieldsets.push({id: 'config_memory', toggle: false, new_vm: new_vm, selected: selected});
+  fieldsets.push({id: 'config_cdrom', toggle: false, new_vm: new_vm, selected: selected});
+  fieldsets.push({id: 'config_os', toggle: false, new_vm: new_vm, selected: selected});
+  fieldsets.push({id: 'config_dns', toggle: false, new_vm: new_vm, selected: selected});
   fieldsets.forEach(toggleFieldset);
   toggleVolumes(selected);
   return false;
@@ -65,7 +68,7 @@ function toggleFieldset(fieldset, index, fieldsets){
   var container_fieldset = $("fieldset[id^='container_"+fieldset.id+"']");
   switch (fieldset.selected) {
     case 'qemu':
-      if (fieldset.toggle){
+      if (fieldset.toggle && fieldset.new_vm){
         server_fieldset.show();
         container_fieldset.hide();
       }
@@ -75,7 +78,7 @@ function toggleFieldset(fieldset, index, fieldsets){
       container_input_hidden.attr('disabled','disabled');
       break;
     case 'lxc':
-      if (fieldset.toggle){
+      if (fieldset.toggle && fieldset.new_vm){
         server_fieldset.hide();
         container_fieldset.show();
       }

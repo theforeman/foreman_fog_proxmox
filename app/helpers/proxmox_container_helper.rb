@@ -22,17 +22,14 @@ require 'fog/proxmox/helpers/nic_helper'
 
 module ProxmoxContainerHelper
 
-  KILO = 1024
-  MEGA = KILO * KILO
-  GIGA = KILO * MEGA
-
   def parse_container_vm(args)
     return {} unless args
     return {} if args.empty?
     return {} unless args['type'] == 'lxc'
     config = args['config_attributes']
-    ostemplate_a = %w[ostemplate_storage ostemplate_file]
+    ostemplate_a = %w[ostemplate ostemplate_storage ostemplate_file]
     ostemplate = parse_container_ostemplate(args.select { |key,_value| ostemplate_a.include? key })
+    ostemplate = parse_container_ostemplate(config.select { |key,_value| ostemplate_a.include? key }) unless ostemplate[:ostemplate]
     volumes = parse_container_volumes(args['volumes_attributes'])
     cpu_a = %w[arch cpulimit cpuunits cores]
     cpu = parse_container_cpu(config.select { |key,_value| cpu_a.include? key })
@@ -57,7 +54,7 @@ module ProxmoxContainerHelper
 
   def parse_container_memory(args)
     memory = {} 
-    args.delete_if { |_key,value| value.empty? }
+    args.delete_if { |_key,value| value.to_s.empty? }
     memory.store(:memory, args['memory'].to_i) if args['memory']
     memory.store(:swap, args['swap'].to_i) if args['swap']
     logger.debug("parse_container_memory(): #{memory}")
@@ -76,8 +73,12 @@ module ProxmoxContainerHelper
   end
 
   def parse_container_ostemplate(args)
+    ostemplate = args['ostemplate']
     ostemplate_file = args['ostemplate_file']
-    parsed_ostemplate = {ostemplate: ostemplate_file}
+    ostemplate = ostemplate ? ostemplate : ostemplate_file
+    ostemplate_storage = args['ostemplate_storage']
+    ostemplate_storage, ostemplate_file, size  = Fog::Proxmox::DiskHelper.extract_storage_volid_size(ostemplate) unless ostemplate.empty?
+    parsed_ostemplate = {ostemplate: ostemplate, ostemplate_file: ostemplate_file, ostemplate_storage: ostemplate_storage}
     logger.debug("parse_container_ostemplate(): #{parsed_ostemplate}")
     parsed_ostemplate
   end
@@ -85,6 +86,7 @@ module ProxmoxContainerHelper
   def parse_container_volume(args)
     disk = {}
     id = args['id']
+    return args unless id
     id = "mp#{args['device']}" unless id
     delete = args['_delete'].to_i == 1
     args.delete_if { |_key,value| value.empty? }
@@ -122,6 +124,7 @@ module ProxmoxContainerHelper
     args.delete_if { |_key,value| value.empty? }
     nic = {}
     id = args['id']
+    return args unless id
     logger.debug("parse_container_interface(): id=#{id}")
     delete = args['_delete'].to_i == 1
     if delete

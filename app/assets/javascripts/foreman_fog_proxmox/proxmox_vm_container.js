@@ -22,7 +22,11 @@ function initOstemplateStorage(){
   }
   
   function initOstemplateOptions(){
-    var select = '#host_compute_attributes_ostemplate_file';
+    var select_ids = ['#host_compute_attributes_ostemplate_file','#compute_attribute_vm_attrs_ostemplate_file'];
+    select_ids.forEach(emptySelect);
+  }
+
+  function emptySelect(select, index, select_ids){
     $(select).empty();
     $(select).append($("<option></option>").val('').text(''));
     $(select).val('');
@@ -46,6 +50,7 @@ function storageOstemplateSelected(item) {
           initOstemplateOptions();
           $.each(ostemplates, function(i,ostemplate){
             $('#host_compute_attributes_ostemplate_file').append($("<option></option>").val(ostemplate.volid).text(ostemplate.volid));
+            $('#compute_attribute_vm_attrs_ostemplate_file').append($("<option></option>").val(ostemplate.volid).text(ostemplate.volid));
           });
         }
       });

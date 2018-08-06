@@ -21,6 +21,7 @@ module FogExtensions
     module Proxmox
         module Container
             extend ActiveSupport::Concern
+            attr_accessor :ostemplate_storage, :ostemplate_file, :password
             def volumes
                 config.mount_points
             end
@@ -28,7 +29,7 @@ module FogExtensions
                 config.mount_points.collect { |mp| mp.id+': '+mp.volid }
             end
             def memory
-                maxmem
+                maxmem.to_i / (1024 * 1024)
             end
             def interfaces
                 config.interfaces

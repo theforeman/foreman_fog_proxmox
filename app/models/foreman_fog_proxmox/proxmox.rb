@@ -74,7 +74,7 @@ module ForemanFogProxmox
       storages.sort_by(&:storage)
     end
 
-    def images(type = 'iso', storage_id)
+    def images_by_storage(type = 'iso', storage_id)
       storage = node.storages.find_by_id storage_id if storage_id
       storage.volumes.list_by_content_type(type).sort_by(&:volid) if storage
     end
@@ -200,7 +200,7 @@ module ForemanFogProxmox
     end
 
     def create_vm(args = {})
-      vmid = args[:vmid]
+      vmid = args[:vmid].to_i
       raise ::Foreman::Exception.new N_("invalid vmid=%{vmid}") % { vmid: vmid } unless node.servers.id_valid?(vmid)
       image_id = args[:image_id]
       node = get_cluster_node args
@@ -216,7 +216,9 @@ module ForemanFogProxmox
           when 'qemu'
             node.servers.create(parse_server_vm(args))
           when 'lxc'
-            node.containers.create(parse_container_vm(args))
+            hash = parse_container_vm(args)
+            hash = hash.merge(vmid: vmid)
+            node.containers.create(hash.reject { |key,_value| %w[ostemplate_storage ostemplate_file].include? key })
         end
       end
       vm = find_vm_by_uuid("#{type}_#{vmid}")
@@ -453,11 +455,13 @@ module ForemanFogProxmox
 
     def convert_sizes(args)
       memory = args['config_attributes']['memory']
+      swap = args['config_attributes']['swap']
       min_memory = args['config_attributes']['min_memory']
       shares = args['config_attributes']['shares']
       memory = (memory.to_i / MEGA).to_s unless memory.empty?
       min_memory = (min_memory.to_i / MEGA).to_s unless min_memory.empty?
       shares = (shares.to_i / MEGA).to_s unless shares.empty?
+      swap = (swap.to_i / MEGA).to_s unless swap.empty?
       args['volumes_attributes'].each_value { |value| value['size'] = (value['size'].to_i / GIGA).to_s unless value['size'].empty? }
     end
 

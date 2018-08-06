@@ -16,9 +16,11 @@
 // along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 $(document).on('ContentLoad', tfm.numFields.initAll);
+$(document).ready(vmTypeSelected);
 
-function vmTypeSelected(item) {
-  var selected = $(item).val();
+function vmTypeSelected() {
+  var selected = $("#host_compute_attributes_type").val();
+  console.log("selected="+selected);
   var fieldsets = [];
   fieldsets.push({id: 'config_advanced_options', toggle: true, selected: selected});
   fieldsets.push({id: 'config_ext', toggle: true, selected: selected});
@@ -31,36 +33,56 @@ function vmTypeSelected(item) {
   fieldsets.push({id: 'config_os', toggle: false, selected: selected});
   fieldsets.push({id: 'config_dns', toggle: false, selected: selected});
   fieldsets.forEach(toggleFieldset);
-  toggleVolumes();
+  toggleVolumes(selected);
   return false;
 }
 
-function toggleVolumes(){
+function toggleVolumes(selected){
   var div_container = $("div[id^='container_volumes']");
-  div_container.toggle();
   var div_server = $("div[id^='server_volumes']");
-  div_server.toggle();
   var a_container = $("a[data-association='container_volumes']");
-  a_container.toggle();
   var a_server = $("a[data-association='server_volumes']");
-  a_server.toggle();
+  switch (selected) {
+    case 'qemu':
+      div_container.hide();
+      div_server.show();
+      a_container.hide();
+      a_server.show();
+    break;
+    case 'lxc':
+      div_container.show();
+      div_server.hide();
+      a_container.show();
+      a_server.hide();
+    break;
+  }
 }
 
 function toggleFieldset(fieldset, index, fieldsets){
+  var server_input_hidden = $("div[id^='server_volumes']" + " > input:hidden");
+  var container_input_hidden = $("div[id^='container_volumes']" + " > input:hidden");
   var server_fieldset = $("fieldset[id^='server_"+fieldset.id+"']");
   var container_fieldset = $("fieldset[id^='container_"+fieldset.id+"']");
-  if (fieldset.toggle){
-    server_fieldset.toggle();
-    container_fieldset.toggle();
-  }
   switch (fieldset.selected) {
     case 'qemu':
+      if (fieldset.toggle){
+        server_fieldset.show();
+        container_fieldset.hide();
+      }
       server_fieldset.removeAttr('disabled');
       container_fieldset.attr('disabled','disabled');
+      server_input_hidden.removeAttr('disabled');
+      container_input_hidden.attr('disabled','disabled');
       break;
     case 'lxc':
+      if (fieldset.toggle){
+        server_fieldset.hide();
+        container_fieldset.show();
+      }
       server_fieldset.attr('disabled','disabled');
       container_fieldset.removeAttr('disabled');
+      container_input_hidden.removeAttr('disabled');
+      server_input_hidden.attr('disabled','disabled');
       break;
     default:
       break;

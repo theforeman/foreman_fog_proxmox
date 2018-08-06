@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: foreman_fog_proxmox 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-03 08:37+0200\n"
-"PO-Revision-Date: 2018-08-03 08:37+0200\n"
+"POT-Creation-Date: 2018-08-06 08:32+0200\n"
+"PO-Revision-Date: 2018-08-06 08:32+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -46,47 +46,47 @@ msgstr ""
 msgid "Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:183
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:186
 msgid "new_vm() vm.config=%{config}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:189
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:192
 msgid "new_container_vm() vm.config=%{config}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:195
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:198
 msgid "new_server_vm() vm.config=%{config}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:201
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:204
 msgid "invalid vmid=%{vmid}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:205
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:208
 msgid "create_vm(): clone %{image_id} in %{vmid}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:209
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:212
 msgid "create_vm(): %{args}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:222
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:225
 msgid "failed to create vm: %{e}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:230
-msgid "Failed retrieving proxmox vm by vmid=%{uuid}"
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:241
+msgid "Failed retrieving proxmox vm by vmid=%{vmid} and type=%{type}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:266
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:277
 msgid "save_vm(): %{attr}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:303
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:314
 msgid "Unable to store X509 certificates"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:327
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:338
 msgid "%s console is not supported at this time"
 msgstr ""
 
@@ -307,6 +307,44 @@ msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:6
+#: ../app/views/compute_resources_vms/index/_proxmox.html.erb:6
+msgid "Name"
+msgstr ""
+
+#:
+#: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:7
+msgid "IPv4"
+msgstr ""
+
+#:
+#: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:7
+msgid "e.g. dhcp or IPv4/CIDR format or manual"
+msgstr ""
+
+#:
+#: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:8
+msgid "IPv6"
+msgstr ""
+
+#:
+#: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:8
+msgid "e.g. dhcp or IPv6/CIDR format or manual"
+msgstr ""
+
+#:
+#: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:9
+#: ../app/views/compute_resources_vms/form/proxmox/server/_network.html.erb:9
+msgid "VLAN tag"
+msgstr ""
+
+#:
+#: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:10
+#: ../app/views/compute_resources_vms/form/proxmox/server/_network.html.erb:10
+msgid "Rate limit"
+msgstr ""
+
+#:
+#: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:11
 #: ../app/views/compute_resources_vms/form/proxmox/server/_network.html.erb:8
 msgid "Bridge"
 msgstr ""
@@ -422,14 +460,6 @@ msgstr ""
 msgid "Card"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/server/_network.html.erb:9
-msgid "VLAN tag"
-msgstr ""
-
-#: ../app/views/compute_resources_vms/form/proxmox/server/_network.html.erb:10
-msgid "Rate limit"
-msgstr ""
-
 #: ../app/views/compute_resources_vms/form/proxmox/server/_network.html.erb:11
 msgid "Multiqueue"
 msgstr ""
@@ -452,10 +482,6 @@ msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/server/_volume.html.erb:10
 msgid "Cache"
-msgstr ""
-
-#: ../app/views/compute_resources_vms/index/_proxmox.html.erb:6
-msgid "Name"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/index/_proxmox.html.erb:8

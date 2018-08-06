@@ -107,8 +107,8 @@ msgstr "Activer/désactiver la virtualisation matérielle de KVM"
 msgid "Extended"
 msgstr "Etendu"
 
-msgid "Failed retrieving proxmox vm by vmid=%{uuid}"
-msgstr "Echec de la récupération dans proxmox de la vm avec vmid=%{uuid}"
+msgid "Failed retrieving proxmox vm by vmid=%{vmid} and type=%{type}"
+msgstr "Echec de récupération de la vm proxmox avec vmid=%{vmid} et type=%{type}"
 
 msgid "Firewall"
 msgstr "Pare-feu"
@@ -124,6 +124,12 @@ msgstr "Général"
 
 msgid "Hostname"
 msgstr "Nom d'hôte"
+
+msgid "IPv4"
+msgstr ""
+
+msgid "IPv6"
+msgstr ""
 
 msgid "Identifier interface[%{index}] required."
 msgstr "L'identifiant de interface[%{index}] est obligatoire."
@@ -296,6 +302,12 @@ msgid "create_vm(): %{args}"
 msgstr ""
 
 msgid "create_vm(): clone %{image_id} in %{vmid}"
+msgstr ""
+
+msgid "e.g. dhcp or IPv4/CIDR format or manual"
+msgstr ""
+
+msgid "e.g. dhcp or IPv6/CIDR format or manual"
 msgstr ""
 
 msgid "e.g. https://127.0.0.1:8006/api2/json"

@@ -27,6 +27,7 @@ module ProxmoxVmHelper
     main_a = %w[name type node vmid]
     main_a += [:name, :type, :node, :vmid]
     type = vm.config.attributes['type']
+    type = vm.type unless type
     main = vm.config.attributes.select { |key,_value| main_a.include? key }
     disks_regexp = /^(scsi|sata|mp|rootfs|virtio|ide)(\d+)/
     nics_regexp = /^(net)(\d+)/

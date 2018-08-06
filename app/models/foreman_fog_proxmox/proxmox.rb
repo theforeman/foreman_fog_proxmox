@@ -188,7 +188,7 @@ module ForemanFogProxmox
     end
 
     def new_container_vm(attr = {})
-      vm = node.containers.new(vm_container_instance_defaults.merge(parse_container_vm(attr)))
+      vm = node.containers.new(vm_container_instance_defaults.merge(parse_container_vm(attr.merge('type': 'lxc'))))
       logger.debug(_("new_container_vm() vm.config=%{config}") % { config: vm.config.inspect })
       vm
     end
@@ -281,8 +281,9 @@ module ForemanFogProxmox
       if (templated == '1' && !vm.templated?)
         vm.template
       else
-        merged = vm.config.attributes.merge!(parse_vm(attr).symbolize_keys).deep_symbolize_keys
-        filtered = merged.reject { |key,value| %w[node vmid].include?(key) || [:templated,:image_id].include?(key) || value.to_s.empty? }
+        parsed_attr = vm.container? ? parse_container_vm(attr) : parse_server_vm(attr)
+        merged = vm.config.attributes.merge!(parsed_attr.symbolize_keys).deep_symbolize_keys
+        filtered = merged.reject { |key,value| %w[node vmid].include?(key) || [:node,:vmid,:templated,:image_id].include?(key) || value.to_s.empty? }
         vm.update(filtered)
       end
     end

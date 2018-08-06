@@ -39,11 +39,11 @@ module ProxmoxContainerHelper
     networks = parse_container_interfaces(interfaces_attributes)
     general_a = %w[node name type config_attributes volumes_attributes interfaces_attributes firmware_type provision_method]
     logger.debug("general_a: #{general_a}")
-    parsed_vm = args.reject { |key,value| general_a.include?(key) || ostemplate_a.include?(key) || value.empty? }
+    parsed_vm = args.reject { |key,value| general_a.include?(key) || ostemplate_a.include?(key) || value.to_s.empty? }
     config_a = []
     config_a += cpu_a
     config_a += memory_a
-    parsed_config = config.reject { |key,value| config_a.include?(key) || value.empty? }
+    parsed_config = config.reject { |key,value| config_a.include?(key) || value.to_s.empty? }
     logger.debug("parse_container_config(): #{parsed_config}")
     parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory).merge(ostemplate)
     networks.each { |network| parsed_vm = parsed_vm.merge(network) }
@@ -63,7 +63,7 @@ module ProxmoxContainerHelper
 
   def parse_container_cpu(args)
     cpu = {}
-    args.delete_if { |_key,value| value.empty? }
+    args.delete_if { |_key,value| value.to_s.empty? }
     cpu.store(:arch, args['arch'].to_s) if args['arch']
     cpu.store(:cpulimit, args['cpulimit'].to_i) if args['cpulimit']
     cpu.store(:cpuunits, args['cpuunits'].to_i) if args['cpuunits']

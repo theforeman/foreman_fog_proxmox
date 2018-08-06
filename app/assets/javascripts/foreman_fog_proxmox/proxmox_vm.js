@@ -22,8 +22,6 @@ function vmTypeSelected() {
   var selected = $("#host_compute_attributes_type").val();
   var host_uuid = $("#host_uuid").val();
   var new_vm =  host_uuid == "";
-  console.log("new_vm="+new_vm);
-  console.log("selected="+selected);
   var fieldsets = [];
   fieldsets.push({id: 'config_advanced_options', toggle: true, new_vm: new_vm, selected: selected});
   fieldsets.push({id: 'config_ext', toggle: true, new_vm: new_vm, selected: selected});

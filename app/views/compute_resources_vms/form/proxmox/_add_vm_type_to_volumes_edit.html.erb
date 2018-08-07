@@ -63,10 +63,10 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
               :layout => "compute_resources_vms/form/#{item_layout}_layout" }) %>
 <% end %>
 <% if new_vm %>
-    <%= add_child_link '+ ' + _("Add Volume"), :server_volumes, { :class => "info", :style => container ? "display: none;" : "", :title => _('add new storage volume') } %>
+    <%= add_child_link '+ ' + _("Add Volume"), :server_volumes, { :class => "info", :style => ("display: none;" unless server), :title => _('add new storage volume') } %>
 <% end %>
 <% if new_vm %>
-    <%= add_child_link '+ ' + _("Add Volume"), :container_volumes, { :class => "info", :style => server ? "display: none;" : "", :title => _('add new storage volume') } %>
+    <%= add_child_link '+ ' + _("Add Volume"), :container_volumes, { :class => "info", :style => ("display: none;" unless container), :title => _('add new storage volume') } %>
 <% end %>
 
 

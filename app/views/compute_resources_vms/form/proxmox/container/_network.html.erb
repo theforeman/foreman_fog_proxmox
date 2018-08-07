@@ -17,7 +17,7 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <% container = type == 'lxc' %>
 
-<%= field_set_tag _("Nic"), :id => "container_network", :class => ('hide' unless container), :disabled => !container do %>  
+<%= field_set_tag _("Nic"), :id => "container_network", :style => ('display: none;' unless container), :disabled => !container do %>  
     <%= text_f f, :name, :label => _('Name'), :label_size => "col-md-2" %>
     <%= text_f f, :ip, :label => _('IPv4'), :label_size => "col-md-2", :help_block => _("e.g. dhcp or IPv4/CIDR format or manual") %>
     <%= text_f f, :ip6, :label => _('IPv6'), :label_size => "col-md-2", :help_block => _("e.g. dhcp or IPv6/CIDR format or manual") %>

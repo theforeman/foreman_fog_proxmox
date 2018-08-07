@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: foreman_fog_proxmox 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-06 08:32+0200\n"
-"PO-Revision-Date: 2018-08-06 08:32+0200\n"
+"POT-Creation-Date: 2018-08-07 08:50+0200\n"
+"PO-Revision-Date: 2018-08-07 08:50+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -70,23 +70,23 @@ msgstr ""
 msgid "create_vm(): %{args}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:225
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:227
 msgid "failed to create vm: %{e}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:241
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:243
 msgid "Failed retrieving proxmox vm by vmid=%{vmid} and type=%{type}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:277
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:279
 msgid "save_vm(): %{attr}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:314
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:317
 msgid "Unable to store X509 certificates"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:338
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:341
 msgid "%s console is not supported at this time"
 msgstr ""
 
@@ -121,22 +121,31 @@ msgid "URL"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:6
+#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_networks_form.html.erb:6
+#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_networks_new_childs_form.html.erb:8
+msgid "remove network interface"
+msgstr ""
+
+#:
 #: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:11
 #: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:16
 #: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:23
+#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:30
+#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:37
+#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:39
+#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:47
 msgid "remove storage volume"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:26
-#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:29
+#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:51
+#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:54
 msgid "Add Volume"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:26
-#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:29
+#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:51
+#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:54
 msgid "add new storage volume"
 msgstr ""
 

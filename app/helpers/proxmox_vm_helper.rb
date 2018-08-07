@@ -22,57 +22,22 @@ require 'fog/proxmox/helpers/nic_helper'
 
 module ProxmoxVmHelper
 
-  def object_to_hash(vm)
+  def object_to_config_hash(vm,type)
+    return vm.config.attributes if vm.type == type
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
     main_a = %w[name type node vmid]
     main_a += [:name, :type, :node, :vmid]
     type = vm.config.attributes['type']
     type = vm.type unless type
     main = vm.config.attributes.select { |key,_value| main_a.include? key }
-    disks_regexp = /^(scsi|sata|mp|rootfs|virtio|ide)(\d+)/
+    disks_regexp = /^(scsi|sata|mp|rootfs|virtio|ide)(\d+){0,1}$/
     nics_regexp = /^(net)(\d+)/
     main_a += %w[templated]
     config = vm.config.attributes.reject { |key,_value| main_a.include?(key) || disks_regexp.match(key) || nics_regexp.match(key)  }
     vm_h = vm_h.merge(main)
-    case type
-    when 'qemu'
-      volumes = compute_volumes_server(vm)
-      config = add_cdrom_to_config_server(vm,config)
-      interfaces = compute_interfaces_server(vm)
-    when 'lxc'
-      volumes = compute_volumes_container(vm)
-      interfaces = compute_interfaces_container(vm)
-    end
-    vm_h = vm_h.merge({'interfaces_attributes': interfaces})
-    vm_h = vm_h.merge({'volumes_attributes': volumes})
+    # config = add_cdrom_to_config_server(vm,config) unless (vm.container? && type == 'lxc')
     vm_h = vm_h.merge({'config_attributes': config})
     vm_h
-  end
-
-  def compute_volumes_server(vm)
-    volumes = {}
-    disks_volumes = vm.config.disks.reject { |disk| disk.id == 'ide2' }
-    disks_volumes.each.each_with_index { |disk,i| volumes.store(i.to_s, Fog::Proxmox::DiskHelper.flatten(disk.attributes)) }
-    volumes
-  end
-
-  def compute_volumes_container(vm)
-    volumes = {}
-    mp_volumes = vm.config.mount_points
-    mp_volumes.each.each_with_index { |mp,i| volumes.store(i.to_s, Fog::Proxmox::DiskHelper.flatten(mp.attributes)) }
-    volumes
-  end
-
-  def compute_interfaces_server(vm)
-    interfaces = {}
-    vm.config.interfaces.each.each_with_index { |interface,i| interfaces.store(i.to_s, Fog::Proxmox::NicHelper.flatten(interface.attributes)) }
-    interfaces
-  end
-
-  def compute_interfaces_container(vm)
-    interfaces = {}
-    vm.config.interfaces.each.each_with_index { |interface,i| interfaces.store(i.to_s, Fog::Proxmox::NicHelper.container_flatten(interface.attributes)) }
-    interfaces
   end
 
   def add_cdrom_to_config_server(vm,config)

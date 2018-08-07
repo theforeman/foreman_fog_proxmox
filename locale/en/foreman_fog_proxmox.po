@@ -331,6 +331,9 @@ msgstr ""
 msgid "new_vm() vm.config=%{config}"
 msgstr ""
 
+msgid "remove network interface"
+msgstr ""
+
 msgid "remove storage volume"
 msgstr ""
 

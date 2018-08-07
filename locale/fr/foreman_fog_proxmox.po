@@ -185,7 +185,7 @@ msgid "OS"
 msgstr "Système d'exploitation"
 
 msgid "OS Template"
-msgstr ""
+msgstr "Modèle d'OS"
 
 msgid "OS type"
 msgstr "Type de système d'exploitation"
@@ -257,7 +257,7 @@ msgid "Swap"
 msgstr ""
 
 msgid "Template storage"
-msgstr ""
+msgstr "Modèle de stockage"
 
 msgid "Test failed"
 msgstr "Le test a échoué"
@@ -296,7 +296,7 @@ msgid "X509 Certification Authorities"
 msgstr "Autorités de certification X509"
 
 msgid "add new storage volume"
-msgstr ""
+msgstr "ajouter un nouveau volume de stockage"
 
 msgid "create_vm(): %{args}"
 msgstr ""
@@ -305,10 +305,10 @@ msgid "create_vm(): clone %{image_id} in %{vmid}"
 msgstr ""
 
 msgid "e.g. dhcp or IPv4/CIDR format or manual"
-msgstr ""
+msgstr "par exemple dhcp ou le format IPv4/CIDR ou manuel"
 
 msgid "e.g. dhcp or IPv6/CIDR format or manual"
-msgstr ""
+msgstr "par exemple dhcp ou le format IPv6/CIDR ou manuel"
 
 msgid "e.g. https://127.0.0.1:8006/api2/json"
 msgstr "par exemple https://127.0.0.1:8006/api2/json"
@@ -330,6 +330,9 @@ msgstr ""
 
 msgid "new_vm() vm.config=%{config}"
 msgstr ""
+
+msgid "remove network interface"
+msgstr "retirer l'interface réseau"
 
 msgid "remove storage volume"
 msgstr "retirer le stockage de volume"

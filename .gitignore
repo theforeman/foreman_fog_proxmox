@@ -13,3 +13,4 @@ locale/*/*.pox
 bin/
 public/
 *.gem
+TAGS

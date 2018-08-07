@@ -194,7 +194,7 @@ module ForemanFogProxmox
     end
 
     def new_server_vm(attr = {})
-      vm = node.servers.new(vm_server_instance_defaults.merge(parse_server_vm(attr)))
+      vm = node.servers.new(vm_server_instance_defaults.merge(parse_server_vm(attr.merge('type': 'qemu'))))
       logger.debug(_("new_server_vm() vm.config=%{config}") % { config: vm.config.inspect })
       vm
     end

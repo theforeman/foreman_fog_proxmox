@@ -91,6 +91,7 @@ module ProxmoxServerHelper
     cdrom = args['cdrom']
     cdrom_image = args['cdrom_iso']
     volid = cdrom_image.empty? ? cdrom : cdrom_image
+    return {} unless volid
     cdrom = "#{volid},media=cdrom"
     {ide2: cdrom}
   end

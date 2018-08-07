@@ -107,7 +107,7 @@ module ForemanFogProxmox
     def host_compute_attrs(host)
       super.tap do |attrs|
         ostype = host.compute_attributes['config_attributes']['ostype']
-        host.compute_attributes['config_attributes']['hostname'] = host.name if host.compute_attributes['type'] == 'lxc'
+        host.compute_attributes['config_attributes'].store('hostname',host.name) if host.compute_attributes['type'] == 'lxc'
         raise Foreman::Exception.new(N_("Operating system family %{type} is not consistent with %{ostype}") % { type: host.operatingsystem.type, ostype: ostype }) unless compute_os_types(host).include?(ostype)
       end
     end

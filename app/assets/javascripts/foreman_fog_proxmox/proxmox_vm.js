@@ -20,13 +20,13 @@ $(document).ready(vmTypeSelected);
 
 function vmTypeSelected() {
   var selected = $("#host_compute_attributes_type").val();
-  var host_uuid = $("#host_uuid").val();
-  var new_vm =  host_uuid == "";
+  var host_uuid = $("input[id='host_uuid']").val();
+  var new_vm =  host_uuid == undefined;
   var fieldsets = [];
   fieldsets.push({id: 'config_advanced_options', toggle: true, new_vm: new_vm, selected: selected});
   fieldsets.push({id: 'config_ext', toggle: true, new_vm: new_vm, selected: selected});
   fieldsets.push({id: 'volume', toggle: true, new_vm: new_vm, selected: selected});
-  fieldsets.push({id: 'network', toggle: true, new_vm: new_vm, selected: selected});
+  fieldsets.push({id: 'network', toggle: true, new_vm: true, selected: selected});
   fieldsets.push({id: 'config_options', toggle: false, new_vm: new_vm, selected: selected});
   fieldsets.push({id: 'config_cpu', toggle: false, new_vm: new_vm, selected: selected});
   fieldsets.push({id: 'config_memory', toggle: false, new_vm: new_vm, selected: selected});
@@ -60,6 +60,9 @@ function toggleVolumes(selected){
 }
 
 function toggleFieldset(fieldset, index, fieldsets){
+  console.log("fieldset.id="+fieldset.id);
+  console.log("fieldset.toggle="+fieldset.toggle);
+  console.log("fieldset.new_vm="+fieldset.new_vm);
   var server_input_hidden = $("div[id^='server_volumes']" + " > input:hidden");
   var container_input_hidden = $("div[id^='container_volumes']" + " > input:hidden");
   var server_fieldset = $("fieldset[id^='server_"+fieldset.id+"']");
@@ -67,6 +70,7 @@ function toggleFieldset(fieldset, index, fieldsets){
   switch (fieldset.selected) {
     case 'qemu':
       if (fieldset.toggle && fieldset.new_vm){
+        console.log("toggle qemu fieldset.id="+fieldset.id);
         server_fieldset.show();
         container_fieldset.hide();
       }
@@ -77,6 +81,7 @@ function toggleFieldset(fieldset, index, fieldsets){
       break;
     case 'lxc':
       if (fieldset.toggle && fieldset.new_vm){
+        console.log("toggle lxc fieldset.id="+fieldset.id);
         server_fieldset.hide();
         container_fieldset.show();
       }

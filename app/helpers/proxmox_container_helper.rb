@@ -22,11 +22,18 @@ require 'fog/proxmox/helpers/nic_helper'
 
 module ProxmoxContainerHelper
 
+  KILO = 1024
+  MEGA = KILO * KILO
+  GIGA = KILO * MEGA
+
   def parse_container_vm(args)
+    args = ActiveSupport::HashWithIndifferentAccess.new(args)
     return {} unless args
     return {} if args.empty?
     return {} unless args['type'] == 'lxc'
     config = args['config_attributes']
+    main_a = %w[name type node vmid]
+    config = args.reject { |key,_value| main_a.include? key } unless config
     ostemplate_a = %w[ostemplate ostemplate_storage ostemplate_file]
     ostemplate = parse_container_ostemplate(args.select { |key,_value| ostemplate_a.include? key })
     ostemplate = parse_container_ostemplate(config.select { |key,_value| ostemplate_a.include? key }) unless ostemplate[:ostemplate]
@@ -37,12 +44,14 @@ module ProxmoxContainerHelper
     memory = parse_container_memory(config.select { |key,_value| memory_a.include? key })
     interfaces_attributes = args['interfaces_attributes']
     networks = parse_container_interfaces(interfaces_attributes)
-    general_a = %w[node name type config_attributes volumes_attributes interfaces_attributes firmware_type provision_method]
+    general_a = %w[node name type config_attributes volumes_attributes interfaces_attributes firmware_type provision_method container_volumes server_volumes]
     logger.debug("general_a: #{general_a}")
     parsed_vm = args.reject { |key,value| general_a.include?(key) || ostemplate_a.include?(key) || value.to_s.empty? }
     config_a = []
     config_a += cpu_a
     config_a += memory_a
+    config_a += main_a
+    config_a += general_a
     parsed_config = config.reject { |key,value| config_a.include?(key) || value.to_s.empty? }
     logger.debug("parse_container_config(): #{parsed_config}")
     parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory).merge(ostemplate)
@@ -77,7 +86,7 @@ module ProxmoxContainerHelper
     ostemplate_file = args['ostemplate_file']
     ostemplate = ostemplate ? ostemplate : ostemplate_file
     ostemplate_storage = args['ostemplate_storage']
-    ostemplate_storage, ostemplate_file, size  = Fog::Proxmox::DiskHelper.extract_storage_volid_size(ostemplate) unless ostemplate.empty?
+    ostemplate_storage, ostemplate_file, _size  = Fog::Proxmox::DiskHelper.extract_storage_volid_size(ostemplate) unless ostemplate.empty?
     parsed_ostemplate = {ostemplate: ostemplate, ostemplate_file: ostemplate_file, ostemplate_storage: ostemplate_storage}
     logger.debug("parse_container_ostemplate(): #{parsed_ostemplate}")
     parsed_ostemplate
@@ -86,7 +95,6 @@ module ProxmoxContainerHelper
   def parse_container_volume(args)
     disk = {}
     id = args['id']
-    return args unless id
     id = "mp#{args['device']}" unless id
     delete = args['_delete'].to_i == 1
     args.delete_if { |_key,value| value.empty? }
@@ -98,7 +106,7 @@ module ProxmoxContainerHelper
       disk.store(:id, id)
       disk.store(:volid, args['volid'])
       disk.store(:storage, args['storage'].to_s)
-      disk.store(:size, args['size'])
+      disk.store(:size, args['size'].to_i)
       options = args.reject { |key,_value| %w[id volid device storage size _delete].include? key}
       disk.store(:options, options)
       logger.debug("parse_container_volume(): add disk=#{disk}")
@@ -124,7 +132,6 @@ module ProxmoxContainerHelper
     args.delete_if { |_key,value| value.empty? }
     nic = {}
     id = args['id']
-    return args unless id
     logger.debug("parse_container_interface(): id=#{id}")
     delete = args['_delete'].to_i == 1
     if delete

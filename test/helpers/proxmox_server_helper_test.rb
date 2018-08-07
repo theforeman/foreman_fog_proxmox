@@ -19,8 +19,8 @@
 
 require 'test_plugin_helper'
 
-class ProxmoxComputeHelperTest < ActiveSupport::TestCase
-  include ProxmoxComputeHelper
+class ProxmoxServerHelperTest < ActiveSupport::TestCase
+  include ProxmoxServerHelper
 
   describe 'parse' do
 
@@ -31,8 +31,9 @@ class ProxmoxComputeHelperTest < ActiveSupport::TestCase
       { 'vmid' => '100', 
         'name' =>  'test', 
         'node' => 'pve',
+        'type' => 'qemu',
         'config_attributes' => { 
-          'memory' => '512', 
+          'memory' => '536870912', 
           'min_memory' => '', 
           'ballon' => '', 
           'shares' => '', 
@@ -42,10 +43,12 @@ class ProxmoxComputeHelperTest < ActiveSupport::TestCase
           'cores' => '1', 
           'sockets' => '1'
         },
-        'volumes_attributes' => {'0'=> { 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => 'none' }}, 
+        'volumes_attributes' => {
+          '0'=> { 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => 'none' }
+        }, 
         'interfaces_attributes' => { 
-          '0' => { 'id' => 'net0', 'model' => 'virtio', 'bridge' => 'vmbr0' },
-          '1' => { 'id' => 'net1', 'model' => 'e1000', 'bridge' => 'vmbr0' } 
+          '0' => { 'id' => 'net0', 'model' => 'virtio', 'bridge' => 'vmbr0', 'firewall' => '0', 'disconnect' => '0' },
+          '1' => { 'id' => 'net1', 'model' => 'e1000', 'bridge' => 'vmbr0', 'firewall' => '0', 'disconnect' => '0' } 
         } 
       }
     end
@@ -53,45 +56,48 @@ class ProxmoxComputeHelperTest < ActiveSupport::TestCase
     let(:host_delete) do 
       { 'vmid' => '100', 
         'name' =>  'test', 
+        'type' => 'qemu',
+        'cdrom' => 'image',
+        'cdrom_iso' => 'local-lvm:iso/debian-netinst.iso',
         'volumes_attributes' => { '0' => { '_delete' => '1', 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824' }}, 
         'interfaces_attributes' => { '0' => { '_delete' => '1', 'id' => 'net0', 'model' => 'virtio' } } 
       }
     end
 
     test '#memory' do       
-      memory = parse_memory(host['config_attributes'])
+      memory = parse_server_memory(host['config_attributes'])
       assert memory.has_key?(:memory)
-      assert_equal memory[:memory], 512
+      assert_equal 536870912, memory[:memory]
     end   
 
     test '#cpu' do       
-      cpu = parse_cpu(host['config_attributes'])
+      cpu = parse_server_cpu(host['config_attributes'])
       assert cpu.has_key?(:cpu)
-      assert_equal cpu[:cpu], 'cputype=kvm64,flags=+spec-ctrl'
+      assert_equal 'cputype=kvm64,flags=+spec-ctrl', cpu[:cpu]
     end   
 
     test '#vm' do       
-      vm = parse_vm(host)
-      assert_equal vm['cores'], '1'
-      assert_equal vm['sockets'], '1'
-      assert_equal vm[:cpu], 'cputype=kvm64,flags=+spec-ctrl'
-      assert_equal vm[:memory], 512
-      assert_equal vm[:scsi0], 'local-lvm:1073741824,cache=none'
-      assert_equal vm[:net0], 'model=virtio,bridge=vmbr0'
+      vm = parse_server_vm(host)
+      assert_equal '1', vm['cores']
+      assert_equal '1', vm['sockets']
+      assert_equal 'cputype=kvm64,flags=+spec-ctrl', vm[:cpu]
+      assert_equal 536870912, vm[:memory]
+      assert_equal 'local-lvm:1073741824,cache=none', vm[:scsi0]
+      assert_equal 'model=virtio,bridge=vmbr0,firewall=0,link_down=0', vm[:net0]
       assert !vm.has_key?(:config)
       assert !vm.has_key?(:node)
     end   
 
     test '#volume with scsi 1Gb' do       
-      volumes = parse_volumes(host['volumes_attributes'])
+      volumes = parse_server_volumes(host['volumes_attributes'])
       assert !volumes.empty?
       assert volume = volumes.first
       assert volume.has_key?(:scsi0)
-      assert_equal volume[:scsi0], 'local-lvm:1073741824,cache=none'
+      assert_equal 'local-lvm:1073741824,cache=none', volume[:scsi0]
     end    
     
     test '#volume delete scsi0' do       
-      volumes = parse_volumes(host_delete['volumes_attributes'])
+      volumes = parse_server_volumes(host_delete['volumes_attributes'])
       assert !volumes.empty?
       assert_equal volumes.length, 1
       assert volume = volumes.first
@@ -100,30 +106,30 @@ class ProxmoxComputeHelperTest < ActiveSupport::TestCase
     end
     
     test '#interface with model virtio and bridge' do       
-      interface = parse_interface(host['interfaces_attributes']['0'].merge(device: '0'))
+      interface = parse_server_interface(host['interfaces_attributes']['0'])
       assert interface.has_key?(:net0)
-      assert_equal interface[:net0], 'model=virtio,bridge=vmbr0'
+      assert_equal 'model=virtio,bridge=vmbr0,firewall=0,link_down=0', interface[:net0]
     end
     
     test '#interface with model e1000 and bridge' do       
-      interface = parse_interface(host['interfaces_attributes']['1'].merge(device: '1'))
+      interface = parse_server_interface(host['interfaces_attributes']['1'])
       assert interface.has_key?(:net1)
-      assert_equal interface[:net1], 'model=e1000,bridge=vmbr0'
+      assert_equal 'model=e1000,bridge=vmbr0,firewall=0,link_down=0', interface[:net1]
     end
     
     test '#interface delete net0' do       
-      interface = parse_interface(host_delete['interfaces_attributes']['0'].merge(device: '0'))
+      interface = parse_server_interface(host_delete['interfaces_attributes']['0'])
       assert interface.has_key?(:delete)
       assert_match(/(scsi0,){0,1}net0(,scsi0){0,1}/, interface[:delete])
       assert_equal interface.length, 1
     end
     
     test '#interfaces' do       
-      interfaces = parse_interfaces(host['interfaces_attributes'])
+      interfaces = parse_server_interfaces(host['interfaces_attributes'])
       assert !interfaces.empty?
       assert_equal interfaces.length, 2
-      assert interfaces.include?({ net0: 'model=virtio,bridge=vmbr0'})
-      assert interfaces.include?({ net1: 'model=e1000,bridge=vmbr0'})
+      assert interfaces.include?({ net0: 'model=virtio,bridge=vmbr0,firewall=0,link_down=0'})
+      assert interfaces.include?({ net1: 'model=e1000,bridge=vmbr0,firewall=0,link_down=0'})
     end
 
   end

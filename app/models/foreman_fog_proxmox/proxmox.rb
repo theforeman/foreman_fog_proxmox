@@ -21,6 +21,7 @@ require 'fog/proxmox'
 
 module ForemanFogProxmox
   class Proxmox < ComputeResource
+    include ProxmoxVmHelper
     include ProxmoxServerHelper
     include ProxmoxContainerHelper
     validates :url, :format => { :with => URI::DEFAULT_PARSER.make_regexp }, :presence => true
@@ -106,6 +107,7 @@ module ForemanFogProxmox
     def host_compute_attrs(host)
       super.tap do |attrs|
         ostype = host.compute_attributes['config_attributes']['ostype']
+        host.compute_attributes['config_attributes']['hostname'] = host.name if host.compute_attributes['type'] == 'lxc'
         raise Foreman::Exception.new(N_("Operating system family %{type} is not consistent with %{ostype}") % { type: host.operatingsystem.type, ostype: ostype }) unless compute_os_types(host).include?(ostype)
       end
     end
@@ -282,6 +284,7 @@ module ForemanFogProxmox
         vm.template
       else
         parsed_attr = vm.container? ? parse_container_vm(attr) : parse_server_vm(attr)
+        convert_sizes(parsed_attr)
         merged = vm.config.attributes.merge!(parsed_attr.symbolize_keys).deep_symbolize_keys
         filtered = merged.reject { |key,value| %w[node vmid].include?(key) || [:node,:vmid,:templated,:image_id].include?(key) || value.to_s.empty? }
         vm.update(filtered)
@@ -452,18 +455,6 @@ module ForemanFogProxmox
 
     def os_windows_types_mapping(host)
       %w[Windows].include?(host.operatingsystem.type) ? available_windows_operating_systems : []
-    end
-
-    def convert_sizes(args)
-      memory = args['config_attributes']['memory']
-      swap = args['config_attributes']['swap']
-      min_memory = args['config_attributes']['min_memory']
-      shares = args['config_attributes']['shares']
-      memory = (memory.to_i / MEGA).to_s unless memory.empty?
-      min_memory = (min_memory.to_i / MEGA).to_s unless min_memory.empty?
-      shares = (shares.to_i / MEGA).to_s unless shares.empty?
-      swap = (swap.to_i / MEGA).to_s unless swap.empty?
-      args['volumes_attributes'].each_value { |value| value['size'] = (value['size'].to_i / GIGA).to_s unless value['size'].empty? }
     end
 
     def host

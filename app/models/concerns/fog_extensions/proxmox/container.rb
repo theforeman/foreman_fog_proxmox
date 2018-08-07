@@ -38,7 +38,7 @@ module FogExtensions
                 config.mount_points.collect { |mp| mp.id+': '+mp.volid }
             end
             def memory
-                maxmem.to_i / (1024 * 1024)
+                maxmem.to_i
             end
             def interfaces
                 config.interfaces

@@ -22,11 +22,13 @@ require 'fog/proxmox/helpers/nic_helper'
 
 module ProxmoxVmHelper
 
+  KILO = 1024
+  MEGA = KILO * KILO
+  GIGA = KILO * MEGA
+
   def object_to_config_hash(vm,type)
-    return vm.config.attributes if vm.type == type
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
-    main_a = %w[name type node vmid]
-    main_a += [:name, :type, :node, :vmid]
+    main_a = %w[hostname name type node vmid]
     type = vm.config.attributes['type']
     type = vm.type unless type
     main = vm.config.attributes.select { |key,_value| main_a.include? key }
@@ -35,7 +37,6 @@ module ProxmoxVmHelper
     main_a += %w[templated]
     config = vm.config.attributes.reject { |key,_value| main_a.include?(key) || disks_regexp.match(key) || nics_regexp.match(key)  }
     vm_h = vm_h.merge(main)
-    # config = add_cdrom_to_config_server(vm,config) unless (vm.container? && type == 'lxc')
     vm_h = vm_h.merge({'config_attributes': config})
     vm_h
   end
@@ -58,6 +59,18 @@ module ProxmoxVmHelper
       cdrom.store('cdrom_iso',volid)
       cdrom.store('cdrom_storage',disk.storage)
     end
+  end
+
+  def convert_sizes(args)
+    convert_memory_size(args['config_attributes'],'memory')
+    convert_memory_size(args['config_attributes'],'min_memory')
+    convert_memory_size(args['config_attributes'],'shares')
+    convert_memory_size(args['config_attributes'],'swap')
+    args['volumes_attributes'].each_value { |value| value['size'] = (value['size'].to_i / GIGA).to_s unless value['size'].empty? }
+  end
+
+  def convert_memory_size(config_hash, key)
+    config_hash.store(key, (config_hash[key].to_i / MEGA).to_s) unless config_hash[key].empty?
   end
 
 end

@@ -27,6 +27,7 @@ module ProxmoxServerHelper
   GIGA = KILO * MEGA
 
   def parse_server_vm(args)
+    args = ActiveSupport::HashWithIndifferentAccess.new(args)
     return {} unless args
     return {} if args.empty?
     return {} unless args['type'] == 'qemu'
@@ -43,13 +44,14 @@ module ProxmoxServerHelper
     memory = parse_server_memory(config.select { |key,_value| memory_a.include? key })
     interfaces_attributes = args['interfaces_attributes']
     networks = parse_server_interfaces(interfaces_attributes)
-    general_a = %w[node type config_attributes volumes_attributes interfaces_attributes firmware_type provision_method]
+    general_a = %w[node type config_attributes volumes_attributes interfaces_attributes firmware_type provision_method container_volumes server_volumes]
     logger.debug("general_a: #{general_a}")
     parsed_vm = args.reject { |key,value| general_a.include?(key) || value.to_s.empty? }
     config_a = []
     config_a += cpu_a
     config_a += cdrom_a
     config_a += memory_a
+    config_a += general_a
     parsed_config = config.reject { |key,value| config_a.include?(key) || value.to_s.empty? }
     logger.debug("parse_server_config(): #{parsed_config}")
     parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory).merge(cdrom)
@@ -111,7 +113,7 @@ module ProxmoxServerHelper
       disk.store(:id, id)
       disk.store(:volid, args['volid'])
       disk.store(:storage, args['storage'].to_s)
-      disk.store(:size, args['size'])
+      disk.store(:size, args['size'].to_i)
       options = args.reject { |key,_value| %w[id volid controller device storage size _delete].include? key}
       disk.store(:options, options)
       logger.debug("parse_server_volume(): add disk=#{disk}")
@@ -137,7 +139,6 @@ module ProxmoxServerHelper
     args.delete_if { |_key,value| value.to_s.empty? }
     nic = {}
     id = args['id']
-    return args unless id
     logger.debug("parse_server_interface(): id=#{id}")
     delete = args['_delete'].to_i == 1
     if delete

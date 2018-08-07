@@ -51,7 +51,7 @@ module FogExtensions
                 config.mac_addresses.first
             end
             def memory
-                maxmem.to_i / (1024 * 1024)
+                maxmem.to_i
             end
             def state
                 qmpstatus

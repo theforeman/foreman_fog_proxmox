@@ -146,6 +146,9 @@ msgstr ""
 msgid "Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0"
 msgstr "L'identifiant de interface[%{index}] est incorrect. La syntaxe correcte est net[n] avec n un entier naturel positif"
 
+msgid "Invalid uuid=[%{uuid}]."
+msgstr ""
+
 msgid "KVM"
 msgstr ""
 

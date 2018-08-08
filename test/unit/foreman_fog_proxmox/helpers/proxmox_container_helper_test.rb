@@ -19,6 +19,7 @@
 
 require 'test_plugin_helper'
 
+module ForemanFogProxmox
 class ProxmoxContainerHelperTest < ActiveSupport::TestCase
   include ProxmoxContainerHelper
 
@@ -200,4 +201,5 @@ class ProxmoxContainerHelperTest < ActiveSupport::TestCase
     end
 
   end
+end
 end

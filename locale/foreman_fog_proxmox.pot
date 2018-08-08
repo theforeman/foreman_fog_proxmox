@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: foreman_fog_proxmox 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-07 08:50+0200\n"
-"PO-Revision-Date: 2018-08-07 08:50+0200\n"
+"POT-Creation-Date: 2018-08-08 11:41+0200\n"
+"PO-Revision-Date: 2018-08-08 11:41+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -34,59 +34,63 @@ msgstr ""
 msgid "Change the password"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:109
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:114
 msgid "Operating system family %{type} is not consistent with %{ostype}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:115
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:120
 msgid "Identifier interface[%{index}] required."
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:116
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:121
 msgid "Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:186
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:191
 msgid "new_vm() vm.config=%{config}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:192
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:197
 msgid "new_container_vm() vm.config=%{config}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:198
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:203
 msgid "new_server_vm() vm.config=%{config}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:204
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:209
 msgid "invalid vmid=%{vmid}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:208
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:213
 msgid "create_vm(): clone %{image_id} in %{vmid}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:212
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:217
 msgid "create_vm(): %{args}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:227
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:232
 msgid "failed to create vm: %{e}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:243
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:239
+msgid "Invalid uuid=[%{uuid}]."
+msgstr ""
+
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:250
 msgid "Failed retrieving proxmox vm by vmid=%{vmid} and type=%{type}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:279
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:286
 msgid "save_vm(): %{attr}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:317
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:325
 msgid "Unable to store X509 certificates"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:341
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:349
 msgid "%s console is not supported at this time"
 msgstr ""
 

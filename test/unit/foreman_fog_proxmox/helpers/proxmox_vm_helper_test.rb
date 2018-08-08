@@ -27,6 +27,7 @@ require 'fog/compute/proxmox/models/interfaces'
 require 'fog/compute/proxmox/models/disk'
 require 'fog/compute/proxmox/models/disks'
 
+module ForemanFogProxmox
 class ProxmoxVmHelperTest < ActiveSupport::TestCase
   include ProxmoxVmHelper
 
@@ -200,4 +201,5 @@ class ProxmoxVmHelperTest < ActiveSupport::TestCase
     end 
   end
 
+end
 end

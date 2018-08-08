@@ -17,17 +17,16 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-FactoryBot.define do
-  factory :container_resource, :class => ComputeResource do
-    sequence(:name) { |n| "compute_resource#{n}" }
+module ForemanFogProxmox
 
-    trait :proxmox do
-      provider 'proxmox'
-      url 'https://192.168.56.101:8006/api2/json'
-      user 'root@pam'
-      password 'proxmox01'
+  module ProxmoxTestHelpers
+  
+    def mock_node_servers(cr, servers) 
+      node = mock()
+      node.stubs(:servers).returns(servers)
+      cr.stubs(:node).returns(node)
+      cr
     end
-
-    factory :proxmox_cr, :class => ForemanFogProxmox::Proxmox, :traits => [:proxmox]
   end
+  
 end

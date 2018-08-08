@@ -107,15 +107,19 @@ module ForemanFogProxmox
     def host_compute_attrs(host)
       super.tap do |attrs|
         ostype = host.compute_attributes['config_attributes']['ostype']
-        host.compute_attributes['config_attributes'].store('hostname',host.name) if host.compute_attributes['type'] == 'lxc'
-        raise Foreman::Exception.new(N_("Operating system family %{type} is not consistent with %{ostype}") % { type: host.operatingsystem.type, ostype: ostype }) unless compute_os_types(host).include?(ostype)
+        case host.compute_attributes['type']
+        when 'lxc'
+          host.compute_attributes['config_attributes'].store('hostname',host.name)
+        when 'qemu'
+          raise ::Foreman::Exception.new(_("Operating system family %{type} is not consistent with %{ostype}") % { type: host.operatingsystem.type, ostype: ostype }) unless compute_os_types(host).include?(ostype)
+        end
       end
     end
 
     def host_interfaces_attrs(host)
       host.interfaces.select(&:physical?).each.with_index.reduce({}) do |hash, (nic, index)|
-        raise ::Foreman::Exception.new N_("Identifier interface[%{index}] required.", { index: index }) if nic.identifier.empty?
-        raise ::Foreman::Exception.new N_("Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0", { index: index }) unless Fog::Proxmox::NicHelper.valid?(nic.identifier)
+        raise ::Foreman::Exception.new _("Identifier interface[%{index}] required." % { index: index }) if nic.identifier.empty?
+        raise ::Foreman::Exception.new _("Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0" % { index: index }) unless Fog::Proxmox::NicHelper.valid?(nic.identifier)
         nic_compute_attributes = nic.compute_attributes.merge(id: nic.identifier)
         nic_compute_attributes.store(:ip, nic.ip) if (nic.ip && !nic.ip.empty?)
         nic_compute_attributes.store(:ip6, nic.ip6) if (nic.ip6 && !nic.ip6.empty?)
@@ -232,7 +236,9 @@ module ForemanFogProxmox
     end
 
     def find_vm_by_uuid(uuid)
-      id_a = uuid.scan(/^(lxc|qemu)\_(\d+)$/).first
+      uuid_regexp = /^(lxc|qemu)\_(\d+)$/
+      raise ::Foreman::Exception.new _("Invalid uuid=[%{uuid}]." % { uuid: uuid }) unless uuid.match(uuid_regexp)
+      id_a = uuid.scan(uuid_regexp).first
       type = id_a[0]
       vmid = id_a[1]
       case type
@@ -284,9 +290,8 @@ module ForemanFogProxmox
         vm.template
       else
         parsed_attr = vm.container? ? parse_container_vm(attr) : parse_server_vm(attr)
-        convert_sizes(parsed_attr)
-        merged = vm.config.attributes.merge!(parsed_attr.symbolize_keys).deep_symbolize_keys
-        filtered = merged.reject { |key,value| %w[node vmid].include?(key) || [:node,:vmid,:templated,:image_id].include?(key) || value.to_s.empty? }
+        merged = vm.config.attributes.merge(parsed_attr.symbolize_keys).deep_symbolize_keys
+        filtered = merged.reject { |key,value| [:node,:vmid,:type,:templated,:image_id].include?(key) || value.to_s.empty? }
         vm.update(filtered)
       end
     end

@@ -272,6 +272,43 @@ module ForemanFogProxmox
     end
   end
 
+  describe 'new_vm' do
+    before do
+      @cr = FactoryBot.build_stubbed(:proxmox_cr)
+    end
+
+    it 'new server with attr empty' do
+      attr = {}
+      vm = mock('vm')
+      config = mock('config')
+      config.stubs(:inspect).returns('config')
+      vm.stubs(:config).returns(config)
+      @cr.stubs(:new_server_vm).with(attr).returns(vm)
+      assert_equal vm, @cr.new_vm(attr)
+    end
+
+    it 'new server with attr not empty' do
+      attr = {'type' => 'qemu'}
+      vm = mock('vm')
+      config = mock('config')
+      config.stubs(:inspect).returns('config')
+      vm.stubs(:config).returns(config)
+      @cr.stubs(:new_server_vm).with(attr).returns(vm)
+      assert_equal vm, @cr.new_vm(attr)
+    end
+
+    it 'new container with attr not empty' do
+      attr = {'type' => 'lxc'}
+      vm = mock('vm')
+      config = mock('config')
+      config.stubs(:inspect).returns('config')
+      vm.stubs(:config).returns(config)
+      @cr.stubs(:new_container_vm).with(attr).returns(vm)
+      assert_equal vm, @cr.new_vm(attr)
+    end
+  end
+
+
 
   end
 end

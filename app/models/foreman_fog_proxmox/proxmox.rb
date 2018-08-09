@@ -187,6 +187,7 @@ module ForemanFogProxmox
     end
 
     def new_vm(attr = {})
+      attr = ActiveSupport::HashWithIndifferentAccess.new(attr)
       type = attr['type']
       type = 'qemu' unless type
       case type
@@ -200,13 +201,13 @@ module ForemanFogProxmox
     end
 
     def new_container_vm(attr = {})
-      vm = node.containers.new(vm_container_instance_defaults.merge(parse_container_vm(attr.merge('type': 'lxc'))))
+      vm = node.containers.new(vm_container_instance_defaults.merge(parse_container_vm(attr.merge(type: 'lxc'))))
       logger.debug(_("new_container_vm() vm.config=%{config}") % { config: vm.config.inspect })
       vm
     end
 
     def new_server_vm(attr = {})
-      vm = node.servers.new(vm_server_instance_defaults.merge(parse_server_vm(attr.merge('type': 'qemu'))))
+      vm = node.servers.new(vm_server_instance_defaults.merge(parse_server_vm(attr.merge(type: 'qemu'))))
       logger.debug(_("new_server_vm() vm.config=%{config}") % { config: vm.config.inspect })
       vm
     end

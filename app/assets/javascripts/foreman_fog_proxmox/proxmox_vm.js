@@ -20,6 +20,7 @@ $(document).ready(vmTypeSelected);
 
 function vmTypeSelected() {
   var selected = $("#host_compute_attributes_type").val();
+  if (selected == undefined) selected = $("#compute_attribute_vm_attrs_type").val();
   var host_uuid = $("input[id='host_uuid']").val();
   var new_vm =  host_uuid == undefined;
   var fieldsets = [];
@@ -60,9 +61,6 @@ function toggleVolumes(selected){
 }
 
 function toggleFieldset(fieldset, index, fieldsets){
-  console.log("fieldset.id="+fieldset.id);
-  console.log("fieldset.toggle="+fieldset.toggle);
-  console.log("fieldset.new_vm="+fieldset.new_vm);
   var server_input_hidden = $("div[id^='server_volumes']" + " > input:hidden");
   var container_input_hidden = $("div[id^='container_volumes']" + " > input:hidden");
   var server_fieldset = $("fieldset[id^='server_"+fieldset.id+"']");
@@ -70,7 +68,6 @@ function toggleFieldset(fieldset, index, fieldsets){
   switch (fieldset.selected) {
     case 'qemu':
       if (fieldset.toggle && fieldset.new_vm){
-        console.log("toggle qemu fieldset.id="+fieldset.id);
         server_fieldset.show();
         container_fieldset.hide();
       }
@@ -81,7 +78,6 @@ function toggleFieldset(fieldset, index, fieldsets){
       break;
     case 'lxc':
       if (fieldset.toggle && fieldset.new_vm){
-        console.log("toggle lxc fieldset.id="+fieldset.id);
         server_fieldset.hide();
         container_fieldset.show();
       }

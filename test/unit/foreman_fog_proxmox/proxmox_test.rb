@@ -147,6 +147,21 @@ module ForemanFogProxmox
       vm.expects(:update, expected_attr)
       @cr.save_vm(uuid,attr)
     end
+
+    it 'saves modified container config' do
+      uuid = 'lxc_100'
+      config = mock('config')
+      config.stubs(:attributes).returns({ :cores => '' })
+      vm = mock('vm')
+      vm.stubs(:config).returns(config)
+      vm.stubs(:container?).returns(true)
+      @cr.stubs(:find_vm_by_uuid).returns(vm)
+      attr = { 'vmid' => '100', 'type' => 'lxc', 'node' => 'pve', 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' } }
+      @cr.stubs(:parse_container_vm).returns({ 'vmid' => '100', 'cores' => '1', 'cpulimit' => '1' })
+      expected_attr = { :cores => '1', :cpulimit => '1' }
+      vm.expects(:update, expected_attr)
+      @cr.save_vm(uuid,attr)
+    end
   end
 
 

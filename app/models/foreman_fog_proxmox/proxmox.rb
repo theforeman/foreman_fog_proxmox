@@ -431,7 +431,7 @@ module ForemanFogProxmox
     end
 
     def interface_container_defaults(id = 'net0')
-      { id: id, name: 'eth0', bridge: bridges.first.to_s, ip: 'dhcp', ip6: 'dhcp' }
+      { id: id, name: 'eth0', bridge: bridges.first.to_s }
     end
 
     def get_cluster_node(args = {})

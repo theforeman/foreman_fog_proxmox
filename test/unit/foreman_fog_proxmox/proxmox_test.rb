@@ -128,6 +128,40 @@ module ForemanFogProxmox
     end
 
 
+    describe "vm_compute_attributes" do
+      before do
+        @cr = FactoryBot.build_stubbed(:proxmox_cr)
+      end
+  
+      it "converts to hash a server" do
+        vm, config_attributes, volume_attributes, interface_attributes  = mock_server_vm
+        vm_attrs = @cr.vm_compute_attributes(vm)
+        assert !vm_attrs.has_key?(:config)
+        assert vm_attrs.has_key?(:config_attributes)
+        assert_equal config_attributes.reject { |key,value| [:disks,:interfaces].include?(key) || value.to_s.empty?}, vm_attrs[:config_attributes]
+        assert !vm_attrs[:config_attributes].has_key?(:disks)
+        assert vm_attrs.has_key?(:volumes_attributes)
+        assert_equal volume_attributes, vm_attrs[:volumes_attributes]['0']
+        assert !vm_attrs[:config_attributes].has_key?(:interfaces)
+        assert vm_attrs.has_key?(:interfaces_attributes)
+        assert_equal interface_attributes, vm_attrs[:interfaces_attributes]['0']
+      end
+  
+      it "converts to hash a container" do
+        vm, config_attributes, volume_attributes, interface_attributes  = mock_container_vm
+        vm_attrs = @cr.vm_compute_attributes(vm)
+        assert !vm_attrs.has_key?(:config)
+        assert vm_attrs.has_key?(:config_attributes)
+        assert_equal config_attributes.reject { |key,value| [:mount_points,:interfaces].include?(key) || value.to_s.empty?}, vm_attrs[:config_attributes]
+        assert !vm_attrs[:config_attributes].has_key?(:mount_points)
+        assert vm_attrs.has_key?(:volumes_attributes)
+        assert_equal volume_attributes, vm_attrs[:volumes_attributes]['0']
+        assert vm_attrs.has_key?(:interfaces_attributes)
+        assert_equal interface_attributes, vm_attrs[:interfaces_attributes]['0']
+      end
+
+    end
+
   describe 'save_vm' do
     before do
       @cr = FactoryBot.build_stubbed(:proxmox_cr)
@@ -141,8 +175,8 @@ module ForemanFogProxmox
       vm.stubs(:config).returns(config)
       vm.stubs(:container?).returns(false)
       @cr.stubs(:find_vm_by_uuid).returns(vm)
-      attr = { 'vmid' => '100', 'type' => 'qemu', 'node' => 'pve', 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' } }
-      @cr.stubs(:parse_server_vm).returns({ 'vmid' => '100', 'cores' => '1', 'cpulimit' => '1' })
+      attr = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' } }
+      @cr.stubs(:parse_server_vm).returns({ 'vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1' })
       expected_attr = { :cores => '1', :cpulimit => '1' }
       vm.expects(:update, expected_attr)
       @cr.save_vm(uuid,attr)
@@ -156,11 +190,85 @@ module ForemanFogProxmox
       vm.stubs(:config).returns(config)
       vm.stubs(:container?).returns(true)
       @cr.stubs(:find_vm_by_uuid).returns(vm)
-      attr = { 'vmid' => '100', 'type' => 'lxc', 'node' => 'pve', 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' } }
-      @cr.stubs(:parse_container_vm).returns({ 'vmid' => '100', 'cores' => '1', 'cpulimit' => '1' })
+      attr = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' } }
+      @cr.stubs(:parse_container_vm).returns({ 'vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1' })
       expected_attr = { :cores => '1', :cpulimit => '1' }
       vm.expects(:update, expected_attr)
       @cr.save_vm(uuid,attr)
+    end
+  end
+
+  describe 'create_vm' do
+
+    it 'raises Foreman::Exception when vmid is invalid' do
+      args = { vmid: '100' }
+      servers = mock('servers')
+      servers.stubs(:id_valid?).returns(false)
+      cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
+      err = assert_raises Foreman::Exception do
+        cr.create_vm(args)
+      end
+      assert err.message.end_with?('invalid vmid=100')
+    end
+
+    it 'creates server' do
+      args = { vmid: '100', type: 'qemu' }
+      servers = mock('servers')
+      servers.stubs(:id_valid?).returns(true)
+      cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
+      cr.stubs(:convert_sizes).with(args)
+      cr.stubs(:parse_server_vm).with(args).returns(args)
+      servers.stubs(:create).with(args)
+      vm = mock('vm')
+      cr.stubs(:find_vm_by_uuid).with("#{args[:type]}_#{args[:vmid]}").returns(vm)
+      cr.create_vm(args)
+    end
+
+    it 'creates container' do
+      args = { vmid: '100', type: 'lxc' }
+      servers = mock('servers')
+      servers.stubs(:id_valid?).returns(true)
+      containers = mock('containers')
+      containers.stubs(:create).with(vmid: 100, type: 'lxc')
+      cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
+      cr.stubs(:convert_sizes).with(args)
+      cr.stubs(:parse_container_vm).with(args).returns(args)
+      vm = mock('vm')
+      cr.stubs(:find_vm_by_uuid).with("#{args[:type]}_#{args[:vmid]}").returns(vm)
+      cr.create_vm(args)
+    end
+
+    it 'clones server' do
+      args = { vmid: '100', type: 'qemu', image_id: '999' }
+      servers = mock('servers')
+      servers.stubs(:id_valid?).returns(true)
+      cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
+      cr.stubs(:convert_sizes).with(args)
+      cr.stubs(:parse_server_vm).with(args).returns(args)
+      servers.stubs(:create).with(args)
+      image = mock('image')
+      image.stubs(:clone).with(100)
+      servers.stubs(:get).with('999').returns(image)
+      vm = mock('vm')
+      cr.stubs(:find_vm_by_uuid).with("#{args[:type]}_#{args[:vmid]}").returns(vm)
+      cr.create_vm(args)
+    end
+
+    it 'clones container' do
+      args = { vmid: '100', type: 'lxc', image_id: '999' }
+      servers = mock('servers')
+      servers.stubs(:id_valid?).returns(true)
+      containers = mock('containers')
+      containers.stubs(:create).with(vmid: 100, type: 'lxc')
+      image = mock('image')
+      image.stubs(:clone).with(100)
+      servers.stubs(:get).with('999').returns(image)
+      cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
+      cr.stubs(:convert_sizes).with(args)
+      cr.stubs(:parse_container_vm).with(args).returns(args)
+      vm = mock('vm')
+      cr.stubs(:find_vm_by_uuid).with("#{args[:type]}_#{args[:vmid]}").returns(vm)
+      cr.create_vm(args)
     end
   end
 

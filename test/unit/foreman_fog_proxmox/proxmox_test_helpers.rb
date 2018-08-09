@@ -18,15 +18,234 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 module ForemanFogProxmox
-
   module ProxmoxTestHelpers
   
     def mock_node_servers(cr, servers) 
-      node = mock()
+      node = mock('node')
       node.stubs(:servers).returns(servers)
       cr.stubs(:node).returns(node)
       cr
     end
-  end
-  
+
+    def mock_node_servers_containers(cr, servers, containers) 
+      node = mock('node')
+      node.stubs(:containers).returns(containers)
+      node.stubs(:servers).returns(servers)
+      cr.stubs(:node).returns(node)
+      cr
+    end
+
+    def mock_server_vm
+      interface_attributes = {
+        id: 'net0',
+        mac: '36:25:8C:53:0C:50',
+        model: 'virtio',
+        name: nil,
+        ip: nil,
+        ip6: nil,
+        bridge: 'vmbr0',
+        firewall: nil,
+        link_down: nil,
+        rate: nil,
+        queues: nil,
+        tag: nil
+      }
+      interface = mock('interface')
+      interface.stubs(:attributes).returns(interface_attributes)
+      interfaces = [interface]
+      volume_attributes = {
+        id: 'scsi0',
+        volid: 'local-lvm:vm-100-disk-1',
+        size: 8,
+        storage: 'local-lvm',
+        cache: 'none',
+        replicate: nil,
+        media: nil,
+        format: nil,
+        model: 'scsi',
+        shared: nil,
+        snapshot: nil,
+        backup: nil,
+        aio: nil
+      }
+      volume = mock('volume')
+      volume.stubs(:attributes).returns(volume_attributes)
+      volumes = [volume]
+      config = mock('config')
+      config_attributes = {
+        vmid: 100,
+        digest: '0',
+        description: '',
+        ostype: 'l26',
+        smbios1: '0',
+        numa: 0,
+        kvm: 0,
+        vcpus: 1,
+        cores: 1,
+        bootdisk: 'scsi0',
+        onboot: 0,
+        boot: 'scsi0',
+        agent: 0,
+        scsihw: 'scsi',
+        sockets: 1,
+        memory: 512,
+        min_memory: 0,
+        shares: 0,
+        balloon: 0,
+        name: 'test',
+        cpu: 1,
+        cpulimit: nil,
+        cpuunits: nil,
+        keyboard: 'fr',
+        vga: 'std',
+        interfaces: interfaces,
+        disks: volumes
+      }
+      config.stubs(:attributes).returns(config_attributes)
+      config.stubs(:disks).returns(volumes)
+      config.stubs(:interfaces).returns(interfaces)
+      vm = mock('vm')
+      vm.stubs(:config).returns(config)
+      vm_attributes = {
+        vmid: 100,
+        id: 'qemu/100',
+        node: 'pve',
+        config: config,
+        name: 'test',
+        type: 'qemu',
+        maxdisk: 0,
+        disk: 0,
+        diskwrite: 0,
+        diskread: 0,
+        uptime: 0,
+        netout: 0,
+        netin: 0,
+        cpu: 1,
+        cpus: 1,
+        template: 0,
+        status: 'stopped',
+        maxcpu: 0,
+        mem: 0,
+        maxmem: 512,
+        qmpstatus: 'stopped',
+        ha: {},
+        pid: 0,
+        blockstat: 0,
+        balloon: 0,
+        ballooninfo: 0,
+        snapshots: []
+      }
+      vm.stubs(:attributes).returns(vm_attributes)
+      vm.stubs(:container?).returns(false)
+      return vm, config_attributes, volume_attributes, interface_attributes
+    end
+
+    def mock_container_vm
+      interface_attributes = {
+        id: 'net0',
+        mac: '36:25:8C:53:0C:50',
+        model: nil,
+        name: 'eth0',
+        ip: nil,
+        ip6: nil,
+        bridge: 'vmbr0',
+        firewall: nil,
+        link_down: nil,
+        rate: nil,
+        queues: nil,
+        tag: nil
+      }
+      interface = mock('interface')
+      interface.stubs(:attributes).returns(interface_attributes)
+      interfaces = [interface]
+      volume_attributes = {
+        id: 'rootfs',
+        volid: 'local-lvm:vm-100-disk-1',
+        size: 8,
+        storage: 'local-lvm',
+        cache: 'none',
+        replicate: nil,
+        media: nil,
+        format: nil,
+        model: 'rootfs',
+        shared: nil,
+        snapshot: nil,
+        backup: nil,
+        aio: nil
+      }
+      volume = mock('volume')
+      volume.stubs(:attributes).returns(volume_attributes)
+      volumes = [volume]
+      config = mock('config')
+      config_attributes = {
+        vmid: 100,
+        digest: '0',
+        ostype: 'alpine',
+        storage: 'local-lvm',
+        template: 0,        
+        arch: 'amd64',
+        memory: 512,
+        swap: nil,
+        hostname: 'test',
+        nameserver: nil,
+        searchdomain: nil,
+        password: 'proxmox01',
+        onboot: 0,
+        startup: nil,
+        rootfs: 'local-lvm:vm-100-disk-1',
+        cores: 1,
+        cpuunits: nil,
+        cpulimit: nil,
+        description: nil,
+        console: nil,
+        cmode: nil,
+        tty: nil,
+        force: nil,
+        lock: nil,
+        pool: nil,
+        bwlimit: nil,
+        unprivileged: nil,
+        interfaces: interfaces,
+        mount_points: volumes
+      }
+      config.stubs(:attributes).returns(config_attributes)
+      config.stubs(:mount_points).returns(volumes)
+      config.stubs(:interfaces).returns(interfaces)
+      vm = mock('vm')
+      vm.stubs(:config).returns(config)
+      vm_attributes = {
+        vmid: 100,
+        id: 'lxc/100',
+        node: 'pve',
+        config: config,
+        name: 'test',
+        type: 'lxc',
+        maxdisk: 0,
+        disk: 0,
+        diskwrite: 0,
+        diskread: 0,
+        uptime: 0,
+        netout: 0,
+        netin: 0,
+        cpu: 1,
+        cpus: 1,
+        template: 0,
+        status: 'stopped',
+        maxcpu: 0,
+        mem: 0,
+        maxmem: 512,
+        qmpstatus: 'stopped',
+        ha: {},
+        pid: 0,
+        blockstat: 0,
+        balloon: 0,
+        ballooninfo: 0,
+        snapshots: []
+      }
+      vm.stubs(:attributes).returns(vm_attributes)
+      vm.stubs(:container?).returns(true)
+      return vm, config_attributes, volume_attributes, interface_attributes
+    end
+
+  end  
 end

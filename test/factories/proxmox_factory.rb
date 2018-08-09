@@ -18,6 +18,7 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 FactoryBot.define do
+  
   factory :proxmox_resource, :class => ComputeResource do
     sequence(:name) { |n| "compute_resource#{n}" }
 

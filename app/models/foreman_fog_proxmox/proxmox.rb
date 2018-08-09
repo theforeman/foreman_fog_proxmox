@@ -157,18 +157,24 @@ module ForemanFogProxmox
     end
 
     def vm_compute_attributes(vm)
-      vm_attrs = vm.attributes rescue {}
-      vm_attrs = vm_attrs.reject{|k,v| k == :id }  
+      vm_attrs = vm.attributes.reject { |key,value| [:config,:interfaces].include?(key) || value.to_s.empty? }
+      vm_attrs = set_vm_config_attributes(vm, vm_attrs)
       vm_attrs = set_vm_volumes_attributes(vm, vm_attrs)
       vm_attrs = set_vm_interfaces_attributes(vm, vm_attrs)
       vm_attrs
     end
 
-    def set_vm_volumes_attributes(vm, vm_attrs)
-      if vm.config.respond_to?(:volumes)
-        volumes = vm.config.volumes || []
-        vm_attrs[:volumes_attributes] = Hash[volumes.each_with_index.map { |volume, idx| [idx.to_s, volume.attributes] }]
+    def set_vm_config_attributes(vm, vm_attrs)
+      if vm.respond_to?(:config)
+        config = vm.config.attributes.reject { |key,value| [:disks,:mount_points,:interfaces].include?(key) || value.to_s.empty?}
+        vm_attrs[:config_attributes] = config
       end
+      vm_attrs
+    end
+
+    def set_vm_volumes_attributes(vm, vm_attrs)
+      volumes = vm.container? ? vm.config.mount_points : vm.config.disks || []
+      vm_attrs[:volumes_attributes] = Hash[volumes.each_with_index.map { |volume, idx| [idx.to_s, volume.attributes] }]
       vm_attrs
     end
 
@@ -207,9 +213,10 @@ module ForemanFogProxmox
 
     def create_vm(args = {})
       vmid = args[:vmid].to_i
+      type = args[:type]
       raise ::Foreman::Exception.new N_("invalid vmid=%{vmid}") % { vmid: vmid } unless node.servers.id_valid?(vmid)
       image_id = args[:image_id]
-      node = get_cluster_node args
+      # node = get_cluster_node args
       if image_id
         logger.debug(_("create_vm(): clone %{image_id} in %{vmid}") % { image_id: image_id, vmid: vmid })
         image = node.servers.get image_id
@@ -217,7 +224,6 @@ module ForemanFogProxmox
       else
         logger.debug(_("create_vm(): %{args}") % { args: args })
         convert_sizes(args)
-        type = args[:type]
         case type
           when 'qemu'
             node.servers.create(parse_server_vm(args))
@@ -236,11 +242,7 @@ module ForemanFogProxmox
     end
 
     def find_vm_by_uuid(uuid)
-      uuid_regexp = /^(lxc|qemu)\_(\d+)$/
-      raise ::Foreman::Exception.new _("Invalid uuid=[%{uuid}]." % { uuid: uuid }) unless uuid.match(uuid_regexp)
-      id_a = uuid.scan(uuid_regexp).first
-      type = id_a[0]
-      vmid = id_a[1]
+      type, vmid = parse_type_and_vmid(uuid)
       case type
       when 'qemu'
         node.servers.get(vmid)
@@ -283,6 +285,8 @@ module ForemanFogProxmox
     end
 
     def save_vm(uuid, attr)
+      type, vmid = parse_type_and_vmid(uuid)
+      attr = attr.merge(type: type, vmid: vmid)
       vm = find_vm_by_uuid(uuid)
       logger.debug(N_("save_vm(): %{attr}") % { attr: attr })
       templated = attr[:templated]

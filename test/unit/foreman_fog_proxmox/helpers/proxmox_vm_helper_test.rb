@@ -138,27 +138,27 @@ class ProxmoxVmHelperTest < ActiveSupport::TestCase
     setup { Fog.mock! }
     teardown { Fog.unmock! }
 
-    test '#server qemu' do       
+    it '#server qemu' do       
       config_hash = object_to_config_hash(server,'qemu')
       expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(server.config.attributes).reject { |key,_value| %w[templated node type ide2 scsi0 net0 net1].include? key }
       assert_equal expected_config_hash, config_hash['config_attributes']
     end  
 
-    test '#server lxc' do       
+    it '#server lxc' do       
       config_hash = object_to_config_hash(server,'lxc')
       assert config_hash.has_key?('config_attributes')
       expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(server.config.attributes).reject { |key,_value| %w[templated node type ide2 scsi0 net0 net1].include? key }
       assert_equal expected_config_hash, config_hash['config_attributes']
     end    
 
-    test '#container qemu' do       
+    it '#container qemu' do       
       config_hash = object_to_config_hash(container,'qemu')
       assert config_hash.has_key?('config_attributes')
       expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(container.config.attributes).reject { |key,_value| %w[templated node type rootfs mp0 net0 net1].include? key }
       assert_equal expected_config_hash, config_hash['config_attributes']
     end  
 
-    test '#container lxc' do       
+    it '#container lxc' do       
       config_hash = object_to_config_hash(container,'lxc')
       assert config_hash.has_key?('config_attributes')
       expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(container.config.attributes).reject { |key,_value| %w[templated node type rootfs mp0 net0 net1].include? key }
@@ -172,13 +172,13 @@ class ProxmoxVmHelperTest < ActiveSupport::TestCase
     setup { Fog.mock! }
     teardown { Fog.unmock! }
 
-    test '#server' do       
+    it '#server' do       
       convert_sizes(host_server)
       assert_equal '512', host_server['config_attributes']['memory']
       assert_equal '1', host_server['volumes_attributes']['0']['size']
     end  
 
-    test '#container' do       
+    it '#container' do       
       convert_sizes(host_container)
       assert_equal '512', host_container['config_attributes']['memory']
       assert_equal '1', host_container['volumes_attributes']['0']['size']
@@ -190,15 +190,40 @@ class ProxmoxVmHelperTest < ActiveSupport::TestCase
     setup { Fog.mock! }
     teardown { Fog.unmock! }
 
-    test '#server' do       
+    it '#server' do       
       convert_memory_size(host_server['config_attributes'],'memory')
       assert_equal '512', host_server['config_attributes']['memory']
     end  
 
-    test '#container' do       
+    it '#container' do       
       convert_memory_size(host_container['config_attributes'],'memory')
       assert_equal '512', host_container['config_attributes']['memory']
     end 
+  end
+
+  describe 'parse_type_and_vmid' do
+
+    setup { Fog.mock! }
+    teardown { Fog.unmock! }
+
+    it "raises Foreman::Exception when the uuid does not match" do
+      err = assert_raises Foreman::Exception do
+        parse_type_and_vmid('100')
+      end
+      assert err.message.end_with?('Invalid uuid=[100].')
+    end
+
+    it '#server' do       
+      type, vmid = parse_type_and_vmid('qemu_100')
+      assert_equal 'qemu', type
+      assert_equal '100', vmid
+    end  
+
+    it '#container' do       
+      type, vmid = parse_type_and_vmid('lxc_100')
+      assert_equal 'lxc', type
+      assert_equal '100', vmid
+    end  
   end
 
 end

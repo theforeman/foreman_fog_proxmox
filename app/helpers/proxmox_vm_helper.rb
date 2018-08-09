@@ -73,4 +73,13 @@ module ProxmoxVmHelper
     config_hash.store(key, (config_hash[key].to_i / MEGA).to_s) unless config_hash[key].empty?
   end
 
+  def parse_type_and_vmid(uuid)
+    uuid_regexp = /^(lxc|qemu)\_(\d+)$/
+    raise ::Foreman::Exception.new _("Invalid uuid=[%{uuid}]." % { uuid: uuid }) unless uuid.match(uuid_regexp)
+    id_a = uuid.scan(uuid_regexp).first
+    type = id_a[0]
+    vmid = id_a[1]
+    return type, vmid
+  end
+
 end

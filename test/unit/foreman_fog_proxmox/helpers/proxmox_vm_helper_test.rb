@@ -80,7 +80,7 @@ class ProxmoxVmHelperTest < ActiveSupport::TestCase
       'type' => 'qemu',
       'config_attributes' => { 
         'memory' => '536870912', 
-        'min_memory' => '', 
+        'min_memory' => nil, 
         'ballon' => '', 
         'shares' => '', 
         'cpu_type' => 'kvm64', 
@@ -111,7 +111,7 @@ class ProxmoxVmHelperTest < ActiveSupport::TestCase
         'onboot' => '0', 
         'description' => '', 
         'memory' => '536870912', 
-        'swap' => '536870912',
+        'swap' => '',
         'cores' => '1',
         'cpulimit' => '',
         'cpuunits' => '',
@@ -190,14 +190,24 @@ class ProxmoxVmHelperTest < ActiveSupport::TestCase
     setup { Fog.mock! }
     teardown { Fog.unmock! }
 
-    it '#server' do       
+    it '#server memory' do       
       convert_memory_size(host_server['config_attributes'],'memory')
       assert_equal '512', host_server['config_attributes']['memory']
     end  
 
-    it '#container' do       
+    it '#server min_memory nil' do       
+      convert_memory_size(host_server['config_attributes'],'min_memory')
+      assert_nil host_server['config_attributes']['min_memory']
+    end  
+
+    it '#container memory' do       
       convert_memory_size(host_container['config_attributes'],'memory')
       assert_equal '512', host_container['config_attributes']['memory']
+    end 
+
+    it '#container swap empty' do       
+      convert_memory_size(host_container['config_attributes'],'swap')
+      assert host_container['config_attributes']['swap'].empty?
     end 
   end
 

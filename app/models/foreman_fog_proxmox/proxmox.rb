@@ -157,7 +157,7 @@ module ForemanFogProxmox
     end
 
     def vm_compute_attributes(vm)
-      vm_attrs = vm.attributes.reject { |key,value| [:config,:interfaces].include?(key) || value.to_s.empty? }
+      vm_attrs = vm.attributes.reject { |key,value| [:config].include?(key) || value.to_s.empty? }
       vm_attrs = set_vm_config_attributes(vm, vm_attrs)
       vm_attrs = set_vm_volumes_attributes(vm, vm_attrs)
       vm_attrs = set_vm_interfaces_attributes(vm, vm_attrs)

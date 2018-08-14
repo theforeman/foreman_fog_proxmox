@@ -19,6 +19,7 @@
 
 require 'fog/proxmox/helpers/disk_helper'
 require 'fog/proxmox/helpers/nic_helper'
+require 'foreman_fog_proxmox/value'
 
 module ProxmoxVmHelper
 
@@ -66,11 +67,11 @@ module ProxmoxVmHelper
     convert_memory_size(args['config_attributes'],'min_memory')
     convert_memory_size(args['config_attributes'],'shares')
     convert_memory_size(args['config_attributes'],'swap')
-    args['volumes_attributes'].each_value { |value| value['size'] = (value['size'].to_i / GIGA).to_s unless value['size'].empty? }
+    args['volumes_attributes'].each_value { |value| value['size'] = (value['size'].to_i / GIGA).to_s unless ForemanFogProxmox::Value.empty?(value['size']) }
   end
 
   def convert_memory_size(config_hash, key)
-    config_hash.store(key, (config_hash[key].to_i / MEGA).to_s) unless config_hash[key].empty?
+    config_hash.store(key, (config_hash[key].to_i / MEGA).to_s) unless ForemanFogProxmox::Value.empty?(config_hash[key])
   end
 
   def parse_type_and_vmid(uuid)

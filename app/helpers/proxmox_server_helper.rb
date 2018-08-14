@@ -19,6 +19,7 @@
 
 require 'fog/proxmox/helpers/disk_helper'
 require 'fog/proxmox/helpers/nic_helper'
+require 'foreman_fog_proxmox/value'
 
 module ProxmoxServerHelper
 
@@ -46,13 +47,13 @@ module ProxmoxServerHelper
     networks = parse_server_interfaces(interfaces_attributes)
     general_a = %w[node type config_attributes volumes_attributes interfaces_attributes firmware_type provision_method container_volumes server_volumes]
     logger.debug("general_a: #{general_a}")
-    parsed_vm = args.reject { |key,value| general_a.include?(key) || value.to_s.empty? }
+    parsed_vm = args.reject { |key,value| general_a.include?(key) || ForemanFogProxmox::Value.empty?(value) }
     config_a = []
     config_a += cpu_a
     config_a += cdrom_a
     config_a += memory_a
     config_a += general_a
-    parsed_config = config.reject { |key,value| config_a.include?(key) || value.to_s.empty? }
+    parsed_config = config.reject { |key,value| config_a.include?(key) || ForemanFogProxmox::Value.empty?(value) }
     logger.debug("parse_server_config(): #{parsed_config}")
     parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory).merge(cdrom)
     networks.each { |network| parsed_vm = parsed_vm.merge(network) }
@@ -82,7 +83,7 @@ module ProxmoxServerHelper
     cpu += "+spec-ctrl" if spectre
     cpu += ";" if spectre && pcid
     cpu += "+pcid" if pcid      
-    args.delete_if { |key,value| %w[cpu_type spectre pcid].include?(key) || value.to_s.empty? }
+    args.delete_if { |key,value| %w[cpu_type spectre pcid].include?(key) || ForemanFogProxmox::Value.empty?(value) }
     args.each_value { |value| value.to_i }
     parsed_cpu = { cpu: cpu }.merge(args)
     logger.debug("parse_server_cpu(): #{parsed_cpu}")
@@ -102,9 +103,9 @@ module ProxmoxServerHelper
     disk = {}
     id = args['id']
     id = "#{args['controller']}#{args['device']}" unless id
-    return args if id.empty?
+    return args if ForemanFogProxmox::Value.empty?(id)
     delete = args['_delete'].to_i == 1
-    args.delete_if { |_key,value| value.to_s.empty? }
+    args.delete_if { |_key,value| ForemanFogProxmox::Value.empty?(value) }
     if delete
       logger.debug("parse_server_volume(): delete id=#{id}")
       disk.store(:delete, id)
@@ -136,7 +137,7 @@ module ProxmoxServerHelper
   end
 
   def parse_server_interface(args)
-    args.delete_if { |_key,value| value.to_s.empty? }
+    args.delete_if { |_key,value| ForemanFogProxmox::Value.empty?(value) }
     nic = {}
     id = args['id']
     logger.debug("parse_server_interface(): id=#{id}")

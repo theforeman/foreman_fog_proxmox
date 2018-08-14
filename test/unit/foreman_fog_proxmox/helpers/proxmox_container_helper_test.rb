@@ -52,7 +52,7 @@ class ProxmoxContainerHelperTest < ActiveSupport::TestCase
           
         },
         'volumes_attributes' => {
-          '0'=> { 'id' => 'rootfs', 'storage' => 'local-lvm', 'size' => '1073741824' },
+          '0'=> { 'id' => 'rootfs', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => nil },
           '1'=> { 'id' => 'mp0', 'storage' => 'local-lvm', 'size' => '1073741824' }
         }, 
         'interfaces_attributes' => { 

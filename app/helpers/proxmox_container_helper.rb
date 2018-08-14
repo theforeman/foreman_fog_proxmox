@@ -19,6 +19,7 @@
 
 require 'fog/proxmox/helpers/disk_helper'
 require 'fog/proxmox/helpers/nic_helper'
+require 'foreman_fog_proxmox/value'
 
 module ProxmoxContainerHelper
 
@@ -46,13 +47,13 @@ module ProxmoxContainerHelper
     networks = parse_container_interfaces(interfaces_attributes)
     general_a = %w[node name type config_attributes volumes_attributes interfaces_attributes firmware_type provision_method container_volumes server_volumes]
     logger.debug("general_a: #{general_a}")
-    parsed_vm = args.reject { |key,value| general_a.include?(key) || ostemplate_a.include?(key) || value.to_s.empty? }
+    parsed_vm = args.reject { |key,value| general_a.include?(key) || ostemplate_a.include?(key) || ForemanFogProxmox::Value.empty?(value) }
     config_a = []
     config_a += cpu_a
     config_a += memory_a
     config_a += main_a
     config_a += general_a
-    parsed_config = config.reject { |key,value| config_a.include?(key) || value.to_s.empty? }
+    parsed_config = config.reject { |key,value| config_a.include?(key) || ForemanFogProxmox::Value.empty?(value) }
     logger.debug("parse_container_config(): #{parsed_config}")
     parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory).merge(ostemplate)
     networks.each { |network| parsed_vm = parsed_vm.merge(network) }
@@ -63,7 +64,7 @@ module ProxmoxContainerHelper
 
   def parse_container_memory(args)
     memory = {} 
-    args.delete_if { |_key,value| value.to_s.empty? }
+    args.delete_if { |_key,value| ForemanFogProxmox::Value.empty?(value) }
     memory.store(:memory, args['memory'].to_i) if args['memory']
     memory.store(:swap, args['swap'].to_i) if args['swap']
     logger.debug("parse_container_memory(): #{memory}")
@@ -72,7 +73,7 @@ module ProxmoxContainerHelper
 
   def parse_container_cpu(args)
     cpu = {}
-    args.delete_if { |_key,value| value.to_s.empty? }
+    args.delete_if { |_key,value| ForemanFogProxmox::Value.empty?(value) }
     cpu.store(:arch, args['arch'].to_s) if args['arch']
     cpu.store(:cpulimit, args['cpulimit'].to_i) if args['cpulimit']
     cpu.store(:cpuunits, args['cpuunits'].to_i) if args['cpuunits']
@@ -86,7 +87,7 @@ module ProxmoxContainerHelper
     ostemplate_file = args['ostemplate_file']
     ostemplate = ostemplate ? ostemplate : ostemplate_file
     ostemplate_storage = args['ostemplate_storage']
-    ostemplate_storage, ostemplate_file, _size  = Fog::Proxmox::DiskHelper.extract_storage_volid_size(ostemplate) unless ostemplate.empty?
+    ostemplate_storage, ostemplate_file, _size  = Fog::Proxmox::DiskHelper.extract_storage_volid_size(ostemplate) unless ForemanFogProxmox::Value.empty?(ostemplate)
     parsed_ostemplate = {ostemplate: ostemplate, ostemplate_file: ostemplate_file, ostemplate_storage: ostemplate_storage}
     logger.debug("parse_container_ostemplate(): #{parsed_ostemplate}")
     parsed_ostemplate
@@ -97,7 +98,8 @@ module ProxmoxContainerHelper
     id = args['id']
     id = "mp#{args['device']}" unless id
     delete = args['_delete'].to_i == 1
-    args.delete_if { |_key,value| value.empty? }
+    logger.debug("parse_container_volume() args=#{args}")
+    args.delete_if { |_key,value| ForemanFogProxmox::Value.empty?(value) }
     if delete
       logger.debug("parse_container_volume(): delete id=#{id}")
       disk.store(:delete, id)
@@ -115,6 +117,7 @@ module ProxmoxContainerHelper
   end
 
   def parse_container_volumes(args)
+    logger.debug("parse_container_volumes() args=#{args}")
     volumes = []
     args.each_value { |value| volumes.push(parse_container_volume(value))} if args
     logger.debug("parse_container_volumes(): volumes=#{volumes}")
@@ -129,7 +132,7 @@ module ProxmoxContainerHelper
   end
 
   def parse_container_interface(args)
-    args.delete_if { |_key,value| value.empty? }
+    args.delete_if { |_key,value| ForemanFogProxmox::Value.empty?(value) }
     nic = {}
     id = args['id']
     logger.debug("parse_container_interface(): id=#{id}")

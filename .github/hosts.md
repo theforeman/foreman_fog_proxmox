@@ -2,11 +2,15 @@
 
 ## Create
 
-VM Proxmox config tab:
+You first choose VM type between a container or a server.
 
-![Create host](images/create_host.png)
+The form automatically changes.
 
-Advanced options could also be modified in VM Proxmox config tab.
+Server VM Proxmox config tab:
+
+![Create host server](images/create_host_server.png)
+
+Advanced options could also be modified in Server VM Proxmox config tab.
 
 Main options:
 
@@ -38,13 +42,21 @@ Network interface tab:
 
 Identifier is required. You must set `net[n]` with n an integer.
 
+The container form slightly differs from the server one.
+
+Container VM Proxmox config tab:
+
+![Create host container](images/create_host_container.png)
+
+
+
 ## Update
 
 Update config is available.
 
 ## Clone images
 
-You can also change a host in an image, i.e. a [template](https://pve.proxmox.com/wiki/Qemu/KVM_Virtual_Machines#qm_templates) in Proxmox.
+You can also change a host (server or container) into an image, i.e. a [template](https://pve.proxmox.com/wiki/Qemu/KVM_Virtual_Machines#qm_templates) in Proxmox.
 You update a host. You check the box `Create image?` to true and save it:
 
 ![Update host to template](images/update_host_to_template.png)
@@ -73,17 +85,17 @@ You can list hosts in foreman:
 
 ![List hosts](images/list_hosts.png)
 
-And you can check it in Proxmox wbe interface too:
+And you can check it in Proxmox Web interface too:
 
 ![List VMs in Proxmox](images/proxmox_vms.png)
 
 ## Show a host
 
-VM tab when vm is a template. `Templated?` is true:
+VM (server) tab when vm is a template. `Templated?` is true:
 
 ![Show VM templated](images/show_host_templated.png)
 
-VM tab when vm is not a template. `Templated?` is false:
+VM (container) tab when vm is not a template. `Templated?` is false:
 
 ![Show VM not templated](images/show_host.png)
 

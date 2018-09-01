@@ -33,7 +33,11 @@ To ease hosts management you can create a host group.
 
 You can create profiles:
 
-![Compute profile](images/compute_profile_small.png)
+![Compute profile](images/compute_profile_server.png)
+
+You can list profiles:
+
+![Compute profile](images/list_profiles.png)
 
 ## Associated vms
 

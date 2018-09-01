@@ -56,7 +56,7 @@ class ProxmoxContainerHelperTest < ActiveSupport::TestCase
           '1'=> { 'id' => 'mp0', 'storage' => 'local-lvm', 'size' => '1073741824' }
         }, 
         'interfaces_attributes' => { 
-          '0' => { 'id' => 'net0', 'name' => 'eth0', 'bridge' => 'vmbr0', 'ip' => 'dhcp', 'ip6' => 'dhcp' },
+          '0' => { 'id' => 'net0', 'name' => 'eth0', 'bridge' => 'vmbr0', 'ip' => 'dhcp', 'ip6' => 'dhcp', 'rate' => nil },
           '1' => { 'id' => 'net1', 'name' => 'eth1', 'bridge' => 'vmbr0', 'ip' => 'dhcp', 'ip6' => 'dhcp' } 
         } 
       }

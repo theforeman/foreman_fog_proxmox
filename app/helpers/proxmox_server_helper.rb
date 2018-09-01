@@ -63,19 +63,21 @@ module ProxmoxServerHelper
   end
 
   def parse_server_memory(args)
-    memory = { memory: args['memory'].to_i }
+    memory = { }
+    memory.store(:memory,args['memory'].to_i) if args['memory']
     ballooned = args['balloon'].to_i == 1
     if ballooned
-      memory.store(:shares,args['shares'].to_i)
-      memory.store(:balloon,args['min_memory'].to_i)
+      memory.store(:shares,args['shares'].to_i) if args['shares']
+      memory.store(:balloon,args['min_memory'].to_i) if args['min_memory']
     else
-      memory.store(:balloon,args['balloon'].to_i)
+      memory.store(:balloon,args['balloon'].to_i) if args['balloon']
     end
     logger.debug("parse_server_memory(): #{memory}")
     memory
   end
 
   def parse_server_cpu(args)
+    return {} unless args['cpu_type']
     cpu = "cputype=#{args['cpu_type']}"
     spectre = args['spectre'].to_i == 1
     pcid = args['pcid'].to_i == 1

@@ -101,7 +101,9 @@ module ForemanFogProxmox
     end
 
     def template(vmid)
-      find_vm_by_uuid(vmid)
+      vm = find_vm_by_uuid("qemu_#{vmid}")
+      vm = find_vm_by_uuid("lxc_#{vmid}") unless vm
+      vm
     end
 
     def host_compute_attrs(host)
@@ -222,6 +224,8 @@ module ForemanFogProxmox
         logger.debug(_("create_vm(): clone %{image_id} in %{vmid}") % { image_id: image_id, vmid: vmid })
         image = node.servers.get image_id
         image.clone(vmid)
+        clone = node.servers.get vmid
+        clone.update(name: args[:name])        
       else
         logger.debug(_("create_vm(): %{args}") % { args: args })
         convert_sizes(args)
@@ -282,7 +286,9 @@ module ForemanFogProxmox
     end
 
     def image_exists?(image)
-      find_vm_by_uuid(image)
+      vm = find_vm_by_uuid("qemu_#{image}")
+      vm = find_vm_by_uuid("lxc_#{image}") unless vm
+      vm!=nil
     end
 
     def save_vm(uuid, attr)

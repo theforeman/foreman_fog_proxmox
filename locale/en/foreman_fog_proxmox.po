@@ -125,12 +125,6 @@ msgstr ""
 msgid "Hostname"
 msgstr ""
 
-msgid "IPv4"
-msgstr ""
-
-msgid "IPv6"
-msgstr ""
-
 msgid "Identifier interface[%{index}] required."
 msgstr ""
 
@@ -305,12 +299,6 @@ msgid "create_vm(): %{args}"
 msgstr ""
 
 msgid "create_vm(): clone %{image_id} in %{vmid}"
-msgstr ""
-
-msgid "e.g. dhcp or IPv4/CIDR format or manual"
-msgstr ""
-
-msgid "e.g. dhcp or IPv6/CIDR format or manual"
 msgstr ""
 
 msgid "e.g. https://127.0.0.1:8006/api2/json"

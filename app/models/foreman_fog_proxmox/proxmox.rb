@@ -353,11 +353,15 @@ module ForemanFogProxmox
 
     def console(uuid)
       vm = find_vm_by_uuid(uuid)
-      if vm.config.type_console == 'vnc'
-        vnc_console = vm.start_console(websocket: 1)  
-        WsProxy.start(:host => host, :host_port => vnc_console['port'], :password => vnc_console['ticket']).merge(:name => vm.name, :type => vm.config.type_console)
-      else
-        raise ::Foreman::Exception.new(_("%s console is not supported at this time") % vm.config.type_console)
+      type_console = vm.config.type_console
+      options = {}
+      options.store(:websocket, 1) if type_console == 'vnc'
+      begin
+        vnc_console = vm.start_console(options)  
+        WsProxy.start(:host => host, :host_port => vnc_console['port'], :password => vnc_console['ticket']).merge(:name => vm.name, :type => type_console)
+      rescue => e
+        logger.error(e)
+        raise ::Foreman::Exception.new(_("%s console is not supported at this time") % type_console)
       end
     end
 

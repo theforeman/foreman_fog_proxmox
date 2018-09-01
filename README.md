@@ -14,8 +14,8 @@ It is intended to satisfy this [feature](http://projects.theforeman.org/issues/2
 
 Tested with:
 
-* Foreman = 1.17.1
-* Fog-proxmox >= 0.5.0
+* Foreman = 1.17.3
+* Fog-proxmox >= 0.5.1
 
 ## Installation
 
@@ -105,11 +105,11 @@ You also need nodejs in your dev machine to run webpack-dev-server.
 
 * Fork this github repo.
 * Clone it on your local machine
-* Install foreman v1.17 on your machine:
+* Install foreman v1.17.3 on your machine:
 
 ```shell
 git clone https://github.com/theforeman/foreman
-git checkout tags/1.17
+git checkout tags/1.17.3
 ```
 
 * Create a Gemfile.local.rb file in foreman/bundler.d/

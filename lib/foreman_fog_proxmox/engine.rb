@@ -38,7 +38,7 @@ module ForemanFogProxmox
 
     initializer 'foreman_fog_proxmox.register_plugin', :before => :finisher_hook do |_app|
       Foreman::Plugin.register :foreman_fog_proxmox do
-        requires_foreman '>= 1.17'
+        requires_foreman '>= 1.17.3'
         # Register Proxmox VE compute resource in foreman
         compute_resource ForemanFogProxmox::Proxmox
         parameter_filter(ComputeResource, :uuid)

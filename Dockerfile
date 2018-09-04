@@ -26,7 +26,7 @@ ADD . /usr/local/foreman_proxmox
 WORKDIR /usr/local
 RUN git clone https://github.com/theforeman/foreman.git
 WORKDIR /usr/local/foreman
-RUN git checkout tags/1.17.1
+RUN git checkout tags/1.17.3
 RUN echo "gem 'foreman_fog_proxmox', :path => '/usr/local/foreman_proxmox'\n" > /usr/local/foreman/bundler.d/Gemfile.local.rb
 RUN echo "gem 'simplecov'" >> /usr/local/foreman/bundler.d/Gemfile.local.rb
 RUN cp /usr/local/foreman/config/settings.yaml.example /usr/local/foreman/config/settings.yaml

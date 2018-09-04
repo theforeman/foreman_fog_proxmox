@@ -239,7 +239,7 @@ module ForemanFogProxmox
     end
 
     it 'clones server' do
-      args = { vmid: '100', type: 'qemu', image_id: '999' }
+      args = { vmid: '100', type: 'qemu', image_id: '999', name: 'name' }
       servers = mock('servers')
       servers.stubs(:id_valid?).returns(true)
       cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
@@ -247,22 +247,28 @@ module ForemanFogProxmox
       cr.stubs(:parse_server_vm).with(args).returns(args)
       servers.stubs(:create).with(args)
       image = mock('image')
+      clone = mock('clone')
       image.stubs(:clone).with(100)
+      servers.stubs(:get).with(100).returns(clone)
       servers.stubs(:get).with('999').returns(image)
+      clone.stubs(:update).with(name: 'name')
       vm = mock('vm')
       cr.stubs(:find_vm_by_uuid).with("#{args[:type]}_#{args[:vmid]}").returns(vm)
       cr.create_vm(args)
     end
 
     it 'clones container' do
-      args = { vmid: '100', type: 'lxc', image_id: '999' }
+      args = { vmid: '100', type: 'lxc', image_id: '999', name: 'name' }
       servers = mock('servers')
       servers.stubs(:id_valid?).returns(true)
       containers = mock('containers')
       containers.stubs(:create).with(vmid: 100, type: 'lxc')
       image = mock('image')
+      clone = mock('clone')
       image.stubs(:clone).with(100)
+      servers.stubs(:get).with(100).returns(clone)
       servers.stubs(:get).with('999').returns(image)
+      clone.stubs(:update).with(name: 'name')
       cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
       cr.stubs(:convert_sizes).with(args)
       cr.stubs(:parse_container_vm).with(args).returns(args)

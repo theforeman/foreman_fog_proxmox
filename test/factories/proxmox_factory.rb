@@ -27,6 +27,7 @@ FactoryBot.define do
       user 'root@pam'
       password 'proxmox01'
       url 'https://192.168.56.101:8006/api2/json'
+      node_name 'pve'
     end
 
     factory :proxmox_cr, :class => ForemanFogProxmox::Proxmox, :traits => [:proxmox]

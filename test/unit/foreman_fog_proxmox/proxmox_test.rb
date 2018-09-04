@@ -30,6 +30,7 @@ module ForemanFogProxmox
     should validate_presence_of(:url)
     should validate_presence_of(:user)
     should validate_presence_of(:password)
+    should validate_presence_of(:node_name)
     should allow_value('root@pam').for(:user)
     should_not allow_value('root').for(:user)
     should_not allow_value('a').for(:url)
@@ -41,6 +42,12 @@ module ForemanFogProxmox
       cr = FactoryBot.build_stubbed(:proxmox_cr)
       vm = mock('vm', :mac => mac)
       assert_equal host, (as_admin { cr.associated_host(vm) })
+    end
+
+    test "#node" do
+      node_name = 'pve'
+      cr = FactoryBot.build_stubbed(:proxmox_cr)
+      assert_equal node_name, (as_admin { cr.node.to_s })
     end
 
     describe "destroy_vm" do

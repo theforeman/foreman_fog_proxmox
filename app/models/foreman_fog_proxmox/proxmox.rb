@@ -27,8 +27,8 @@ module ForemanFogProxmox
     validates :url, :format => { :with => URI::DEFAULT_PARSER.make_regexp }, :presence => true
     validates :user, :format => { :with => /(\w+)[@]{1}(\w+)/ }, :presence => true
     validates :password, :presence => true
+    validates :node_name, :presence => true
     before_create :test_connection
-    attr_accessor :node
 
     def provided_attributes
       super.merge(
@@ -49,7 +49,7 @@ module ForemanFogProxmox
     end
 
     def credentials_valid?
-      errors[:url].empty? && errors[:user].empty? && errors[:user].include?('@') && errors[:password].empty? && node
+      errors[:url].empty? && errors[:user].empty? && errors[:user].include?('@') && errors[:password].empty? && errors[:node_name].empty?
     end
 
     def test_connection(options = {})
@@ -61,8 +61,8 @@ module ForemanFogProxmox
     end
 
     def nodes
-      nodes = client.nodes.all
-      nodes.sort_by(&:node)
+      nodes = client.nodes.all if client
+      nodes.sort_by(&:node) if nodes
     end
 
     def pools
@@ -219,7 +219,6 @@ module ForemanFogProxmox
       type = args[:type]
       raise ::Foreman::Exception.new N_("invalid vmid=%{vmid}") % { vmid: vmid } unless node.servers.id_valid?(vmid)
       image_id = args[:image_id]
-      # node = get_cluster_node args
       if image_id
         logger.debug(_("create_vm(): clone %{image_id} in %{vmid}") % { image_id: image_id, vmid: vmid })
         image = node.servers.get image_id
@@ -311,8 +310,16 @@ module ForemanFogProxmox
       node.servers.next_id
     end
 
+    def node_name  
+      self.attrs[:node_name]
+    end
+
+    def node_name=(value)
+      self.attrs[:node_name] = value
+    end
+
     def node
-      @node ||= get_cluster_node
+      client.nodes.find_by_id node_name
     end
 
     def ssl_certs  
@@ -444,11 +451,6 @@ module ForemanFogProxmox
     def interface_container_defaults(id = 'net0')
       { id: id, name: 'eth0', bridge: bridges.first.to_s }
     end
-
-    def get_cluster_node(args = {})
-      test_connection
-      args.empty? ? client.nodes.first : client.nodes.find_by_id(args[:node])  if errors.empty?
-    end 
     
     def compute_os_types(host)
       os_linux_types_mapping(host).empty? ? os_windows_types_mapping(host) : os_linux_types_mapping(host)

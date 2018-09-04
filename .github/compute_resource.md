@@ -9,6 +9,14 @@ You create a proxmox compute resource and set:
 * user password
 * if ssl_verify_peer, copy and paste the two cluster certificates: root and pve
 
+Test if connection works.
+
+Then choose a node and test connection again. Finally save it.
+
+The compute resource will be associated with only one node. All VM computed with this resource will be in this node.
+
+If you have other nodes (in cluster), you have to create a compute resource by node.
+
 ![Compute resource](images/compute_resource.png)
 
 Certificates can be copy and paste from your provider:

@@ -10,6 +10,8 @@
 
 It is intended to satisfy this [feature](http://projects.theforeman.org/issues/2186).
 
+If you like it and need more features you can [support](SUPPORT.md) it.
+
 ## Compatibility
 
 Tested with:

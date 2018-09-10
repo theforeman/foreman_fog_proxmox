@@ -29,15 +29,14 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/tristanrobert/foreman_proxmox'
   s.summary     = 'Foreman plugin that adds Proxmox VE compute resource using fog-proxmox'
   # also update locale/gemspec.rb
-  s.description = 'Foreman plugin adds Proxmox VE compute resource using fog-proxmox. It is compatible with Foreman 1.17'
+  s.description = 'Foreman plugin adds Proxmox VE compute resource using fog-proxmox. It is compatible with Foreman 1.17+'
 
   s.files = Dir['{app,config,db,lib,locale}/**/*'] + ['LICENSE', 'Rakefile', 'README.md']
   s.test_files = Dir['test/**/*']
 
   s.add_dependency 'fog-proxmox', '~> 0.5'
-  s.add_dependency 'deface', '~> 1.3'
-  s.add_dependency 'sprockets', '~> 3.7'
-  s.add_development_dependency 'rdoc', '~> 6.0'
-  s.add_development_dependency 'rubocop', '~> 0.58'
-  s.add_development_dependency 'simplecov', '~> 0.16'
+  s.add_dependency 'deface'
+  s.add_development_dependency 'rdoc'
+  s.add_development_dependency 'rubocop'
+  s.add_development_dependency 'simplecov'
 end

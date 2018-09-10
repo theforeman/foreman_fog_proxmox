@@ -16,8 +16,10 @@ If you like it and need more features you can [support](SUPPORT.md) it.
 
 Tested with:
 
-* Foreman = 1.17.3
+* Foreman >= 1.17 and < 1.20
 * Fog-proxmox >= 0.5.1
+* Proxmox >= 5.1
+* Ruby >= 2.3
 
 ## Installation
 
@@ -31,7 +33,7 @@ See complete details in [plugin installation from gem](https://theforeman.org/pl
 
 Here is a Debian sample:
 
-* Install foreman 1.17 [from OS packages](https://theforeman.org/manuals/1.17/index.html#3.3InstallFromPackages):
+* Install foreman [from OS packages](https://theforeman.org/manuals/1.19/index.html#3.3InstallFromPackages):
 
 ```shell
 sudo apt install -y foreman foreman-compute foreman-sqlite3 foreman-assets
@@ -62,7 +64,7 @@ sudo -u foreman /usr/bin/foreman-ruby /usr/bin/bundle install
 /usr/bin/foreman-ruby /usr/bin/bundle exec bin/rake plugin:gettext[foreman_fog_proxmox]
 ```
 
-* Complete installation of foreman 1.17 with foreman-installer:
+* Complete installation of foreman 1.17+ with foreman-installer:
 
 ```shell
 sudo apt install -y foreman-installer
@@ -107,7 +109,7 @@ You also need nodejs in your dev machine to run webpack-dev-server.
 
 * Fork this github repo.
 * Clone it on your local machine
-* Install foreman v1.17.3 on your machine:
+* Install foreman v1.17.3 or later on your machine:
 
 ```shell
 git clone https://github.com/theforeman/foreman
@@ -145,6 +147,13 @@ bundle exec bin/rake db:seed
 
 ```shell
 bundle exec bin/rake permissions:reset
+```
+
+* You sholud write tests and you can execute those specific to this plugin:
+
+```shell
+export DISABLE_SPRING=true
+bundle exec bin/rake test:foreman_fog_proxmox
 ```
 
 * In foreman directory, after you modify foreman_fog_proxmox specific assets (proxmox.js, etc) you have to precompile it:

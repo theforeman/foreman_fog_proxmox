@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: foreman_fog_proxmox 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-26 15:17+0200\n"
-"PO-Revision-Date: 2018-08-26 15:17+0200\n"
+"POT-Creation-Date: 2018-09-10 09:45+0200\n"
+"PO-Revision-Date: 2018-09-10 09:45+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -38,59 +38,59 @@ msgstr ""
 msgid "Invalid uuid=[%{uuid}]."
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:114
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:116
 msgid "Operating system family %{type} is not consistent with %{ostype}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:121
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:123
 msgid "Identifier interface[%{index}] required."
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:122
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:124
 msgid "Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:199
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:201
 msgid "new_vm() vm.config=%{config}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:205
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:207
 msgid "new_container_vm() vm.config=%{config}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:211
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:213
 msgid "new_server_vm() vm.config=%{config}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:218
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:220
 msgid "invalid vmid=%{vmid}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:222
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:223
 msgid "create_vm(): clone %{image_id} in %{vmid}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:226
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:229
 msgid "create_vm(): %{args}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:240
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:243
 msgid "failed to create vm: %{e}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:254
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:257
 msgid "Failed retrieving proxmox vm by vmid=%{vmid} and type=%{type}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:292
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:297
 msgid "save_vm(): %{attr}"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:330
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:343
 msgid "Unable to store X509 certificates"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:354
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:371
 msgid "%s console is not supported at this time"
 msgstr ""
 
@@ -118,6 +118,11 @@ msgstr ""
 msgid ""
 "Optionally provide a CA, or a correctly ordered CA chain. If left blank, disab"
 "le ssl_verify_peer."
+msgstr ""
+
+#: ../app/views/compute_resources/form/_proxmox.html.erb:12
+#: ../app/views/compute_resources_vms/form/proxmox/_general.html.erb:8
+msgid "Node"
 msgstr ""
 
 #: ../app/views/compute_resources/show/_proxmox.html.erb:4
@@ -169,10 +174,6 @@ msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/_general.html.erb:7
 msgid "VM ID"
-msgstr ""
-
-#: ../app/views/compute_resources_vms/form/proxmox/_general.html.erb:8
-msgid "Node"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/_general.html.erb:18

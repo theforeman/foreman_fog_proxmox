@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
+require 'fog/compute/proxmox/models/node'
+
 FactoryBot.define do
   
   factory :proxmox_resource, :class => ComputeResource do
@@ -32,15 +34,14 @@ FactoryBot.define do
 
     factory :proxmox_cr, :class => ForemanFogProxmox::Proxmox, :traits => [:proxmox]
 
-    after(:create) do |cr, evaluator|
-      FactoryBot.create(:node, :compute_resource => cr)
-    end
-
   end
 
-  factory :node do
+  factory :node, :class => Fog::Compute::Proxmox::Node do
     sequence(:identity) { |n| "node#{n}" }
-    association :compute_resource, factory: :proxmox_cr
+    trait :pve do
+      identity 'pve'
+    end
+    factory :pve_node, :class => Fog::Compute::Proxmox::Node, :traits => [:pve]
   end
 
   def deferred_nic_attrs

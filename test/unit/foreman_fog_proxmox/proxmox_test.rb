@@ -45,9 +45,10 @@ module ForemanFogProxmox
     end
 
     test "#node" do
-      node_name = 'pve'
+      node = mock('node')
       cr = FactoryBot.build_stubbed(:proxmox_cr)
-      assert_equal node_name, (as_admin { cr.node.to_s })
+      cr.stubs(:node).returns(node)
+      assert_equal node, (as_admin { cr.node })
     end
 
     describe "destroy_vm" do

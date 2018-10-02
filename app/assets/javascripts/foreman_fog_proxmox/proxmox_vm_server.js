@@ -108,3 +108,25 @@ function computeControllerMaxDevice(controller){
       break;
   }
 }
+
+function balloonSelected(item){
+  var ballooned = $(item).is(':checked');
+  var memory_f = $("input[name$='[config_attributes][memory]']:hidden");
+  var min_memory_f = $("input[id$='config_attributes_min_memory']");
+  var min_memory_hidden_f = $("input[name$='[config_attributes][min_memory]']:hidden");
+  var shares_f = $("input[id$='config_attributes_shares']");
+  var shares_hidden_f = $("input[name$='[config_attributes][shares]']:hidden");
+  if (ballooned) {
+    min_memory_f.removeAttr('disabled');
+    shares_f.removeAttr('disabled');
+    var max = memory_f.val();
+    console.log("max="+max);
+    min_memory_f.attr('data-soft-max',max);
+  } else {
+    min_memory_f.attr('disabled','disabled');
+    min_memory_hidden_f.attr('value','');
+    shares_f.attr('disabled','disabled');
+    shares_hidden_f.attr('value','');
+  }
+  tfm.numFields.initAll();
+}

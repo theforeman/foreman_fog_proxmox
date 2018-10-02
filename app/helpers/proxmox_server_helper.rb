@@ -68,10 +68,9 @@ module ProxmoxServerHelper
     ballooned = args['balloon'].to_i == 1
     if ballooned
       memory.store(:shares,args['shares'].to_i) if args['shares']
-      memory.store(:balloon,args['min_memory'].to_i) if args['min_memory']
-    else
-      memory.store(:balloon,args['balloon'].to_i) if args['balloon']
+      memory.store(:min_memory,args['min_memory'].to_i) if args['min_memory']
     end
+    memory.store(:balloon,args['balloon'].to_i) if args['balloon']
     logger.debug("parse_server_memory(): #{memory}")
     memory
   end

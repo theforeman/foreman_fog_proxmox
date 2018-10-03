@@ -12,6 +12,8 @@ Server VM Proxmox config tab:
 
 Advanced options could also be modified in Server VM Proxmox config tab.
 
+N.B.: There's a bug in [foreman/webpack/assets/javascripts/jquery.ui.custom_spinners.js](https://projects.theforeman.org/issues/25111) file. The minimum counter spinner is set to `1` and not `0`. It is used in device disk storage field so if you put `0`, it could show `1` instead.
+
 Main options:
 
 ![Create host](images/create_host_advanced_main_options.png)

@@ -20,7 +20,7 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <%= field_set_tag n_("Main option", "Main options", 2), :id => "server_config_options", :class => 'hide', :disabled => !server do %>
   <%= textarea_f f, :description, :label => _('Description'), :label_size => "col-md-2" %>
-  <%= text_f f, :boot, :label => _('Start/Shutdown order'), :label_size => "col-md-2" %>
+  <%= text_f f, :boot, :label => _('Boot device order'), :label_size => "col-md-2", :label_help => _('Floppy disk (a), hard disk (c), cdrom (d), network (n). Default cdn')  %>
   <%= checkbox_f f, :onboot, :label => _('Start at boot') %>
   <%= checkbox_f f, :agent, :label => _('Qemu Agent') %>
   <%= checkbox_f f, :kvm, :label => _('KVM'), :label_help => _('Enable/disable KVM hardware virtualization') %>

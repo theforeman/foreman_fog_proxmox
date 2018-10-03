@@ -39,7 +39,7 @@ module ProxmoxServerHelper
     cdrom = parse_server_cdrom(config.select { |key,_value| cdrom_a.include? key })
     vols = args['volumes_attributes']
     volumes = parse_server_volumes(vols)
-    cpu_a = %w[cpu_type spectre pcid vcpus cpulimit cpuunits cores sockets numa]
+    cpu_a = %w[cpu_type spectre pcid]
     cpu = parse_server_cpu(config.select { |key,_value| cpu_a.include? key })
     memory_a = %w[memory min_memory balloon shares]
     memory = parse_server_memory(config.select { |key,_value| memory_a.include? key })
@@ -149,12 +149,12 @@ module ProxmoxServerHelper
       nic
     else
       nic.store(:id, id)
-      nic.store(:tag, args['vlan'].to_i) if args['vlan']
+      nic.store(:tag, args['tag'].to_i) if args['tag']
       nic.store(:model, args['model'].to_s)
       nic.store(:bridge, args['bridge'].to_s) if args['bridge']
       nic.store(:firewall, args['firewall'].to_i) if args['firewall']
       nic.store(:rate, args['rate'].to_i) if args['rate']
-      nic.store(:link_down, args['disconnect'].to_i) if args['disconnect']
+      nic.store(:link_down, args['link_down'].to_i) if args['link_down']
       nic.store(:queues, args['queues'].to_i) if args['queues']
       logger.debug("parse_server_interface(): add nic=#{nic}")
       Fog::Proxmox::NicHelper.flatten(nic)

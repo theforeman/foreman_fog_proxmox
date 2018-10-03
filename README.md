@@ -17,7 +17,7 @@ If you like it and need more features you can [support](SUPPORT.md) it.
 Tested with:
 
 * Foreman >= 1.17 and < 1.20
-* Fog-proxmox >= 0.5.1
+* Fog-proxmox >= 0.5.2
 * Proxmox >= 5.1
 * Ruby >= 2.3
 

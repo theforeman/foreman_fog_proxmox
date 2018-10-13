@@ -86,7 +86,7 @@ Then you can check plugin installation after login into your new foreman server 
 
 ### From OS packages
 
-Deb, rpm: work in progress...
+[Deb](https://github.com/theforeman/foreman-packaging/pull/3071), [rpm](https://github.com/theforeman/foreman-packaging/pull/3069): work in progress...
 
 Please see the Foreman manual for complete instructions:
 

@@ -21,7 +21,7 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <%= select_f f, :type, proxmox_types_map, :id, :name, { }, :label => _('Type'), :label_size => "col-md-2", :onchange => "vmTypeSelected()", :disabled => !new_vm %>
 
 <!-- VM General Settings -->
-<%= render :partial => "compute_resources_vms/form/proxmox/general", :locals => { :f => f, :compute_resource =>  compute_resource, :new_vm => new_vm } %>
+<%= render :partial => "compute_resources_vms/form/proxmox/general", :locals => { :f => f, :compute_resource =>  compute_resource, :new_vm => new_vm, :from_profile => from_profile } %>
 
 <!-- VM Extended Settings -->
 <%= render :partial => "compute_resources_vms/form/proxmox/container/extended", :locals => { :f => f, :compute_resource =>  compute_resource, :new_vm => new_vm } %>

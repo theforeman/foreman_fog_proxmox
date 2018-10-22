@@ -19,7 +19,7 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <%= field_set_tag _("General"), :id => "general" do %>
   <%= checkbox_f f, :templated, :label => _('Create image?'), :disabled => untemplatable, :class => ('hide' if untemplatable), :no_label => untemplatable %>
-  <%= counter_f f, :vmid, :label => _('VM ID'), :label_size => "col-md-2", :required => true, :disabled => !new_vm %>
+  <%= counter_f f, :vmid, :label => _('VM ID'), :label_size => "col-md-2", :required => true, :disabled => (!new_vm || from_profile) %>
   <%= select_f f, :node, compute_resource.nodes, :node, :node, { }, :label => _('Node'), :label_size => "col-md-2", :required => true, :disabled => true %>
   <% unless local_assigns[:hide_image] && !new_vm %>
     <%

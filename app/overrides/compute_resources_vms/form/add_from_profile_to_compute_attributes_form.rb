@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Copyright 2018 Tristan Robert
 
 # This file is part of ForemanFogProxmox.
@@ -17,6 +15,18 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-module ForemanFogProxmox
-  VERSION = '0.5.3'.freeze
-end
+Deface::Override.new(
+    :virtual_path => "compute_attributes/_form",
+    :name => "add_from_profile_to_compute_attributes_form",
+    :replace => "erb[loud]:contains('render')",
+    :partial => "compute_resources_vms/form/proxmox/add_from_profile_to_compute_attributes_form",
+    :original => '0e01b2f93b6855afc207e0e301515cdd300a1c61'
+)
+
+Deface::Override.new(
+    :virtual_path => "compute_attributes/_compute_form",
+    :name => "add_from_profile_to_compute_form",
+    :replace => "erb[loud]:contains('provider_partial')",
+    :partial => "compute_resources_vms/form/proxmox/add_from_profile_to_compute_form",
+    :original => '107f930f8e6b2bdd3e728757d8320d483f19ff9e'
+)

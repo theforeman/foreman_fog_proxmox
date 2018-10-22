@@ -22,3 +22,12 @@ Deface::Override.new(
     :text => "<% new_vm = @host.nil? || new_vm?(@host) || @host.name.nil? %>",
     :original => "<% new_vm = @host.nil? || new_vm?(@host) %>"
 )
+
+
+Deface::Override.new(
+    :virtual_path => "hosts/_compute_detail",
+    :name => "add_from_profile_to_compute_detail",
+    :replace => "erb[loud]:contains('provider_partial')",
+    :partial => "compute_resources_vms/form/proxmox/add_from_profile_to_hosts_compute_detail_form",
+    :original => '448e3b265e4dc1789f0efbbc6076e32216ac3a24'
+)

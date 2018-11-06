@@ -86,7 +86,7 @@ module ForemanFogProxmox
 
     def bridges
       node = network_client.nodes.find_by_id node_name
-      bridges = node.networks.all(type: 'bridge')
+      bridges = node.networks.all(type: 'any_bridge')
       bridges.sort_by(&:iface)
     end    
 

@@ -48,8 +48,8 @@ class ProxmoxServerHelperTest < ActiveSupport::TestCase
           '0'=> { 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => 'none' }
         }, 
         'interfaces_attributes' => { 
-          '0' => { 'id' => 'net0', 'model' => 'virtio', 'bridge' => 'vmbr0', 'firewall' => '0', 'disconnect' => '0', 'rate' => nil },
-          '1' => { 'id' => 'net1', 'model' => 'e1000', 'bridge' => 'vmbr0', 'firewall' => '0', 'disconnect' => '0' } 
+          '0' => { 'id' => 'net0', 'model' => 'virtio', 'bridge' => 'vmbr0', 'firewall' => '0', 'link_down' => '0', 'rate' => nil },
+          '1' => { 'id' => 'net1', 'model' => 'e1000', 'bridge' => 'vmbr0', 'firewall' => '0', 'link_down' => '0' } 
         } 
       }
     end

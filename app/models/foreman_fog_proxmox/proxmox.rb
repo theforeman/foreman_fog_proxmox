@@ -188,6 +188,10 @@ module ForemanFogProxmox
       vm_attrs
     end
 
+    def vms(opts = {})
+      node.servers
+    end
+
     def new_vm(attr = {})
       attr = ActiveSupport::HashWithIndifferentAccess.new(attr)
       type = attr['type']

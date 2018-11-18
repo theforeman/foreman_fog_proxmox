@@ -120,7 +120,8 @@ module ForemanFogProxmox
 
     def host_interfaces_attrs(host)
       host.interfaces.select(&:physical?).each.with_index.reduce({}) do |hash, (nic, index)|
-        raise ::Foreman::Exception.new _("Identifier interface[%{index}] required." % { index: index }) if nic.identifier.empty?
+        # Set default interface identifier to net[n]
+        nic.identifier = "net%{index}" % {index: index} if nic.identifier.empty?
         raise ::Foreman::Exception.new _("Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0" % { index: index }) unless Fog::Proxmox::NicHelper.valid?(nic.identifier)
         nic_compute_attributes = nic.compute_attributes.merge(id: nic.identifier)
         nic_compute_attributes.store(:ip, nic.ip) if (nic.ip && !nic.ip.empty?)

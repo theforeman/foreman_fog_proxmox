@@ -43,6 +43,7 @@ Network interface tab:
 ![Interface](images/create_host_interface.png)
 
 Identifier is required. You must set `net[n]` with n an integer.
+If not, a default one is set for you.
 
 The container form slightly differs from the server one.
 

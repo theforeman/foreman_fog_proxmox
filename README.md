@@ -122,8 +122,9 @@ git checkout tags/1.17.3
 ```ruby
 gem 'foreman_fog_proxmox', :path => '/your_path_to/foreman_fog_proxmox'
 gem 'fog-proxmox', :path => '/your_path_to/fog-proxmox' # optional if you need to modify fog-proxmox code too
-gem 'ruby-debug-ide'
-gem 'debase'
+gem 'ruby-debug-ide' # dev
+gem 'debase' # dev
+gem 'simplecov' # test
 ```
 
 * In foreman directory, install dependencies:

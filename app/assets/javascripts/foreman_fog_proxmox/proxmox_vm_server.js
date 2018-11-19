@@ -41,55 +41,74 @@ function cdromSelected(item) {
   return false;
 }
 
-function initCdromStorage(){
+function initCdromStorage() {
   var select = '#host_compute_attributes_config_attributes_cdrom_storage';
-  $(select + ' option:selected').prop('selected',false);
+  $(select + ' option:selected').prop('selected', false);
   $(select).val('');
 }
 
-function initCdromOptions(name){
-  var select = '#host_compute_attributes_config_attributes_cdrom_'+name;
+function initCdromOptions(name) {
+  var select = '#host_compute_attributes_config_attributes_cdrom_' + name;
   $(select).empty();
   $(select).append($("<option></option>").val('').text(''));
   $(select).val('');
 }
 
-  function storageIsoSelected(item) {
-    var storage = $(item).val();
-    if (storage != '') {
-      tfm.tools.showSpinner();
-      $.getJSON({
-        type: 'get',
-        url: '/foreman_fog_proxmox/isos/'+storage,
-        complete: function(){
-          tfm.tools.hideSpinner();
-        },
-        error: function(j,status,error){
-          console.log("Error=" + error +", status=" + status + " loading isos for storage=" + storage);
-        },
-        success: function(isos) {
-          initCdromOptions('iso');
-          $.each(isos, function(i,iso){
-            $('#host_compute_attributes_config_attributes_cdrom_iso').append($("<option></option>").val(iso.volid).text(iso.volid));
-          });
-        }
-      });
-    } else {
-      initCdromOptions('iso');
-    }
+function storageIsoSelected(item) {
+  var storage = $(item).val();
+  if (storage != '') {
+    tfm.tools.showSpinner();
+    $.getJSON({
+      type: 'get',
+      url: '/foreman_fog_proxmox/isos/' + storage,
+      complete: function () {
+        tfm.tools.hideSpinner();
+      },
+      error: function (j, status, error) {
+        console.log("Error=" + error + ", status=" + status + " loading isos for storage=" + storage);
+      },
+      success: function (isos) {
+        initCdromOptions('iso');
+        $.each(isos, function (i, iso) {
+          $('#host_compute_attributes_config_attributes_cdrom_iso').append($("<option></option>").val(iso.volid).text(iso.volid));
+        });
+      }
+    });
+  } else {
+    initCdromOptions('iso');
   }
+}
 
-function controllerSelected(item){
+function controllerSelected(item) {
   var controller = $(item).val();
-  var id = $(item).attr('id');
-  var pattern = /(\w+)(\d+)(\w+)/i;
-  var index =  pattern.exec(id)[2];
+  var index = getIndex(item);
   var max = computeControllerMaxDevice(controller);
-  $('#host_compute_attributes_volumes_attributes_' + index + '_device').attr('data-soft-max',max);
+  var device_selector = '#host_compute_attributes_volumes_attributes_' + index + '_device';
+  $(device_selector).attr('data-soft-max', max);
+  var device = $(device_selector).limitedSpinner('value');
+  console.log("device=" + device);
+  $('#host_compute_attributes_volumes_attributes_' + index + '_id').val(controller + device);
   tfm.numFields.initAll();
 }
 
-function computeControllerMaxDevice(controller){
+function deviceSelected(item) {
+  var device = $(item).limitedSpinner('value');
+  console.log("device=" + device);
+  var index = getIndex(item);
+  var controller_selector = '#host_compute_attributes_volumes_attributes_' + index + '_controller';
+  var controller = $(controller_selector).val();
+  $('#host_compute_attributes_volumes_attributes_' + index + '_id').val(controller + device);
+  tfm.numFields.initAll();
+}
+
+function getIndex(item) {
+  var id = $(item).attr('id');
+  var pattern = /(\w+)(\d+)(\w+)/i;
+  var index = pattern.exec(id)[2];
+  return index;
+}
+
+function computeControllerMaxDevice(controller) {
   switch (controller) {
     case 'ide':
       return 3;
@@ -109,7 +128,7 @@ function computeControllerMaxDevice(controller){
   }
 }
 
-function balloonSelected(item){
+function balloonSelected(item) {
   var ballooned = $(item).is(':checked');
   var memory_f = $("input[name$='[config_attributes][memory]']:hidden");
   var min_memory_f = $("input[id$='config_attributes_min_memory']");
@@ -120,13 +139,13 @@ function balloonSelected(item){
     min_memory_f.removeAttr('disabled');
     shares_f.removeAttr('disabled');
     var max = memory_f.val();
-    console.log("max="+max);
-    min_memory_f.attr('data-soft-max',max);
+    console.log("max=" + max);
+    min_memory_f.attr('data-soft-max', max);
   } else {
-    min_memory_f.attr('disabled','disabled');
-    min_memory_hidden_f.attr('value','');
-    shares_f.attr('disabled','disabled');
-    shares_hidden_f.attr('value','');
+    min_memory_f.attr('disabled', 'disabled');
+    min_memory_hidden_f.attr('value', '');
+    shares_f.attr('disabled', 'disabled');
+    shares_hidden_f.attr('value', '');
   }
   tfm.numFields.initAll();
 }

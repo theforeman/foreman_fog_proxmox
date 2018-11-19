@@ -101,9 +101,9 @@ Please see the Foreman manual for complete instructions:
 
 ### Prerequisites
 
-You need a Proxmox VE >= 5.1 server running.
-
-You also need nodejs in your dev machine to run webpack-dev-server.
+* You need a Proxmox VE >= 5.1 server running.
+* You need ruby >= 2.3. You can install it with [rbenv](https://github.com/rbenv/rbenv).
+* You also need nodejs in your dev machine to run webpack-dev-server.
 
 ### Platform
 
@@ -121,18 +121,22 @@ git checkout tags/1.17.3
 
 ```ruby
 gem 'foreman_fog_proxmox', :path => '/your_path_to/foreman_fog_proxmox'
+gem 'fog-proxmox', :path => '/your_path_to/fog-proxmox' # optional if you need to modify fog-proxmox code too
+gem 'ruby-debug-ide' # dev
+gem 'debase' # dev
+gem 'simplecov' # test
 ```
 
 * In foreman directory, install dependencies:
 
 ```shell
-bundle install
+bundle install --without libvirt postgresql mysql2
 ```
 
 * Configure foreman settings:
 
 ```shell
-cp config/settings.yaml.example config/settings.yaml
+cp config/settings.yaml.test config/settings.yaml
 ```
 
 * Install foreman database (sqlite is default in rails development):

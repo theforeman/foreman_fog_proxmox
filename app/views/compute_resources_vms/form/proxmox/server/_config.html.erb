@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <%= javascript_include_tag 'foreman_fog_proxmox/proxmox_vm_server', "data-turbolinks-track" => true %>
+
 <% server = type == 'qemu' %>
 
 <%= field_set_tag n_("Main option", "Main options", 2), :id => "server_config_options", :class => 'hide', :disabled => !server do %>

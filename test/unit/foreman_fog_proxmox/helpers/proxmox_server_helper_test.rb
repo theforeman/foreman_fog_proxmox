@@ -45,7 +45,8 @@ class ProxmoxServerHelperTest < ActiveSupport::TestCase
           'sockets' => '1'
         },
         'volumes_attributes' => {
-          '0'=> { 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => 'none' }
+          '0'=> { 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => 'none' },
+          '1'=> { 'controller' => 'virtio', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => 'none' }
         }, 
         'interfaces_attributes' => { 
           '0' => { 'id' => 'net0', 'model' => 'virtio', 'bridge' => 'vmbr0', 'firewall' => '0', 'link_down' => '0', 'rate' => nil },
@@ -92,9 +93,19 @@ class ProxmoxServerHelperTest < ActiveSupport::TestCase
     test '#volume with scsi 1Gb' do       
       volumes = parse_server_volumes(host['volumes_attributes'])
       assert !volumes.empty?
+      assert volumes.size, 2
       assert volume = volumes.first
       assert volume.has_key?(:scsi0)
       assert_equal 'local-lvm:1073741824,cache=none', volume[:scsi0]
+    end    
+
+    test '#volume with virtio 1Gb' do       
+      volumes = parse_server_volumes(host['volumes_attributes'])
+      assert !volumes.empty?
+      assert volumes.size, 2
+      assert volume = volumes[1]
+      assert volume.has_key?(:virtio0)
+      assert_equal 'local-lvm:1073741824,cache=none', volume[:virtio0]
     end    
     
     test '#volume delete scsi0' do       

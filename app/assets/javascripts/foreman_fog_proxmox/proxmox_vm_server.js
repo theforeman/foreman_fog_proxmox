@@ -86,7 +86,6 @@ function controllerSelected(item) {
   var device_selector = '#host_compute_attributes_volumes_attributes_' + index + '_device';
   $(device_selector).attr('data-soft-max', max);
   var device = $(device_selector).limitedSpinner('value');
-  console.log("device=" + device);
   $('#host_compute_attributes_volumes_attributes_' + index + '_id').val(controller + device);
   tfm.numFields.initAll();
 }

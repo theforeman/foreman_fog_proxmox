@@ -103,7 +103,7 @@ Please see the Foreman manual for complete instructions:
 
 * You need a Proxmox VE >= 5.1 server running.
 * You need ruby >= 2.3. You can install it with [rbenv](https://github.com/rbenv/rbenv).
-* You also need nodejs in your dev machine to run webpack-dev-server.
+* You also need nodejs in your dev machine to run webpack-dev-server. You can install it with [nvm](https://github.com/creationix/nvm).
 
 ### Platform
 

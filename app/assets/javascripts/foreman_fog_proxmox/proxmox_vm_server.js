@@ -102,8 +102,10 @@ function deviceSelected(item) {
 
 function getIndex(item) {
   var id = $(item).attr('id');
-  var pattern = /(\w+)(\d+)(\w+)/i;
-  var index = pattern.exec(id)[2];
+  var pattern = /(host_compute_attributes_volumes_attributes_)(\d+)[_](.*)/i;
+  pattern_a = pattern.exec(id);
+  var index = pattern_a[2];
+  console.log("index=" + index);
   return index;
 }
 

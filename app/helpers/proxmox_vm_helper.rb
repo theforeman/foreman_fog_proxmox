@@ -70,6 +70,10 @@ module ProxmoxVmHelper
     args['volumes_attributes'].each_value { |value| value['size'] = (value['size'].to_i / GIGA).to_s unless ForemanFogProxmox::Value.empty?(value['size']) }
   end
 
+  def remove_deletes(args)
+    args['volumes_attributes'].delete_if { |_key,value| value.has_key? '_delete' }
+  end
+
   def convert_memory_size(config_hash, key)
     config_hash.store(key, (config_hash[key].to_i / MEGA).to_s) unless ForemanFogProxmox::Value.empty?(config_hash[key])
   end
@@ -81,6 +85,14 @@ module ProxmoxVmHelper
     type = id_a[0]
     vmid = id_a[1]
     return type, vmid
+  end
+
+  def mount_point_disk?(id)
+    /^(mp)(\d+)$/.match?(id)
+  end
+
+  def server_disk?(id)
+    /^(scsi|sata|virtio|ide)(\d+)$/.match?(id)
   end
 
 end

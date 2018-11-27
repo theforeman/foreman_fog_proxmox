@@ -103,8 +103,8 @@ module ProxmoxServerHelper
   def parse_server_volume(args)
     disk = {}
     id = args['id']
-    id = "#{args['controller']}#{args['device']}" unless id
-    return args if ForemanFogProxmox::Value.empty?(id)
+    id = "#{args['controller']}#{args['device']}" if args.has_key?('controller') && args.has_key?('device') && !id
+    return args if ForemanFogProxmox::Value.empty?(id) || id == 'rootfs'
     delete = args['_delete'].to_i == 1
     args.delete_if { |_key,value| ForemanFogProxmox::Value.empty?(value) }
     if delete
@@ -113,9 +113,9 @@ module ProxmoxServerHelper
       disk
     else
       disk.store(:id, id)
-      disk.store(:volid, args['volid'])
-      disk.store(:storage, args['storage'].to_s)
-      disk.store(:size, args['size'].to_i)
+      disk.store(:volid, args['volid']) if args.has_key?('volid')
+      disk.store(:storage, args['storage'].to_s) if args.has_key?('storage')
+      disk.store(:size, args['size'].to_i) if args.has_key?('size')
       options = args.reject { |key,_value| %w[id volid controller device storage size _delete].include? key}
       disk.store(:options, options)
       logger.debug("parse_server_volume(): add disk=#{disk}")

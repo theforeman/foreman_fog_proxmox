@@ -96,9 +96,10 @@ module ProxmoxContainerHelper
   def parse_container_volume(args)
     disk = {}
     id = args['id']
-    id = "mp#{args['device']}" unless id
+    id = "mp#{args['device']}" if args.has_key?('device') && !id
     delete = args['_delete'].to_i == 1
     logger.debug("parse_container_volume() args=#{args}")
+    return args if ForemanFogProxmox::Value.empty?(id) || server_disk?(id)
     args.delete_if { |_key,value| ForemanFogProxmox::Value.empty?(value) }
     if delete
       logger.debug("parse_container_volume(): delete id=#{id}")

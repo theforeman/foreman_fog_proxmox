@@ -56,12 +56,17 @@ end
   options[:form_builder_local] ||= :f
   options[:form_builder_attrs] ||= {}
 
-  content_tag(:div, :class => "#{association}_fields_template form_template #{options[:type]}", :style => "display: none;") do
-    form_builder.fields_for(association, options[:object], :child_index => "new_#{association}") do |f|
+  content_tag(:div, :class => "#{options[:type]}_#{association}_fields_template form_template #{}", :style => "display: none;") do
+    form_builder.fields_for(association, options[:object], :child_index => "new_#{options[:type]}_#{association}") do |f|
       render(:partial => options[:partial], :layout => options[:layout],
              :locals => { options[:form_builder_local] => f }.merge(options[:form_builder_attrs]))
     end
   end
 end
 
+def add_child_link_typed(name, association, type, opts = {})
+  opts[:class] = [opts[:class], "add_nested_fields btn btn-primary"].compact.join(" ")
+  opts[:"data-association"] = (type + '_' + association.to_s).to_sym
+  link_to_function(name.to_s, "add_child_node(this);tfm.numFields.initAll();", opts)
+end
 end

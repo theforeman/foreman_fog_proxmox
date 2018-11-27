@@ -123,6 +123,10 @@ module ForemanFogProxmox
         # Set default interface identifier to net[n]
         nic.identifier = "net%{index}" % {index: index} if nic.identifier.empty?
         raise ::Foreman::Exception.new _("Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0" % { index: index }) unless Fog::Proxmox::NicHelper.valid?(nic.identifier)
+        # Set default container interface name to eth[n]
+        container = host.compute_attributes['type'] == 'lxc'
+        nic.compute_attributes['name'] = "eth%{index}" % {index: index} if container && nic.compute_attributes['name'].empty?
+        raise ::Foreman::Exception.new _("Invalid name interface[%{index}]. Must be eth[n] with n integer >= 0" % { index: index }) if container && !/^(eth)(\d+)$/.match?(nic.compute_attributes['name'])
         nic_compute_attributes = nic.compute_attributes.merge(id: nic.identifier)
         nic_compute_attributes.store(:ip, nic.ip) if (nic.ip && !nic.ip.empty?)
         nic_compute_attributes.store(:ip6, nic.ip6) if (nic.ip6 && !nic.ip6.empty?)
@@ -233,6 +237,7 @@ module ForemanFogProxmox
       else
         logger.debug(_("create_vm(): %{args}") % { args: args })
         convert_sizes(args)
+        remove_deletes(args)
         case type
           when 'qemu'
             node.servers.create(parse_server_vm(args))
@@ -423,7 +428,7 @@ module ForemanFogProxmox
         cpu: 'kvm64',
         scsihw: 'virtio-scsi-pci',
         ide2: "none,media=cdrom",
-        templated: 0).merge(Fog::Proxmox::DiskHelper.flatten(volume_server_defaults)).merge(Fog::Proxmox::NicHelper.flatten(interface_server_defaults))
+        templated: 0).merge(Fog::Proxmox::DiskHelper.flatten(volume_server_defaults)).merge(Fog::Proxmox::DiskHelper.flatten(volume_container_defaults)).merge(Fog::Proxmox::NicHelper.flatten(interface_server_defaults))
     end
 
     def vm_container_instance_defaults
@@ -433,7 +438,7 @@ module ForemanFogProxmox
         type: 'lxc', 
         node: node.to_s,
         memory: 512 * MEGA, 
-        templated: 0).merge(Fog::Proxmox::DiskHelper.flatten(volume_container_defaults)).merge(Fog::Proxmox::NicHelper.container_flatten(interface_container_defaults))
+        templated: 0).merge(Fog::Proxmox::DiskHelper.flatten(volume_server_defaults)).merge(Fog::Proxmox::DiskHelper.flatten(volume_container_defaults)).merge(Fog::Proxmox::NicHelper.container_flatten(interface_container_defaults))
     end
 
     def vm_instance_defaults

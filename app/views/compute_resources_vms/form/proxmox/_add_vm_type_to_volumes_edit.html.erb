@@ -34,23 +34,26 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
               :layout => "compute_resources_vms/form/#{item_layout}_layout" }) %>
 
 
-<% if server %>
+
     <%= f.fields_for :volumes do |i| %>
-        <%= render :partial => provider_partial(compute_resource, 'server/volume'), :locals => { :f => i, :type => type, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume') }, :layout => "compute_resources_vms/form/#{item_layout}_layout" %>
-    <% end %>
-<% end %>
-<% if container %>
-    <%= f.fields_for :volumes do |i| %>
-        <% if i.object.id == 'rootfs' %>
-            <%= render :partial => provider_partial(compute_resource, 'container/volume_rootfs'), :locals => { :f => i, :type => type, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume') }, :layout => "compute_resources_vms/form/#{item_layout}_layout" %>
-        <% else %>
-            <%= render :partial => provider_partial(compute_resource, 'container/volume_mp'), :locals => { :f => i, :type => type, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume') }, :layout => "compute_resources_vms/form/#{item_layout}_layout" %>
-        <% end %>
-    <% end %>
-<% end %>
+            <% if i.object.id == 'rootfs' %>
+            <div id="container_volumes_rootfs" style="<%= 'display: ' + (container ? 'block' : 'none') + ';' %>">
+                <%= render :partial => provider_partial(compute_resource, 'container/volume_rootfs'), :locals => { :f => i, :type => type, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume'), :disabled => !container }, :layout => "compute_resources_vms/form/#{item_layout}_layout" %>
+            </div>  
+            <% elsif mount_point_disk?(i.object.id) %>
+            <div id="container_volumes_mp" style="<%= 'display: ' + (container ? 'block' : 'none') + ';' %>">
+                <%= render :partial => provider_partial(compute_resource, 'container/volume_mp'), :locals => { :f => i, :type => type, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume'), :disabled => !container }, :layout => "compute_resources_vms/form/#{item_layout}_layout" %>
+            </div>
+            <% elsif server_disk?(i.object.id) %>
+            <div id="server_volumes" style="<%= 'display: ' + (server ? 'block' : 'none') + ';' %>">
+                <%= render :partial => provider_partial(compute_resource, 'server/volume'), :locals => { :f => i, :type => type, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume'), :disabled => !server }, :layout => "compute_resources_vms/form/#{item_layout}_layout" %>
+            </div>
+            <% end %> 
+    <% end %>  
+
 <% if new_vm %>
-    <%= add_child_link '+ ' + _("Add Volume"), :volumes, { :class => "server info #{'hide' unless server}", :title => _('add new storage volume') } %>
-    <%= add_child_link '+ ' + _("Add Volume"), :volumes, { :class => "container info #{'hide' unless container}", :title => _('add new storage volume') } %>
+    <%= add_child_link_typed '+ ' + _("Add Volume"), :volumes, 'server', { :class => "info #{'hide' unless server}", :title => _('add new storage volume') } %>
+    <%= add_child_link_typed '+ ' + _("Add Volume"), :volumes, 'container', { :class => "info #{'hide' unless container}", :title => _('add new storage volume') } %>
 <% end %>
 
 

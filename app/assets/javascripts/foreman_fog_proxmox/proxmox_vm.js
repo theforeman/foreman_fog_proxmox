@@ -50,21 +50,26 @@ function toggleVolumes(selected){
       div_server.show();
       a_container.hide();
       a_server.show();
-    break;
+      break;
     case 'lxc':
       div_container.show();
       div_server.hide();
       a_container.show();
       a_server.hide();
-    break;
+      break;
+    default:
+      console.log("unkown type="+selected);
+      break;
   }
 }
 
 function toggleFieldset(fieldset, index, fieldsets){
-  var server_input_hidden = $("div[id^='server_volumes']" + " > input:hidden");
-  var container_input_hidden = $("div[id^='container_volumes']" + " > input:hidden");
+  var server_input_hidden = $("div[id^='server_volumes']" + " + input:hidden");
+  var container_input_hidden = $("div[id^='container_volumes']" + " + input:hidden");
+  var removable_input_hidden = $("div.removable-item[style='display: none;']" + " + input:hidden");
   var server_fieldset = $("fieldset[id^='server_"+fieldset.id+"']");
   var container_fieldset = $("fieldset[id^='container_"+fieldset.id+"']");
+  removable_input_hidden.attr('disabled','disabled');
   switch (fieldset.selected) {
     case 'qemu':
       if (fieldset.toggle && fieldset.new_vm){
@@ -87,6 +92,7 @@ function toggleFieldset(fieldset, index, fieldsets){
       server_input_hidden.attr('disabled','disabled');
       break;
     default:
+      console.log("unkown type="+fieldset.selected);
       break;
   }
 }

@@ -113,19 +113,14 @@ function computeControllerMaxDevice(controller) {
   switch (controller) {
     case 'ide':
       return 3;
-      break;
     case 'sata':
       return 5;
-      break;
     case 'scsi':
       return 13;
-      break;
     case 'virtio':
       return 15;
-      break;
     default:
       return 1;
-      break;
   }
 }
 

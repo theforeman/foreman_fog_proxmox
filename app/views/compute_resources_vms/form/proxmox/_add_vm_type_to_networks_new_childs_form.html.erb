@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-<% vm_type = f.object.type %>
+<% vm_type = f.object.respond_to?('type') ? f.object.type : nil %>
 
 <%= new_child_fields_template(f, compute_resource.interfaces_attrs_name, {
         :object => compute_resource.new_interface,

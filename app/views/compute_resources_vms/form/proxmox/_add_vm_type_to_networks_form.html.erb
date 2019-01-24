@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-<% vm_type = f.object.type %>
+<% vm_type = f.object.respond_to?('type') ? f.object.type : nil %>
 
 <%= render :partial => provider_partial(compute_resource, 'network'),
               :locals => { :f => i, :vm_type => vm_type, :compute_resource => compute_resource, :new_host => new_host, :new_vm => new_vm, :remove_title => _('remove network interface') },

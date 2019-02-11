@@ -31,7 +31,7 @@ RUN echo "gem 'foreman_fog_proxmox', :path => '/usr/local/foreman_proxmox'\n" > 
 RUN echo "gem 'simplecov'" >> /usr/local/foreman/bundler.d/Gemfile.local.rb
 RUN cp /usr/local/foreman/config/settings.yaml.example /usr/local/foreman/config/settings.yaml
 RUN cp /usr/local/foreman/config/database.yml.example /usr/local/foreman/config/database.yml
-RUN bundle install --jobs 20
+RUN bundle install --jobs 20 --without libvirt postgresql mysql2
 ENTRYPOINT ["bundle", "exec"]
 RUN bundle exec bin/rake db:migrate
 CMD ["bin/rake", "test:foreman_fog_proxmox"]

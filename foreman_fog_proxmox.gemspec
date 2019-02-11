@@ -24,9 +24,9 @@ Gem::Specification.new do |s|
   s.name        = 'foreman_fog_proxmox'
   s.version     = ForemanFogProxmox::VERSION
   s.license     = 'GPL-3.0'
-  s.authors     = ['Tristan Robert']
-  s.email       = ['tristan.robert.44@gmail.com']
-  s.homepage    = 'https://github.com/tristanrobert/foreman_proxmox'
+  s.authors     = ['Tristan Robert', 'The Foreman Team']
+  s.email       = ['tristan.robert.44@gmail.com', 'theforeman.rubygems@gmail.com']
+  s.homepage    = 'https://github.com/theforeman/foreman_proxmox'
   s.summary     = 'Foreman plugin that adds Proxmox VE compute resource using fog-proxmox'
   # also update locale/gemspec.rb
   s.description = 'Foreman plugin adds Proxmox VE compute resource using fog-proxmox. It is compatible with Foreman 1.17+'

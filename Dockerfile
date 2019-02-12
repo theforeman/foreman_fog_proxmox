@@ -20,18 +20,18 @@ LABEL MAINTAINER="tristan.robert.44@gmail.com"
 RUN apt-get update -qq && apt-get install -y build-essential libpq-dev libsystemd-dev libvirt-dev
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
 RUN apt-get install -y nodejs
-RUN mkdir /usr/local/foreman_proxmox
-WORKDIR /usr/local/foreman_proxmox
-ADD . /usr/local/foreman_proxmox
+RUN mkdir /usr/local/foreman_fog_proxmox
+WORKDIR /usr/local/foreman_fog_proxmox
+ADD . /usr/local/foreman_fog_proxmox
 WORKDIR /usr/local
 RUN git clone https://github.com/theforeman/foreman.git
 WORKDIR /usr/local/foreman
-RUN git checkout tags/1.17.3
-RUN echo "gem 'foreman_fog_proxmox', :path => '/usr/local/foreman_proxmox'\n" > /usr/local/foreman/bundler.d/Gemfile.local.rb
+RUN git checkout tags/1.20.1
+RUN echo "gem 'foreman_fog_proxmox', :path => '/usr/local/foreman_fog_proxmox'\n" > /usr/local/foreman/bundler.d/Gemfile.local.rb
 RUN echo "gem 'simplecov'" >> /usr/local/foreman/bundler.d/Gemfile.local.rb
 RUN cp /usr/local/foreman/config/settings.yaml.example /usr/local/foreman/config/settings.yaml
 RUN cp /usr/local/foreman/config/database.yml.example /usr/local/foreman/config/database.yml
-RUN bundle install --jobs 20 --without libvirt postgresql mysql2
+RUN bundle install --jobs 20
 ENTRYPOINT ["bundle", "exec"]
 RUN bundle exec bin/rake db:migrate
 CMD ["bin/rake", "test:foreman_fog_proxmox"]

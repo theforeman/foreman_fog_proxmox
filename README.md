@@ -86,11 +86,11 @@ Then you can check plugin installation after login into your new foreman server 
 
 ### From OS packages
 
-[Deb](https://github.com/theforeman/foreman-packaging/pull/3071), [rpm](https://github.com/theforeman/foreman-packaging/pull/3069): work in progress...
-
 Please see the Foreman manual for complete instructions:
 
 * [Foreman: How to Install a Plugin](http://theforeman.org/manuals/latest/index.html#6.1InstallaPlugin)
+
+Redhat, CentOS or Fedora users should also [setup Selinux](https://projects.theforeman.org/projects/foreman/wiki/SELinux) to allow foreman and all its plugins to work.
 
 ## Usage
 

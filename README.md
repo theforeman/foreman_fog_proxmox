@@ -189,7 +189,7 @@ See details in [foreman plugin development](https://projects.theforeman.org/proj
 ## Contributing
 
 You can reach the [contributors](CONTRIBUTORS.md).
-Bug reports and pull requests are welcome on GitHub at [ForemanFogProxmox](https://github.com/tristanrobert/foreman_proxmox). This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at [ForemanFogProxmox](https://github.com/theforeman/foreman_fog_proxmox). This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 Please read [how to contribute](CONTRIBUTING.md).
 

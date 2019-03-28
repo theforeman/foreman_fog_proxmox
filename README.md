@@ -12,14 +12,12 @@ It is intended to satisfy this [feature](http://projects.theforeman.org/issues/2
 
 If you like it and need more features you can [support](SUPPORT.md) it.
 
-## Compatibility
+## Compatibility versions
 
-Tested with:
-
-* Foreman >= 1.17 and <= 1.20
-* Fog-proxmox >= 0.5.3
-* Proxmox >= 5.1
-* Ruby >= 2.3
+|Fog-proxmox|Proxmox|Foreman-fog-proxmox|Foreman|Ruby|
+|--|--|--|--|--|
+|<0.6|<5.3|<0.6|<=1.20|>=2.3|
+|>=0.6|=5.3|>=0.6|=1.21|>=2.3|
 
 ## Installation
 
@@ -142,7 +140,7 @@ cp config/settings.yaml.test config/settings.yaml
 * Install foreman database (sqlite is default in rails development):
 
 ```shell
-cp config/database.yaml.example config/database.yaml
+cp config/database.yml.example config/database.yml
 bundle exec bin/rake db:migrate
 bundle exec bin/rake db:seed
 ```

@@ -107,11 +107,11 @@ Redhat, CentOS or Fedora users should also [setup Selinux](https://projects.thef
 
 * Fork this github repo.
 * Clone it on your local machine
-* Install foreman v1.17.3 or later on your machine:
+* Install foreman v1.21.1 on your machine:
 
 ```shell
 git clone https://github.com/theforeman/foreman
-git checkout tags/1.17.3
+git checkout tags/1.21.1
 ```
 
 * Create a Gemfile.local.rb file in foreman/bundler.d/
@@ -140,6 +140,7 @@ cp config/settings.yaml.test config/settings.yaml
 * Install foreman database (sqlite is default in rails development):
 
 ```shell
+cp config/model.mappings.example config/model.mappings
 cp config/database.yml.example config/database.yml
 bundle exec bin/rake db:migrate
 bundle exec bin/rake db:seed
@@ -173,13 +174,19 @@ bundle exec bin/rake plugin:gettext[foreman_fog_proxmox]
 * In foreman directory, run rails server:
 
 ```shell
-rails server
+bundle exec bin/rails server
 ```
 
 * In foreman directory, run in a new terminal the webpack-dev-server:
 
 ```shell
 ./node_modules/.bin/webpack-dev-server --config config/webpack.config.js
+```
+
+* Or you can launch all togethet:
+
+```shell
+bundle exec foreman start
 ```
 
 See details in [foreman plugin development](https://projects.theforeman.org/projects/foreman/wiki/How_to_Create_a_Plugin)

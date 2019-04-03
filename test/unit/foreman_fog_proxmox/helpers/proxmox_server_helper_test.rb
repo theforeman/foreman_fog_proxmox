@@ -22,6 +22,7 @@ require 'test_plugin_helper'
 module ForemanFogProxmox
 class ProxmoxServerHelperTest < ActiveSupport::TestCase
   include ProxmoxServerHelper
+  include ProxmoxVmHelper
 
   describe 'parse' do
 
@@ -31,7 +32,7 @@ class ProxmoxServerHelperTest < ActiveSupport::TestCase
     let(:host) do 
       { 'vmid' => '100', 
         'name' =>  'test', 
-        'node' => 'pve',
+        'node_id' => 'pve',
         'type' => 'qemu',
         'config_attributes' => { 
           'memory' => '536870912', 

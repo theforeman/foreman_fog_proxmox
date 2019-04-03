@@ -16,6 +16,6 @@ You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <% data = ForemanFogProxmox::NodeDashboard::Data.new() %>
-<% node = data.node.to_s rescue nil %>
-<h4 class="header ca"><%= N_("Proxmox Node Statistics: %s") % node %></h4>
+<% node_id = data.node_id rescue nil %>
+<h4 class="header ca"><%= N_("Proxmox Node Statistics: %s") % node_id %></h4>
 <%= render_node_statistics(data.statistics, :class => 'statistics-bar') rescue nil %>

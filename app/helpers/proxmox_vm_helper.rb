@@ -29,7 +29,7 @@ module ProxmoxVmHelper
 
   def object_to_config_hash(vm,type)
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
-    main_a = %w[hostname name type node vmid]
+    main_a = %w[hostname name type node_id vmid]
     type = vm.config.attributes['type']
     type = vm.type unless type
     main = vm.config.attributes.select { |key,_value| main_a.include? key }
@@ -71,7 +71,7 @@ module ProxmoxVmHelper
   end
 
   def remove_deletes(args)
-    args['volumes_attributes'].delete_if { |_key,value| value.has_key? '_delete' }
+    args['volumes_attributes'].delete_if { |_key,value| value.has_key? '_delete' } if args['volumes_attributes']
   end
 
   def convert_memory_size(config_hash, key)

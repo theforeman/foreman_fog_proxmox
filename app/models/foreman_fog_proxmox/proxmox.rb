@@ -27,7 +27,7 @@ module ForemanFogProxmox
     validates :url, :format => { :with => URI::DEFAULT_PARSER.make_regexp }, :presence => true
     validates :user, :format => { :with => /(\w+)[@]{1}(\w+)/ }, :presence => true
     validates :password, :presence => true
-    validates :node_name, :presence => true
+    validates :node_id, :presence => true
     before_create :test_connection
 
     def provided_attributes
@@ -49,7 +49,7 @@ module ForemanFogProxmox
     end
 
     def credentials_valid?
-      errors[:url].empty? && errors[:user].empty? && errors[:user].include?('@') && errors[:password].empty? && errors[:node_name].empty?
+      errors[:url].empty? && errors[:user].empty? && errors[:user].include?('@') && errors[:password].empty? && errors[:node_id].empty?
     end
 
     def test_connection(options = {})
@@ -76,7 +76,7 @@ module ForemanFogProxmox
     end
 
     def images_by_storage(type = 'iso', storage_id)
-      storage = node.storages.find_by_id storage_id if storage_id
+      storage = node.storages.get storage_id if storage_id
       storage.volumes.list_by_content_type(type).sort_by(&:volid) if storage
     end
 
@@ -85,7 +85,7 @@ module ForemanFogProxmox
     end
 
     def bridges
-      node = network_client.nodes.find_by_id node_name
+      node = network_client.nodes.get node_id
       bridges = node.networks.all(type: 'any_bridge')
       bridges.sort_by(&:iface)
     end    
@@ -197,29 +197,31 @@ module ForemanFogProxmox
       node.servers
     end
 
-    def new_vm(attr = {})
-      attr = ActiveSupport::HashWithIndifferentAccess.new(attr)
-      type = attr['type']
+    def new_vm(new_attr = {})
+      new_attr = ActiveSupport::HashWithIndifferentAccess.new(new_attr)
+      type = new_attr['type']
       type = 'qemu' unless type
       case type
       when 'lxc'
-        vm = new_container_vm(attr)
+        vm = new_container_vm(new_attr)
       when 'qemu'
-        vm = new_server_vm(attr)
+        vm = new_server_vm(new_attr)
       end
-      logger.debug(_("new_vm() vm.config=%{config}") % { config: vm.config.inspect })
+      # logger.debug(_("new_vm() vm.config=%{config}") % { config: vm.config.inspect })
       vm
     end
 
-    def new_container_vm(attr = {})
-      vm = node.containers.new(vm_container_instance_defaults.merge(parse_container_vm(attr.merge(type: 'lxc'))))
-      logger.debug(_("new_container_vm() vm.config=%{config}") % { config: vm.config.inspect })
+    def new_container_vm(new_attr = {})
+      new_attr.merge(node_id: node_id)
+      vm = node.containers.new(vm_container_instance_defaults.merge(parse_container_vm(new_attr.merge(type: 'lxc'))).deep_symbolize_keys)
+      # logger.debug(_("new_container_vm() vm.config=%{config}") % { config: vm.config.inspect })
       vm
     end
 
-    def new_server_vm(attr = {})
-      vm = node.servers.new(vm_server_instance_defaults.merge(parse_server_vm(attr.merge(type: 'qemu'))))
-      logger.debug(_("new_server_vm() vm.config=%{config}") % { config: vm.config.inspect })
+    def new_server_vm(new_attr = {})
+      new_attr.merge(node_id: node_id)
+      vm = node.servers.new(vm_server_instance_defaults.merge(parse_server_vm(new_attr.merge(type: 'qemu'))).deep_symbolize_keys)
+      # logger.debug(_("new_server_vm() vm.config=%{config}") % { config: vm.config.inspect })
       vm
     end
 
@@ -311,7 +313,7 @@ module ForemanFogProxmox
       else
         parsed_attr = vm.container? ? parse_container_vm(attr) : parse_server_vm(attr)
         merged = vm.config.attributes.merge(parsed_attr.symbolize_keys).deep_symbolize_keys
-        filtered = merged.reject { |key,value| [:node,:vmid,:type,:templated,:image_id].include?(key) || value.to_s.empty? }
+        filtered = merged.reject { |key,value| [:node_id,:vmid,:type,:templated,:image_id].include?(key) || value.to_s.empty? }
         vm.update(filtered)
       end
     end
@@ -320,16 +322,16 @@ module ForemanFogProxmox
       node.servers.next_id
     end
 
-    def node_name  
-      self.attrs[:node_name]
+    def node_id  
+      self.attrs[:node_id]
     end
 
-    def node_name=(value)
-      self.attrs[:node_name] = value
+    def node_id=(value)
+      self.attrs[:node_id] = value
     end
 
     def node
-      client.nodes.find_by_id node_name
+      client.nodes.get node_id
     end
 
     def ssl_certs  
@@ -417,7 +419,7 @@ module ForemanFogProxmox
         name: "foreman_#{Time.now.to_i}",
         vmid: next_vmid, 
         type: 'qemu', 
-        node: node.to_s, 
+        node_id: node_id, 
         cores: 1, 
         sockets: 1, 
         kvm: 0,
@@ -436,30 +438,30 @@ module ForemanFogProxmox
         name: "foreman_#{Time.now.to_i}",
         vmid: next_vmid, 
         type: 'lxc', 
-        node: node.to_s,
+        node_id: node_id, 
         memory: 512 * MEGA, 
         templated: 0).merge(Fog::Proxmox::DiskHelper.flatten(volume_server_defaults)).merge(Fog::Proxmox::DiskHelper.flatten(volume_container_defaults)).merge(Fog::Proxmox::NicHelper.container_flatten(interface_container_defaults))
     end
 
     def vm_instance_defaults
-      super.merge(vmid: next_vmid, node: node.to_s)
+      super.merge(vmid: next_vmid, node_id: node_id)
     end
 
     def volume_server_defaults(controller = 'scsi', device = 0)
       id = "#{controller}#{device}"
-      { id: id, storage: storages.first.to_s, size: (8 * GIGA), options: { cache: 'none' } }
+      { id: id, storage: storages.first.identity.to_s, size: (8 * GIGA), options: { cache: 'none' } }
     end
 
     def volume_container_defaults(id='rootfs')
-      { id: id, storage: storages.first.to_s, size: (8 * GIGA), options: {  } }
+      { id: id, storage: storages.first.identity.to_s, size: (8 * GIGA), options: {  } }
     end
 
     def interface_server_defaults(id = 'net0')
-      { id: id, model: 'virtio', bridge: bridges.first.to_s }
+      { id: id, model: 'virtio', bridge: bridges.first.identity.to_s }
     end
 
     def interface_container_defaults(id = 'net0')
-      { id: id, name: 'eth0', bridge: bridges.first.to_s }
+      { id: id, name: 'eth0', bridge: bridges.first.identity.to_s }
     end
     
     def compute_os_types(host)

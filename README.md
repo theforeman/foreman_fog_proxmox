@@ -152,11 +152,20 @@ bundle exec bin/rake db:seed
 bundle exec bin/rake permissions:reset
 ```
 
-* You sholud write tests and you can execute those specific to this plugin:
+* You should write tests and you can execute those specific to this plugin:
+
+all:
 
 ```shell
 export DISABLE_SPRING=true
 bundle exec bin/rake test:foreman_fog_proxmox
+```
+
+or just one:
+
+```shell
+export DISABLE_SPRING=true
+bundle exec bin/rake test TEST=test/functional/compute_resources_controller_test.rb
 ```
 
 * In foreman directory, after you modify foreman_fog_proxmox specific assets (proxmox.js, etc) you have to precompile it:
@@ -183,7 +192,7 @@ bundle exec bin/rails server
 ./node_modules/.bin/webpack-dev-server --config config/webpack.config.js
 ```
 
-* Or you can launch all togethet:
+* Or you can launch all together:
 
 ```shell
 bundle exec foreman start

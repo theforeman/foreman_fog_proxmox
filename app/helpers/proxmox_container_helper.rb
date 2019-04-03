@@ -33,7 +33,7 @@ module ProxmoxContainerHelper
     return {} if args.empty?
     return {} unless args['type'] == 'lxc'
     config = args['config_attributes']
-    main_a = %w[name type node vmid]
+    main_a = %w[name type node_id vmid]
     config = args.reject { |key,_value| main_a.include? key } unless config
     ostemplate_a = %w[ostemplate ostemplate_storage ostemplate_file]
     ostemplate = parse_container_ostemplate(args.select { |key,_value| ostemplate_a.include? key })
@@ -45,7 +45,7 @@ module ProxmoxContainerHelper
     memory = parse_container_memory(config.select { |key,_value| memory_a.include? key })
     interfaces_attributes = args['interfaces_attributes']
     networks = parse_container_interfaces(interfaces_attributes)
-    general_a = %w[node name type config_attributes volumes_attributes interfaces_attributes firmware_type provision_method container_volumes server_volumes]
+    general_a = %w[node_id name type config_attributes volumes_attributes interfaces_attributes firmware_type provision_method container_volumes server_volumes]
     logger.debug("general_a: #{general_a}")
     parsed_vm = args.reject { |key,value| general_a.include?(key) || ostemplate_a.include?(key) || ForemanFogProxmox::Value.empty?(value) }
     config_a = []

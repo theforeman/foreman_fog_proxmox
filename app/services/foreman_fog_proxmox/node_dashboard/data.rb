@@ -25,13 +25,13 @@ module ForemanFogProxmox::NodeDashboard
             @filter = filter
         end
 
-        def node
+        def node_id
             @compute_resource = ComputeResource.find_by(type: 'ForemanFogProxmox::Proxmox')
-            @compute_resource.node if @compute_resource
+            @compute_resource.node_id if @compute_resource
         end
 
         def statistics            
-            node.statistics('rrddata', { timeframe: 'hour', cf: 'AVERAGE' }) if node
+            node.statistics('rrddata', { timeframe: 'hour', cf: 'AVERAGE' }) if node_id
         end
     end
 end

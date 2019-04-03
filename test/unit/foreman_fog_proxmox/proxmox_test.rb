@@ -30,7 +30,7 @@ module ForemanFogProxmox
     should validate_presence_of(:url)
     should validate_presence_of(:user)
     should validate_presence_of(:password)
-    should validate_presence_of(:node_name)
+    should validate_presence_of(:node_id)
     should allow_value('root@pam').for(:user)
     should_not allow_value('root').for(:user)
     should_not allow_value('a').for(:url)
@@ -80,16 +80,7 @@ module ForemanFogProxmox
       before do
         @cr = FactoryBot.build_stubbed(:proxmox_cr)
       end
-  
-      it "raises Foreman::Exception when physical identifier is empty" do
-        physical_nic = FactoryBot.build(:nic_base_empty)
-        host = FactoryBot.build(:host_empty, :interfaces => [physical_nic])
-        err = assert_raises Foreman::Exception do
-          @cr.host_interfaces_attrs(host)
-        end
-        assert err.message.end_with?('Identifier interface[0] required.')
-      end
-  
+    
       it "raises Foreman::Exception when physical identifier does not match net[k] with k integer" do
         physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'eth0')
         host = FactoryBot.build(:host_empty, :interfaces => [physical_nic])
@@ -103,7 +94,7 @@ module ForemanFogProxmox
         ip = IPAddr.new(1, Socket::AF_INET).to_s
         ip6 = Array.new(4) { '%x' % rand(16**4) }.join(':') + '::1'
         physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6)
-        host = FactoryBot.build(:host_empty, :interfaces => [physical_nic])
+        host = FactoryBot.build(:host_empty, :interfaces => [physical_nic], :compute_attributes => {'type' => 'qemu'})
         nic_attributes = @cr.host_interfaces_attrs(host).values.select(&:present?)
         nic_attr = nic_attributes.first
         assert_equal 'net0', nic_attr[:id]

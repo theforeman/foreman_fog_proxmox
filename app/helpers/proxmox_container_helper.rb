@@ -33,7 +33,7 @@ module ProxmoxContainerHelper
     return {} if args.empty?
     return {} unless args['type'] == 'lxc'
     config = args['config_attributes']
-    main_a = %w[name type node_id vmid]
+    main_a = %w[name type node_id vmid interfaces mount_points disks]
     config = args.reject { |key,_value| main_a.include? key } unless config
     ostemplate_a = %w[ostemplate ostemplate_storage ostemplate_file]
     ostemplate = parse_container_ostemplate(args.select { |key,_value| ostemplate_a.include? key })

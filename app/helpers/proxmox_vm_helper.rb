@@ -29,10 +29,10 @@ module ProxmoxVmHelper
 
   def object_to_config_hash(vm,type)
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
-    main_a = %w[hostname name type node_id vmid]
+    main_a = %w[hostname name vmid]
     type = vm.config.attributes['type']
     type = vm.type unless type
-    main = vm.config.attributes.select { |key,_value| main_a.include? key }
+    main = vm.attributes.select { |key,_value| main_a.include? key }
     disks_regexp = /^(scsi|sata|mp|rootfs|virtio|ide)(\d+){0,1}$/
     nics_regexp = /^(net)(\d+)/
     main_a += %w[templated]

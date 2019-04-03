@@ -158,8 +158,24 @@ module ForemanFogProxmox
       Fog::Compute::Proxmox::Disk.new(opts)
     end
 
-    def new_interface(attr = {})
+    def new_interface(attr = {}) 
+      type = attr['type']
+      type = 'qemu' unless type
+      case type
+      when 'lxc'
+        return new_container_interface(attr)
+      when 'qemu'
+        return new_server_interface(attr)
+      end
+    end
+
+    def new_server_interface(attr = {})
       opts = interface_server_defaults.merge(attr.to_h).deep_symbolize_keys
+      Fog::Compute::Proxmox::Interface.new(opts)
+    end
+
+    def new_container_interface(attr = {})
+      opts = interface_container_defaults.merge(attr.to_h).deep_symbolize_keys
       Fog::Compute::Proxmox::Interface.new(opts)
     end
 
@@ -207,21 +223,21 @@ module ForemanFogProxmox
       when 'qemu'
         vm = new_server_vm(new_attr)
       end
-      # logger.debug(_("new_vm() vm.config=%{config}") % { config: vm.config.inspect })
+      logger.debug(_("new_vm() vm.config=%{config}") % { config: vm.config.inspect })
       vm
     end
 
     def new_container_vm(new_attr = {})
       new_attr.merge(node_id: node_id)
-      vm = node.containers.new(vm_container_instance_defaults.merge(parse_container_vm(new_attr.merge(type: 'lxc'))).deep_symbolize_keys)
-      # logger.debug(_("new_container_vm() vm.config=%{config}") % { config: vm.config.inspect })
+      vm = node.containers.new(parse_container_vm(vm_container_instance_defaults.merge(new_attr.merge(type: 'lxc'))).deep_symbolize_keys)
+      logger.debug(_("new_container_vm() vm.config=%{config}") % { config: vm.config.inspect })
       vm
     end
 
     def new_server_vm(new_attr = {})
       new_attr.merge(node_id: node_id)
-      vm = node.servers.new(vm_server_instance_defaults.merge(parse_server_vm(new_attr.merge(type: 'qemu'))).deep_symbolize_keys)
-      # logger.debug(_("new_server_vm() vm.config=%{config}") % { config: vm.config.inspect })
+      vm = node.servers.new(parse_server_vm(vm_server_instance_defaults.merge(new_attr.merge(type: 'qemu'))).deep_symbolize_keys)
+      logger.debug(_("new_server_vm() vm.config=%{config}") % { config: vm.config.inspect })
       vm
     end
 

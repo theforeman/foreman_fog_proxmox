@@ -33,7 +33,7 @@ module ProxmoxServerHelper
     return {} if args.empty?
     return {} unless args['type'] == 'qemu'
     config = args['config_attributes']
-    main_a = %w[name type node_id vmid]
+    main_a = %w[name type node_id vmid interfaces mount_points disks]
     config = args.reject { |key,_value| main_a.include? key } unless config
     cdrom_a = %w[cdrom cdrom_storage cdrom_iso]
     cdrom = parse_server_cdrom(config.select { |key,_value| cdrom_a.include? key })

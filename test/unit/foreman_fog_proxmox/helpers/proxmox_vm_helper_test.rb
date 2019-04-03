@@ -26,6 +26,8 @@ require 'fog/compute/proxmox/models/interface'
 require 'fog/compute/proxmox/models/interfaces'
 require 'fog/compute/proxmox/models/disk'
 require 'fog/compute/proxmox/models/disks'
+require 'fog/compute/proxmox/models/snapshots'
+require 'fog/compute/proxmox/models/tasks'
 
 module ForemanFogProxmox
 class ProxmoxVmHelperTest < ActiveSupport::TestCase
@@ -34,11 +36,12 @@ class ProxmoxVmHelperTest < ActiveSupport::TestCase
   let(:container) do 
     service = mock('service')
     service.stubs(:get_server_config).returns(nil)
+    service.stubs(:list_tasks).returns([])
     Fog::Compute::Proxmox::Container.new(
     { 'vmid' => '100', 
       'hostname' =>  'test', 
-      'type' =>  'lxc', 
-      'node_id' => 'pve',
+      :type =>  'lxc', 
+      :node_id => 'pve',
       :service => service,
       'templated' => '0', 
       'memory' => '536870912', 
@@ -56,12 +59,13 @@ class ProxmoxVmHelperTest < ActiveSupport::TestCase
   let(:server) do 
     service = mock('service')
     service.stubs(:get_server_config).returns(nil)
+    service.stubs(:list_tasks).returns([])
     Fog::Compute::Proxmox::Server.new(
     { 'vmid' => '100', 
       'name' =>  'test', 
-      'node_id' => 'pve', 
+      :node_id => 'pve', 
       :service => service,
-      'type' => 'qemu',
+      :type => 'qemu',
       'templated' => '0', 
       'ide2' => 'local-lvm:iso/debian-netinst.iso,media=cdrom',
       'memory' => '536870912', 
@@ -146,28 +150,28 @@ class ProxmoxVmHelperTest < ActiveSupport::TestCase
 
     it '#server qemu' do            
       config_hash = object_to_config_hash(server,'qemu')
-      expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(server.config.attributes).reject { |key,_value| %w[templated node_id type ide2 scsi0 net0 net1].include? key }
+      expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(server.config.attributes).reject { |key,_value| %w[templated ide2 scsi0 net0 net1].include? key }
       assert_equal expected_config_hash, config_hash['config_attributes']
     end  
 
     it '#server lxc' do       
       config_hash = object_to_config_hash(server,'lxc')
       assert config_hash.has_key?('config_attributes')
-      expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(server.config.attributes).reject { |key,_value| %w[templated node_id type ide2 scsi0 net0 net1].include? key }
+      expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(server.config.attributes).reject { |key,_value| %w[templated ide2 scsi0 net0 net1].include? key }
       assert_equal expected_config_hash, config_hash['config_attributes']
     end    
 
     it '#container qemu' do       
       config_hash = object_to_config_hash(container,'qemu')
       assert config_hash.has_key?('config_attributes')
-      expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(container.config.attributes).reject { |key,_value| %w[templated node_id type rootfs mp0 net0 net1].include? key }
+      expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(container.config.attributes).reject { |key,_value| %w[templated rootfs mp0 net0 net1].include? key }
       assert_equal expected_config_hash, config_hash['config_attributes']
     end  
 
     it '#container lxc' do       
       config_hash = object_to_config_hash(container,'lxc')
       assert config_hash.has_key?('config_attributes')
-      expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(container.config.attributes).reject { |key,_value| %w[templated node_id type rootfs mp0 net0 net1].include? key }
+      expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(container.config.attributes).reject { |key,_value| %w[templated rootfs mp0 net0 net1].include? key }
       assert_equal expected_config_hash, config_hash['config_attributes']
     end    
   end

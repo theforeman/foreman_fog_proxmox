@@ -189,14 +189,10 @@ See details in [foreman plugin development](https://projects.theforeman.org/proj
 ## Contributing
 
 You can reach the [contributors](CONTRIBUTORS.md).
-Bug reports and pull requests are welcome on GitHub at [ForemanFogProxmox](https://github.com/theforeman/foreman_fog_proxmox). This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at [ForemanFogProxmox](https://github.com/theforeman/foreman_fog_proxmox).
 
-Please read [how to contribute](CONTRIBUTING.md).
+Please read more information about [how to contribute](CONTRIBUTING.md).
 
 ## License
 
 The code is available as open source under the terms of the [GNU Public License v3](LICENSE).
-
-## Code of Conduct
-
-Everyone interacting in the ForemanProxmox project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](CODE_OF_CONDUCT.md).

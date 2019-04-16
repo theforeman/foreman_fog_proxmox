@@ -24,14 +24,14 @@ RUN mkdir /usr/local/foreman_fog_proxmox
 WORKDIR /usr/local/foreman_fog_proxmox
 ADD . /usr/local/foreman_fog_proxmox
 WORKDIR /usr/local
-RUN git clone https://github.com/theforeman/foreman.git
+RUN git clone https://github.com/theforeman/foreman.git -b 1.21-stable
 WORKDIR /usr/local/foreman
-RUN git checkout tags/1.20.1
 RUN echo "gem 'foreman_fog_proxmox', :path => '/usr/local/foreman_fog_proxmox'\n" > /usr/local/foreman/bundler.d/Gemfile.local.rb
 RUN echo "gem 'simplecov'" >> /usr/local/foreman/bundler.d/Gemfile.local.rb
 RUN cp /usr/local/foreman/config/settings.yaml.example /usr/local/foreman/config/settings.yaml
 RUN cp /usr/local/foreman/config/database.yml.example /usr/local/foreman/config/database.yml
-RUN bundle install --jobs 20
+RUN bundle install --without mysql2 libvirt pg --path vendor --jobs 20
 ENTRYPOINT ["bundle", "exec"]
 RUN bundle exec bin/rake db:migrate
+RUN bundle exec rake db:seed assets:precompile locale:pack webpack:compile
 CMD ["bin/rake", "test:foreman_fog_proxmox"]

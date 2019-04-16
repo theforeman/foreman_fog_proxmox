@@ -12,14 +12,12 @@ It is intended to satisfy this [feature](http://projects.theforeman.org/issues/2
 
 If you like it and need more features you can [support](SUPPORT.md) it.
 
-## Compatibility
+## Compatibility versions
 
-Tested with:
-
-* Foreman >= 1.17 and <= 1.20
-* Fog-proxmox >= 0.5.3
-* Proxmox >= 5.1
-* Ruby >= 2.3
+|Fog-proxmox|Proxmox|Foreman-fog-proxmox|Foreman|Ruby|
+|--|--|--|--|--|
+|<0.6|<5.3|<0.6|<=1.20|>=2.3|
+|>=0.6|=5.3|>=0.6|=1.21|>=2.3|
 
 ## Installation
 
@@ -109,11 +107,11 @@ Redhat, CentOS or Fedora users should also [setup Selinux](https://projects.thef
 
 * Fork this github repo.
 * Clone it on your local machine
-* Install foreman v1.17.3 or later on your machine:
+* Install foreman v1.21.1 on your machine:
 
 ```shell
 git clone https://github.com/theforeman/foreman
-git checkout tags/1.17.3
+git checkout tags/1.21.1
 ```
 
 * Create a Gemfile.local.rb file in foreman/bundler.d/
@@ -142,7 +140,8 @@ cp config/settings.yaml.test config/settings.yaml
 * Install foreman database (sqlite is default in rails development):
 
 ```shell
-cp config/database.yaml.example config/database.yaml
+cp config/model.mappings.example config/model.mappings
+cp config/database.yml.example config/database.yml
 bundle exec bin/rake db:migrate
 bundle exec bin/rake db:seed
 ```
@@ -153,11 +152,20 @@ bundle exec bin/rake db:seed
 bundle exec bin/rake permissions:reset
 ```
 
-* You sholud write tests and you can execute those specific to this plugin:
+* You should write tests and you can execute those specific to this plugin:
+
+all:
 
 ```shell
 export DISABLE_SPRING=true
 bundle exec bin/rake test:foreman_fog_proxmox
+```
+
+or just one:
+
+```shell
+export DISABLE_SPRING=true
+bundle exec bin/rake test TEST=test/functional/compute_resources_controller_test.rb
 ```
 
 * In foreman directory, after you modify foreman_fog_proxmox specific assets (proxmox.js, etc) you have to precompile it:
@@ -175,13 +183,19 @@ bundle exec bin/rake plugin:gettext[foreman_fog_proxmox]
 * In foreman directory, run rails server:
 
 ```shell
-rails server
+bundle exec bin/rails server
 ```
 
 * In foreman directory, run in a new terminal the webpack-dev-server:
 
 ```shell
 ./node_modules/.bin/webpack-dev-server --config config/webpack.config.js
+```
+
+* Or you can launch all together:
+
+```shell
+bundle exec foreman start
 ```
 
 See details in [foreman plugin development](https://projects.theforeman.org/projects/foreman/wiki/How_to_Create_a_Plugin)

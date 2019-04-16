@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
   s.files = Dir['{app,config,db,lib,locale}/**/*'] + ['LICENSE', 'Rakefile', 'README.md']
   s.test_files = Dir['test/**/*']
 
-  s.add_dependency 'fog-proxmox', '~> 0.5'
+  s.add_dependency 'fog-proxmox', '~> 0.6'
   s.add_dependency 'deface'
   s.add_development_dependency 'rdoc'
   s.add_development_dependency 'rubocop'

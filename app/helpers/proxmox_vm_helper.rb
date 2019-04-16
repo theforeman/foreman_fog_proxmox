@@ -29,10 +29,10 @@ module ProxmoxVmHelper
 
   def object_to_config_hash(vm,type)
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
-    main_a = %w[hostname name type node vmid]
+    main_a = %w[hostname name vmid]
     type = vm.config.attributes['type']
     type = vm.type unless type
-    main = vm.config.attributes.select { |key,_value| main_a.include? key }
+    main = vm.attributes.select { |key,_value| main_a.include? key }
     disks_regexp = /^(scsi|sata|mp|rootfs|virtio|ide)(\d+){0,1}$/
     nics_regexp = /^(net)(\d+)/
     main_a += %w[templated]
@@ -71,11 +71,13 @@ module ProxmoxVmHelper
   end
 
   def remove_deletes(args)
-    args['volumes_attributes'].delete_if { |_key,value| value.has_key? '_delete' }
+    args['volumes_attributes'].delete_if { |_key,value| value.has_key? '_delete' } if args['volumes_attributes']
   end
 
   def convert_memory_size(config_hash, key)
-    config_hash.store(key, (config_hash[key].to_i / MEGA).to_s) unless ForemanFogProxmox::Value.empty?(config_hash[key])
+    # default unit memory size is Mb
+    memory = (config_hash[key].to_i / MEGA).to_s == '0' ? config_hash[key] : (config_hash[key].to_i / MEGA).to_s
+    config_hash.store(key, memory)
   end
 
   def parse_type_and_vmid(uuid)

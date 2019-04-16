@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+{
+    "name": "Rails server",
+    "type": "Ruby",
+    "request": "launch",
+    "cwd": "${workspaceRoot}",
+    "program": "${workspaceRoot}/bin/rails",
+    "useBundler": true,
+    "showDebuggerOutput": true,
+    "args": [
+        "server"
+    ]
+}
+]
+}

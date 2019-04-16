@@ -22,6 +22,7 @@ require 'test_plugin_helper'
 module ForemanFogProxmox
 class ProxmoxContainerHelperTest < ActiveSupport::TestCase
   include ProxmoxContainerHelper
+  include ProxmoxVmHelper
 
   describe 'parse' do
 
@@ -32,7 +33,7 @@ class ProxmoxContainerHelperTest < ActiveSupport::TestCase
       { 'vmid' => '100', 
         'name' =>  'test', 
         'type' =>  'lxc', 
-        'node' => 'pve',
+        'node_id' => 'pve',
         'ostemplate_storage' => 'local',
         'ostemplate_file' => 'local:vztmpl/alpine-3.7-default_20171211_amd64.tar.xz',
         'password' => 'proxmox01',
@@ -68,8 +69,8 @@ class ProxmoxContainerHelperTest < ActiveSupport::TestCase
         'name' =>  'test', 
         'type' =>  'lxc', 
         :type =>  'lxc', 
-        'node' => 'pve',
-        :node => {name: 'pve'},
+        'node_id' => 'pve',
+        :node_id => 'pve',
         :memory => 536870912, 
         'templated' => 0, 
         :onboot => 0,
@@ -92,6 +93,7 @@ class ProxmoxContainerHelperTest < ActiveSupport::TestCase
       { 'vmid' => '100', 
         'name' =>  'test', 
         'type' =>  'lxc', 
+        'node_id' => 'pve',
         'volumes_attributes' => { '0' => { '_delete' => '1', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824' }}, 
         'interfaces_attributes' => { '0' => { '_delete' => '1', 'id' => 'net0', 'name' => 'eth0' } } 
       }
@@ -151,8 +153,6 @@ class ProxmoxContainerHelperTest < ActiveSupport::TestCase
         :net1 => 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp',
         :rootfs => 'local-lvm:1073741824', 
         :mp0 => 'local-lvm:1073741824' )
-      assert_equal expected_vm.length, vm.length
-      assert_equal expected_vm.keys, vm.keys
       assert_equal expected_vm, vm
     end   
 

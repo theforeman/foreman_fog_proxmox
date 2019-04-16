@@ -20,7 +20,7 @@ Deface::Override.new(
     :name => "add_vm_type_to_networks_form",
     :replace => "erb[loud]:contains('render')",
     :partial => "compute_resources_vms/form/proxmox/add_vm_type_to_networks_form",
-    :original => 'bae57f59cbbf6fcf1aecdf3a02baee5ff3494c85'
+    :original => 'ce82feb03418d25628001c9fc5f5f78025c5e5f8'
 )
 
 Deface::Override.new(

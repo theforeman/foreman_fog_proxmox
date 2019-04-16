@@ -17,15 +17,6 @@
 
 Deface::Override.new(
     :virtual_path => "hosts/_compute_detail",
-    :name => "add_clone_to_new_vm_compute_detail",
-    :replace => "erb[silent]:contains('new_vm = @host.nil? || new_vm?(@host)')",
-    :text => "<% new_vm = @host.nil? || new_vm?(@host) || @host.name.nil? %>",
-    :original => "<% new_vm = @host.nil? || new_vm?(@host) %>"
-)
-
-
-Deface::Override.new(
-    :virtual_path => "hosts/_compute_detail",
     :name => "add_from_profile_to_compute_detail",
     :replace => "erb[loud]:contains('provider_partial')",
     :partial => "compute_resources_vms/form/proxmox/add_from_profile_to_hosts_compute_detail_form",

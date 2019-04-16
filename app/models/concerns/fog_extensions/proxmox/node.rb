@@ -17,20 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-require 'fog/proxmox/helpers/disk_helper'
-
 module FogExtensions
     module Proxmox
-        module ContainerConfig
+        module Node
             extend ActiveSupport::Concern
-
-            def rootfs_storage
-                mount_points.rootfs.storage
+            def all(options = {})
+                vms = servers.all 
+                vms += containers.all
+                vms
             end
-            def rootfs_file
-                mount_points.rootfs.volid
-            end
-
         end
     end
-end   
+end  

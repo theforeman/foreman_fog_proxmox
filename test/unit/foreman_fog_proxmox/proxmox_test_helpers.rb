@@ -27,6 +27,13 @@ module ForemanFogProxmox
       cr
     end
 
+    def mock_node_containers(cr, containers) 
+      node = mock('node')
+      node.stubs(:containers).returns(containers)
+      cr.stubs(:node).returns(node)
+      cr
+    end
+
     def mock_node_servers_containers(cr, servers, containers) 
       node = mock('node')
       node.stubs(:containers).returns(containers)
@@ -106,11 +113,14 @@ module ForemanFogProxmox
       config.stubs(:interfaces).returns(interfaces)
       vm = mock('vm')
       vm.stubs(:config).returns(config)
+      vm.stubs(:type).returns('qemu')
+      service = mock('service')
       vm_attributes = {
         vmid: 100,
         id: 'qemu/100',
-        node: 'pve',
+        node_id: 'pve',
         config: config,
+        service: service,
         name: 'test',
         type: 'qemu',
         maxdisk: 0,
@@ -206,17 +216,21 @@ module ForemanFogProxmox
         bwlimit: nil,
         unprivileged: nil,
         interfaces: interfaces,
-        mount_points: volumes
+        disks: volumes
       }
       config.stubs(:attributes).returns(config_attributes)
-      config.stubs(:mount_points).returns(volumes)
+      config.stubs(:attributes).returns(config_attributes)
+      config.stubs(:disks).returns(volumes)
       config.stubs(:interfaces).returns(interfaces)
       vm = mock('vm')
       vm.stubs(:config).returns(config)
+      vm.stubs(:type).returns('lxc')
+      service = mock('service')
       vm_attributes = {
         vmid: 100,
         id: 'lxc/100',
-        node: 'pve',
+        node_id: 'pve',
+        service: service,
         config: config,
         name: 'test',
         type: 'lxc',

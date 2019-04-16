@@ -30,7 +30,7 @@ module ForemanFogProxmox
     should validate_presence_of(:url)
     should validate_presence_of(:user)
     should validate_presence_of(:password)
-    should validate_presence_of(:node_name)
+    should validate_presence_of(:node_id)
     should allow_value('root@pam').for(:user)
     should_not allow_value('root').for(:user)
     should_not allow_value('a').for(:url)
@@ -60,18 +60,16 @@ module ForemanFogProxmox
     end
 
     describe "find_vm_by_uuid" do
-      it "raises Foreman::Exception when the uuid does not match" do
-        cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, empty_servers)
-        assert_raises Foreman::Exception do
-          cr.find_vm_by_uuid('100')
-        end
+      it "returns nil when the uuid does not match" do
+        cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, empty_servers, empty_servers)
+        assert cr.find_vm_by_uuid('100').nil?
       end
   
-      it "raises RecordNotFound when the compute raises retrieve error" do
-        exception = Fog::Proxmox::Errors::ServiceError.new(StandardError.new('VM not found'))
+      it "raises RecordNotFound when the compute raises error" do
+        exception = Fog::Errors::Error.new
         cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers_raising_exception(exception))
         assert_raises ActiveRecord::RecordNotFound do
-          cr.find_vm_by_uuid('qemu_100')
+          cr.find_vm_by_uuid('100')
         end
       end
     end
@@ -80,16 +78,7 @@ module ForemanFogProxmox
       before do
         @cr = FactoryBot.build_stubbed(:proxmox_cr)
       end
-  
-      it "raises Foreman::Exception when physical identifier is empty" do
-        physical_nic = FactoryBot.build(:nic_base_empty)
-        host = FactoryBot.build(:host_empty, :interfaces => [physical_nic])
-        err = assert_raises Foreman::Exception do
-          @cr.host_interfaces_attrs(host)
-        end
-        assert err.message.end_with?('Identifier interface[0] required.')
-      end
-  
+    
       it "raises Foreman::Exception when physical identifier does not match net[k] with k integer" do
         physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'eth0')
         host = FactoryBot.build(:host_empty, :interfaces => [physical_nic])
@@ -103,7 +92,7 @@ module ForemanFogProxmox
         ip = IPAddr.new(1, Socket::AF_INET).to_s
         ip6 = Array.new(4) { '%x' % rand(16**4) }.join(':') + '::1'
         physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6)
-        host = FactoryBot.build(:host_empty, :interfaces => [physical_nic])
+        host = FactoryBot.build(:host_empty, :interfaces => [physical_nic], :compute_attributes => {'type' => 'qemu'})
         nic_attributes = @cr.host_interfaces_attrs(host).values.select(&:present?)
         nic_attr = nic_attributes.first
         assert_equal 'net0', nic_attr[:id]
@@ -141,12 +130,12 @@ module ForemanFogProxmox
         @cr = FactoryBot.build_stubbed(:proxmox_cr)
       end
   
-      it "converts to hash a server" do
+      it "converts a server to hash" do
         vm, config_attributes, volume_attributes, interface_attributes  = mock_server_vm
         vm_attrs = @cr.vm_compute_attributes(vm)
         assert !vm_attrs.has_key?(:config)
         assert vm_attrs.has_key?(:config_attributes)
-        assert_equal config_attributes.reject { |key,value| [:disks,:interfaces].include?(key) || value.to_s.empty?}, vm_attrs[:config_attributes]
+        assert_equal config_attributes.reject { |key,value| [:vmid,:disks,:interfaces].include?(key) || value.to_s.empty?}, vm_attrs[:config_attributes]
         assert !vm_attrs[:config_attributes].has_key?(:disks)
         assert vm_attrs.has_key?(:volumes_attributes)
         assert_equal volume_attributes, vm_attrs[:volumes_attributes]['0']
@@ -155,13 +144,13 @@ module ForemanFogProxmox
         assert_equal interface_attributes, vm_attrs[:interfaces_attributes]['0']
       end
   
-      it "converts to hash a container" do
+      it "converts a container to hash" do
         vm, config_attributes, volume_attributes, interface_attributes  = mock_container_vm
         vm_attrs = @cr.vm_compute_attributes(vm)
         assert !vm_attrs.has_key?(:config)
         assert vm_attrs.has_key?(:config_attributes)
-        assert_equal config_attributes.reject { |key,value| [:mount_points,:interfaces].include?(key) || value.to_s.empty?}, vm_attrs[:config_attributes]
-        assert !vm_attrs[:config_attributes].has_key?(:mount_points)
+        assert_equal config_attributes.reject { |key,value| [:vmid,:disks,:interfaces].include?(key) || value.to_s.empty?}, vm_attrs[:config_attributes]
+        assert !vm_attrs[:config_attributes].has_key?(:disks)
         assert vm_attrs.has_key?(:volumes_attributes)
         assert_equal volume_attributes, vm_attrs[:volumes_attributes]['0']
         assert vm_attrs.has_key?(:interfaces_attributes)
@@ -176,12 +165,13 @@ module ForemanFogProxmox
     end
 
     it 'saves modified server config' do
-      uuid = 'qemu_100'
+      uuid = '100'
       config = mock('config')
       config.stubs(:attributes).returns({ :cores => '' })
       vm = mock('vm')
       vm.stubs(:config).returns(config)
       vm.stubs(:container?).returns(false)
+      vm.stubs(:type).returns('qemu')
       @cr.stubs(:find_vm_by_uuid).returns(vm)
       attr = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' } }
       @cr.stubs(:parse_server_vm).returns({ 'vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1' })
@@ -191,12 +181,13 @@ module ForemanFogProxmox
     end
 
     it 'saves modified container config' do
-      uuid = 'lxc_100'
+      uuid = '100'
       config = mock('config')
       config.stubs(:attributes).returns({ :cores => '' })
       vm = mock('vm')
       vm.stubs(:config).returns(config)
       vm.stubs(:container?).returns(true)
+      vm.stubs(:type).returns('lxc')
       @cr.stubs(:find_vm_by_uuid).returns(vm)
       attr = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' } }
       @cr.stubs(:parse_container_vm).returns({ 'vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1' })
@@ -228,7 +219,7 @@ module ForemanFogProxmox
       cr.stubs(:parse_server_vm).with(args).returns(args)
       servers.stubs(:create).with(args)
       vm = mock('vm')
-      cr.stubs(:find_vm_by_uuid).with("#{args[:type]}_#{args[:vmid]}").returns(vm)
+      cr.stubs(:find_vm_by_uuid).with("#{args[:vmid]}").returns(vm)
       cr.create_vm(args)
     end
 
@@ -242,7 +233,7 @@ module ForemanFogProxmox
       cr.stubs(:convert_sizes).with(args)
       cr.stubs(:parse_container_vm).with(args).returns(args)
       vm = mock('vm')
-      cr.stubs(:find_vm_by_uuid).with("#{args[:type]}_#{args[:vmid]}").returns(vm)
+      cr.stubs(:find_vm_by_uuid).with("#{args[:vmid]}").returns(vm)
       cr.create_vm(args)
     end
 
@@ -261,7 +252,7 @@ module ForemanFogProxmox
       servers.stubs(:get).with('999').returns(image)
       clone.stubs(:update).with(name: 'name')
       vm = mock('vm')
-      cr.stubs(:find_vm_by_uuid).with("#{args[:type]}_#{args[:vmid]}").returns(vm)
+      cr.stubs(:find_vm_by_uuid).with("#{args[:vmid]}").returns(vm)
       cr.create_vm(args)
     end
 
@@ -281,7 +272,7 @@ module ForemanFogProxmox
       cr.stubs(:convert_sizes).with(args)
       cr.stubs(:parse_container_vm).with(args).returns(args)
       vm = mock('vm')
-      cr.stubs(:find_vm_by_uuid).with("#{args[:type]}_#{args[:vmid]}").returns(vm)
+      cr.stubs(:find_vm_by_uuid).with("#{args[:vmid]}").returns(vm)
       cr.create_vm(args)
     end
   end

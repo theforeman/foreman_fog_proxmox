@@ -21,5 +21,5 @@ Deface::Override.new(
     :replace => "erb[loud]:contains('f.fields_for')",
     :closing_selector => "erb[silent]:contains('end')",
     :partial => "compute_resources_vms/form/proxmox/add_vm_type_to_nic_provider_specific_form",
-    :original => '3c575e0e570cc620277fbffd61bfdc7c42bbdc77' 
+    :original => 'f1a2373efd9c7c993fd1662a2ee4752183542704' 
 )

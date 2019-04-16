@@ -28,12 +28,13 @@ module ProxmoxServerHelper
   GIGA = KILO * MEGA
 
   def parse_server_vm(args)
+    logger.debug("parse_server_vm args=#{args}")
     args = ActiveSupport::HashWithIndifferentAccess.new(args)
     return {} unless args
     return {} if args.empty?
     return {} unless args['type'] == 'qemu'
     config = args['config_attributes']
-    main_a = %w[name type node vmid]
+    main_a = %w[name type node_id vmid interfaces mount_points disks]
     config = args.reject { |key,_value| main_a.include? key } unless config
     cdrom_a = %w[cdrom cdrom_storage cdrom_iso]
     cdrom = parse_server_cdrom(config.select { |key,_value| cdrom_a.include? key })
@@ -45,7 +46,7 @@ module ProxmoxServerHelper
     memory = parse_server_memory(config.select { |key,_value| memory_a.include? key })
     interfaces_attributes = args['interfaces_attributes']
     networks = parse_server_interfaces(interfaces_attributes)
-    general_a = %w[node type config_attributes volumes_attributes interfaces_attributes firmware_type provision_method container_volumes server_volumes]
+    general_a = %w[node_id type config_attributes volumes_attributes interfaces_attributes firmware_type provision_method container_volumes server_volumes]
     logger.debug("general_a: #{general_a}")
     parsed_vm = args.reject { |key,value| general_a.include?(key) || ForemanFogProxmox::Value.empty?(value) }
     config_a = []

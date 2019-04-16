@@ -21,19 +21,8 @@ module FogExtensions
     module Proxmox
         module Server
             extend ActiveSupport::Concern
-            attr_accessor :image_id, :templated, :ostemplate_storage, :ostemplate_file
-            def to_s
-                name
-            end
-            def identity
-                "#{type}_#{vmid}"
-            end
-            def container?
-                type == 'lxc'
-            end
-            def persisted?
-                !!identity && !!uptime
-            end
+            attr_accessor :image_id, :templated, :ostemplate_storage, :ostemplate_file, :password
+            
             def start
                 action('start')
             end

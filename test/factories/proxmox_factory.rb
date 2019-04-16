@@ -29,7 +29,7 @@ FactoryBot.define do
       user 'root@pam'
       password 'proxmox01'
       url 'https://192.168.56.101:8006/api2/json'
-      node_name 'pve'
+      node_id 'pve'
     end
 
     factory :proxmox_cr, :class => ForemanFogProxmox::Proxmox, :traits => [:proxmox]
@@ -41,7 +41,10 @@ FactoryBot.define do
     trait :pve do
       identity 'pve'
     end
-    factory :pve_node, :class => Fog::Compute::Proxmox::Node, :traits => [:pve]
+    trait :service do
+      service :proxmox_cr
+    end
+    factory :pve_node, :class => Fog::Compute::Proxmox::Node, :traits => [:pve, :service]
   end
 
   def deferred_nic_attrs
@@ -68,6 +71,10 @@ FactoryBot.define do
   factory :host_empty, :class => Host do
     sequence(:name) { |n| "host#{n}" }
     sequence(:hostname) { |n| "host#{n}" }
+    trait :compute_attributes do
+      { 'type' => 'qemu' }
+    end
+    compute_attributes { { 'type' => 'qemu' } }
   end
 
 end

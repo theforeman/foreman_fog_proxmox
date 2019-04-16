@@ -28,6 +28,7 @@ module ProxmoxContainerHelper
   GIGA = KILO * MEGA
 
   def parse_container_vm(args)
+    logger.debug("parse_container_vm args=#{args}")
     args = ActiveSupport::HashWithIndifferentAccess.new(args)
     return {} unless args
     return {} if args.empty?
@@ -151,7 +152,7 @@ module ProxmoxContainerHelper
       nic.store(:rate, args['rate'].to_i) if args['rate']
       nic.store(:tag, args['tag'].to_i) if args['tag']
       logger.debug("parse_container_interface(): add nic=#{nic}")
-      Fog::Proxmox::NicHelper.container_flatten(nic)
+      Fog::Proxmox::NicHelper.flatten(nic)
     end 
   end
 

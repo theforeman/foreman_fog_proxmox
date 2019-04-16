@@ -75,7 +75,9 @@ module ProxmoxVmHelper
   end
 
   def convert_memory_size(config_hash, key)
-    config_hash.store(key, (config_hash[key].to_i / MEGA).to_s) unless ForemanFogProxmox::Value.empty?(config_hash[key])
+    # default unit memory size is Mb
+    memory = (config_hash[key].to_i / MEGA).to_s == '0' ? config_hash[key] : (config_hash[key].to_i / MEGA).to_s
+    config_hash.store(key, memory)
   end
 
   def parse_type_and_vmid(uuid)

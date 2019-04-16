@@ -153,8 +153,6 @@ class ProxmoxContainerHelperTest < ActiveSupport::TestCase
         :net1 => 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp',
         :rootfs => 'local-lvm:1073741824', 
         :mp0 => 'local-lvm:1073741824' )
-      assert_equal expected_vm.length, vm.length
-      assert_equal expected_vm.keys, vm.keys
       assert_equal expected_vm, vm
     end   
 

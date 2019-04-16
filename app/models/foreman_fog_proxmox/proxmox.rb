@@ -52,9 +52,14 @@ module ForemanFogProxmox
       errors[:url].empty? && errors[:user].empty? && errors[:user].include?('@') && errors[:password].empty? && errors[:node_id].empty?
     end
 
+    def version_suitable?
+      version == '5.3'
+    end
+
     def test_connection(options = {})
       super
       credentials_valid?
+      version_suitable?
     rescue => e
       errors[:base] << e.message
       errors[:url] << e.message
@@ -101,15 +106,14 @@ module ForemanFogProxmox
     end
 
     def template(vmid)
-      vm = find_vm_by_uuid("qemu_#{vmid}")
-      vm = find_vm_by_uuid("lxc_#{vmid}") unless vm
-      vm
+      find_vm_by_uuid(vmid)
     end
 
     def host_compute_attrs(host)
       super.tap do |attrs|
         ostype = host.compute_attributes['config_attributes']['ostype']
-        case host.compute_attributes['type']
+        type = host.compute_attributes['type']
+        case type
         when 'lxc'
           host.compute_attributes['config_attributes'].store('hostname',host.name)
         when 'qemu'
@@ -170,17 +174,20 @@ module ForemanFogProxmox
     end
 
     def new_server_interface(attr = {})
+      logger.debug("new_server_interface")
       opts = interface_server_defaults.merge(attr.to_h).deep_symbolize_keys
       Fog::Compute::Proxmox::Interface.new(opts)
     end
 
     def new_container_interface(attr = {})
+      logger.debug("new_container_interface")
       opts = interface_container_defaults.merge(attr.to_h).deep_symbolize_keys
       Fog::Compute::Proxmox::Interface.new(opts)
     end
 
+    # used by host.clone
     def vm_compute_attributes(vm)
-      vm_attrs = vm.attributes.reject { |key,value| [:config].include?(key) || value.to_s.empty? }
+      vm_attrs = vm.attributes.reject { |key,value| [:config, :vmid].include?(key.to_sym) || value.to_s.empty? }
       vm_attrs = set_vm_config_attributes(vm, vm_attrs)
       vm_attrs = set_vm_volumes_attributes(vm, vm_attrs)
       vm_attrs = set_vm_interfaces_attributes(vm, vm_attrs)
@@ -189,15 +196,17 @@ module ForemanFogProxmox
 
     def set_vm_config_attributes(vm, vm_attrs)
       if vm.respond_to?(:config)
-        config = vm.config.attributes.reject { |key,value| [:disks,:mount_points,:interfaces].include?(key) || value.to_s.empty?}
+        config = vm.config.attributes.reject { |key,value| [:disks, :interfaces, :vmid].include?(key) || value.to_s.empty?}
         vm_attrs[:config_attributes] = config
       end
       vm_attrs
     end
 
     def set_vm_volumes_attributes(vm, vm_attrs)
-      volumes = vm.container? ? vm.config.mount_points : vm.config.disks || []
-      vm_attrs[:volumes_attributes] = Hash[volumes.each_with_index.map { |volume, idx| [idx.to_s, volume.attributes] }]
+      if vm.config.respond_to?(:disks)
+        volumes = vm.config.disks || []
+        vm_attrs[:volumes_attributes] = Hash[volumes.each_with_index.map { |volume, idx| [idx.to_s, volume.attributes] }]
+      end
       vm_attrs
     end
 
@@ -210,7 +219,7 @@ module ForemanFogProxmox
     end
 
     def vms(opts = {})
-      node.servers
+      node
     end
 
     def new_vm(new_attr = {})
@@ -253,20 +262,17 @@ module ForemanFogProxmox
         clone = node.servers.get vmid
         clone.update(name: args[:name])        
       else
-        logger.debug(_("create_vm(): %{args}") % { args: args })
         convert_sizes(args)
         remove_deletes(args)
         case type
           when 'qemu'
-            node.servers.create(parse_server_vm(args))
+            vm = node.servers.create(parse_server_vm(args))
           when 'lxc'
             hash = parse_container_vm(args)
             hash = hash.merge(vmid: vmid)
-            node.containers.create(hash.reject { |key,_value| %w[ostemplate_storage ostemplate_file].include? key })
+            vm = node.containers.create(hash.reject { |key,_value| %w[ostemplate_storage ostemplate_file].include? key })
         end
       end
-      vm = find_vm_by_uuid("#{type}_#{vmid}")
-      vm
     rescue => e
       logger.warn(_("failed to create vm: %{e}") % { e: e })
       destroy_vm vm.id if vm
@@ -274,16 +280,23 @@ module ForemanFogProxmox
     end
 
     def find_vm_by_uuid(uuid)
-      type, vmid = parse_type_and_vmid(uuid)
-      case type
-      when 'qemu'
-        node.servers.get(vmid)
-      when 'lxc'
-        node.containers.get(vmid)
+      begin
+        vm = node.servers.get(uuid)
+      rescue Fog::Errors::NotFound
+        vm = nil  
+      rescue Fog::Errors::Error => e
+        Foreman::Logging.exception(_("Failed retrieving proxmox server vm by vmid=%{uuid}") % { vmid: uuid }, e)
+        raise(ActiveRecord::RecordNotFound)
       end
-    rescue Fog::Errors::Error => e
-      Foreman::Logging.exception(_("Failed retrieving proxmox vm by vmid=%{vmid} and type=%{type}") % { vmid: vmid, type: type }, e)
-      raise(ActiveRecord::RecordNotFound)
+      begin
+        vm = node.containers.get(uuid) unless vm
+      rescue Fog::Errors::NotFound
+        vm = nil  
+      rescue Fog::Errors::Error => e
+        Foreman::Logging.exception(_("Failed retrieving proxmox container vm by vmid=%{uuid}") % { vmid: uuid }, e)
+        raise(ActiveRecord::RecordNotFound)
+      end
+      vm
     end
 
     def supports_update?
@@ -313,25 +326,19 @@ module ForemanFogProxmox
     end
 
     def image_exists?(image)
-      vm = find_vm_by_uuid("qemu_#{image}")
-      vm = find_vm_by_uuid("lxc_#{image}") unless vm
-      vm!=nil
+      !find_vm_by_uuid(image).nil?
     end
 
-    def save_vm(uuid, attr)
-      type, vmid = parse_type_and_vmid(uuid)
-      attr = attr.merge(type: type, vmid: vmid)
+    def save_vm(uuid, new_attributes)
       vm = find_vm_by_uuid(uuid)
-      logger.debug(N_("save_vm(): %{attr}") % { attr: attr })
-      templated = attr[:templated]
+      templated = new_attributes[:templated]
       if (templated == '1' && !vm.templated?)
-        vm.template
+        vm.create_template
       else
-        parsed_attr = vm.container? ? parse_container_vm(attr) : parse_server_vm(attr)
-        merged = vm.config.attributes.merge(parsed_attr.symbolize_keys).deep_symbolize_keys
-        filtered = merged.reject { |key,value| [:node_id,:vmid,:type,:templated,:image_id].include?(key) || value.to_s.empty? }
-        vm.update(filtered)
+        parsed_attr = vm.container? ? parse_container_vm(new_attributes.merge(type: vm.type)) : parse_server_vm(new_attributes.merge(type: vm.type))
+        vm.update(parsed_attr.reject { |key,value| [:templated,:ostemplate,:ostemplate_file,:ostemplate_storage].include? key.to_sym || ForemanFogProxmox::Value.empty?(value) })
       end
+      vm = find_vm_by_uuid(uuid)
     end
 
     def next_vmid
@@ -388,9 +395,14 @@ module ForemanFogProxmox
 
     def console(uuid)
       vm = find_vm_by_uuid(uuid)
-      type_console = vm.config.type_console
       options = {}
-      options.store(:websocket, 1) if type_console == 'vnc'
+      if vm.container?
+        type_console = 'vnc'
+        options.store(:console, type_console)
+      else
+        type_console = vm.config.type_console
+      end
+        options.store(:websocket, 1) if type_console == 'vnc'
       begin
         vnc_console = vm.start_console(options)  
         WsProxy.start(:host => host, :host_port => vnc_console['port'], :password => vnc_console['ticket']).merge(:name => vm.name, :type => type_console)
@@ -398,6 +410,10 @@ module ForemanFogProxmox
         logger.error(e)
         raise ::Foreman::Exception.new(_("%s console is not supported at this time") % type_console)
       end
+    end
+
+    def version
+      identity_client.read_version
     end
 
     private
@@ -446,7 +462,7 @@ module ForemanFogProxmox
         cpu: 'kvm64',
         scsihw: 'virtio-scsi-pci',
         ide2: "none,media=cdrom",
-        templated: 0).merge(Fog::Proxmox::DiskHelper.flatten(volume_server_defaults)).merge(Fog::Proxmox::DiskHelper.flatten(volume_container_defaults)).merge(Fog::Proxmox::NicHelper.flatten(interface_server_defaults))
+        templated: 0).merge(Fog::Proxmox::DiskHelper.flatten(volume_server_defaults)).merge(Fog::Proxmox::DiskHelper.flatten(volume_container_defaults)).merge(Fog::Proxmox::NicHelper.flatten(interface_defaults))
     end
 
     def vm_container_instance_defaults
@@ -456,7 +472,7 @@ module ForemanFogProxmox
         type: 'lxc', 
         node_id: node_id, 
         memory: 512 * MEGA, 
-        templated: 0).merge(Fog::Proxmox::DiskHelper.flatten(volume_server_defaults)).merge(Fog::Proxmox::DiskHelper.flatten(volume_container_defaults)).merge(Fog::Proxmox::NicHelper.container_flatten(interface_container_defaults))
+        templated: 0).merge(Fog::Proxmox::DiskHelper.flatten(volume_container_defaults)).merge(Fog::Proxmox::DiskHelper.flatten(volume_server_defaults)).merge(Fog::Proxmox::NicHelper.flatten(interface_defaults))
     end
 
     def vm_instance_defaults
@@ -470,6 +486,10 @@ module ForemanFogProxmox
 
     def volume_container_defaults(id='rootfs')
       { id: id, storage: storages.first.identity.to_s, size: (8 * GIGA), options: {  } }
+    end
+
+    def interface_defaults(id = 'net0')
+      { id: id, model: 'virtio', name: 'eth0', bridge: bridges.first.identity.to_s }
     end
 
     def interface_server_defaults(id = 'net0')

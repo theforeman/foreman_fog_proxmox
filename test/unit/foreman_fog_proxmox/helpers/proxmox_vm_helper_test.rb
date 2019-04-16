@@ -20,8 +20,6 @@
 require 'test_plugin_helper'
 require 'fog/compute/proxmox/models/server'
 require 'fog/compute/proxmox/models/server_config'
-require 'fog/compute/proxmox/models/container'
-require 'fog/compute/proxmox/models/container_config'
 require 'fog/compute/proxmox/models/interface'
 require 'fog/compute/proxmox/models/interfaces'
 require 'fog/compute/proxmox/models/disk'
@@ -37,7 +35,7 @@ class ProxmoxVmHelperTest < ActiveSupport::TestCase
     service = mock('service')
     service.stubs(:get_server_config).returns(nil)
     service.stubs(:list_tasks).returns([])
-    Fog::Compute::Proxmox::Container.new(
+    Fog::Compute::Proxmox::Server.new(
     { 'vmid' => '100', 
       'hostname' =>  'test', 
       :type =>  'lxc', 

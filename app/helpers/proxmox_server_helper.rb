@@ -28,6 +28,7 @@ module ProxmoxServerHelper
   GIGA = KILO * MEGA
 
   def parse_server_vm(args)
+    logger.debug("parse_server_vm args=#{args}")
     args = ActiveSupport::HashWithIndifferentAccess.new(args)
     return {} unless args
     return {} if args.empty?

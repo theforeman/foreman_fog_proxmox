@@ -33,24 +33,30 @@ module FogExtensions
                 Fog::Proxmox::CpuHelper.extract_pcid(cpu)
             end
             def cdrom
-                if !disks.empty?
+                if disks.cdrom
                     %w[none cdrom].include?(disks.cdrom.volid) ? disks.cdrom.volid : 'image'
                 else
                     'none'
                 end
             end
             def cdrom_storage
-                !disks.empty? ? disks.cdrom.storage : ''
+                disks.cdrom ? disks.cdrom.storage : ''
             end
             def cdrom_iso
-                !disks.empty? ? disks.cdrom.volid : ''
+                disks.cdrom ? disks.cdrom.volid : ''
             end
             def cdrom_image
-                if !disks.empty?
+                if disks.cdrom
                     %w[none cdrom].include?(disks.cdrom.volid) ? disks.cdrom.volid : 'image'
                 else
                     'none'
                 end
+            end
+            def rootfs_storage
+                disks.rootfs.storage if disks.rootfs
+            end
+            def rootfs_file
+                disks.rootfs.volid if disks.rootfs
             end
         end
     end

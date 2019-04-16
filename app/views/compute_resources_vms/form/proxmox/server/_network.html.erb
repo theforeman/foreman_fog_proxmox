@@ -15,7 +15,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-
 <% server = type == 'qemu' %>
 
 <%= field_set_tag _("Nic"), :id => "server_network", :style => ('display: none;' unless server), :disabled => !server do %> 

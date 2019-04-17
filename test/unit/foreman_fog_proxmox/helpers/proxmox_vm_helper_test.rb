@@ -35,7 +35,7 @@ class ProxmoxVmHelperTest < ActiveSupport::TestCase
     service = mock('service')
     service.stubs(:get_server_config).returns(nil)
     service.stubs(:list_tasks).returns([])
-    Fog::Compute::Proxmox::Server.new(
+    Fog::Proxmox::Compute::Server.new(
     { 'vmid' => '100', 
       'hostname' =>  'test', 
       :type =>  'lxc', 
@@ -58,7 +58,7 @@ class ProxmoxVmHelperTest < ActiveSupport::TestCase
     service = mock('service')
     service.stubs(:get_server_config).returns(nil)
     service.stubs(:list_tasks).returns([])
-    Fog::Compute::Proxmox::Server.new(
+    Fog::Proxmox::Compute::Server.new(
     { 'vmid' => '100', 
       'name' =>  'test', 
       :node_id => 'pve', 

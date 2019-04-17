@@ -35,10 +35,6 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     <%= prop :uptime %>
     <%= prop :vmid %>
     <%= prop :description %>
-    <% if @vm.container? %>
-      <%= prop :mount_points %>
-    <% else %>
-      <%= prop :disks %>
-    <% end %>
+    <%= prop :disks %>
   </table>
 </div>

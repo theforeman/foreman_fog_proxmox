@@ -38,7 +38,7 @@ module ForemanFogProxmox
 
     initializer 'foreman_fog_proxmox.register_plugin', :before => :finisher_hook do |_app|
       Foreman::Plugin.register :foreman_fog_proxmox do
-        requires_foreman '>= 1.21.0'
+        requires_foreman '>= 1.22.0'
         # Register Proxmox VE compute resource in foreman
         compute_resource ForemanFogProxmox::Proxmox
         parameter_filter(ComputeResource, :uuid)
@@ -85,12 +85,12 @@ module ForemanFogProxmox
       require 'fog/compute/proxmox/models/volume'
       require 'fog/compute/proxmox/models/node'
 
-      Fog::Compute::Proxmox::Server.send :include, FogExtensions::Proxmox::Server
-      Fog::Compute::Proxmox::ServerConfig.send :include, FogExtensions::Proxmox::ServerConfig
-      Fog::Compute::Proxmox::Disk.send :include, FogExtensions::Proxmox::Disk
-      Fog::Compute::Proxmox::Volume.send :include, FogExtensions::Proxmox::Volume
+      Fog::Proxmox::Compute::Server.send :include, FogExtensions::Proxmox::Server
+      Fog::Proxmox::Compute::ServerConfig.send :include, FogExtensions::Proxmox::ServerConfig
+      Fog::Proxmox::Compute::Disk.send :include, FogExtensions::Proxmox::Disk
+      Fog::Proxmox::Compute::Volume.send :include, FogExtensions::Proxmox::Volume
       ::ComputeResourcesController.send :include, ForemanFogProxmox::Controller::Parameters::ComputeResource
-      Fog::Compute::Proxmox::Node.send :include, FogExtensions::Proxmox::Node
+      Fog::Proxmox::Compute::Node.send :include, FogExtensions::Proxmox::Node
     end
 
   end

@@ -36,7 +36,7 @@ FactoryBot.define do
 
   end
 
-  factory :node, :class => Fog::Compute::Proxmox::Node do
+  factory :node, :class => Fog::Proxmox::Compute::Node do
     sequence(:identity) { |n| "node#{n}" }
     trait :pve do
       identity 'pve'
@@ -44,7 +44,7 @@ FactoryBot.define do
     trait :service do
       service :proxmox_cr
     end
-    factory :pve_node, :class => Fog::Compute::Proxmox::Node, :traits => [:pve, :service]
+    factory :pve_node, :class => Fog::Proxmox::Compute::Node, :traits => [:pve, :service]
   end
 
   def deferred_nic_attrs

@@ -17,7 +17,8 @@ If you like it and need more features you can [support](SUPPORT.md) it.
 |Fog-proxmox|Proxmox|Foreman-fog-proxmox|Foreman|Ruby|
 |--|--|--|--|--|
 |<0.6|<5.3|<0.6|<=1.20|>=2.3|
-|>=0.6|=5.3|>=0.6|=1.21|>=2.3|
+|=0.6|=5.3|=0.6|=1.21|>=2.3|
+|=0.7|=5.4|=0.7|=1.22|>=2.3|
 
 ## Installation
 
@@ -62,7 +63,7 @@ sudo -u foreman /usr/bin/foreman-ruby /usr/bin/bundle install
 /usr/bin/foreman-ruby /usr/bin/bundle exec bin/rake plugin:gettext[foreman_fog_proxmox]
 ```
 
-* Complete installation of foreman 1.17+ with foreman-installer:
+* Complete installation of foreman 1.22 with foreman-installer:
 
 ```shell
 sudo apt install -y foreman-installer
@@ -99,7 +100,7 @@ Redhat, CentOS or Fedora users should also [setup Selinux](https://projects.thef
 
 ### Prerequisites
 
-* You need a Proxmox VE >= 5.1 server running.
+* You need a Proxmox VE 5.4 server running.
 * You need ruby >= 2.3. You can install it with [rbenv](https://github.com/rbenv/rbenv).
 * You also need nodejs in your dev machine to run webpack-dev-server. You can install it with [nvm](https://github.com/creationix/nvm).
 
@@ -107,11 +108,10 @@ Redhat, CentOS or Fedora users should also [setup Selinux](https://projects.thef
 
 * Fork this github repo.
 * Clone it on your local machine
-* Install foreman v1.21.1 on your machine:
+* Install foreman v1.22 on your machine:
 
 ```shell
-git clone https://github.com/theforeman/foreman
-git checkout tags/1.21.1
+git clone https://github.com/theforeman/foreman -b develop
 ```
 
 * Create a Gemfile.local.rb file in foreman/bundler.d/

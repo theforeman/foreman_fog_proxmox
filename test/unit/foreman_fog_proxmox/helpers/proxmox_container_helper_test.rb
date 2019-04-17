@@ -54,7 +54,7 @@ class ProxmoxContainerHelperTest < ActiveSupport::TestCase
         },
         'volumes_attributes' => {
           '0'=> { 'id' => 'rootfs', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => nil },
-          '1'=> { 'id' => 'mp0', 'storage' => 'local-lvm', 'size' => '1073741824' }
+          '1'=> { 'id' => 'mp0', 'storage' => 'local-lvm', 'size' => '1073741824', 'mp' => '/opt/path' }
         }, 
         'interfaces_attributes' => { 
           '0' => { 'id' => 'net0', 'name' => 'eth0', 'bridge' => 'vmbr0', 'ip' => 'dhcp', 'ip6' => 'dhcp', 'rate' => nil },
@@ -83,7 +83,7 @@ class ProxmoxContainerHelperTest < ActiveSupport::TestCase
         'ostemplate_file' => 'local:vztmpl/alpine-3.7-default_20171211_amd64.tar.xz',
         'password' => 'proxmox01',
         :rootfs => 'local-lvm:1073741824',
-        :mp0 => 'local-lvm:1073741824',
+        :mp0 => 'local-lvm:1073741824,mp=/opt/path',
         'net0' => 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp',
         'net1' => 'model=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp'
       }
@@ -152,16 +152,20 @@ class ProxmoxContainerHelperTest < ActiveSupport::TestCase
         :net0 => 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp',
         :net1 => 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp',
         :rootfs => 'local-lvm:1073741824', 
-        :mp0 => 'local-lvm:1073741824' )
+        :mp0 => 'local-lvm:1073741824,mp=/opt/path' )
       assert_equal expected_vm, vm
     end   
 
     test '#volume with rootfs 1Gb' do       
       volumes = parse_container_volumes(host['volumes_attributes'])
       assert !volumes.empty?
-      assert volume = volumes.first
-      assert volume.has_key?(:rootfs)
-      assert_equal 'local-lvm:1073741824', volume[:rootfs]
+      assert_equal 2, volumes.size
+      assert rootfs = volumes.first
+      assert rootfs.has_key?(:rootfs)
+      assert_equal 'local-lvm:1073741824', rootfs[:rootfs]
+      assert mp0 = volumes[1]
+      assert mp0.has_key?(:mp0)
+      assert_equal 'local-lvm:1073741824,mp=/opt/path', mp0[:mp0]
     end    
     
     test '#volume delete mp0' do       

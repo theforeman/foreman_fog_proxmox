@@ -24,9 +24,12 @@ RUN mkdir /usr/local/foreman_fog_proxmox
 WORKDIR /usr/local/foreman_fog_proxmox
 ADD . /usr/local/foreman_fog_proxmox
 WORKDIR /usr/local
-RUN git clone https://github.com/theforeman/foreman.git -b 1.21-stable
+RUN git clone https://github.com/fog/fog-proxmox.git -b 0_7_0
+WORKDIR /usr/local
+RUN git clone https://github.com/theforeman/foreman.git -b develop
 WORKDIR /usr/local/foreman
 RUN echo "gem 'foreman_fog_proxmox', :path => '/usr/local/foreman_fog_proxmox'\n" > /usr/local/foreman/bundler.d/Gemfile.local.rb
+RUN echo "gem 'fog-proxmox', :path => '/usr/local/fog-proxmox'\n" > /usr/local/foreman/bundler.d/Gemfile.local.rb
 RUN echo "gem 'simplecov'" >> /usr/local/foreman/bundler.d/Gemfile.local.rb
 RUN cp /usr/local/foreman/config/settings.yaml.example /usr/local/foreman/config/settings.yaml
 RUN cp /usr/local/foreman/config/database.yml.example /usr/local/foreman/config/database.yml

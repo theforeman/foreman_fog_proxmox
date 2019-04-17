@@ -155,14 +155,13 @@ module ForemanFogProxmox
     def new_volume_server(attr = {})
       opts = volume_server_defaults.merge(attr.to_h).deep_symbolize_keys
       opts[:size] = opts[:size].to_s
-      Fog::Compute::Proxmox::Disk.new(opts)
+      Fog::Proxmox::Compute::Disk.new(opts)
     end
 
     def new_volume_container(attr = {})
-      id = attr[:id]
-      opts = volume_container_defaults(id).merge(attr.to_h).deep_symbolize_keys
+      opts = volume_container_defaults.merge(attr.to_h).deep_symbolize_keys
       opts[:size] = opts[:size].to_s
-      Fog::Compute::Proxmox::Disk.new(opts)
+      Fog::Proxmox::Compute::Disk.new(opts)
     end
 
     def new_interface(attr = {}) 
@@ -179,13 +178,13 @@ module ForemanFogProxmox
     def new_server_interface(attr = {})
       logger.debug("new_server_interface")
       opts = interface_server_defaults.merge(attr.to_h).deep_symbolize_keys
-      Fog::Compute::Proxmox::Interface.new(opts)
+      Fog::Proxmox::Compute::Interface.new(opts)
     end
 
     def new_container_interface(attr = {})
       logger.debug("new_container_interface")
       opts = interface_container_defaults.merge(attr.to_h).deep_symbolize_keys
-      Fog::Compute::Proxmox::Interface.new(opts)
+      Fog::Proxmox::Compute::Interface.new(opts)
     end
 
     # used by host.clone
@@ -430,15 +429,15 @@ module ForemanFogProxmox
     end
 
     def client
-      @client ||= ::Fog::Compute::Proxmox.new(fog_credentials)
+      @client ||= ::Fog::Proxmox::Compute.new(fog_credentials)
     end
 
     def identity_client
-      @identity_client ||= ::Fog::Identity::Proxmox.new(fog_credentials)
+      @identity_client ||= ::Fog::Proxmox::Identity.new(fog_credentials)
     end
 
     def network_client
-      @network_client ||= ::Fog::Network::Proxmox.new(fog_credentials)
+      @network_client ||= ::Fog::Proxmox::Network.new(fog_credentials)
     end
 
     def disconnect

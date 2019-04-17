@@ -18,6 +18,7 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 require 'fog/proxmox'
+require 'foreman_fog_proxmox/semver'
 
 module ForemanFogProxmox
   class Proxmox < ComputeResource
@@ -53,7 +54,9 @@ module ForemanFogProxmox
     end
 
     def version_suitable?
-      version == '5.3'
+      logger.debug(_("Proxmox compute resource version is %{version}") % { version: version })
+      raise ::Foreman::Exception.new(_("Proxmox version %{version} is not semver suitable") % { version: version }) unless ForemanFogProxmox::Semver.is_semver?(version)
+      ForemanFogProxmox::Semver.to_semver(version) >= ForemanFogProxmox::Semver.to_semver("5.3.0") && ForemanFogProxmox::Semver.to_semver(version) < ForemanFogProxmox::Semver.to_semver("5.5.0")
     end
 
     def test_connection(options = {})
@@ -413,7 +416,8 @@ module ForemanFogProxmox
     end
 
     def version
-      identity_client.read_version
+      v = identity_client.read_version
+      "#{v['version']}.#{v['release']}"
     end
 
     private

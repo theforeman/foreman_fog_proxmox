@@ -33,7 +33,8 @@ RUN echo "gem 'fog-proxmox', :path => '/usr/local/fog-proxmox'\n" > /usr/local/f
 RUN echo "gem 'simplecov'" >> /usr/local/foreman/bundler.d/Gemfile.local.rb
 RUN cp /usr/local/foreman/config/settings.yaml.example /usr/local/foreman/config/settings.yaml
 RUN cp /usr/local/foreman/config/database.yml.example /usr/local/foreman/config/database.yml
+RUN cp /usr/local/foreman/config/model.mappings.example /usr/local/foreman/config/model.mappings
 RUN bundle install --jobs 20
-ENTRYPOINT ["bundle", "exec"]
 RUN bundle exec bin/rake db:migrate
+ENTRYPOINT ["bundle", "exec"]
 CMD ["bin/rake", "test:foreman_fog_proxmox"]

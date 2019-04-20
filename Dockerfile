@@ -24,7 +24,7 @@ RUN mkdir /usr/local/foreman_fog_proxmox
 WORKDIR /usr/local/foreman_fog_proxmox
 ADD . /usr/local/foreman_fog_proxmox
 WORKDIR /usr/local
-RUN git clone https://github.com/fog/fog-proxmox.git -b 0_7_0
+RUN git clone https://github.com/fog/fog-proxmox.git
 WORKDIR /usr/local
 RUN git clone https://github.com/theforeman/foreman.git -b develop
 WORKDIR /usr/local/foreman

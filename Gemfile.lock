@@ -1,9 +1,17 @@
 PATH
   remote: .
   specs:
-    foreman_fog_proxmox (0.7.0)
+    fog-proxmox (0.8.0)
+      fog-core (~> 2.1)
+      fog-json (~> 1.2)
+      ipaddress (~> 0.8)
+
+PATH
+  remote: .
+  specs:
+    foreman_fog_proxmox (0.8.0)
       deface
-      fog-proxmox (~> 0.7)
+      fog-proxmox (~> 0.8)
 
 GEM
   remote: https://rubygems.org/
@@ -70,10 +78,6 @@ GEM
     fog-json (1.2.0)
       fog-core
       multi_json (~> 1.10)
-    fog-proxmox (0.7.0)
-      fog-core (~> 2.1)
-      fog-json (~> 1.2)
-      ipaddress (~> 0.8)
     formatador (0.2.5)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
@@ -99,7 +103,7 @@ GEM
     minitest (5.11.3)
     multi_json (1.13.1)
     nio4r (2.3.1)
-    nokogiri (1.10.2)
+    nokogiri (1.10.3)
       mini_portile2 (~> 2.4.0)
     parallel (1.12.1)
     parser (2.5.1.2)
@@ -170,7 +174,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  fog-proxmox (~> 0.7)
+  fog-proxmox (~> 0.8)!
   foreman_fog_proxmox!
   rdoc
   rubocop

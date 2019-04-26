@@ -2,4 +2,4 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'fog-proxmox', '~> 0.7'
+gem 'fog-proxmox', '~> 0.8'

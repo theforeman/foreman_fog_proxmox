@@ -109,31 +109,41 @@ class ProxmoxServerHelperTest < ActiveSupport::TestCase
       assert_equal 'local-lvm:1073741824,cache=none', volume[:virtio0]
     end  
     
-    test '#interface with model virtio and bridge' do       
-      interface = parse_server_interface(host['interfaces_attributes']['0'])
-      assert interface.has_key?(:net0)
-      assert_equal 'model=virtio,bridge=vmbr0,firewall=0,link_down=0', interface[:net0]
+    test '#interface with model virtio and bridge' do      
+      interfaces_to_delete = []
+      interfaces_to_add = []      
+      add_server_interface(host['interfaces_attributes']['0'],interfaces_to_delete,interfaces_to_add)
+      assert interfaces_to_delete.empty?
+      assert_equal 1, interfaces_to_add.length
+      assert interfaces_to_add[0].has_key?(:net0)
+      assert_equal 'model=virtio,bridge=vmbr0,firewall=0,link_down=0', interfaces_to_add[0][:net0]
     end
     
-    test '#interface with model e1000 and bridge' do       
-      interface = parse_server_interface(host['interfaces_attributes']['1'])
-      assert interface.has_key?(:net1)
-      assert_equal 'model=e1000,bridge=vmbr0,firewall=0,link_down=0', interface[:net1]
+    test '#interface with model e1000 and bridge' do    
+      interfaces_to_delete = []
+      interfaces_to_add = []   
+      interface = add_server_interface(host['interfaces_attributes']['1'],interfaces_to_delete,interfaces_to_add)
+      assert interfaces_to_delete.empty?
+      assert_equal 1, interfaces_to_add.length
+      assert interfaces_to_add[0].has_key?(:net1)
+      assert_equal 'model=e1000,bridge=vmbr0,firewall=0,link_down=0', interfaces_to_add[0][:net1]
     end
     
     test '#interface delete net0' do       
-      interface = parse_server_interface(host_delete['interfaces_attributes']['0'])
-      assert interface.has_key?(:delete)
-      assert_match(/(scsi0,){0,1}net0(,scsi0){0,1}/, interface[:delete])
-      assert_equal interface.length, 1
+      interfaces_to_delete = []
+      interfaces_to_add = []
+      add_server_interface(host_delete['interfaces_attributes']['0'],interfaces_to_delete,interfaces_to_add)
+      assert interfaces_to_add.empty?
+      assert_equal 1, interfaces_to_delete.length
+      assert_equal 'net0', interfaces_to_delete[0]
     end
     
     test '#interfaces' do       
-      interfaces = parse_server_interfaces(host['interfaces_attributes'])
-      assert !interfaces.empty?
-      assert_equal interfaces.length, 2
-      assert interfaces.include?({ net0: 'model=virtio,bridge=vmbr0,firewall=0,link_down=0'})
-      assert interfaces.include?({ net1: 'model=e1000,bridge=vmbr0,firewall=0,link_down=0'})
+      interfaces_to_add, interfaces_to_delete = parse_server_interfaces(host['interfaces_attributes'])
+      assert interfaces_to_delete.empty?
+      assert_equal 2, interfaces_to_add.length
+      assert interfaces_to_add.include?({ net0: 'model=virtio,bridge=vmbr0,firewall=0,link_down=0'})
+      assert interfaces_to_add.include?({ net1: 'model=e1000,bridge=vmbr0,firewall=0,link_down=0'})
     end
 
   end

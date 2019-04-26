@@ -247,6 +247,27 @@ module ForemanFogProxmox
       @cr.save_vm(uuid,new_attributes)
     end
 
+    it 'saves modified server config with removed interfaces' do
+      uuid = '100'
+      config = mock('config')
+      interfaces = mock('interfaces')
+      interface = mock('interface')
+      interface.stubs(:id).returns('net0')
+      interfaces.stubs(:get).returns(interface)
+      config.stubs(:interfaces).returns(interfaces)
+      config.stubs(:attributes).returns({ :cores => '' })
+      vm = mock('vm')
+      vm.stubs(:config).returns(config)
+      vm.stubs(:container?).returns(false)
+      vm.stubs(:type).returns('qemu')
+      @cr.stubs(:find_vm_by_uuid).returns(vm)
+      new_attributes = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' }, 'interfaces_attributes' => { '0'=> { '_delete' => '1', 'id' => 'net0' } } }
+      @cr.stubs(:parse_server_vm).returns({ 'vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'delete' => 'net0' })
+      expected_config_attr = { :cores => '1', :cpulimit => '1', :delete => 'net0' }
+      vm.expects(:update, expected_config_attr)
+      @cr.save_vm(uuid,new_attributes)
+    end
+
     it 'saves modified server config with resized volumes' do
       uuid = '100'
       config = mock('config')

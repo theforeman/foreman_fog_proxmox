@@ -142,6 +142,7 @@ cp config/settings.yaml.test config/settings.yaml
 ```shell
 cp config/model.mappings.example config/model.mappings
 cp config/database.yml.example config/database.yml
+cp config/ignored_environments.yml.sample config/ignored_environments.yml
 bundle exec bin/rake db:migrate
 bundle exec bin/rake db:seed
 ```

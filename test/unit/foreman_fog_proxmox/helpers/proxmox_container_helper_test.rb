@@ -169,30 +169,38 @@ class ProxmoxContainerHelperTest < ActiveSupport::TestCase
     end    
     
     test '#interface with name eth0 and bridge' do       
-      interface = parse_container_interface(host['interfaces_attributes']['0'])
-      assert interface.has_key?(:net0)
-      assert_equal 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp', interface[:net0]
+      deletes = []
+      nics = []    
+      add_container_interface(host['interfaces_attributes']['0'], deletes, nics)
+      assert 1, nics.length
+      assert nics[0].has_key?(:net0)
+      assert_equal 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp', nics[0][:net0]
     end
     
-    test '#interface with name eth1 and bridge' do       
-      interface = parse_container_interface(host['interfaces_attributes']['1'])
-      assert interface.has_key?(:net1)
-      assert_equal 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp', interface[:net1]
+    test '#interface with name eth1 and bridge' do          
+      deletes = []
+      nics = []    
+      add_container_interface(host['interfaces_attributes']['1'], deletes, nics)
+      assert 1, nics.length
+      assert nics[0].has_key?(:net1)
+      assert_equal 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp', nics[0][:net1]
     end
     
-    test '#interface delete net0' do       
-      interface = parse_container_interface(host_delete['interfaces_attributes']['0'])
-      assert interface.has_key?(:delete)
-      assert_equal interface[:delete], 'net0'
-      assert_equal 1, interface.length
+    test '#interface delete net0' do         
+      deletes = []
+      nics = []    
+      add_container_interface(host_delete['interfaces_attributes']['0'], deletes, nics)
+      assert nics.empty?
+      assert_equal 1, deletes.length
+      assert_equal 'net0', deletes[0]
     end
     
     test '#interfaces' do       
-      interfaces = parse_container_interfaces(host['interfaces_attributes'])
-      assert !interfaces.empty?
-      assert_equal 2, interfaces.length
-      assert interfaces.include?({ net0: 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp'})
-      assert interfaces.include?({ net1: 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp'})
+      interfaces_to_add, interfaces_to_delete = parse_container_interfaces(host['interfaces_attributes'])
+      assert interfaces_to_delete.empty?
+      assert_equal 2, interfaces_to_add.length
+      assert interfaces_to_add.include?({ net0: 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp'})
+      assert interfaces_to_add.include?({ net1: 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp'})
     end
 
   end

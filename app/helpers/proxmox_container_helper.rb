@@ -45,7 +45,7 @@ module ProxmoxContainerHelper
     memory_a = %w[memory swap]
     memory = parse_container_memory(config.select { |key,_value| memory_a.include? key })
     interfaces_attributes = args['interfaces_attributes']
-    networks = parse_container_interfaces(interfaces_attributes)
+    interfaces_to_add, interfaces_to_delete = parse_container_interfaces(interfaces_attributes)
     general_a = %w[node_id name type config_attributes volumes_attributes interfaces_attributes firmware_type provision_method container_volumes server_volumes]
     logger.debug("general_a: #{general_a}")
     parsed_vm = args.reject { |key,value| general_a.include?(key) || ostemplate_a.include?(key) || ForemanFogProxmox::Value.empty?(value) }
@@ -57,7 +57,8 @@ module ProxmoxContainerHelper
     parsed_config = config.reject { |key,value| config_a.include?(key) || ForemanFogProxmox::Value.empty?(value) }
     logger.debug("parse_container_config(): #{parsed_config}")
     parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory).merge(ostemplate)
-    networks.each { |network| parsed_vm = parsed_vm.merge(network) }
+    interfaces_to_add.each { |interface| parsed_vm = parsed_vm.merge(interface) }
+    parsed_vm = parsed_vm.merge(delete: ForemanFogProxmox::ProxmoxArray.to_s(interfaces_to_delete)) unless interfaces_to_delete.empty?
     volumes.each { |volume| parsed_vm = parsed_vm.merge(volume) }
     logger.debug("parse_container_vm(): #{parsed_vm}")
     parsed_vm
@@ -119,34 +120,33 @@ module ProxmoxContainerHelper
     volumes
   end
 
-  def parse_container_interfaces(args)
-    nics = []
-    args.each_value { |value| nics.push(parse_container_interface(value))} if args
-    logger.debug("parse_container_interfaces(): nics=#{nics}")
-    nics
+  def parse_container_interfaces(interfaces_attributes)
+    interfaces_to_add = []
+    interfaces_to_delete = []
+    interfaces_attributes.each_value { |value| add_container_interface(value,interfaces_to_delete,interfaces_to_add) } if interfaces_attributes
+    logger.debug("parse_container_interfaces(): interfaces_to_add=#{interfaces_to_add}, interfaces_to_delete=#{interfaces_to_delete}")
+    [interfaces_to_add, interfaces_to_delete]
   end
 
-  def parse_container_interface(args)
-    args.delete_if { |_key,value| ForemanFogProxmox::Value.empty?(value) }
+  def add_container_interface(interface_attributes, interfaces_to_delete, interfaces_to_add)
+    interface_attributes.delete_if { |_key,value| ForemanFogProxmox::Value.empty?(value) }
     nic = {}
-    id = args['id']
+    id = interface_attributes['id']
     logger.debug("parse_container_interface(): id=#{id}")
-    delete = args['_delete'].to_i == 1
+    delete = interface_attributes['_delete'].to_i == 1
     if delete
-      logger.debug("parse_container_interface(): delete id=#{id}")
-      nic.store(:delete, id)
-      nic
+      interfaces_to_delete.push(id.to_s)
     else
       nic.store(:id, id)
-      nic.store(:name, args['name'].to_s)
-      nic.store(:bridge, args['bridge'].to_s) if args['bridge']
-      nic.store(:ip, args['ip'].to_s) if args['ip']
-      nic.store(:ip6, args['ip6'].to_s) if args['ip6']
-      nic.store(:rate, args['rate'].to_i) if args['rate']
-      nic.store(:tag, args['tag'].to_i) if args['tag']
+      nic.store(:name, interface_attributes['name'].to_s)
+      nic.store(:bridge, interface_attributes['bridge'].to_s) if interface_attributes['bridge']
+      nic.store(:ip, interface_attributes['ip'].to_s) if interface_attributes['ip']
+      nic.store(:ip6, interface_attributes['ip6'].to_s) if interface_attributes['ip6']
+      nic.store(:rate, interface_attributes['rate'].to_i) if interface_attributes['rate']
+      nic.store(:tag, interface_attributes['tag'].to_i) if interface_attributes['tag']
       logger.debug("parse_container_interface(): add nic=#{nic}")
-      Fog::Proxmox::NicHelper.flatten(nic)
-    end 
+      interfaces_to_add.push(Fog::Proxmox::NicHelper.flatten(nic))
+    end
   end
 
 end

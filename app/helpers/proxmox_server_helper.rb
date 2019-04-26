@@ -45,7 +45,7 @@ module ProxmoxServerHelper
     memory_a = %w[memory min_memory balloon shares]
     memory = parse_server_memory(config.select { |key,_value| memory_a.include? key })
     interfaces_attributes = args['interfaces_attributes']
-    networks = parse_server_interfaces(interfaces_attributes)
+    interfaces_to_add, interfaces_to_delete = parse_server_interfaces(interfaces_attributes)
     general_a = %w[node_id type config_attributes volumes_attributes interfaces_attributes firmware_type provision_method container_volumes server_volumes]
     logger.debug("general_a: #{general_a}")
     parsed_vm = args.reject { |key,value| general_a.include?(key) || ForemanFogProxmox::Value.empty?(value) }
@@ -57,7 +57,8 @@ module ProxmoxServerHelper
     parsed_config = config.reject { |key,value| config_a.include?(key) || ForemanFogProxmox::Value.empty?(value) }
     logger.debug("parse_server_config(): #{parsed_config}")
     parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory).merge(cdrom)
-    networks.each { |network| parsed_vm = parsed_vm.merge(network) }
+    interfaces_to_add.each { |interface| parsed_vm = parsed_vm.merge(interface) }
+    parsed_vm = parsed_vm.merge(delete: ForemanFogProxmox::ProxmoxArray.to_s(interfaces_to_delete)) unless interfaces_to_delete.empty?
     volumes.each { |volume| parsed_vm = parsed_vm.merge(volume) }
     logger.debug("parse_server_vm(): #{parsed_vm}")
     parsed_vm
@@ -125,35 +126,34 @@ module ProxmoxServerHelper
     volumes
   end
 
-  def parse_server_interfaces(args)
-    nics = []
-    args.each_value { |value| nics.push(parse_server_interface(value))} if args
-    logger.debug("parse_server_interfaces(): nics=#{nics}")
-    nics
+  def parse_server_interfaces(interfaces_attributes)
+    interfaces_to_add = []
+    interfaces_to_delete = []
+    interfaces_attributes.each_value { |value| add_server_interface(value,interfaces_to_delete,interfaces_to_add)} if interfaces_attributes
+    logger.debug("parse_server_interfaces(): interfaces_to_delete=#{interfaces_to_delete} interfaces_to_add=#{interfaces_to_add}")
+    [interfaces_to_add, interfaces_to_delete]
   end
 
-  def parse_server_interface(args)
-    args.delete_if { |_key,value| ForemanFogProxmox::Value.empty?(value) }
+  def add_server_interface(interface_attributes, interfaces_to_delete, interfaces_to_add)
+    interface_attributes.delete_if { |_key,value| ForemanFogProxmox::Value.empty?(value) }
     nic = {}
-    id = args['id']
-    logger.debug("parse_server_interface(): id=#{id}")
-    delete = args['_delete'].to_i == 1
+    id = interface_attributes['id']
+    logger.debug("add_server_interface(): id=#{id}")
+    delete = interface_attributes['_delete'].to_i == 1
     if delete
-      logger.debug("parse_server_interface(): delete id=#{id}")
-      nic.store(:delete, id)
-      nic
+      interfaces_to_delete.push(id.to_s)
     else
       nic.store(:id, id)
-      nic.store(:tag, args['tag'].to_i) if args['tag']
-      nic.store(:model, args['model'].to_s)
-      nic.store(:bridge, args['bridge'].to_s) if args['bridge']
-      nic.store(:firewall, args['firewall'].to_i) if args['firewall']
-      nic.store(:rate, args['rate'].to_i) if args['rate']
-      nic.store(:link_down, args['link_down'].to_i) if args['link_down']
-      nic.store(:queues, args['queues'].to_i) if args['queues']
-      logger.debug("parse_server_interface(): add nic=#{nic}")
-      Fog::Proxmox::NicHelper.flatten(nic)
-    end 
+      nic.store(:tag, interface_attributes['tag'].to_i) if interface_attributes['tag']
+      nic.store(:model, interface_attributes['model'].to_s)
+      nic.store(:bridge, interface_attributes['bridge'].to_s) if interface_attributes['bridge']
+      nic.store(:firewall, interface_attributes['firewall'].to_i) if interface_attributes['firewall']
+      nic.store(:rate, interface_attributes['rate'].to_i) if interface_attributes['rate']
+      nic.store(:link_down, interface_attributes['link_down'].to_i) if interface_attributes['link_down']
+      nic.store(:queues, interface_attributes['queues'].to_i) if interface_attributes['queues']
+      logger.debug("add_server_interface(): add nic=#{nic}")
+      interfaces_to_add.push(Fog::Proxmox::NicHelper.flatten(nic))
+    end
   end
 
 end

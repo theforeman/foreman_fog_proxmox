@@ -10,7 +10,7 @@
 
 It is intended to satisfy this [feature](http://projects.theforeman.org/issues/2186).
 
-If you like it and need more features you can [support](SUPPORT.md) it.
+If you like it and need more features you can [support](.github/SUPPORT.md) it.
 
 ## Compatibility versions
 
@@ -18,7 +18,7 @@ If you like it and need more features you can [support](SUPPORT.md) it.
 |--|--|--|--|--|
 |<0.6|<5.3|<0.6|<=1.20|>=2.3|
 |=0.6|=5.3|=0.6|=1.21|>=2.3|
-|=0.7|=5.4|=0.7|=1.22|>=2.3|
+|>=0.7|=5.4|>=0.7|>=1.22|>=2.3|
 
 ## Installation
 
@@ -202,10 +202,10 @@ See details in [foreman plugin development](https://projects.theforeman.org/proj
 
 ## Contributing
 
-You can reach the [contributors](CONTRIBUTORS.md).
+You can reach the [contributors](.github/CONTRIBUTORS.md).
 Bug reports and pull requests are welcome on GitHub at [ForemanFogProxmox](https://github.com/theforeman/foreman_fog_proxmox).
 
-Please read more information about [how to contribute](CONTRIBUTING.md).
+Please read more information about [how to contribute](.github/CONTRIBUTING.md).
 
 ## License
 

@@ -169,22 +169,29 @@ class ProxmoxContainerHelperTest < ActiveSupport::TestCase
     end    
     
     test '#interface with name eth0 and bridge' do       
-      interface = parse_container_interface(host['interfaces_attributes']['0'])
-      assert interface.has_key?(:net0)
-      assert_equal 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp', interface[:net0]
+      deletes = ''
+      nics = []    
+      add_container_interface(host['interfaces_attributes']['0'], deletes, nics)
+      assert 1, nics.length
+      assert nics[0].has_key?(:net0)
+      assert_equal 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp', nics[0][:net0]
     end
     
     test '#interface with name eth1 and bridge' do       
-      interface = parse_container_interface(host['interfaces_attributes']['1'])
-      assert interface.has_key?(:net1)
-      assert_equal 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp', interface[:net1]
+      deletes = ''
+      nics = []    
+      add_container_interface(host['interfaces_attributes']['1'], deletes, nics)
+      assert 1, nics.length
+      assert nics[0].has_key?(:net1)
+      assert_equal 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp', nics[0][:net1]
     end
     
-    test '#interface delete net0' do       
-      interface = parse_container_interface(host_delete['interfaces_attributes']['0'])
-      assert interface.has_key?(:delete)
-      assert_equal interface[:delete], 'net0'
-      assert_equal 1, interface.length
+    test '#interface delete net0' do   
+      deletes = ''
+      nics = []    
+      add_container_interface(host_delete['interfaces_attributes']['0'], deletes, nics)
+      assert nics.empty?
+      assert_equal 'net0', deletes
     end
     
     test '#interfaces' do       

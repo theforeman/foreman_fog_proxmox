@@ -331,6 +331,22 @@ module ForemanFogProxmox
       !find_vm_by_uuid(image).nil?
     end
 
+    def save_interfaces(vm, interfaces_attributes)
+      if interfaces_attributes
+        interfaces_attributes.each_value do |interface_attributes|
+          id = interface_attributes['id']
+          interface = vm.config.interfaces.get(id)
+          delete = interface_attributes['_delete']
+          if interface
+            if delete == '1'
+            else
+            end
+          else
+          end
+        end
+      end
+    end
+
     def save_volumes(vm, volumes_attributes)
       if volumes_attributes
         volumes_attributes.each_value do |volume_attributes|

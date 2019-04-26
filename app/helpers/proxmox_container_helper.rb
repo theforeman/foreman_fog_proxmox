@@ -119,34 +119,39 @@ module ProxmoxContainerHelper
     volumes
   end
 
-  def parse_container_interfaces(args)
+  def parse_container_interfaces(interfaces_attributes)
     nics = []
-    args.each_value { |value| nics.push(parse_container_interface(value))} if args
-    logger.debug("parse_container_interfaces(): nics=#{nics}")
+    deletes = ''
+    interfaces_attributes.each_value { |value| add_container_interface(value,deletes,nics) } if interfaces_attributes
+    logger.debug("parse_container_interfaces(): nics=#{nics}, deletes=#{deletes}")
     nics
   end
 
-  def parse_container_interface(args)
-    args.delete_if { |_key,value| ForemanFogProxmox::Value.empty?(value) }
+  def add_delete(id,deletes)
+    deletes += deletes + ',' unless deletes == ''
+    deletes += id.to_s
+  end
+
+  def add_container_interface(interface_attributes, deletes, nics)
+    interface_attributes.delete_if { |_key,value| ForemanFogProxmox::Value.empty?(value) }
     nic = {}
-    id = args['id']
+    id = interface_attributes['id']
     logger.debug("parse_container_interface(): id=#{id}")
-    delete = args['_delete'].to_i == 1
+    delete = interface_attributes['_delete'].to_i == 1
     if delete
       logger.debug("parse_container_interface(): delete id=#{id}")
-      nic.store(:delete, id)
-      nic
+      add_delete(id,deletes)
     else
       nic.store(:id, id)
-      nic.store(:name, args['name'].to_s)
-      nic.store(:bridge, args['bridge'].to_s) if args['bridge']
-      nic.store(:ip, args['ip'].to_s) if args['ip']
-      nic.store(:ip6, args['ip6'].to_s) if args['ip6']
-      nic.store(:rate, args['rate'].to_i) if args['rate']
-      nic.store(:tag, args['tag'].to_i) if args['tag']
+      nic.store(:name, interface_attributes['name'].to_s)
+      nic.store(:bridge, interface_attributes['bridge'].to_s) if interface_attributes['bridge']
+      nic.store(:ip, interface_attributes['ip'].to_s) if interface_attributes['ip']
+      nic.store(:ip6, interface_attributes['ip6'].to_s) if interface_attributes['ip6']
+      nic.store(:rate, interface_attributes['rate'].to_i) if interface_attributes['rate']
+      nic.store(:tag, interface_attributes['tag'].to_i) if interface_attributes['tag']
       logger.debug("parse_container_interface(): add nic=#{nic}")
-      Fog::Proxmox::NicHelper.flatten(nic)
-    end 
+      nics.push(Fog::Proxmox::NicHelper.flatten(nic))
+    end
   end
 
 end

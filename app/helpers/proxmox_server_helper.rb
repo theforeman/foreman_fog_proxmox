@@ -138,12 +138,12 @@ module ProxmoxServerHelper
     id = args['id']
     logger.debug("parse_server_interface(): id=#{id}")
     delete = args['_delete'].to_i == 1
+    nic.store(:id, id)
     if delete
       logger.debug("parse_server_interface(): delete id=#{id}")
-      nic.store(:delete, id)
+      nic.store(:delete, 1)
       nic
     else
-      nic.store(:id, id)
       nic.store(:tag, args['tag'].to_i) if args['tag']
       nic.store(:model, args['model'].to_s)
       nic.store(:bridge, args['bridge'].to_s) if args['bridge']
@@ -153,7 +153,7 @@ module ProxmoxServerHelper
       nic.store(:queues, args['queues'].to_i) if args['queues']
       logger.debug("parse_server_interface(): add nic=#{nic}")
       Fog::Proxmox::NicHelper.flatten(nic)
-    end 
+    end
   end
 
 end

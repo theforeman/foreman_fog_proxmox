@@ -15,10 +15,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-<% container = type == 'lxc' %>
+<% volume_rootfs = f.object.respond_to?(:rootfs?) && f.object.rootfs? %>
 
-<%= field_set_tag _("Rootfs"), :id => "container_volume_#{f.index}", :class => ('hide' unless container), :disabled => !container do %> 
-    <%= f.hidden_field :volid if !new_vm %>
-    <%= select_f f, :storage, compute_resource.storages, :storage, :storage, { }, :label => _('Storage'), :label_size => "col-md-2" %>
-    <%= byte_size_f f, :size, :class => "input-mini", :label => _("Size"), :label_size => "col-md-2" %>
+<% unless volume_rootfs %>
+    <%= remove_child_link('X', f, { :method => :'_delete', :title => local_assigns[:remove_title], :class => 'label label-danger' }) %>
 <% end %>

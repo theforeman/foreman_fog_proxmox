@@ -33,10 +33,8 @@ module ProxmoxVmHelper
     type = vm.config.attributes['type']
     type = vm.type unless type
     main = vm.attributes.select { |key,_value| main_a.include? key }
-    disks_regexp = /^(scsi|sata|mp|rootfs|virtio|ide)(\d+){0,1}$/
-    nics_regexp = /^(net)(\d+)/
     main_a += %w[templated]
-    config = vm.config.attributes.reject { |key,_value| main_a.include?(key) || disks_regexp.match(key) || nics_regexp.match(key)  }
+    config = vm.config.attributes.reject { |key,_value| main_a.include?(key) || Fog::Proxmox::DiskHelper.disk?(key) || Fog::Proxmox::NicHelper.is_a_nic?(key)  }
     vm_h = vm_h.merge(main)
     vm_h = vm_h.merge({'config_attributes': config})
     vm_h
@@ -78,23 +76,6 @@ module ProxmoxVmHelper
     # default unit memory size is Mb
     memory = (config_hash[key].to_i / MEGA).to_s == '0' ? config_hash[key] : (config_hash[key].to_i / MEGA).to_s
     config_hash.store(key, memory)
-  end
-
-  def parse_type_and_vmid(uuid)
-    uuid_regexp = /^(lxc|qemu)\_(\d+)$/
-    raise ::Foreman::Exception.new _("Invalid uuid=[%{uuid}]." % { uuid: uuid }) unless uuid.match(uuid_regexp)
-    id_a = uuid.scan(uuid_regexp).first
-    type = id_a[0]
-    vmid = id_a[1]
-    return type, vmid
-  end
-
-  def mount_point_disk?(id)
-    /^(mp)(\d+)$/.match?(id)
-  end
-
-  def server_disk?(id)
-    /^(scsi|sata|virtio|ide)(\d+)$/.match?(id)
   end
 
 end

@@ -129,7 +129,7 @@ module ForemanFogProxmox
       host.interfaces.select(&:physical?).each.with_index.reduce({}) do |hash, (nic, index)|
         # Set default interface identifier to net[n]
         nic.identifier = "net%{index}" % {index: index} if nic.identifier.empty?
-        raise ::Foreman::Exception.new _("Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0" % { index: index }) unless Fog::Proxmox::NicHelper.valid?(nic.identifier)
+        raise ::Foreman::Exception.new _("Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0" % { index: index }) unless Fog::Proxmox::NicHelper.is_a_nic?(nic.identifier)
         # Set default container interface name to eth[n]
         container = host.compute_attributes['type'] == 'lxc'
         nic.compute_attributes['name'] = "eth%{index}" % {index: index} if container && nic.compute_attributes['name'].empty?
@@ -331,14 +331,50 @@ module ForemanFogProxmox
       !find_vm_by_uuid(image).nil?
     end
 
+    def save_volumes(vm, volumes_attributes)
+      if volumes_attributes
+        volumes_attributes.each_value do |volume_attributes|
+          id = volume_attributes['id']
+          disk = vm.config.disks.get(id)
+          delete = volume_attributes['_delete']
+          if disk
+            if delete == '1'
+              vm.detach(id)
+              device = Fog::Proxmox::DiskHelper.extract_device(id)
+              vm.detach('unused' + device.to_s)
+            else
+              diff_size = volume_attributes['size'].to_i - disk.size
+              raise ::Foreman::Exception.new(_("Unable to shrink %{id} size. Proxmox allows only increasing size.") % { id: id }) unless diff_size >= 0
+              if diff_size > 0
+                extension = '+' + (diff_size / GIGA).to_s + 'G'
+                vm.extend(id,extension)
+              elsif disk.storage != volume_attributes['storage']
+                vm.move(id,volume_attributes['storage'])
+              end
+            end
+          else
+            options = {}
+            options.store(:mp, volume_attributes['mp']) if vm.container?
+            disk_attributes = { id: id, storage: volume_attributes['storage'], size: (volume_attributes['size'].to_i / GIGA).to_s }
+            vm.attach(disk_attributes, options) unless delete == '1'
+          end
+        end
+      end
+    end
+
     def save_vm(uuid, new_attributes)
       vm = find_vm_by_uuid(uuid)
-      templated = new_attributes[:templated]
+      templated = new_attributes['templated']
       if (templated == '1' && !vm.templated?)
         vm.create_template
       else
+        volumes_attributes = new_attributes['volumes_attributes']
+        save_volumes(vm, volumes_attributes)
         parsed_attr = vm.container? ? parse_container_vm(new_attributes.merge(type: vm.type)) : parse_server_vm(new_attributes.merge(type: vm.type))
-        vm.update(parsed_attr.reject { |key,value| [:templated,:ostemplate,:ostemplate_file,:ostemplate_storage].include? key.to_sym || ForemanFogProxmox::Value.empty?(value) })
+        config_attributes = parsed_attr.reject { |key,_value| [:templated,:ostemplate,:ostemplate_file,:ostemplate_storage,:volumes_attributes].include? key.to_sym }
+        config_attributes = config_attributes.reject { |_key,value| ForemanFogProxmox::Value.empty?(value) }
+        config_attributes = config_attributes.reject { |key,_value| Fog::Proxmox::DiskHelper.disk?(key) }
+        vm.update(config_attributes)   
       end
       vm = find_vm_by_uuid(uuid)
     end

@@ -16,12 +16,13 @@ You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <% server = type == 'qemu' %>
+<% new_volume = f.object.volid.nil? %>
 
 <%= field_set_tag _("Disk"), :id => "server_volume_#{f.index}", :class => ('hide' unless server), :disabled => !server do %> 
     <%= f.hidden_field :volid if !new_vm %>
-    <%= select_f f, :storage, compute_resource.storages, :storage, :storage, { }, :label => _('Storage'), :label_size => "col-md-2", :disabled => !new_vm %>
-    <%= select_f f, :controller, proxmox_controllers_map, :id, :name, { }, :label => _('Controller'), :label_size => "col-md-2", :disabled => !new_vm, :onchange => 'controllerSelected(this)' %>
-    <%= counter_f f, :device, :label => _('Device'), :label_size => "col-md-2", :disabled => !new_vm, :'data-soft-max' => proxmox_max_device(f.object.controller), :onchange => 'deviceSelected(this)' %>
+    <%= select_f f, :storage, compute_resource.storages, :storage, :storage, { }, :label => _('Storage'), :label_size => "col-md-2" %>
+    <%= select_f f, :controller, proxmox_controllers_map, :id, :name, { }, :label => _('Controller'), :label_size => "col-md-2", :disabled => !new_volume, :onchange => 'controllerSelected(this)' %>
+    <%= counter_f f, :device, :label => _('Device'), :label_size => "col-md-2", :disabled => !new_volume, :'data-soft-max' => proxmox_max_device(f.object.controller), :onchange => 'deviceSelected(this)' %>
     <%= select_f f, :cache, proxmox_caches_map, :id, :name, { }, :label => _('Cache'), :label_size => "col-md-2" %>
-    <%= byte_size_f f, :size, :class => "input-mini", :label => _("Size"), :label_size => "col-md-2", :disabled => !new_vm %>
+    <%= byte_size_f f, :size, :class => "input-mini", :label => _("Size"), :label_size => "col-md-2" %>
 <% end %>

@@ -219,30 +219,5 @@ class ProxmoxVmHelperTest < ActiveSupport::TestCase
     end 
   end
 
-  describe 'parse_type_and_vmid' do
-
-    setup { Fog.mock! }
-    teardown { Fog.unmock! }
-
-    it "raises Foreman::Exception when the uuid does not match" do
-      err = assert_raises Foreman::Exception do
-        parse_type_and_vmid('100')
-      end
-      assert err.message.end_with?('Invalid uuid=[100].')
-    end
-
-    it '#server' do       
-      type, vmid = parse_type_and_vmid('qemu_100')
-      assert_equal 'qemu', type
-      assert_equal '100', vmid
-    end  
-
-    it '#container' do       
-      type, vmid = parse_type_and_vmid('lxc_100')
-      assert_equal 'lxc', type
-      assert_equal '100', vmid
-    end  
-  end
-
 end
 end

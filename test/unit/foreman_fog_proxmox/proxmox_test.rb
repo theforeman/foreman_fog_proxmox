@@ -26,6 +26,7 @@ module ForemanFogProxmox
   class ProxmoxTest < ActiveSupport::TestCase
     include ComputeResourceTestHelpers
     include ForemanFogProxmox::ProxmoxTestHelpers
+    include ProxmoxVmHelper
 
     should validate_presence_of(:url)
     should validate_presence_of(:user)
@@ -164,7 +165,7 @@ module ForemanFogProxmox
       @cr = FactoryBot.build_stubbed(:proxmox_cr)
     end
 
-    it 'saves modified server config' do
+    it 'saves modified server config with same volumes' do
       uuid = '100'
       config = mock('config')
       config.stubs(:attributes).returns({ :cores => '' })
@@ -180,6 +181,144 @@ module ForemanFogProxmox
       @cr.save_vm(uuid,attr)
     end
 
+    it 'saves server as template' do
+      uuid = '100'
+      config = mock('config')
+      config.stubs(:attributes).returns({ :cores => '' })
+      vm = mock('vm')
+      vm.stubs(:config).returns(config)
+      vm.stubs(:container?).returns(false)
+      vm.stubs(:templated?).returns(false)
+      vm.stubs(:type).returns('qemu')
+      @cr.stubs(:find_vm_by_uuid).returns(vm)
+      attr = { 'templated' => '1' }
+      vm.expects(:create_template)
+      @cr.save_vm(uuid,attr)
+    end
+
+    it 'saves modified server config with added volumes' do
+      uuid = '100'
+      config = mock('config')
+      disks = mock('disks')
+      disk = mock('disk')
+      disk.stubs(:size).returns(1073741824)
+      disk.stubs(:storage).returns('local-lvm')
+      disk.stubs(:id).returns('virtio0')
+      disks.stubs(:get).returns()
+      config.stubs(:disks).returns(disks)
+      config.stubs(:attributes).returns({ :cores => '' })
+      vm = mock('vm')
+      vm.stubs(:config).returns(config)
+      vm.stubs(:container?).returns(false)
+      vm.stubs(:type).returns('qemu')
+      @cr.stubs(:find_vm_by_uuid).returns(vm)
+      new_attributes = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' }, 'volumes_attributes' => { '0'=> { 'id' => 'scsi0', 'storage' => 'local-lvm', 'size' => '2147483648', 'cache' => 'none' } } }
+      @cr.stubs(:parse_server_vm).returns({ 'vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1' })
+      expected_config_attr = { :cores => '1', :cpulimit => '1' }
+      expected_volume_attr = { id: 'scsi0', storage: 'local:lvm', size: (2147483648 / GIGA).to_s }
+      vm.expects(:attach, expected_volume_attr)
+      vm.expects(:update, expected_config_attr)
+      @cr.save_vm(uuid,new_attributes)
+    end
+
+    it 'saves modified server config with removed volumes' do
+      uuid = '100'
+      config = mock('config')
+      disks = mock('disks')
+      disk = mock('disk')
+      disk.stubs(:size).returns(1073741824)
+      disk.stubs(:storage).returns('local-lvm')
+      disk.stubs(:id).returns('virtio0')
+      disks.stubs(:get).returns(disk)
+      config.stubs(:disks).returns(disks)
+      config.stubs(:attributes).returns({ :cores => '' })
+      vm = mock('vm')
+      vm.stubs(:config).returns(config)
+      vm.stubs(:container?).returns(false)
+      vm.stubs(:type).returns('qemu')
+      @cr.stubs(:find_vm_by_uuid).returns(vm)
+      new_attributes = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' }, 'volumes_attributes' => { '0'=> { '_delete' => '1', 'id' => 'scsi0', 'storage' => 'local-lvm', 'size' => '2147483648', 'cache' => 'none' } } }
+      @cr.stubs(:parse_server_vm).returns({ 'vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1' })
+      expected_config_attr = { :cores => '1', :cpulimit => '1' }
+      expected_volume_attr = 'scsi0'
+      vm.expects(:detach, expected_volume_attr)
+      vm.expects(:detach, 'unused0')
+      vm.expects(:update, expected_config_attr)
+      @cr.save_vm(uuid,new_attributes)
+    end
+
+    it 'saves modified server config with resized volumes' do
+      uuid = '100'
+      config = mock('config')
+      disks = mock('disks')
+      disk = mock('disk')
+      disk.stubs(:size).returns(1073741824)
+      disk.stubs(:storage).returns('local-lvm')
+      disks.stubs(:get).returns(disk)
+      config.stubs(:disks).returns(disks)
+      config.stubs(:attributes).returns({ :cores => '' })
+      vm = mock('vm')
+      vm.stubs(:config).returns(config)
+      vm.stubs(:container?).returns(false)
+      vm.stubs(:type).returns('qemu')
+      @cr.stubs(:find_vm_by_uuid).returns(vm)
+      new_attributes = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' }, 'volumes_attributes' => { '0'=> { 'id' => 'scsi0', 'storage' => 'local-lvm', 'size' => '2147483648', 'cache' => 'none' } } }
+      @cr.stubs(:parse_server_vm).returns({ 'vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1' })
+      expected_config_attr = { :cores => '1', :cpulimit => '1' }
+      expected_volume_attr = ['scsi0', '+1G']
+      vm.expects(:extend, expected_volume_attr)
+      vm.expects(:update, expected_config_attr)
+      @cr.save_vm(uuid,new_attributes)
+    end
+
+    it 'raises error unable to shrink volumes' do
+      uuid = '100'
+      config = mock('config')
+      disks = mock('disks')
+      disk = mock('disk')
+      disk.stubs(:size).returns(1073741824)
+      disk.stubs(:storage).returns('local-lvm')
+      disks.stubs(:get).returns(disk)
+      config.stubs(:disks).returns(disks)
+      config.stubs(:attributes).returns({ :cores => '' })
+      vm = mock('vm')
+      vm.stubs(:config).returns(config)
+      vm.stubs(:container?).returns(false)
+      vm.stubs(:type).returns('qemu')
+      @cr.stubs(:find_vm_by_uuid).returns(vm)
+      new_attributes = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' }, 'volumes_attributes' => { '0'=> { 'id' => 'scsi0', 'storage' => 'local-lvm', 'size' => '2', 'cache' => 'none' } } }
+      @cr.stubs(:parse_server_vm).returns({ 'vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1' })
+      expected_config_attr = { :cores => '1', :cpulimit => '1' }
+      err = assert_raises Foreman::Exception do
+        @cr.save_vm(uuid,new_attributes)
+      end
+      assert err.message.end_with?('Unable to shrink scsi0 size. Proxmox allows only increasing size.')
+    end
+
+    it 'saves modified server config with moved volumes' do
+      uuid = '100'
+      config = mock('config')
+      disks = mock('disks')
+      disk = mock('disk')
+      disk.stubs(:size).returns(1073741824)
+      disk.stubs(:storage).returns('local-lvm')
+      disks.stubs(:get).returns(disk)
+      config.stubs(:disks).returns(disks)
+      config.stubs(:attributes).returns({ :cores => '' })
+      vm = mock('vm')
+      vm.stubs(:config).returns(config)
+      vm.stubs(:container?).returns(false)
+      vm.stubs(:type).returns('qemu')
+      @cr.stubs(:find_vm_by_uuid).returns(vm)
+      new_attributes = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' }, 'volumes_attributes' => { '0'=> { 'id' => 'scsi0', 'storage' => 'local-lvm2', 'size' => '1073741824', 'cache' => 'none' } } }
+      @cr.stubs(:parse_server_vm).returns({ 'vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1' })
+      expected_config_attr = { :cores => '1', :cpulimit => '1' }
+      expected_volume_attr = ['scsi0', 'local-lvm2']
+      vm.expects(:move, expected_volume_attr)
+      vm.expects(:update, expected_config_attr)
+      @cr.save_vm(uuid,new_attributes)
+    end
+
     it 'saves modified container config' do
       uuid = '100'
       config = mock('config')
@@ -190,10 +329,60 @@ module ForemanFogProxmox
       vm.stubs(:type).returns('lxc')
       @cr.stubs(:find_vm_by_uuid).returns(vm)
       attr = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' } }
-      @cr.stubs(:parse_container_vm).returns({ 'vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1' })
+      @cr.stubs(:parse_container_vm).returns({ 'vmid' => '100', 'type' => 'lxc', 'cores' => '1', 'cpulimit' => '1' })
       expected_attr = { :cores => '1', :cpulimit => '1' }
       vm.expects(:update, expected_attr)
       @cr.save_vm(uuid,attr)
+    end
+
+    it 'saves modified container config with added volumes' do
+      uuid = '100'
+      config = mock('config')
+      disks = mock('disks')
+      disk = mock('disk')
+      disk.stubs(:size).returns(1073741824)
+      disk.stubs(:storage).returns('local-lvm')
+      disk.stubs(:id).returns('rootfs')
+      disks.stubs(:get).returns()
+      config.stubs(:disks).returns(disks)
+      config.stubs(:attributes).returns({ :cores => '' })
+      vm = mock('vm')
+      vm.stubs(:config).returns(config)
+      vm.stubs(:container?).returns(false)
+      vm.stubs(:type).returns('lxc')
+      @cr.stubs(:find_vm_by_uuid).returns(vm)
+      new_attributes = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' }, 'volumes_attributes' => { '0'=> { 'id' => 'mp0', 'storage' => 'local-lvm', 'size' => '2147483648', 'cache' => 'none', 'mp' => '/opt/path' } } }
+      @cr.stubs(:parse_container_vm).returns({ 'vmid' => '100', 'type' => 'lxc', 'cores' => '1', 'cpulimit' => '1' })
+      expected_config_attr = { :cores => '1', :cpulimit => '1' }
+      expected_volume_attr = [{ id: 'mp0', storage: 'local:lvm', size: (2147483648 / GIGA).to_s }, { mp: '/opt/path' }]
+      vm.expects(:attach, expected_volume_attr)
+      vm.expects(:update, expected_config_attr)
+      @cr.save_vm(uuid,new_attributes)
+    end
+
+    it 'saves modified container config with resized volumes' do
+      uuid = '100'
+      config = mock('config')
+      disks = mock('disks')
+      disk = mock('disk')
+      disk.stubs(:size).returns(1073741824)
+      disk.stubs(:storage).returns('local-lvm')
+      disk.stubs(:id).returns('rootfs')
+      disks.stubs(:get).returns(disk)
+      config.stubs(:disks).returns(disks)
+      config.stubs(:attributes).returns({ :cores => '' })
+      vm = mock('vm')
+      vm.stubs(:config).returns(config)
+      vm.stubs(:container?).returns(false)
+      vm.stubs(:type).returns('lxc')
+      @cr.stubs(:find_vm_by_uuid).returns(vm)
+      new_attributes = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' }, 'volumes_attributes' => { '0'=> { 'id' => 'rootfs', 'storage' => 'local-lvm', 'size' => '2147483648', 'cache' => 'none' } } }
+      @cr.stubs(:parse_container_vm).returns({ 'vmid' => '100', 'type' => 'lxc', 'cores' => '1', 'cpulimit' => '1' })
+      expected_config_attr = { :cores => '1', :cpulimit => '1' }
+      expected_volume_attr = ['rootfs', '+1G']
+      vm.expects(:extend, expected_volume_attr)
+      vm.expects(:update, expected_config_attr)
+      @cr.save_vm(uuid,new_attributes)
     end
   end
 

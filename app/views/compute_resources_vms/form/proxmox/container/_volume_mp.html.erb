@@ -16,11 +16,12 @@ You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <% container = type == 'lxc' %>
+<% new_volume = f.object.volid.nil? %>
 
 <%= field_set_tag _("Mount point"), :id => "container_volume_#{f.index}", :class => ('hide' unless container), :disabled => !container do %> 
     <%= f.hidden_field :volid if !new_vm %>
-    <%= select_f f, :storage, compute_resource.storages, :storage, :storage, { }, :label => _('Storage'), :label_size => "col-md-2", :disabled => !new_vm %>
-    <%= text_f f, :mp, :label => _('Path'), :label_size => "col-md-2", :disabled => !new_vm, :required => true %>
-    <%= counter_f f, :device, :label => _('Device'), :label_size => "col-md-2", :class => ('hide' if f.object.rootfs?), :disabled => (!new_vm || f.object.rootfs?), :'data-soft-max' => 10 %>
-    <%= byte_size_f f, :size, :class => "input-mini", :label => _("Size"), :label_size => "col-md-2", :disabled => !new_vm %>
+    <%= select_f f, :storage, compute_resource.storages, :storage, :storage, { }, :label => _('Storage'), :label_size => "col-md-2" %>
+    <%= text_f f, :mp, :label => _('Path'), :label_size => "col-md-2", :required => true, :help_inline => _("e.g. /path/to/") %>
+    <%= counter_f f, :device, :label => _('Device'), :label_size => "col-md-2", :class => ('hide' if f.object.rootfs?), :disabled => (!new_volume || f.object.rootfs?), :'data-soft-max' => 10 %>
+    <%= byte_size_f f, :size, :class => "input-mini", :label => _("Size"), :label_size => "col-md-2" %>
 <% end %>

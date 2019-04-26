@@ -53,11 +53,11 @@ class ProxmoxContainerHelperTest < ActiveSupport::TestCase
           
         },
         'volumes_attributes' => {
-          '0'=> { 'id' => 'rootfs', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => nil },
+          '0'=> { 'id' => 'rootfs', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => '' },
           '1'=> { 'id' => 'mp0', 'storage' => 'local-lvm', 'size' => '1073741824', 'mp' => '/opt/path' }
         }, 
         'interfaces_attributes' => { 
-          '0' => { 'id' => 'net0', 'name' => 'eth0', 'bridge' => 'vmbr0', 'ip' => 'dhcp', 'ip6' => 'dhcp', 'rate' => nil },
+          '0' => { 'id' => 'net0', 'name' => 'eth0', 'bridge' => 'vmbr0', 'ip' => 'dhcp', 'ip6' => 'dhcp', 'rate' => '' },
           '1' => { 'id' => 'net1', 'name' => 'eth1', 'bridge' => 'vmbr0', 'ip' => 'dhcp', 'ip6' => 'dhcp' } 
         } 
       }
@@ -94,7 +94,7 @@ class ProxmoxContainerHelperTest < ActiveSupport::TestCase
         'name' =>  'test', 
         'type' =>  'lxc', 
         'node_id' => 'pve',
-        'volumes_attributes' => { '0' => { '_delete' => '1', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824' }}, 
+        'volumes_attributes' => { '0' => { '_delete' => '1', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'mp' => '/opt/path' }}, 
         'interfaces_attributes' => { '0' => { '_delete' => '1', 'id' => 'net0', 'name' => 'eth0' } } 
       }
     end
@@ -167,15 +167,6 @@ class ProxmoxContainerHelperTest < ActiveSupport::TestCase
       assert mp0.has_key?(:mp0)
       assert_equal 'local-lvm:1073741824,mp=/opt/path', mp0[:mp0]
     end    
-    
-    test '#volume delete mp0' do       
-      volumes = parse_container_volumes(host_delete['volumes_attributes'])
-      assert !volumes.empty?
-      assert_equal 1, volumes.length
-      assert volume = volumes.first
-      assert volume.has_key?(:delete)
-      assert_equal 'mp0', volume[:delete]
-    end
     
     test '#interface with name eth0 and bridge' do       
       interface = parse_container_interface(host['interfaces_attributes']['0'])

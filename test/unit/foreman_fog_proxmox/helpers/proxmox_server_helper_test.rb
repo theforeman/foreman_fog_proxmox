@@ -107,16 +107,7 @@ class ProxmoxServerHelperTest < ActiveSupport::TestCase
       assert volume = volumes[1]
       assert volume.has_key?(:virtio0)
       assert_equal 'local-lvm:1073741824,cache=none', volume[:virtio0]
-    end    
-    
-    test '#volume delete scsi0' do       
-      volumes = parse_server_volumes(host_delete['volumes_attributes'])
-      assert !volumes.empty?
-      assert_equal volumes.length, 1
-      assert volume = volumes.first
-      assert volume.has_key?(:delete)
-      assert_match(/(net0,){0,1}scsi0(,net0){0,1}/, volume[:delete])
-    end
+    end  
     
     test '#interface with model virtio and bridge' do       
       interface = parse_server_interface(host['interfaces_attributes']['0'])

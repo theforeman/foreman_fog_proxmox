@@ -145,7 +145,11 @@ module ProxmoxContainerHelper
       nic.store(:rate, interface_attributes['rate'].to_i) if interface_attributes['rate']
       nic.store(:tag, interface_attributes['tag'].to_i) if interface_attributes['tag']
       logger.debug("parse_container_interface(): add nic=#{nic}")
+<<<<<<< HEAD
       interfaces_to_add.push(Fog::Proxmox::NicHelper.flatten(nic))
+=======
+      nics.push(Fog::Proxmox::NicHelper.flatten(nic))
+>>>>>>> 148d0b06ae688fd2b01dcefcdae4a449109ce40b
     end
   end
 

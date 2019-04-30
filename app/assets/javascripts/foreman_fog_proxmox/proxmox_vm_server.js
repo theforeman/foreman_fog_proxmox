@@ -79,34 +79,53 @@ function storageIsoSelected(item) {
   }
 }
 
+function attributesPrefixSelector(profile, type) {
+  return profile ?  '#compute_attribute_vm_attrs_' + type + '_attributes_': '#host_compute_attributes_' + type + '_attributes_';
+}
+
+function volumesAttributesSelector(profile,index,selector) {
+  return attributesPrefixSelector(profile,'volumes') + index + '_' + selector;
+}
+
+function getIndex(item) {
+  var id = $(item).attr('id');
+  var pattern = /(host_compute_attributes_volumes_attributes_||compute_attribute_vm_attrs_volumes_attributes_)(\d+)[_](.*)/i;
+  pattern_a = pattern.exec(id);
+  var index = pattern_a[2];
+  console.log("index=" + index);
+  return index;
+}
+
+function isProfile() {
+  return $(volumesAttributesSelector(true,0,'id')) !== undefined;
+}
+
 function controllerSelected(item) {
   var controller = $(item).val();
   var index = getIndex(item);
   var max = computeControllerMaxDevice(controller);
-  var device_selector = '#host_compute_attributes_volumes_attributes_' + index + '_device';
+  var profile = isProfile();
+  console.log("profile="+profile);
+  var device_selector = volumesAttributesSelector(profile,index,'device');
+  var id_selector = volumesAttributesSelector(profile,index,'id');
   $(device_selector).attr('data-soft-max', max);
   var device = $(device_selector).limitedSpinner('value');
-  $('#host_compute_attributes_volumes_attributes_' + index + '_id').val(controller + device);
+  var id = controller + device;
+  $(id_selector).val(id);
   tfm.numFields.initAll();
 }
 
 function deviceSelected(item) {
   var device = $(item).limitedSpinner('value');
-  console.log("device=" + device);
   var index = getIndex(item);
-  var controller_selector = '#host_compute_attributes_volumes_attributes_' + index + '_controller';
+  var profile = isProfile();
+  console.log("profile="+profile);
+  var controller_selector = volumesAttributesSelector(profile,index,'controller');
+  var id_selector = volumesAttributesSelector(profile,index,'id');
   var controller = $(controller_selector).val();
-  $('#host_compute_attributes_volumes_attributes_' + index + '_id').val(controller + device);
+  var id = controller + device;
+  $(id_selector).val(id);
   tfm.numFields.initAll();
-}
-
-function getIndex(item) {
-  var id = $(item).attr('id');
-  var pattern = /(host_compute_attributes_volumes_attributes_)(\d+)[_](.*)/i;
-  pattern_a = pattern.exec(id);
-  var index = pattern_a[2];
-  console.log("index=" + index);
-  return index;
 }
 
 function computeControllerMaxDevice(controller) {

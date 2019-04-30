@@ -42,7 +42,7 @@ module ForemanFogProxmox
     end
 
     def capabilities
-      [:build, :new_volume, :image]
+      [:build, :new_volume, :new_interface, :image]
     end
 
     def self.model_name
@@ -191,7 +191,6 @@ module ForemanFogProxmox
       Fog::Proxmox::Compute::Interface.new(opts)
     end
 
-    # used by host.clone
     def vm_compute_attributes(vm)
       vm_attrs = vm.attributes.reject { |key,value| [:config, :vmid].include?(key.to_sym) || value.to_s.empty? }
       vm_attrs = set_vm_config_attributes(vm, vm_attrs)
@@ -243,15 +242,19 @@ module ForemanFogProxmox
     end
 
     def new_container_vm(new_attr = {})
-      new_attr.merge(node_id: node_id)
-      vm = node.containers.new(parse_container_vm(vm_container_instance_defaults.merge(new_attr.merge(type: 'lxc'))).deep_symbolize_keys)
+      options = new_attr
+      options = options.merge(node_id: node_id).merge(type: 'lxc').merge(vmid: next_vmid)
+      options= vm_container_instance_defaults.merge(options) if new_attr.empty?
+      vm = node.containers.new(parse_container_vm(options).deep_symbolize_keys)
       logger.debug(_("new_container_vm() vm.config=%{config}") % { config: vm.config.inspect })
       vm
     end
 
     def new_server_vm(new_attr = {})
-      new_attr.merge(node_id: node_id)
-      vm = node.servers.new(parse_server_vm(vm_server_instance_defaults.merge(new_attr.merge(type: 'qemu'))).deep_symbolize_keys)
+      options = new_attr
+      options = options.merge(node_id: node_id).merge(type: 'qemu').merge(vmid: next_vmid)
+      options = vm_server_instance_defaults.merge(options) if new_attr.empty?
+      vm = node.servers.new(parse_server_vm(options).deep_symbolize_keys)
       logger.debug(_("new_server_vm() vm.config=%{config}") % { config: vm.config.inspect })
       vm
     end
@@ -377,8 +380,9 @@ module ForemanFogProxmox
         parsed_attr = vm.container? ? parse_container_vm(new_attributes.merge(type: vm.type)) : parse_server_vm(new_attributes.merge(type: vm.type))
         config_attributes = parsed_attr.reject { |key,_value| [:templated,:ostemplate,:ostemplate_file,:ostemplate_storage,:volumes_attributes].include? key.to_sym }
         config_attributes = config_attributes.reject { |_key,value| ForemanFogProxmox::Value.empty?(value) }
+        cdrom_attributes = parsed_attr.select { |_key,value| Fog::Proxmox::DiskHelper.cdrom?(value.to_s) }
         config_attributes = config_attributes.reject { |key,_value| Fog::Proxmox::DiskHelper.disk?(key) }
-        vm.update(config_attributes)   
+        vm.update(config_attributes.merge(cdrom_attributes))   
       end
       vm = find_vm_by_uuid(uuid)
     end

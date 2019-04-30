@@ -17,7 +17,7 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <% container = type == 'lxc' %>
 
-<%= field_set_tag _("Nic"), :id => "container_network", :style => ('display: none;' unless container), :disabled => !container do %>  
+<%= field_set_tag _("Nic"), :id => "container_network_#{f.index}", :style => ('display: none;' unless container), :disabled => !container do %>  
     <%= text_f f, :name, :label => _('Name'), :label_size => "col-md-2" %>
     <%= counter_f f, :tag, :class => "input-mini", :label => _('VLAN tag'), :label_size => "col-md-2" %>
     <%= counter_f f, :rate, :class => "input-mini", :label => _('Rate limit'), :label_size => "col-md-2" %>

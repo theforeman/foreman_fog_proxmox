@@ -18,7 +18,7 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% container = type == 'lxc' %>
 <% new_volume = f.object.volid.nil? %>
 
-<%= field_set_tag _("Mount point"), :id => "container_volume_#{f.index}", :class => ('hide' unless container), :disabled => !container do %> 
+<%= field_set_tag _("Mount point"), :id => "container_volume_mp_#{f.index}", :class => ('hide' unless container), :disabled => !container do %> 
     <%= f.hidden_field :volid if !new_vm %>
     <%= select_f f, :storage, compute_resource.storages, :storage, :storage, { }, :label => _('Storage'), :label_size => "col-md-2" %>
     <%= text_f f, :mp, :label => _('Path'), :label_size => "col-md-2", :required => true, :help_inline => _("e.g. /path/to/") %>

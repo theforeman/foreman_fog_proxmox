@@ -26,6 +26,19 @@ module FogExtensions
                 vms += containers.all
                 vms
             end
+            def each(collection_filters = {})
+                if block_given?
+                Kernel.loop do
+                    break unless collection_filters[:marker]
+                    page = all(collection_filters)
+                    # We need to explicitly use the base 'each' method here on the page,
+                    #  otherwise we get infinite recursion
+                    base_each = Fog::Collection.instance_method(:each)
+                    base_each.bind(page).call { |item| yield item }
+                end
+                end
+                self
+            end
         end
     end
 end  

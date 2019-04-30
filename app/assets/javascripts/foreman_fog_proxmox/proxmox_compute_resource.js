@@ -15,12 +15,19 @@
 // You should have received a copy of the GNU General Public License
 // along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-function sslVerifyPeerSelected(item){
-  var selected = $(item).is(':checked');
-  var ssl_certs_form = $('#compute_resource_ssl_certs').parents('.clearfix');
+$(document).on('ContentLoad', tfm.numFields.initAll);
+$(document).ready(sslVerifyPeerSelected);
+
+function sslVerifyPeerSelected(){
+  var selected = $("#compute_resource_ssl_verify_peer").is(':checked');
+  var ssl_certs_block = $('#compute_resource_ssl_certs').parents('.clearfix');
+  var ssl_certs_textarea = $('#compute_resource_ssl_certs');
   if (selected) {
-    ssl_certs_form.show();
+    ssl_certs_block.show();
+    ssl_certs_textarea.show();
   } else {
-    ssl_certs_form.hide();
+    ssl_certs_block.hide();
+    ssl_certs_textarea.text('');
+    ssl_certs_textarea.hide();
   }
 }

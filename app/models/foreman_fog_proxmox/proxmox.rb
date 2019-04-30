@@ -65,7 +65,11 @@ module ForemanFogProxmox
       version_suitable?
     rescue => e
       errors[:base] << e.message
-      errors[:url] << e.message
+      if e.message.include?('SSL')
+        errors[:ssl_certs] << e.message
+      else
+        errors[:url] << e.message
+      end
     end
 
     def nodes
@@ -329,22 +333,6 @@ module ForemanFogProxmox
 
     def image_exists?(image)
       !find_vm_by_uuid(image).nil?
-    end
-
-    def save_interfaces(vm, interfaces_attributes)
-      if interfaces_attributes
-        interfaces_attributes.each_value do |interface_attributes|
-          id = interface_attributes['id']
-          interface = vm.config.interfaces.get(id)
-          delete = interface_attributes['_delete']
-          if interface
-            if delete == '1'
-            else
-            end
-          else
-          end
-        end
-      end
     end
 
     def save_volumes(vm, volumes_attributes)

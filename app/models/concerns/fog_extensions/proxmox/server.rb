@@ -57,11 +57,14 @@ module FogExtensions
             def interfaces
                 config.interfaces
             end
+            def nics
+                config.interfaces.collect { |nic| nic.to_s }
+            end
             def volumes
                 config.disks.reject { |disk| disk.cdrom? }
             end
             def disks
-                config.disks.collect { |disk| disk.id+': '+disk.volid }
+                config.disks.collect { |disk| disk.to_s }
             end
             def vga
                 config.vga

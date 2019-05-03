@@ -18,7 +18,10 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 require 'fog/proxmox'
+require 'fog/proxmox/helpers/nic_helper'
+require 'fog/proxmox/helpers/disk_helper'
 require 'foreman_fog_proxmox/semver'
+require 'foreman_fog_proxmox/value'
 
 module ForemanFogProxmox
   class Proxmox < ComputeResource
@@ -118,6 +121,7 @@ module ForemanFogProxmox
 
     def host_compute_attrs(host)
       super.tap do |attrs|
+        host.compute_attributes['interfaces_attributes'] = attrs['interfaces_attributes']
         ostype = host.compute_attributes['config_attributes']['ostype']
         type = host.compute_attributes['type']
         case type
@@ -133,12 +137,15 @@ module ForemanFogProxmox
       host.interfaces.select(&:physical?).each.with_index.reduce({}) do |hash, (nic, index)|
         # Set default interface identifier to net[n]
         nic.identifier = "net%{index}" % {index: index} if nic.identifier.empty?
-        raise ::Foreman::Exception.new _("Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0" % { index: index }) unless Fog::Proxmox::NicHelper.is_a_nic?(nic.identifier)
+        raise ::Foreman::Exception.new _("Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0" % { index: index }) unless Fog::Proxmox::NicHelper.nic?(nic.identifier)
         # Set default container interface name to eth[n]
         container = host.compute_attributes['type'] == 'lxc'
         nic.compute_attributes['name'] = "eth%{index}" % {index: index} if container && nic.compute_attributes['name'].empty?
         raise ::Foreman::Exception.new _("Invalid name interface[%{index}]. Must be eth[n] with n integer >= 0" % { index: index }) if container && !/^(eth)(\d+)$/.match?(nic.compute_attributes['name'])
         nic_compute_attributes = nic.compute_attributes.merge(id: nic.identifier)
+        mac = nic.mac
+        mac = nic.attributes['mac'] unless mac
+        nic_compute_attributes.store(:macaddr, mac) if (mac && !mac.empty?)
         nic_compute_attributes.store(:ip, nic.ip) if (nic.ip && !nic.ip.empty?)
         nic_compute_attributes.store(:ip6, nic.ip6) if (nic.ip6 && !nic.ip6.empty?)
         hash.merge(index.to_s => nic_compute_attributes)
@@ -192,33 +199,16 @@ module ForemanFogProxmox
     end
 
     def vm_compute_attributes(vm)
-      vm_attrs = vm.attributes.reject { |key,value| [:config, :vmid].include?(key.to_sym) || value.to_s.empty? }
-      vm_attrs = set_vm_config_attributes(vm, vm_attrs)
-      vm_attrs = set_vm_volumes_attributes(vm, vm_attrs)
-      vm_attrs = set_vm_interfaces_attributes(vm, vm_attrs)
-      vm_attrs
-    end
-
-    def set_vm_config_attributes(vm, vm_attrs)
+      vm_attrs = {}
       if vm.respond_to?(:config)
-        config = vm.config.attributes.reject { |key,value| [:disks, :interfaces, :vmid].include?(key) || value.to_s.empty?}
-        vm_attrs[:config_attributes] = config
-      end
-      vm_attrs
-    end
-
-    def set_vm_volumes_attributes(vm, vm_attrs)
-      if vm.config.respond_to?(:disks)
-        volumes = vm.config.disks || []
-        vm_attrs[:volumes_attributes] = Hash[volumes.each_with_index.map { |volume, idx| [idx.to_s, volume.attributes] }]
-      end
-      vm_attrs
-    end
-
-    def set_vm_interfaces_attributes(vm, vm_attrs)
-      if vm.config.respond_to?(:interfaces)
-        interfaces = vm.config.interfaces || []
-        vm_attrs[:interfaces_attributes] = Hash[interfaces.each_with_index.map { |interface, idx| [idx.to_s, interface.attributes] }]
+        vm_attrs = vm_attrs.merge(vmid: vm.identity, node_id: vm.node_id, type: vm.type)
+        if vm.config.respond_to?(:disks)
+          vm_attrs[:volumes_attributes] = Hash[vm.config.disks.each_with_index.map { |disk, idx| [idx.to_s, disk.attributes] }]
+        end
+        if vm.config.respond_to?(:interfaces)
+          vm_attrs[:interfaces_attributes] = Hash[vm.config.interfaces.each_with_index.map { |interface, idx| [idx.to_s, interface.attributes] }]
+        end
+        vm_attrs[:config_attributes] = vm.config.attributes.reject { |key,value| [:disks, :interfaces, :vmid, :node_id, :node, :type].include?(key) || !vm.config.respond_to?(key) || ForemanFogProxmox::Value.empty?(value.to_s) || Fog::Proxmox::DiskHelper.disk?(key.to_s) || Fog::Proxmox::NicHelper.nic?(key.to_s) }
       end
       vm_attrs
     end
@@ -369,6 +359,13 @@ module ForemanFogProxmox
       end
     end
 
+    def update_interfaces(vm, attrs)
+      interfaces = nested_attributes_for :interfaces, attrs
+      interfaces.each do |interface|
+        logger.debug("update_interfaces interface=#{interface}")
+      end
+    end
+
     def save_vm(uuid, new_attributes)
       vm = find_vm_by_uuid(uuid)
       templated = new_attributes['templated']
@@ -382,6 +379,7 @@ module ForemanFogProxmox
         config_attributes = config_attributes.reject { |_key,value| ForemanFogProxmox::Value.empty?(value) }
         cdrom_attributes = parsed_attr.select { |_key,value| Fog::Proxmox::DiskHelper.cdrom?(value.to_s) }
         config_attributes = config_attributes.reject { |key,_value| Fog::Proxmox::DiskHelper.disk?(key) }
+        update_interfaces(vm, parsed_attr[:interfaces_attributes])
         vm.update(config_attributes.merge(cdrom_attributes))   
       end
       vm = find_vm_by_uuid(uuid)

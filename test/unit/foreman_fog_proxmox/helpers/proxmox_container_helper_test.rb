@@ -95,7 +95,7 @@ class ProxmoxContainerHelperTest < ActiveSupport::TestCase
         'type' =>  'lxc', 
         'node_id' => 'pve',
         'volumes_attributes' => { '0' => { '_delete' => '1', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'mp' => '/opt/path' }}, 
-        'interfaces_attributes' => { '0' => { '_delete' => '1', 'id' => 'net0', 'name' => 'eth0' } } 
+        'interfaces_attributes' => { '0' => { '_destroy' => '1', 'id' => 'net0', 'name' => 'eth0' } } 
       }
     end
 

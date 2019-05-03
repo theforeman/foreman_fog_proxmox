@@ -45,7 +45,7 @@ module ForemanFogProxmox
     def mock_server_vm
       interface_attributes = {
         id: 'net0',
-        mac: '36:25:8C:53:0C:50',
+        macaddr: '36:25:8C:53:0C:50',
         model: 'virtio',
         name: nil,
         ip: nil,
@@ -111,9 +111,13 @@ module ForemanFogProxmox
       config.stubs(:attributes).returns(config_attributes)
       config.stubs(:disks).returns(volumes)
       config.stubs(:interfaces).returns(interfaces)
+      config.stubs(:respond_to?).returns(true)
       vm = mock('vm')
+      vm.stubs(:respond_to?).returns(true)
       vm.stubs(:config).returns(config)
       vm.stubs(:type).returns('qemu')
+      vm.stubs(:identity).returns(100)
+      vm.stubs(:node_id).returns('pve')
       service = mock('service')
       vm_attributes = {
         vmid: 100,
@@ -202,7 +206,6 @@ module ForemanFogProxmox
         password: 'proxmox01',
         onboot: 0,
         startup: nil,
-        rootfs: 'local-lvm:vm-100-disk-1',
         cores: 1,
         cpuunits: nil,
         cpulimit: nil,
@@ -222,9 +225,14 @@ module ForemanFogProxmox
       config.stubs(:attributes).returns(config_attributes)
       config.stubs(:disks).returns(volumes)
       config.stubs(:interfaces).returns(interfaces)
+      config.stubs(:respond_to?).returns(true)
       vm = mock('vm')
+      vm.stubs(:respond_to?).returns(true)
       vm.stubs(:config).returns(config)
       vm.stubs(:type).returns('lxc')
+      vm.stubs(:identity).returns(100)
+      vm.stubs(:node_id).returns('pve')
+      vm.stubs(:identity).returns(100)
       service = mock('service')
       vm_attributes = {
         vmid: 100,

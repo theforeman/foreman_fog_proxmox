@@ -34,7 +34,7 @@ module ProxmoxVmHelper
     type = vm.type unless type
     main = vm.attributes.select { |key,_value| main_a.include? key }
     main_a += %w[templated]
-    config = vm.config.attributes.reject { |key,_value| main_a.include?(key) || Fog::Proxmox::DiskHelper.disk?(key) || Fog::Proxmox::NicHelper.is_a_nic?(key)  }
+    config = vm.config.attributes.reject { |key,_value| main_a.include?(key) || Fog::Proxmox::DiskHelper.disk?(key) || Fog::Proxmox::NicHelper.nic?(key)  }
     vm_h = vm_h.merge(main)
     vm_h = vm_h.merge({'config_attributes': config})
     vm_h

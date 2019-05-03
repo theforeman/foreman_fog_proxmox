@@ -82,15 +82,18 @@ module ForemanFogProxmox
       require 'fog/compute/proxmox/models/server'
       require 'fog/compute/proxmox/models/server_config'
       require 'fog/compute/proxmox/models/disk'
+      require 'fog/compute/proxmox/models/interface'
       require 'fog/compute/proxmox/models/volume'
       require 'fog/compute/proxmox/models/node'
 
       Fog::Proxmox::Compute::Server.send :include, FogExtensions::Proxmox::Server
       Fog::Proxmox::Compute::ServerConfig.send :include, FogExtensions::Proxmox::ServerConfig
       Fog::Proxmox::Compute::Disk.send :include, FogExtensions::Proxmox::Disk
+      Fog::Proxmox::Compute::Interface.send :include, FogExtensions::Proxmox::Interface
       Fog::Proxmox::Compute::Volume.send :include, FogExtensions::Proxmox::Volume
       ::ComputeResourcesController.send :include, ForemanFogProxmox::Controller::Parameters::ComputeResource
       Fog::Proxmox::Compute::Node.send :include, FogExtensions::Proxmox::Node
+      ::Host::Managed.send :include, Orchestration::Proxmox::Compute
     end
 
   end

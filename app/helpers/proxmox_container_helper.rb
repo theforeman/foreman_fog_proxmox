@@ -133,7 +133,7 @@ module ProxmoxContainerHelper
     nic = {}
     id = interface_attributes['id']
     logger.debug("parse_container_interface(): id=#{id}")
-    delete = interface_attributes['_delete'].to_i == 1
+    delete = interface_attributes['_destroy'].to_i == 1
     if delete
       interfaces_to_delete.push(id.to_s)
     else

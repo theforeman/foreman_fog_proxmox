@@ -138,6 +138,7 @@ module ProxmoxContainerHelper
       interfaces_to_delete.push(id.to_s)
     else
       nic.store(:id, id)
+      nic.store(:macaddr, interface_attributes['macaddr']) if interface_attributes['macaddr']
       nic.store(:name, interface_attributes['name'].to_s)
       nic.store(:bridge, interface_attributes['bridge'].to_s) if interface_attributes['bridge']
       nic.store(:ip, interface_attributes['ip'].to_s) if interface_attributes['ip']

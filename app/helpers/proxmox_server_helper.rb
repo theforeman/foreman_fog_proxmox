@@ -144,6 +144,7 @@ module ProxmoxServerHelper
       interfaces_to_delete.push(id.to_s)
     else
       nic.store(:id, id)
+      nic.store(:macaddr, interface_attributes['macaddr']) if interface_attributes['macaddr']
       nic.store(:tag, interface_attributes['tag'].to_i) if interface_attributes['tag']
       nic.store(:model, interface_attributes['model'].to_s)
       nic.store(:bridge, interface_attributes['bridge'].to_s) if interface_attributes['bridge']

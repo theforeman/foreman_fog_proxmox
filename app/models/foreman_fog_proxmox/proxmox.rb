@@ -379,7 +379,7 @@ module ForemanFogProxmox
         config_attributes = config_attributes.reject { |_key,value| ForemanFogProxmox::Value.empty?(value) }
         cdrom_attributes = parsed_attr.select { |_key,value| Fog::Proxmox::DiskHelper.cdrom?(value.to_s) }
         config_attributes = config_attributes.reject { |key,_value| Fog::Proxmox::DiskHelper.disk?(key) }
-        update_interfaces(vm, parsed_attr[:interfaces_attributes])
+        update_interfaces(vm, parsed_attr.select { |key,_value| Fog::Proxmox::NicHelper.nic?(key) })
         vm.update(config_attributes.merge(cdrom_attributes))   
       end
       vm = find_vm_by_uuid(uuid)

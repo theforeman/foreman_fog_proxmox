@@ -58,7 +58,7 @@ module ProxmoxServerHelper
     logger.debug("parse_server_config(): #{parsed_config}")
     parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory).merge(cdrom)
     interfaces_to_add.each { |interface| parsed_vm = parsed_vm.merge(interface) }
-    parsed_vm = parsed_vm.merge(delete: ForemanFogProxmox::ProxmoxArray.to_s(interfaces_to_delete)) unless interfaces_to_delete.empty?
+    parsed_vm = parsed_vm.merge(delete: interfaces_to_delete.join(',')) unless interfaces_to_delete.empty?
     volumes.each { |volume| parsed_vm = parsed_vm.merge(volume) }
     logger.debug("parse_server_vm(): #{parsed_vm}")
     parsed_vm
@@ -139,7 +139,7 @@ module ProxmoxServerHelper
     nic = {}
     id = interface_attributes['id']
     logger.debug("add_server_interface(): id=#{id}")
-    delete = interface_attributes['_destroy'].to_i == 1
+    delete = interface_attributes['_delete'].to_i == 1
     if delete
       interfaces_to_delete.push(id.to_s)
     else

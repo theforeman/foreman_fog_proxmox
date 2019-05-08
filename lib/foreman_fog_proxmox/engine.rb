@@ -94,6 +94,7 @@ module ForemanFogProxmox
       ::ComputeResourcesController.send :include, ForemanFogProxmox::Controller::Parameters::ComputeResource
       Fog::Proxmox::Compute::Node.send :include, FogExtensions::Proxmox::Node
       ::Host::Managed.send :include, Orchestration::Proxmox::Compute
+      ::Host::Managed.send :include, HostExt::Proxmox::Interfaces
     end
 
   end

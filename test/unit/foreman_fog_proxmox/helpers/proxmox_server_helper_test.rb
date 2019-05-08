@@ -63,7 +63,7 @@ class ProxmoxServerHelperTest < ActiveSupport::TestCase
         'cdrom' => 'image',
         'cdrom_iso' => 'local-lvm:iso/debian-netinst.iso',
         'volumes_attributes' => { '0' => { '_delete' => '1', 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824' }}, 
-        'interfaces_attributes' => { '0' => { '_destroy' => '1', 'id' => 'net0', 'model' => 'virtio' } } 
+        'interfaces_attributes' => { '0' => { '_delete' => '1', 'id' => 'net0', 'model' => 'virtio' } } 
       }
     end
 

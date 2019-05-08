@@ -93,7 +93,7 @@ module ForemanFogProxmox
         ip = IPAddr.new(1, Socket::AF_INET).to_s
         ip6 = Array.new(4) { '%x' % rand(16**4) }.join(':') + '::1'
         physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6)
-        host = FactoryBot.build(:host_empty, :interfaces => [physical_nic], :compute_attributes => {'type' => 'qemu'})
+        host = FactoryBot.build(:host_empty, :interfaces => [physical_nic], :compute_attributes => {'type' => 'qemu', 'interfaces_attributes' => { '0' => physical_nic }})
         nic_attributes = @cr.host_interfaces_attrs(host).values.select(&:present?)
         nic_attr = nic_attributes.first
         assert_equal 'net0', nic_attr[:id]
@@ -110,7 +110,7 @@ module ForemanFogProxmox
       it "raises Foreman::Exception when server ostype does not match os family" do
         operatingsystem = FactoryBot.build(:solaris)
         physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :primary => true)
-        host = FactoryBot.build(:host_empty, :interfaces => [physical_nic], :operatingsystem => operatingsystem, :compute_attributes => { 'type' => 'qemu', 'config_attributes' => { 'ostype' => 'l26' } })
+        host = FactoryBot.build(:host_empty, :interfaces => [physical_nic], :operatingsystem => operatingsystem, :compute_attributes => { 'type' => 'qemu', 'config_attributes' => { 'ostype' => 'l26' }, 'interfaces_attributes' => { '0' => physical_nic } })
         err = assert_raises Foreman::Exception do
           @cr.host_compute_attrs(host)
         end
@@ -119,7 +119,7 @@ module ForemanFogProxmox
 
       it "sets container hostname with host name" do
         physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :primary => true)
-        host = FactoryBot.build(:host_empty, :interfaces => [physical_nic], :compute_attributes => { 'type' => 'lxc', 'config_attributes' => { 'hostname' => '' } })
+        host = FactoryBot.build(:host_empty, :interfaces => [physical_nic], :compute_attributes => { 'type' => 'lxc', 'config_attributes' => { 'hostname' => '' }, 'interfaces_attributes' => { '0' => {} } })
         @cr.host_compute_attrs(host)
         assert_equal host.name, host.compute_attributes['config_attributes']['hostname']
       end

@@ -121,7 +121,6 @@ module ForemanFogProxmox
 
     def host_compute_attrs(host)
       super.tap do |attrs|
-        host.compute_attributes['interfaces_attributes'] = attrs['interfaces_attributes']
         ostype = host.compute_attributes['config_attributes']['ostype']
         type = host.compute_attributes['type']
         case type
@@ -146,6 +145,8 @@ module ForemanFogProxmox
         mac = nic.mac
         mac = nic.attributes['mac'] unless mac
         nic_compute_attributes.store(:macaddr, mac) if (mac && !mac.empty?)
+        interface_compute_attributes = host.compute_attributes['interfaces_attributes'].select { |_k,v| v['id'] == nic.identifier }
+        nic_compute_attributes.store(:_delete, interface_compute_attributes[interface_compute_attributes.keys[0]]['_delete']) unless interface_compute_attributes.empty?
         nic_compute_attributes.store(:ip, nic.ip) if (nic.ip && !nic.ip.empty?)
         nic_compute_attributes.store(:ip6, nic.ip6) if (nic.ip6 && !nic.ip6.empty?)
         hash.merge(index.to_s => nic_compute_attributes)
@@ -359,13 +360,6 @@ module ForemanFogProxmox
       end
     end
 
-    def update_interfaces(vm, attrs)
-      interfaces = nested_attributes_for :interfaces, attrs
-      interfaces.each do |interface|
-        logger.debug("update_interfaces interface=#{interface}")
-      end
-    end
-
     def save_vm(uuid, new_attributes)
       vm = find_vm_by_uuid(uuid)
       templated = new_attributes['templated']
@@ -379,7 +373,6 @@ module ForemanFogProxmox
         config_attributes = config_attributes.reject { |_key,value| ForemanFogProxmox::Value.empty?(value) }
         cdrom_attributes = parsed_attr.select { |_key,value| Fog::Proxmox::DiskHelper.cdrom?(value.to_s) }
         config_attributes = config_attributes.reject { |key,_value| Fog::Proxmox::DiskHelper.disk?(key) }
-        update_interfaces(vm, parsed_attr.select { |key,_value| Fog::Proxmox::NicHelper.nic?(key) })
         vm.update(config_attributes.merge(cdrom_attributes))   
       end
       vm = find_vm_by_uuid(uuid)

@@ -492,7 +492,7 @@ module ForemanFogProxmox
         node_id: node_id,
         cores: 1,
         sockets: 1,
-        kvm: 0,
+        kvm: 1,
         vga: 'std',
         memory: 512 * MEGA,
         ostype: 'l26',

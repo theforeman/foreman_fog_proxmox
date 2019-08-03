@@ -39,7 +39,7 @@ module ForemanFogProxmox
         :mac  => :mac
       )
     end
-    
+
     def self.provider_friendly_name
       "Proxmox"
     end
@@ -103,7 +103,7 @@ module ForemanFogProxmox
       node = network_client.nodes.get node_id
       bridges = node.networks.all(type: 'any_bridge')
       bridges.sort_by(&:iface)
-    end    
+    end
 
     def available_images
       templates.collect { |template| OpenStruct.new(id: template.vmid) }
@@ -153,7 +153,7 @@ module ForemanFogProxmox
       end
     end
 
-    def new_volume(attr = {})     
+    def new_volume(attr = {})
       type = attr['type']
       type = 'qemu' unless type
       case type
@@ -176,7 +176,7 @@ module ForemanFogProxmox
       Fog::Proxmox::Compute::Disk.new(opts)
     end
 
-    def new_interface(attr = {}) 
+    def new_interface(attr = {})
       type = attr['type']
       type = 'qemu' unless type
       case type
@@ -260,7 +260,7 @@ module ForemanFogProxmox
         image = node.servers.get image_id
         image.clone(vmid)
         clone = node.servers.get vmid
-        clone.update(name: args[:name])        
+        clone.update(name: args[:name])
       else
         convert_sizes(args)
         remove_deletes(args)
@@ -283,7 +283,7 @@ module ForemanFogProxmox
       begin
         vm = node.servers.get(uuid)
       rescue Fog::Errors::NotFound
-        vm = nil  
+        vm = nil
       rescue Fog::Errors::Error => e
         Foreman::Logging.exception(_("Failed retrieving proxmox server vm by vmid=%{uuid}") % { vmid: uuid }, e)
         raise(ActiveRecord::RecordNotFound)
@@ -291,7 +291,7 @@ module ForemanFogProxmox
       begin
         vm = node.containers.get(uuid) unless vm
       rescue Fog::Errors::NotFound
-        vm = nil  
+        vm = nil
       rescue Fog::Errors::Error => e
         Foreman::Logging.exception(_("Failed retrieving proxmox container vm by vmid=%{uuid}") % { vmid: uuid }, e)
         raise(ActiveRecord::RecordNotFound)
@@ -373,7 +373,7 @@ module ForemanFogProxmox
         config_attributes = config_attributes.reject { |_key,value| ForemanFogProxmox::Value.empty?(value) }
         cdrom_attributes = parsed_attr.select { |_key,value| Fog::Proxmox::DiskHelper.cdrom?(value.to_s) }
         config_attributes = config_attributes.reject { |key,_value| Fog::Proxmox::DiskHelper.disk?(key) }
-        vm.update(config_attributes.merge(cdrom_attributes))   
+        vm.update(config_attributes.merge(cdrom_attributes))
       end
       vm = find_vm_by_uuid(uuid)
     end
@@ -382,7 +382,7 @@ module ForemanFogProxmox
       node.servers.next_id
     end
 
-    def node_id  
+    def node_id
       self.attrs[:node_id]
     end
 
@@ -394,7 +394,7 @@ module ForemanFogProxmox
       client.nodes.get node_id
     end
 
-    def ssl_certs  
+    def ssl_certs
       self.attrs[:ssl_certs]
     end
 
@@ -441,7 +441,7 @@ module ForemanFogProxmox
       end
         options.store(:websocket, 1) if type_console == 'vnc'
       begin
-        vnc_console = vm.start_console(options)  
+        vnc_console = vm.start_console(options)
         WsProxy.start(:host => host, :host_port => vnc_console['port'], :password => vnc_console['ticket']).merge(:name => vm.name, :type => type_console)
       rescue => e
         logger.error(e)
@@ -487,14 +487,14 @@ module ForemanFogProxmox
     def vm_server_instance_defaults
       ActiveSupport::HashWithIndifferentAccess.new(
         name: "foreman_#{Time.now.to_i}",
-        vmid: next_vmid, 
-        type: 'qemu', 
-        node_id: node_id, 
-        cores: 1, 
-        sockets: 1, 
-        kvm: 0,
+        vmid: next_vmid,
+        type: 'qemu',
+        node_id: node_id,
+        cores: 1,
+        sockets: 1,
+        kvm: 1,
         vga: 'std',
-        memory: 512 * MEGA, 
+        memory: 512 * MEGA,
         ostype: 'l26',
         keyboard: 'en-us',
         cpu: 'kvm64',
@@ -506,10 +506,10 @@ module ForemanFogProxmox
     def vm_container_instance_defaults
       ActiveSupport::HashWithIndifferentAccess.new(
         name: "foreman_#{Time.now.to_i}",
-        vmid: next_vmid, 
-        type: 'lxc', 
-        node_id: node_id, 
-        memory: 512 * MEGA, 
+        vmid: next_vmid,
+        type: 'lxc',
+        node_id: node_id,
+        memory: 512 * MEGA,
         templated: 0).merge(Fog::Proxmox::DiskHelper.flatten(volume_container_defaults)).merge(Fog::Proxmox::DiskHelper.flatten(volume_server_defaults)).merge(Fog::Proxmox::NicHelper.flatten(interface_defaults))
     end
 
@@ -537,7 +537,7 @@ module ForemanFogProxmox
     def interface_container_defaults(id = 'net0')
       { id: id, name: 'eth0', bridge: bridges.first.identity.to_s }
     end
-    
+
     def compute_os_types(host)
       os_linux_types_mapping(host).empty? ? os_windows_types_mapping(host) : os_linux_types_mapping(host)
     end

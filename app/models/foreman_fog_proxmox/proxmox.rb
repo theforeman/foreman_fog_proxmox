@@ -279,6 +279,16 @@ module ForemanFogProxmox
       raise e
     end
 
+    def destroy_vm(uuid)
+      vm = find_vm_by_uuid(uuid)
+      vm.stop
+      vm.destroy
+    rescue ActiveRecord::RecordNotFound
+      # if the VM does not exists, we don't really care.
+      true
+    end
+
+
     def find_vm_by_uuid(uuid)
       begin
         vm = node.servers.get(uuid)

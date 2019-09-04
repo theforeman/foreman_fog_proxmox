@@ -22,6 +22,7 @@ module ForemanFogProxmox
     def mock_node_servers(cr, servers)
       node = mock('node')
       node.stubs(:servers).returns(servers)
+      cr.stubs(:nodes).returns([node])
       cr.stubs(:node).returns(node)
       cr
     end
@@ -30,6 +31,7 @@ module ForemanFogProxmox
       node = mock('node')
       node.stubs(:containers).returns(containers)
       cr.stubs(:node).returns(node)
+      cr.stubs(:nodes).returns([node])
       cr
     end
 
@@ -38,6 +40,21 @@ module ForemanFogProxmox
       node.stubs(:containers).returns(containers)
       node.stubs(:servers).returns(servers)
       cr.stubs(:node).returns(node)
+      cr.stubs(:nodes).returns([node])
+      cr
+    end
+
+    def mock_cluster_nodes_servers_containers(cr, n1s, n1c, n2s, n2c)
+      node1 = mock('node')
+      node1.stubs(:node).returns('node1')
+      node1.stubs(:servers).returns(n1s)
+      node1.stubs(:containers).returns(n1c)
+      node2 = mock('node')
+      node2.stubs(:node).returns('node2')
+      node2.stubs(:servers).returns(n2s)
+      node2.stubs(:containers).returns(n2c)
+      cr.stubs(:node).returns(node1)
+      cr.stubs(:nodes).returns([node1, node2])
       cr
     end
 

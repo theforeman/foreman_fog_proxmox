@@ -9,6 +9,10 @@ Metrics/LineLength:
     - 'app/models/foreman_fog_proxmox/proxmox.rb'
     - 'app/models/concerns/host_ext/proxmox/interfaces.rb'
 
+Metrics/ModuleLength:
+  Exclude:
+    - 'test/unit/foreman_fog_proxmox/proxmox_test_helpers.rb'
+
 Naming/PredicateName:
   Exclude:
     - 'lib/foreman_fog_proxmox/semver.rb'

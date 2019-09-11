@@ -19,7 +19,7 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <% nodes = f.object.nodes rescue nil %>
 <% node_id = !!f.object.node_id ? f.object.node_id : '' %>
-<%= text_f f, :url, :help_block => _("e.g. https://127.0.0.1:8006/api2/json"), :help_inline_permanent => load_button_f(f, !!nodes, _("Test failed")) %>
+<%= text_f f, :url, :help_block => _("e.g. https://127.0.0.1:8006/api2/json"), :help_inline_permanent => load_button_f(f, !!nodes, _("Test Connection")) %>
 <%= text_f f, :user , :help_block => _("e.g. root@pam") %>
 <%= password_f f, :password, :keep_value => true, :unset => unset_password? %>
 <%= checkbox_f f, :ssl_verify_peer, :label => _("SSL verify peer"), :checked_value => '1', :onchange => "sslVerifyPeerSelected()" %>

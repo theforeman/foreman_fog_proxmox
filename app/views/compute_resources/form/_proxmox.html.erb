@@ -22,7 +22,7 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% token_expired = f.object.token_expired? %>
 <% token_deadline = f.object.token_deadline %>
 <%= checkbox_f f, :renew, :label => _("Renew expired token ?"), :checked_value => '1', :label_help => _("Token expires on #{token_deadline}") %>
-<%= text_f f, :url, :help_block => _("e.g. https://127.0.0.1:8006/api2/json"), :help_inline_permanent => load_button_f(f, !!nodes, _("Test failed")) %>
+<%= text_f f, :url, :help_block => _("e.g. https://127.0.0.1:8006/api2/json"), :help_inline_permanent => load_button_f(f, !!nodes, _("Test Connection")) %>
 <%= text_f f, :user , :help_block => _("e.g. root@pam") %>
 <%= password_f f, :password, :keep_value => true, :unset => unset_password? %>
 <%= checkbox_f f, :ssl_verify_peer, :label => _("SSL verify peer"), :checked_value => '1', :onchange => "sslVerifyPeerSelected()" %>

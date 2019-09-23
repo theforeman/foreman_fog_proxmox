@@ -9,10 +9,6 @@ inherit_from:
 Style/Documentation:
   Enabled: false
 
-# Force before_filter until upgrade to Rails 4
-Rails/ActionFilter:
-  EnforcedStyle: filter
-
 # TODO: try to refactor concerned code
 Metrics/AbcSize:
   Max: 60

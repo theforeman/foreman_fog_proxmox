@@ -19,7 +19,7 @@
 
 module ForemanFogProxmox
   class ComputeResourcesController < ::ApplicationController
-    before_filter :load_compute_resource
+    before_action :load_compute_resource
 
     # GET foreman_fog_proxmox/isos/:storage
     def isos

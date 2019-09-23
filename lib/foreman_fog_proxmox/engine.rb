@@ -60,10 +60,11 @@ module ForemanFogProxmox
       app.config.assets.precompile += assets_to_precompile
     end
     initializer 'foreman_fog_proxmox.configure_assets', group: :assets do
-      SETTINGS[:foreman_fog_proxmox] = { 
-        assets: { 
-          precompile: assets_to_precompile 
-        } }
+      SETTINGS[:foreman_fog_proxmox] = {
+        assets: {
+          precompile: assets_to_precompile
+        }
+      }
     end
 
     rake_tasks do
@@ -96,6 +97,5 @@ module ForemanFogProxmox
       ::Host::Managed.send :include, Orchestration::Proxmox::Compute
       ::Host::Managed.send :include, HostExt::Proxmox::Interfaces
     end
-
   end
 end

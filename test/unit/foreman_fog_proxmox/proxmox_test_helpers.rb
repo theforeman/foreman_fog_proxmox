@@ -19,22 +19,21 @@
 
 module ForemanFogProxmox
   module ProxmoxTestHelpers
-  
-    def mock_node_servers(cr, servers) 
+    def mock_node_servers(cr, servers)
       node = mock('node')
       node.stubs(:servers).returns(servers)
       cr.stubs(:node).returns(node)
       cr
     end
 
-    def mock_node_containers(cr, containers) 
+    def mock_node_containers(cr, containers)
       node = mock('node')
       node.stubs(:containers).returns(containers)
       cr.stubs(:node).returns(node)
       cr
     end
 
-    def mock_node_servers_containers(cr, servers, containers) 
+    def mock_node_servers_containers(cr, servers, containers)
       node = mock('node')
       node.stubs(:containers).returns(containers)
       node.stubs(:servers).returns(servers)
@@ -151,7 +150,7 @@ module ForemanFogProxmox
       }
       vm.stubs(:attributes).returns(vm_attributes)
       vm.stubs(:container?).returns(false)
-      return vm, config_attributes, volume_attributes, interface_attributes
+      [vm, config_attributes, volume_attributes, interface_attributes]
     end
 
     def mock_container_vm
@@ -196,7 +195,7 @@ module ForemanFogProxmox
         digest: '0',
         ostype: 'alpine',
         storage: 'local-lvm',
-        template: 0,        
+        template: 0,
         arch: 'amd64',
         memory: 512,
         swap: nil,
@@ -266,8 +265,7 @@ module ForemanFogProxmox
       }
       vm.stubs(:attributes).returns(vm_attributes)
       vm.stubs(:container?).returns(true)
-      return vm, config_attributes, volume_attributes, interface_attributes
+      [vm, config_attributes, volume_attributes, interface_attributes]
     end
-
-  end  
+  end
 end

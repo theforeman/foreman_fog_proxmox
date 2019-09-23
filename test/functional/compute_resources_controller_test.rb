@@ -19,16 +19,16 @@
 require 'test_plugin_helper'
 
 class ::ForemanFogProxmox::ComputeResourcesControllerTest < ActionController::TestCase
-    test 'should get isos' do
-        get :isos, params: { :storage => 'local' }
-        assert_response :found
-        show_response = @response.body
-        assert !show_response.empty?
-    end
-    test 'should get ostemplates' do
-        get :ostemplates, params: { :storage => 'local' }
-        assert_response :found
-        show_response = @response.body
-        assert !show_response.empty?
-    end
+  test 'should get isos' do
+    get :isos, params: { :storage => 'local' }
+    assert_response :found
+    show_response = @response.body
+    assert_not show_response.empty?
+  end
+  test 'should get ostemplates' do
+    get :ostemplates, params: { :storage => 'local' }
+    assert_response :found
+    show_response = @response.body
+    assert_not show_response.empty?
+  end
 end

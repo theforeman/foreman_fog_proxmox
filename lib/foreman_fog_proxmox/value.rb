@@ -18,7 +18,7 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 module ForemanFogProxmox::Value
-    def self.empty?(value)
-        value == nil || value == ""
-    end
+  def self.empty?(value)
+    value.nil? || value == ''
+  end
 end

@@ -21,3 +21,10 @@ Style/Next:
 # Support both ruby19 and hash_rockets
 Style/HashSyntax:
   Enabled: false
+
+Style/SymbolArray:
+  Description: Using percent style obscures symbolic intent of array's contents.
+  EnforcedStyle: brackets
+
+Style/WordArray:
+  EnforcedStyle: brackets

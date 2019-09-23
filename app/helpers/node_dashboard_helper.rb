@@ -18,19 +18,18 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 module NodeDashboardHelper
-    
-    def compute_data(statistics)
-        data = []
-        statistics.each do |statistic| 
-            t = Time.at(statistic['time'])
-            x = t.hour.to_s + ':' + t.min.to_s
-            data << [x,statistic['loadavg']*100]
-        end
-        data
+  def compute_data(statistics)
+    data = []
+    statistics.each do |statistic|
+      t = Time.zone.at(statistic['time'])
+      x = t.hour.to_s + ':' + t.min.to_s
+      data << [x, statistic['loadavg'] * 100]
     end
+    data
+  end
 
-    def render_node_statistics(statistics,options = {})
-        data = compute_data(statistics)
-        flot_bar_chart("node_statistics", _("Time"), _("Average load (x100)"), data, options)
-    end
+  def render_node_statistics(statistics, options = {})
+    data = compute_data(statistics)
+    flot_bar_chart('node_statistics', _('Time'), _('Average load (x100)'), data, options)
+  end
 end

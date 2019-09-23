@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright 2018 Tristan Robert
 
 # This file is part of ForemanFogProxmox.
@@ -16,9 +18,9 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 Deface::Override.new(
-    :virtual_path => "compute_resources_vms/form/_removable_layout",
-    :name => "remove_new_vm_from_removable_layout",
-    :replace_contents => "div.remove-button",
-    :partial => "compute_resources_vms/form/proxmox/removable_layout",
-    :original => "8b7383e57fbe158fc12bf8bc1003431f2f2cb6f5"
+  :virtual_path => 'compute_resources_vms/form/_removable_layout',
+  :name => 'remove_new_vm_from_removable_layout',
+  :replace_contents => 'div.remove-button',
+  :partial => 'compute_resources_vms/form/proxmox/removable_layout',
+  :original => '8b7383e57fbe158fc12bf8bc1003431f2f2cb6f5'
 )

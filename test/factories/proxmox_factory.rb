@@ -20,7 +20,6 @@
 require 'fog/compute/proxmox/models/node'
 
 FactoryBot.define do
-  
   factory :proxmox_resource, :class => ComputeResource do
     sequence(:name) { |n| "compute_resource#{n}" }
 
@@ -33,7 +32,6 @@ FactoryBot.define do
     end
 
     factory :proxmox_cr, :class => ForemanFogProxmox::Proxmox, :traits => [:proxmox]
-
   end
 
   factory :node, :class => Fog::Proxmox::Compute::Node do
@@ -50,10 +48,11 @@ FactoryBot.define do
   def deferred_nic_attrs
     [:ip, :ip6, :mac, :subnet, :domain]
   end
-  
+
   def set_nic_attributes(host, attributes, evaluator)
     attributes.each do |nic_attribute|
-      next unless evaluator.send(nic_attribute).present?
+      next if evaluator.send(nic_attribute).blank?
+
       host.primary_interface.send(:"#{nic_attribute}=", evaluator.send(nic_attribute))
     end
     host
@@ -65,7 +64,7 @@ FactoryBot.define do
 
   factory :nic_managed_empty, :class => Nic::Managed, :parent => :nic_base_empty do
     type 'Nic::Managed'
-    identifier 'net0'  
+    identifier 'net0'
   end
 
   factory :host_empty, :class => Host do
@@ -76,5 +75,4 @@ FactoryBot.define do
     end
     compute_attributes { { 'type' => 'qemu' } }
   end
-
 end

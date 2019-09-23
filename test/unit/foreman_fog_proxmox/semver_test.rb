@@ -45,6 +45,7 @@ module ForemanFogProxmox
         end
       end
     end
+    # rubocop:disable Lint/UselessComparison
     describe 'semverclass comparators' do
       it '#5.3.0 <= 5.4.0 returns true' do
         assert ForemanFogProxmox::Semver.to_semver('5.3.0') <= ForemanFogProxmox::Semver.to_semver('5.4.0')
@@ -75,5 +76,6 @@ module ForemanFogProxmox
         assert ForemanFogProxmox::Semver.to_semver('0.10.2') < ForemanFogProxmox::Semver.to_semver('1.20.0')
       end
     end
+    # rubocop:enable Lint/UselessComparison
   end
 end

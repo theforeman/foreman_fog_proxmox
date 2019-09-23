@@ -92,7 +92,16 @@ module ForemanFogProxmox
         ip = IPAddr.new(1, Socket::AF_INET).to_s
         ip6 = Array.new(4) { format('%x', rand(16**4)) }.join(':') + '::1'
         physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6)
-        host = FactoryBot.build(:host_empty, :interfaces => [physical_nic], :compute_attributes => { 'type' => 'qemu', 'interfaces_attributes' => { '0' => physical_nic } })
+        host = FactoryBot.build(
+          :host_empty,
+          :interfaces => [physical_nic],
+          :compute_attributes => {
+            'type' => 'qemu',
+            'interfaces_attributes' => {
+              '0' => physical_nic
+            }
+          }
+        )
         nic_attributes = @cr.host_interfaces_attrs(host).values.select(&:present?)
         nic_attr = nic_attributes.first
         assert_equal 'net0', nic_attr[:id]
@@ -109,7 +118,20 @@ module ForemanFogProxmox
       it 'raises Foreman::Exception when server ostype does not match os family' do
         operatingsystem = FactoryBot.build(:solaris)
         physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :primary => true)
-        host = FactoryBot.build(:host_empty, :interfaces => [physical_nic], :operatingsystem => operatingsystem, :compute_attributes => { 'type' => 'qemu', 'config_attributes' => { 'ostype' => 'l26' }, 'interfaces_attributes' => { '0' => physical_nic } })
+        host = FactoryBot.build(
+          :host_empty,
+          :interfaces => [physical_nic],
+          :operatingsystem => operatingsystem,
+          :compute_attributes => {
+            'type' => 'qemu',
+            'config_attributes' => {
+              'ostype' => 'l26'
+            },
+            'interfaces_attributes' => {
+              '0' => physical_nic
+            }
+          }
+        )
         err = assert_raises Foreman::Exception do
           @cr.host_compute_attrs(host)
         end
@@ -118,7 +140,19 @@ module ForemanFogProxmox
 
       it 'sets container hostname with host name' do
         physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :primary => true)
-        host = FactoryBot.build(:host_empty, :interfaces => [physical_nic], :compute_attributes => { 'type' => 'lxc', 'config_attributes' => { 'hostname' => '' }, 'interfaces_attributes' => { '0' => {} } })
+        host = FactoryBot.build(
+          :host_empty,
+          :interfaces => [physical_nic],
+          :compute_attributes => {
+            'type' => 'lxc',
+            'config_attributes' => {
+              'hostname' => ''
+            },
+            'interfaces_attributes' => {
+              '0' => {}
+            }
+          }
+        )
         @cr.host_compute_attrs(host)
         assert_equal host.name, host.compute_attributes['config_attributes']['hostname']
       end
@@ -209,7 +243,21 @@ module ForemanFogProxmox
         vm.stubs(:container?).returns(false)
         vm.stubs(:type).returns('qemu')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
-        new_attributes = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' }, 'volumes_attributes' => { '0' => { 'id' => 'scsi0', 'storage' => 'local-lvm', 'size' => '2147483648', 'cache' => 'none' } } }
+        new_attributes = {
+          'templated' => '0',
+          'config_attributes' => {
+            'cores' => '1',
+            'cpulimit' => '1'
+          },
+          'volumes_attributes' => {
+            '0' => {
+              'id' => 'scsi0',
+              'storage' => 'local-lvm',
+              'size' => '2147483648',
+              'cache' => 'none'
+            }
+          }
+        }
         @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = { id: 'scsi0', storage: 'local:lvm', size: (2_147_483_648 / GIGA).to_s }
@@ -234,7 +282,22 @@ module ForemanFogProxmox
         vm.stubs(:container?).returns(false)
         vm.stubs(:type).returns('qemu')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
-        new_attributes = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' }, 'volumes_attributes' => { '0' => { '_delete' => '1', 'id' => 'scsi0', 'storage' => 'local-lvm', 'size' => '2147483648', 'cache' => 'none' } } }
+        new_attributes = {
+          'templated' => '0',
+          'config_attributes' => {
+            'cores' => '1',
+            'cpulimit' => '1'
+          },
+          'volumes_attributes' => {
+            '0' => {
+              '_delete' => '1',
+              'id' => 'scsi0',
+              'storage' => 'local-lvm',
+              'size' => '2147483648',
+              'cache' => 'none'
+            }
+          }
+        }
         @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = 'scsi0'
@@ -258,8 +321,26 @@ module ForemanFogProxmox
         vm.stubs(:container?).returns(false)
         vm.stubs(:type).returns('qemu')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
-        new_attributes = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' }, 'interfaces_attributes' => { '0' => { '_delete' => '1', 'id' => 'net0' } } }
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'delete' => 'net0')
+        new_attributes = {
+          'templated' => '0',
+          'config_attributes' => {
+            'cores' => '1',
+            'cpulimit' => '1'
+          },
+          'interfaces_attributes' => {
+            '0' => {
+              '_delete' => '1',
+              'id' => 'net0'
+            }
+          }
+        }
+        @cr.stubs(:parse_server_vm).returns(
+          'vmid' => '100',
+          'type' => 'qemu',
+          'cores' => '1',
+          'cpulimit' => '1',
+          'delete' => 'net0'
+        )
         expected_config_attr = { :cores => '1', :cpulimit => '1', :delete => 'net0' }
         vm.expects(:update, expected_config_attr)
         @cr.save_vm(uuid, new_attributes)
@@ -280,7 +361,21 @@ module ForemanFogProxmox
         vm.stubs(:container?).returns(false)
         vm.stubs(:type).returns('qemu')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
-        new_attributes = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' }, 'volumes_attributes' => { '0' => { 'id' => 'scsi0', 'storage' => 'local-lvm', 'size' => '2147483648', 'cache' => 'none' } } }
+        new_attributes = {
+          'templated' => '0',
+          'config_attributes' => {
+            'cores' => '1',
+            'cpulimit' => '1'
+          },
+          'volumes_attributes' => {
+            '0' => {
+              'id' => 'scsi0',
+              'storage' => 'local-lvm',
+              'size' => '2147483648',
+              'cache' => 'none'
+            }
+          }
+        }
         @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = ['scsi0', '+1G']
@@ -304,9 +399,24 @@ module ForemanFogProxmox
         vm.stubs(:container?).returns(false)
         vm.stubs(:type).returns('qemu')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
-        new_attributes = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' }, 'volumes_attributes' => { '0' => { 'id' => 'scsi0', 'storage' => 'local-lvm', 'size' => '2', 'cache' => 'none' } } }
+        new_attributes = {
+          'templated' => '0',
+          'config_attributes' => {
+            'cores' => '1',
+            'cpulimit' => '1'
+          },
+          'volumes_attributes' => {
+            '0' => {
+              'id' => 'scsi0',
+              'storage' => 'local-lvm',
+              'size' => '2',
+              'cache' => 'none'
+            }
+          }
+        }
         @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
-        expected_config_attr = { :cores => '1', :cpulimit => '1' }
+        # FIXME: is this neccessary?
+        # expected_config_attr = { :cores => '1', :cpulimit => '1' }
         err = assert_raises Foreman::Exception do
           @cr.save_vm(uuid, new_attributes)
         end
@@ -328,7 +438,21 @@ module ForemanFogProxmox
         vm.stubs(:container?).returns(false)
         vm.stubs(:type).returns('qemu')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
-        new_attributes = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' }, 'volumes_attributes' => { '0' => { 'id' => 'scsi0', 'storage' => 'local-lvm2', 'size' => '1073741824', 'cache' => 'none' } } }
+        new_attributes = {
+          'templated' => '0',
+          'config_attributes' => {
+            'cores' => '1',
+            'cpulimit' => '1'
+          },
+          'volumes_attributes' => {
+            '0' => {
+              'id' => 'scsi0',
+              'storage' => 'local-lvm2',
+              'size' => '1073741824',
+              'cache' => 'none'
+            }
+          }
+        }
         @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = ['scsi0', 'local-lvm2']
@@ -369,10 +493,35 @@ module ForemanFogProxmox
         vm.stubs(:container?).returns(false)
         vm.stubs(:type).returns('lxc')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
-        new_attributes = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' }, 'volumes_attributes' => { '0' => { 'id' => 'mp0', 'storage' => 'local-lvm', 'size' => '2147483648', 'cache' => 'none', 'mp' => '/opt/path' } } }
+        new_attributes = {
+          'templated' => '0',
+          'config_attributes' => {
+            'cores' => '1',
+            'cpulimit' => '1'
+          },
+          'volumes_attributes' => {
+            '0' => {
+              'id' => 'mp0',
+              'storage' => 'local-lvm',
+              'size' => '2147483648',
+              'cache' => 'none',
+              'mp' => '/opt/path'
+            }
+          }
+        }
         @cr.stubs(:parse_container_vm).returns('vmid' => '100', 'type' => 'lxc', 'cores' => '1', 'cpulimit' => '1')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
-        expected_volume_attr = [{ id: 'mp0', storage: 'local:lvm', size: (2_147_483_648 / GIGA).to_s }, { mp: '/opt/path' }]
+        expected_volume_attr =
+          [
+            {
+              id: 'mp0',
+              storage: 'local:lvm',
+              size: (2_147_483_648 / GIGA).to_s
+            },
+            {
+              mp: '/opt/path'
+            }
+          ]
         vm.expects(:attach, expected_volume_attr)
         vm.expects(:update, expected_config_attr)
         @cr.save_vm(uuid, new_attributes)
@@ -394,8 +543,28 @@ module ForemanFogProxmox
         vm.stubs(:container?).returns(false)
         vm.stubs(:type).returns('lxc')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
-        new_attributes = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' }, 'volumes_attributes' => { '0' => { 'id' => 'rootfs', 'storage' => 'local-lvm', 'size' => '2147483648', 'cache' => 'none' } } }
-        @cr.stubs(:parse_container_vm).returns('vmid' => '100', 'type' => 'lxc', 'cores' => '1', 'cpulimit' => '1')
+        new_attributes =
+          {
+            'templated' => '0',
+            'config_attributes' => {
+              'cores' => '1',
+              'cpulimit' => '1'
+            },
+            'volumes_attributes' => {
+              '0' => {
+                'id' => 'rootfs',
+                'storage' => 'local-lvm',
+                'size' => '2147483648',
+                'cache' => 'none'
+              }
+            }
+          }
+        @cr.stubs(:parse_container_vm).returns(
+          'vmid' => '100',
+          'type' => 'lxc',
+          'cores' => '1',
+          'cpulimit' => '1'
+        )
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = ['rootfs', '+1G']
         vm.expects(:extend, expected_volume_attr)

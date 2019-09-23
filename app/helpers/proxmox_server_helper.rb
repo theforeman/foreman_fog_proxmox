@@ -111,7 +111,8 @@ module ProxmoxServerHelper
     logger.error "###### ID: #{id};  attrs:#{args.inspect}"
     return args if ForemanFogProxmox::Value.empty?(id) || id == 'rootfs'
 
-    delete = args['_delete'].to_i == 1
+    # TODO: Delete disk if requested:
+    # delete = args['_delete'].to_i == 1
     args.delete_if { |_key, value| ForemanFogProxmox::Value.empty?(value) }
     disk.store(:id, id)
     disk.store(:volid, args['volid']) if args.key?('volid')

@@ -17,101 +17,104 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-module ForemanFogProxmox::Semver
-  SEMVER_REGEX = /^(\d+)[.]{1}(\d+)[.]{1}(\d+)[-]{0,1}(\w+){0,1}$/.freeze
-  class SemverClass
-    attr_accessor :major
-    attr_accessor :minor
-    attr_accessor :patch
-    attr_accessor :qualifier
-    def initialize(major, minor, patch, qualifier = '')
-      @major = major.to_i
-      @minor = minor.to_i
-      @patch = patch.to_i
-      @qualifier = qualifier.nil? ? '' : qualifier
-    end
+module ForemanFogProxmox
+  module Semver
+    SEMVER_REGEX = /^(\d+)[.]{1}(\d+)[.]{1}(\d+)[-]{0,1}(\w+){0,1}$/.freeze
+    class SemverClass
+      attr_accessor :major
+      attr_accessor :minor
+      attr_accessor :patch
+      attr_accessor :qualifier
+      def initialize(major, minor, patch, qualifier = '')
+        @major = major.to_i
+        @minor = minor.to_i
+        @patch = patch.to_i
+        @qualifier = qualifier.nil? ? '' : qualifier
+      end
 
-    def to_s
-      flat = "#{major}.#{minor}.#{patch}"
-      flat += "-#{qualifier}" unless qualifier == ''
-    end
+      def to_s
+        flat = "#{major}.#{minor}.#{patch}"
+        flat += "-#{qualifier}" unless qualifier == ''
+        flat
+      end
 
-    def <=(other)
-      raise TypeError unless other.is_a?(SemverClass)
+      def <=(other)
+        raise TypeError unless other.is_a?(SemverClass)
 
-      if @major == other.major
-        if @minor == other.minor
-          return @patch <= other.patch
+        if @major == other.major
+          if @minor == other.minor
+            return @patch <= other.patch
+          else
+            return @minor <= other.minor
+          end
         else
-          return @minor <= other.minor
+          return @major <= other.major
         end
-      else
-        return @major <= other.major
+      end
+
+      def <(other)
+        raise TypeError unless other.is_a?(SemverClass)
+
+        if @major == other.major
+          if @minor == other.minor
+            return @patch < other.patch
+          else
+            return @minor < other.minor
+          end
+        else
+          return @major < other.major
+        end
+      end
+
+      def >(other)
+        raise TypeError unless other.is_a?(SemverClass)
+
+        if @major == other.major
+          if @minor == other.minor
+            return @patch > other.patch
+          else
+            return @minor > other.minor
+          end
+        else
+          return @major > other.major
+        end
+      end
+
+      def >=(other)
+        raise TypeError unless other.is_a?(SemverClass)
+
+        if @major == other.major
+          if @minor == other.minor
+            return @patch >= other.patch
+          else
+            return @minor >= other.minor
+          end
+        else
+          return @major >= other.major
+        end
+      end
+
+      def ==(other)
+        raise TypeError unless other.is_a?(SemverClass)
+
+        @major == other.major && @minor == other.minor && @patch == other.patch && @qualifier == other.qualifier
       end
     end
-
-    def <(other)
-      raise TypeError unless other.is_a?(SemverClass)
-
-      if @major == other.major
-        if @minor == other.minor
-          return @patch < other.patch
-        else
-          return @minor < other.minor
-        end
-      else
-        return @major < other.major
-      end
+    def self.is_semver?(version)
+      version.is_a?(String) && version.match(SEMVER_REGEX)
     end
 
-    def >(other)
-      raise TypeError unless other.is_a?(SemverClass)
+    def self.to_semver(version)
+      raise ArgumentError unless is_semver?(version)
 
-      if @major == other.major
-        if @minor == other.minor
-          return @patch > other.patch
-        else
-          return @minor > other.minor
-        end
-      else
-        return @major > other.major
-      end
+      version_a = version.scan(SEMVER_REGEX)
+      raise ArgumentError if version_a.empty?
+
+      semver_a = version_a.first
+      raise ArgumentError if semver_a.empty?
+      raise ArgumentError if semver_a.size < 4
+
+      SemverClass.new(semver_a[0], semver_a[1], semver_a[2], semver_a[3])
     end
-
-    def >=(other)
-      raise TypeError unless other.is_a?(SemverClass)
-
-      if @major == other.major
-        if @minor == other.minor
-          return @patch >= other.patch
-        else
-          return @minor >= other.minor
-        end
-      else
-        return @major >= other.major
-      end
-    end
-
-    def ==(other)
-      raise TypeError unless other.is_a?(SemverClass)
-
-      @major == other.major && @minor == other.minor && @patch == other.patch && @qualifier == other.qualifier
-    end
-  end
-  def self.is_semver?(version)
-    version.is_a?(String) && version.match(SEMVER_REGEX)
-  end
-
-  def self.to_semver(version)
-    raise ArgumentError unless is_semver?(version)
-
-    version_a = version.scan(SEMVER_REGEX)
-    raise ArgumentError if version_a.empty?
-
-    semver_a = version_a.first
-    raise ArgumentError if semver_a.empty?
-    raise ArgumentError if semver_a.size < 4
-
-    SemverClass.new(semver_a[0], semver_a[1], semver_a[2], semver_a[3])
   end
 end

@@ -119,7 +119,7 @@ module ForemanFogProxmox
       test '#interface with model e1000 and bridge' do
         interfaces_to_delete = []
         interfaces_to_add = []
-        interface = add_server_interface(host['interfaces_attributes']['1'], interfaces_to_delete, interfaces_to_add)
+        add_server_interface(host['interfaces_attributes']['1'], interfaces_to_delete, interfaces_to_add)
         assert interfaces_to_delete.empty?
         assert_equal 1, interfaces_to_add.length
         assert interfaces_to_add[0].key?(:net1)

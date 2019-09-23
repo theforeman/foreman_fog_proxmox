@@ -212,5 +212,5 @@ module ForemanFogProxmox
         assert host_container['config_attributes']['swap'].empty?
       end
     end
-    end
+  end
 end

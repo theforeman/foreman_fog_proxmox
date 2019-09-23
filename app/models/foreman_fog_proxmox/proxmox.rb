@@ -57,8 +57,8 @@ module ForemanFogProxmox
     end
 
     def version_suitable?
-      logger.debug(format(_('Proxmox compute resource version is %{version}'), version: version))
-      raise ::Foreman::Exception, format(_('Proxmox version %{version} is not semver suitable'), version: version) unless ForemanFogProxmox::Semver.is_semver?(version)
+      logger.debug(format(_('Proxmox compute resource version is %<version>s'), version: version))
+      raise ::Foreman::Exception, format(_('Proxmox version %<version>s is not semver suitable'), version: version) unless ForemanFogProxmox::Semver.is_semver?(version)
 
       ForemanFogProxmox::Semver.to_semver(version) >= ForemanFogProxmox::Semver.to_semver('5.3.0') && ForemanFogProxmox::Semver.to_semver(version) < ForemanFogProxmox::Semver.to_semver('5.5.0')
     end
@@ -128,7 +128,7 @@ module ForemanFogProxmox
         when 'lxc'
           host.compute_attributes['config_attributes'].store('hostname', host.name)
         when 'qemu'
-          raise ::Foreman::Exception, format(_('Operating system family %{type} is not consistent with %{ostype}'), type: host.operatingsystem.type, ostype: ostype) unless compute_os_types(host).include?(ostype)
+          raise ::Foreman::Exception, format(_('Operating system family %<type>s is not consistent with %<ostype>s'), type: host.operatingsystem.type, ostype: ostype) unless compute_os_types(host).include?(ostype)
         end
       end
     end
@@ -289,7 +289,7 @@ module ForemanFogProxmox
       rescue Fog::Errors::NotFound
         vm = nil
       rescue Fog::Errors::Error => e
-        Foreman::Logging.exception(format(_('Failed retrieving proxmox server vm by vmid=%{uuid}'), vmid: uuid), e)
+        Foreman::Logging.exception(format(_('Failed retrieving proxmox server vm by vmid=%<vmid>s'), vmid: uuid), e)
         raise(ActiveRecord::RecordNotFound)
       end
       begin
@@ -297,7 +297,7 @@ module ForemanFogProxmox
       rescue Fog::Errors::NotFound
         vm = nil
       rescue Fog::Errors::Error => e
-        Foreman::Logging.exception(format(_('Failed retrieving proxmox container vm by vmid=%{uuid}'), vmid: uuid), e)
+        Foreman::Logging.exception(format(_('Failed retrieving proxmox container vm by vmid=%<vmid>s'), vmid: uuid), e)
         raise(ActiveRecord::RecordNotFound)
       end
       vm
@@ -345,7 +345,7 @@ module ForemanFogProxmox
             vm.detach('unused' + device.to_s)
           else
             diff_size = volume_attributes['size'].to_i - disk.size
-            raise ::Foreman::Exception, format(_('Unable to shrink %{id} size. Proxmox allows only increasing size.'), id: id) unless diff_size >= 0
+            raise ::Foreman::Exception, format(_('Unable to shrink %<id>s size. Proxmox allows only increasing size.'), id: id) unless diff_size >= 0
 
             if diff_size > 0
               extension = '+' + (diff_size / GIGA).to_s + 'G'
@@ -378,7 +378,7 @@ module ForemanFogProxmox
         config_attributes = config_attributes.reject { |key, _value| Fog::Proxmox::DiskHelper.disk?(key) }
         vm.update(config_attributes.merge(cdrom_attributes))
       end
-      vm = find_vm_by_uuid(uuid)
+      find_vm_by_uuid(uuid)
     end
 
     def next_vmid

@@ -1,0 +1,50 @@
+
+Metrics/ClassLength:
+  Exclude:
+    - 'app/models/foreman_fog_proxmox/proxmox.rb'
+    - 'test/unit/foreman_fog_proxmox/proxmox_test.rb'
+
+Metrics/LineLength:
+  Exclude:
+    - 'app/models/foreman_fog_proxmox/proxmox.rb'
+    - 'app/models/concerns/host_ext/proxmox/interfaces.rb'
+
+Naming/PredicateName:
+  Exclude:
+    - 'lib/foreman_fog_proxmox/semver.rb'
+
+Naming/UncommunicativeMethodParamName:
+  Exclude:
+    - 'app/models/foreman_fog_proxmox/proxmox.rb'
+    - 'app/helpers/proxmox_vm_helper.rb'
+    - 'app/helpers/proxmox_form_helper.rb'
+    - 'test/unit/foreman_fog_proxmox/proxmox_test_helpers.rb'
+
+Style/FormatStringToken:
+  Exclude:
+    - 'test/unit/foreman_fog_proxmox/proxmox_test.rb'
+    - 'app/models/foreman_fog_proxmox/proxmox.rb'
+    - 'app/models/concerns/orchestration/proxmox/compute.rb'
+
+Style/GuardClause:
+  Exclude:
+    - 'lib/foreman_fog_proxmox/semver.rb'
+
+Style/IfUnlessModifier:
+  Exclude:
+    - 'app/models/foreman_fog_proxmox/proxmox.rb'
+
+# FIXME: ASAP PLEASE
+Lint/ShadowedArgument:
+  Exclude:
+    - 'app/helpers/proxmox_vm_helper.rb'
+Lint/UselessAssignment:
+  Exclude:
+    - 'app/helpers/proxmox_vm_helper.rb'
+Style/OptionalArguments:
+  Exclude:
+    - 'app/models/foreman_fog_proxmox/proxmox.rb'
+Rails/OutputSafety:
+  Exclude:
+    - 'app/helpers/proxmox_form_helper.rb'
+

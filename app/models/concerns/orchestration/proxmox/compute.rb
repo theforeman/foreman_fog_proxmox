@@ -17,22 +17,26 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-module Orchestration::Proxmox::Compute
-  extend ActiveSupport::Concern
+module Orchestration
+  module Proxmox
+    module Compute
+      extend ActiveSupport::Concern
 
-  def setComputeUpdate
-    logger.info "Update Proxmox Compute instance for #{name}"
-    final_compute_attributes = compute_attributes.merge(compute_resource.host_compute_attrs(self))
-    compute_resource.save_vm uuid, final_compute_attributes
-  rescue StandardError => e
-    failure format(_('Failed to update a compute %{compute_resource} instance %{name}: %{e}'), :compute_resource => compute_resource, :name => name, :e => e), e
-  end
+      def setComputeUpdate
+        logger.info "Update Proxmox Compute instance for #{name}"
+        final_compute_attributes = compute_attributes.merge(compute_resource.host_compute_attrs(self))
+        compute_resource.save_vm uuid, final_compute_attributes
+      rescue StandardError => e
+        failure format(_('Failed to update a compute %{compute_resource} instance %{name}: %{e}'), :compute_resource => compute_resource, :name => name, :e => e), e
+      end
 
-  def delComputeUpdate
-    logger.info "Undo Update Proxmox Compute instance for #{name}"
-    final_compute_attributes = old.compute_attributes.merge(compute_resource.host_compute_attrs(old))
-    compute_resource.save_vm uuid, final_compute_attributes
-  rescue StandardError => e
-    failure format(_('Failed to undo update compute %{compute_resource} instance %{name}: %{e}'), :compute_resource => compute_resource, :name => name, :e => e), e
+      def delComputeUpdate
+        logger.info "Undo Update Proxmox Compute instance for #{name}"
+        final_compute_attributes = old.compute_attributes.merge(compute_resource.host_compute_attrs(old))
+        compute_resource.save_vm uuid, final_compute_attributes
+      rescue StandardError => e
+        failure format(_('Failed to undo update compute %{compute_resource} instance %{name}: %{e}'), :compute_resource => compute_resource, :name => name, :e => e), e
+      end
+    end
   end
 end

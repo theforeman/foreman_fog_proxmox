@@ -18,17 +18,19 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 require 'test_plugin_helper'
 
-class ::ForemanFogProxmox::ComputeResourcesControllerTest < ActionController::TestCase
+module ForemanFogProxmox
+  class ComputeResourcesControllerTest < ActionController::TestCase
     test 'should get isos' do
-        get :isos, params: { :storage => 'local' }
-        assert_response :found
-        show_response = @response.body
-        assert !show_response.empty?
+      get :isos, params: { :storage => 'local' }
+      assert_response :found
+      show_response = @response.body
+      assert_not show_response.empty?
     end
     test 'should get ostemplates' do
-        get :ostemplates, params: { :storage => 'local' }
-        assert_response :found
-        show_response = @response.body
-        assert !show_response.empty?
+      get :ostemplates, params: { :storage => 'local' }
+      assert_response :found
+      show_response = @response.body
+      assert_not show_response.empty?
     end
+  end
 end

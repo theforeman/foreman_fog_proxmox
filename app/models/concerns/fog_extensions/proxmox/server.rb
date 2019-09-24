@@ -18,63 +18,75 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 module FogExtensions
-    module Proxmox
-        module Server
-            extend ActiveSupport::Concern
-            attr_accessor :image_id, :templated, :ostemplate_storage, :ostemplate_file, :password
-            
-            def start
-                action('start')
-            end
-            def stop
-                action('stop')
-            end
-            def reboot
-                stop
-                start
-            end
-            def reset
-                reboot
-            end
-            def mac
-                config.mac_addresses.first
-            end
-            def memory
-                maxmem.to_i
-            end
-            def state
-                qmpstatus
-            end
-            def description
-                config.description
-            end
-            def vm_description
-                "Name=#{name}, vmid=#{vmid}"
-            end
-            def select_nic(fog_nics, nic)
-                fog_nics.find {|fog_nic| fog_nic.identity.to_s == nic.identifier}
-            end
-            def interfaces
-                config.interfaces
-            end
-            def nics
-                config.interfaces.collect { |nic| nic.to_s }
-            end
-            def volumes
-                config.disks.reject { |disk| disk.cdrom? }
-            end
-            def disks
-                config.disks.collect { |disk| disk.to_s }
-            end
-            def vga
-                config.vga
-            end
-            def interfaces_attributes=(attrs); end
-            def volumes_attributes=(attrs); end
-            def config_attributes=(attrs); end
-            def templated?
-                volumes.any? { |volume| volume.templated? }
-            end
-        end
+  module Proxmox
+    module Server
+      extend ActiveSupport::Concern
+      attr_accessor :image_id, :templated, :ostemplate_storage, :ostemplate_file, :password
+
+      def start
+        action('start')
+      end
+
+      def stop
+        action('stop')
+      end
+
+      def reboot
+        stop
+        start
+      end
+
+      def reset
+        reboot
+      end
+
+      def mac
+        config.mac_addresses.first
+      end
+
+      def memory
+        maxmem.to_i
+      end
+
+      def state
+        qmpstatus
+      end
+
+      delegate :description, to: :config
+
+      def vm_description
+        "Name=#{name}, vmid=#{vmid}"
+      end
+
+      def select_nic(fog_nics, nic)
+        fog_nics.find { |fog_nic| fog_nic.identity.to_s == nic.identifier }
+      end
+
+      delegate :interfaces, to: :config
+
+      def nics
+        config.interfaces.collect(&:to_s)
+      end
+
+      def volumes
+        config.disks.reject(&:cdrom?)
+      end
+
+      def disks
+        config.disks.collect(&:to_s)
+      end
+
+      delegate :vga, to: :config
+
+      def interfaces_attributes=(attrs); end
+
+      def volumes_attributes=(attrs); end
+
+      def config_attributes=(attrs); end
+
+      def templated?
+        volumes.any?(&:templated?)
+      end
     end
-end   
+  end
+end

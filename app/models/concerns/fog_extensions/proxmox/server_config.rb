@@ -20,44 +20,52 @@
 require 'fog/proxmox/helpers/cpu_helper'
 
 module FogExtensions
-    module Proxmox
-        module ServerConfig
-            extend ActiveSupport::Concern
-            def cpu_type
-                Fog::Proxmox::CpuHelper.extract_type(cpu)
-            end
-            def spectre
-                Fog::Proxmox::CpuHelper.extract_spectre(cpu)
-            end
-            def pcid
-                Fog::Proxmox::CpuHelper.extract_pcid(cpu)
-            end
-            def cdrom
-                if disks.cdrom
-                    %w[none cdrom].include?(disks.cdrom.volid) ? disks.cdrom.volid : 'image'
-                else
-                    'none'
-                end
-            end
-            def cdrom_storage
-                disks.cdrom ? disks.cdrom.storage : ''
-            end
-            def cdrom_iso
-                disks.cdrom ? disks.cdrom.volid : ''
-            end
-            def cdrom_image
-                if disks.cdrom
-                    %w[none cdrom].include?(disks.cdrom.volid) ? disks.cdrom.volid : 'image'
-                else
-                    'none'
-                end
-            end
-            def rootfs_storage
-                disks.rootfs.storage if disks.rootfs
-            end
-            def rootfs_file
-                disks.rootfs.volid if disks.rootfs
-            end
+  module Proxmox
+    module ServerConfig
+      extend ActiveSupport::Concern
+      def cpu_type
+        Fog::Proxmox::CpuHelper.extract_type(cpu)
+      end
+
+      def spectre
+        Fog::Proxmox::CpuHelper.extract_spectre(cpu)
+      end
+
+      def pcid
+        Fog::Proxmox::CpuHelper.extract_pcid(cpu)
+      end
+
+      def cdrom
+        if disks.cdrom
+          ['none', 'cdrom'].include?(disks.cdrom.volid) ? disks.cdrom.volid : 'image'
+        else
+          'none'
         end
+      end
+
+      def cdrom_storage
+        disks.cdrom ? disks.cdrom.storage : ''
+      end
+
+      def cdrom_iso
+        disks.cdrom ? disks.cdrom.volid : ''
+      end
+
+      def cdrom_image
+        if disks.cdrom
+          ['none', 'cdrom'].include?(disks.cdrom.volid) ? disks.cdrom.volid : 'image'
+        else
+          'none'
+        end
+      end
+
+      def rootfs_storage
+        disks.rootfs&.storage
+      end
+
+      def rootfs_file
+        disks.rootfs&.volid
+      end
     end
-end   
+  end
+end

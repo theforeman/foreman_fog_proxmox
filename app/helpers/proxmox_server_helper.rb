@@ -22,7 +22,6 @@ require 'fog/proxmox/helpers/nic_helper'
 require 'foreman_fog_proxmox/value'
 
 module ProxmoxServerHelper
-
   KILO = 1024
   MEGA = KILO * KILO
   GIGA = KILO * MEGA
@@ -33,28 +32,29 @@ module ProxmoxServerHelper
     return {} unless args
     return {} if args.empty?
     return {} unless args['type'] == 'qemu'
+
     config = args['config_attributes']
-    main_a = %w[name type node_id vmid interfaces mount_points disks]
-    config = args.reject { |key,_value| main_a.include? key } unless config
-    cdrom_a = %w[cdrom cdrom_storage cdrom_iso]
-    cdrom = parse_server_cdrom(config.select { |key,_value| cdrom_a.include? key })
+    main_a = ['name', 'type', 'node_id', 'vmid', 'interfaces', 'mount_points', 'disks']
+    config ||= args.reject { |key, _value| main_a.include? key }
+    cdrom_a = ['cdrom', 'cdrom_storage', 'cdrom_iso']
+    cdrom = parse_server_cdrom(config.select { |key, _value| cdrom_a.include? key })
     vols = args['volumes_attributes']
     volumes = parse_server_volumes(vols)
-    cpu_a = %w[cpu_type spectre pcid]
-    cpu = parse_server_cpu(config.select { |key,_value| cpu_a.include? key })
-    memory_a = %w[memory min_memory balloon shares]
-    memory = parse_server_memory(config.select { |key,_value| memory_a.include? key })
+    cpu_a = ['cpu_type', 'spectre', 'pcid']
+    cpu = parse_server_cpu(config.select { |key, _value| cpu_a.include? key })
+    memory_a = ['memory', 'min_memory', 'balloon', 'shares']
+    memory = parse_server_memory(config.select { |key, _value| memory_a.include? key })
     interfaces_attributes = args['interfaces_attributes']
     interfaces_to_add, interfaces_to_delete = parse_server_interfaces(interfaces_attributes)
-    general_a = %w[node_id type config_attributes volumes_attributes interfaces_attributes firmware_type provision_method container_volumes server_volumes]
+    general_a = ['node_id', 'type', 'config_attributes', 'volumes_attributes', 'interfaces_attributes', 'firmware_type', 'provision_method', 'container_volumes', 'server_volumes']
     logger.debug("general_a: #{general_a}")
-    parsed_vm = args.reject { |key,value| general_a.include?(key) || ForemanFogProxmox::Value.empty?(value) }
+    parsed_vm = args.reject { |key, value| general_a.include?(key) || ForemanFogProxmox::Value.empty?(value) }
     config_a = []
     config_a += cpu_a
     config_a += cdrom_a
     config_a += memory_a
     config_a += general_a
-    parsed_config = config.reject { |key,value| config_a.include?(key) || ForemanFogProxmox::Value.empty?(value) }
+    parsed_config = config.reject { |key, value| config_a.include?(key) || ForemanFogProxmox::Value.empty?(value) }
     logger.debug("parse_server_config(): #{parsed_config}")
     parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory).merge(cdrom)
     interfaces_to_add.each { |interface| parsed_vm = parsed_vm.merge(interface) }
@@ -65,29 +65,30 @@ module ProxmoxServerHelper
   end
 
   def parse_server_memory(args)
-    memory = { }
-    memory.store(:memory,args['memory'].to_i) if args['memory']
+    memory = {}
+    memory.store(:memory, args['memory'].to_i) if args['memory']
     ballooned = args['balloon'].to_i == 1
     if ballooned
-      memory.store(:shares,args['shares'].to_i) if args['shares']
-      memory.store(:min_memory,args['min_memory'].to_i) if args['min_memory']
+      memory.store(:shares, args['shares'].to_i) if args['shares']
+      memory.store(:min_memory, args['min_memory'].to_i) if args['min_memory']
     end
-    memory.store(:balloon,args['balloon'].to_i) if args['balloon']
+    memory.store(:balloon, args['balloon'].to_i) if args['balloon']
     logger.debug("parse_server_memory(): #{memory}")
     memory
   end
 
   def parse_server_cpu(args)
     return {} unless args['cpu_type']
+
     cpu = "cputype=#{args['cpu_type']}"
     spectre = args['spectre'].to_i == 1
     pcid = args['pcid'].to_i == 1
-    cpu += ",flags=" if spectre || pcid
-    cpu += "+spec-ctrl" if spectre
-    cpu += ";" if spectre && pcid
-    cpu += "+pcid" if pcid      
-    args.delete_if { |key,value| %w[cpu_type spectre pcid].include?(key) || ForemanFogProxmox::Value.empty?(value) }
-    args.each_value { |value| value.to_i }
+    cpu += ',flags=' if spectre || pcid
+    cpu += '+spec-ctrl' if spectre
+    cpu += ';' if spectre && pcid
+    cpu += '+pcid' if pcid
+    args.delete_if { |key, value| ['cpu_type', 'spectre', 'pcid'].include?(key) || ForemanFogProxmox::Value.empty?(value) }
+    args.each_value(&:to_i)
     parsed_cpu = { cpu: cpu }.merge(args)
     logger.debug("parse_server_cpu(): #{parsed_cpu}")
     parsed_cpu
@@ -98,22 +99,26 @@ module ProxmoxServerHelper
     cdrom_image = args['cdrom_iso']
     volid = cdrom_image.empty? ? cdrom : cdrom_image
     return {} unless volid
+
     cdrom = "#{volid},media=cdrom"
-    {ide2: cdrom}
+    { ide2: cdrom }
   end
 
   def parse_server_volume(args)
     disk = {}
     id = args['id']
-    id = "#{args['controller']}#{args['device']}" if args.has_key?('controller') && args.has_key?('device') && !id
+    id = "#{args['controller']}#{args['device']}" if args.key?('controller') && args.key?('device') && !id
+    logger.error "###### ID: #{id};  attrs:#{args.inspect}"
     return args if ForemanFogProxmox::Value.empty?(id) || id == 'rootfs'
-    delete = args['_delete'].to_i == 1
-    args.delete_if { |_key,value| ForemanFogProxmox::Value.empty?(value) }
+
+    # TODO: Delete disk if requested:
+    # delete = args['_delete'].to_i == 1
+    args.delete_if { |_key, value| ForemanFogProxmox::Value.empty?(value) }
     disk.store(:id, id)
-    disk.store(:volid, args['volid']) if args.has_key?('volid')
-    disk.store(:storage, args['storage'].to_s) if args.has_key?('storage')
-    disk.store(:size, args['size'].to_i) if args.has_key?('size')
-    options = args.reject { |key,_value| %w[id volid controller device storage size _delete].include? key}
+    disk.store(:volid, args['volid']) if args.key?('volid')
+    disk.store(:storage, args['storage'].to_s) if args.key?('storage')
+    disk.store(:size, args['size'].to_i) if args.key?('size')
+    options = args.reject { |key, _value| ['id', 'volid', 'controller', 'device', 'storage', 'size', '_delete'].include? key }
     disk.store(:options, options)
     logger.debug("parse_server_volume(): disk=#{disk}")
     Fog::Proxmox::DiskHelper.flatten(disk)
@@ -121,7 +126,7 @@ module ProxmoxServerHelper
 
   def parse_server_volumes(args)
     volumes = []
-    args.each_value { |value| volumes.push(parse_server_volume(value))} if args
+    args&.each_value { |value| volumes.push(parse_server_volume(value)) }
     logger.debug("parse_server_volumes(): volumes=#{volumes}")
     volumes
   end
@@ -129,13 +134,13 @@ module ProxmoxServerHelper
   def parse_server_interfaces(interfaces_attributes)
     interfaces_to_add = []
     interfaces_to_delete = []
-    interfaces_attributes.each_value { |value| add_server_interface(value,interfaces_to_delete,interfaces_to_add)} if interfaces_attributes
+    interfaces_attributes&.each_value { |value| add_server_interface(value, interfaces_to_delete, interfaces_to_add) }
     logger.debug("parse_server_interfaces(): interfaces_to_delete=#{interfaces_to_delete} interfaces_to_add=#{interfaces_to_add}")
     [interfaces_to_add, interfaces_to_delete]
   end
 
   def add_server_interface(interface_attributes, interfaces_to_delete, interfaces_to_add)
-    interface_attributes.delete_if { |_key,value| ForemanFogProxmox::Value.empty?(value) }
+    interface_attributes.delete_if { |_key, value| ForemanFogProxmox::Value.empty?(value) }
     nic = {}
     id = interface_attributes['id']
     logger.debug("add_server_interface(): id=#{id}")
@@ -156,5 +161,4 @@ module ProxmoxServerHelper
       interfaces_to_add.push(Fog::Proxmox::NicHelper.flatten(nic))
     end
   end
-
 end

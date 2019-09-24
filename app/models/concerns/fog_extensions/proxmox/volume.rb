@@ -18,12 +18,12 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 module FogExtensions
-    module Proxmox
-        module Volume
-            extend ActiveSupport::Concern
-            def templated?
-                volid ? volid.match(/^([\w-]+)[:]base-(\d+)-disk-(\d+)/) : false
-            end
-        end
+  module Proxmox
+    module Volume
+      extend ActiveSupport::Concern
+      def templated?
+        volid ? volid.match(/^([\w-]+)[:]base-(\d+)-disk-(\d+)/) : false
+      end
     end
-end   
+  end
+end

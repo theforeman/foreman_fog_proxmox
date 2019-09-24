@@ -1,14 +1,6 @@
-require 'rake/testtask'
+# frozen_string_literal: true
 
-# Tasks
-namespace :foreman_fog_proxmox do
-  namespace :example do
-    desc 'Example Task'
-    task task: :environment do
-      # Task goes here
-    end
-  end
-end
+require 'rake/testtask'
 
 # Tests
 namespace :test do

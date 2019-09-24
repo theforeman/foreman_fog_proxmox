@@ -1,4 +1,3 @@
-
 # frozen_string_literal: true
 
 # Copyright 2018 Tristan Robert
@@ -18,20 +17,21 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-module ForemanFogProxmox::NodeDashboard
+module ForemanFogProxmox
+  module NodeDashboard
     class Data
+      def initialize(filter = '')
+        @filter = filter
+      end
 
-        def initialize(filter="")
-            @filter = filter
-        end
+      def node_id
+        @compute_resource = ComputeResource.find_by(type: 'ForemanFogProxmox::Proxmox')
+        @compute_resource&.node_id
+      end
 
-        def node_id
-            @compute_resource = ComputeResource.find_by(type: 'ForemanFogProxmox::Proxmox')
-            @compute_resource.node_id if @compute_resource
-        end
-
-        def statistics            
-            node.statistics('rrddata', { timeframe: 'hour', cf: 'AVERAGE' }) if node_id
-        end
+      def statistics
+        node.statistics('rrddata', timeframe: 'hour', cf: 'AVERAGE') if node_id
+      end
     end
+  end
 end

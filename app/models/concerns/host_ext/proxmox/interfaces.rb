@@ -17,21 +17,27 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-module HostExt::Proxmox::Interfaces
-    extend ActiveSupport::Concern
-    def update(attributes = {})
+module HostExt
+  module Proxmox
+    module Interfaces
+      extend ActiveSupport::Concern
+      def update(attributes = {})
         add_interfaces_to_compute_attributes(attributes)
         super(attributes)
-    end
-    def add_interfaces_to_compute_attributes(attributes)
+      end
+
+      def add_interfaces_to_compute_attributes(attributes)
         attributes['compute_attributes']['interfaces_attributes'] = {}
-        attributes['interfaces_attributes'].each { |index,interface_attributes| add_interface_to_compute_attributes(index,interface_attributes,attributes['compute_attributes']['interfaces_attributes']) }
-    end
-    def add_interface_to_compute_attributes(index,interface_attributes,compute_attributes)
+        attributes['interfaces_attributes'].each { |index, interface_attributes| add_interface_to_compute_attributes(index, interface_attributes, attributes['compute_attributes']['interfaces_attributes']) }
+      end
+
+      def add_interface_to_compute_attributes(index, interface_attributes, compute_attributes)
         compute_attributes[index] = {}
-        compute_attributes[index].store('id',interface_attributes['identifier'])
-        compute_attributes[index].store('_delete',interface_attributes['_destroy'])
-        compute_attributes[index].store('macaddr',interface_attributes['mac'])
-        compute_attributes[index].merge!(interface_attributes['compute_attributes'].reject { |k,_v| k == 'id' })
+        compute_attributes[index].store('id', interface_attributes['identifier'])
+        compute_attributes[index].store('_delete', interface_attributes['_destroy'])
+        compute_attributes[index].store('macaddr', interface_attributes['mac'])
+        compute_attributes[index].merge!(interface_attributes['compute_attributes'].reject { |k, _v| k == 'id' })
+      end
     end
+  end
 end

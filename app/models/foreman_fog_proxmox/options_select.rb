@@ -18,19 +18,19 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 module ForemanFogProxmox
-    class OptionsSelect
-      attr_accessor :id
-      attr_accessor :name
-      attr_accessor :range
+  class OptionsSelect
+    attr_accessor :id
+    attr_accessor :name
+    attr_accessor :range
 
-      def to_s
-        id
-      end
-
-      def initialize(args = {})
-        @id = args[:id]
-        @name = args[:name]
-        @range = args[:range]
-      end
+    def to_s
+      id
     end
+
+    def initialize(args = {})
+      @id = args[:id]
+      @name = args[:name]
+      @range = args[:range]
+    end
+  end
 end

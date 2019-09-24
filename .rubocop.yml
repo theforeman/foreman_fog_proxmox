@@ -1,19 +1,42 @@
 Rails:
   Enabled: true
 
+# TODO: remove this file by either moving cops here or fixing code
+inherit_from:
+  - .rubocop_todo.yml
+
 # Don't enforce documentation
 Style/Documentation:
   Enabled: false
 
-# Force before_filter until upgrade to Rails 4
-Rails/ActionFilter:
-  EnforcedStyle: filter
+# TODO: try to refactor concerned code
+Metrics/AbcSize:
+  Max: 60
+
+Metrics/BlockLength:
+  Max: 366
+
+Metrics/ClassLength:
+  Max: 322
+
+Metrics/CyclomaticComplexity:
+  Max: 11
 
 Metrics/MethodLength:
-  Max: 20
+  Max: 112
+
+Metrics/ModuleLength:
+  Max: 244
+
+Metrics/PerceivedComplexity:
+  Max: 11
 
 Metrics/LineLength:
-  Max: 111 # TODO: discuss and set this
+  Max: 200 # TODO: discuss and set this
+
+Naming/MethodName:
+  Description: From foreman's rubocop-config. Neccessary for overloading methods in foreman.
+  Enabled: false
 
 Style/Next:
   Enabled: false
@@ -21,3 +44,13 @@ Style/Next:
 # Support both ruby19 and hash_rockets
 Style/HashSyntax:
   Enabled: false
+
+Style/NumericPredicate:
+  Enabled: false
+
+Style/SymbolArray:
+  Description: Using percent style obscures symbolic intent of array's contents.
+  EnforcedStyle: brackets
+
+Style/WordArray:
+  EnforcedStyle: brackets

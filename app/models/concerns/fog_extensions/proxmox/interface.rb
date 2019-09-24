@@ -18,12 +18,12 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 module FogExtensions
-    module Proxmox
-        module Interface
-            extend ActiveSupport::Concern
-            def mac
-                macaddr
-            end
-        end
+  module Proxmox
+    module Interface
+      extend ActiveSupport::Concern
+      def mac
+        macaddr
+      end
     end
-end   
+  end
+end

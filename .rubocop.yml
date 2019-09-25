@@ -38,6 +38,11 @@ Naming/MethodName:
   Description: From foreman's rubocop-config. Neccessary for overloading methods in foreman.
   Enabled: false
 
+Style/FrozenStringLiteralComment:
+  Description: Apparently, Deface hates frozen string literals
+  Exclude:
+    - 'app/overrides/compute_resources_vms/form/*.rb'
+
 Style/Next:
   Enabled: false
 

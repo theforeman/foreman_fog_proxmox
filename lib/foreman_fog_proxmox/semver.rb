@@ -19,7 +19,7 @@
 
 module ForemanFogProxmox
   module Semver
-    SEMVER_REGEX = /^(\d+)[.]{1}(\d+)[.]{1}(\d+)[-]{0,1}(\w+){0,1}$/.freeze
+    SEMVER_REGEX = /^(\d+)[.](\d+)([.](\d+))?(-([.\w]+))?$/.freeze
     class SemverClass
       attr_accessor :major
       attr_accessor :minor
@@ -112,9 +112,9 @@ module ForemanFogProxmox
 
       semver_a = version_a.first
       raise ArgumentError if semver_a.empty?
-      raise ArgumentError if semver_a.size < 4
+      raise ArgumentError unless semver_a.size == 6
 
-      SemverClass.new(semver_a[0], semver_a[1], semver_a[2], semver_a[3])
+      SemverClass.new(semver_a[0], semver_a[1], semver_a[3], semver_a[5])
     end
   end
 end

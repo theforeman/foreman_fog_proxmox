@@ -25,6 +25,9 @@ module ForemanFogProxmox
       it '#5.3.2 returns true' do
         assert ForemanFogProxmox::Semver.is_semver?('5.3.2')
       end
+      it '#6.0-6 returns true' do
+        assert ForemanFogProxmox::Semver.is_semver?('6.0-6')
+      end
       it '#5.3beta returns false' do
         assert_not ForemanFogProxmox::Semver.is_semver?('5.3beta')
       end
@@ -38,6 +41,15 @@ module ForemanFogProxmox
         assert_equal 3, semver.minor
         assert_equal 2, semver.patch
         assert_equal '', semver.qualifier
+      end
+      it '#6.0-6 returns SemverClass' do
+        semver = ForemanFogProxmox::Semver.to_semver('6.0-6')
+        assert_not_nil semver
+        assert semver.is_a?(ForemanFogProxmox::Semver::SemverClass)
+        assert_equal 6, semver.major
+        assert_equal 0, semver.minor
+        assert_equal 0, semver.patch
+        assert_equal '6', semver.qualifier
       end
       it '#5.3beta raises ArgumentError' do
         assert_raises ArgumentError do

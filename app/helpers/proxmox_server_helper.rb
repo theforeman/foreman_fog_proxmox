@@ -106,13 +106,17 @@ module ProxmoxServerHelper
 
   def parse_server_volume(args)
     disk = {}
-    id = args['id']
+    id = args['id'] if args['volid'].present?
     id = "#{args['controller']}#{args['device']}" if args.key?('controller') && args.key?('device') && !id
-    logger.error "###### ID: #{id};  attrs:#{args.inspect}"
+    # FIXME: Does this make sense: return args !?
     return args if ForemanFogProxmox::Value.empty?(id) || id == 'rootfs'
 
     # TODO: Delete disk if requested:
-    # delete = args['_delete'].to_i == 1
+    delete = args['_delete'].to_i == 1
+
+    # ignore deleted volumes that have not been created, yet
+    return nil if delete && args['volid'].blank?
+
     args.delete_if { |_key, value| ForemanFogProxmox::Value.empty?(value) }
     disk.store(:id, id)
     disk.store(:volid, args['volid']) if args.key?('volid')
@@ -128,7 +132,7 @@ module ProxmoxServerHelper
     volumes = []
     args&.each_value { |value| volumes.push(parse_server_volume(value)) }
     logger.debug("parse_server_volumes(): volumes=#{volumes}")
-    volumes
+    volumes.compact
   end
 
   def parse_server_interfaces(interfaces_attributes)

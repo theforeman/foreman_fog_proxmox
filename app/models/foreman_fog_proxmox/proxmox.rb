@@ -341,7 +341,7 @@ module ForemanFogProxmox
         id = volume_attributes['id']
         disk = vm.config.disks.get(id)
         delete = volume_attributes['_delete']
-        if disk
+        if disk && volume_attributes['volid'].present?
           if delete == '1'
             vm.detach(id)
             device = Fog::Proxmox::DiskHelper.extract_device(id)

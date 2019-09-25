@@ -1,4 +1,10 @@
 
+Metrics/BlockLength:
+  Exclude:
+    - 'test/unit/foreman_fog_proxmox/proxmox_test.rb'
+    - 'test/unit/foreman_fog_proxmox/helpers/proxmox_container_helper_test.rb'
+    - 'test/unit/foreman_fog_proxmox/helpers/proxmox_server_helper_test.rb'
+
 Metrics/ClassLength:
   Exclude:
     - 'app/models/foreman_fog_proxmox/proxmox.rb'

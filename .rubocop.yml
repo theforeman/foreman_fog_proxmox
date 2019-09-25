@@ -14,13 +14,13 @@ Metrics/AbcSize:
   Max: 60
 
 Metrics/BlockLength:
-  Max: 366
+  Max: 100
 
 Metrics/ClassLength:
   Max: 322
 
 Metrics/CyclomaticComplexity:
-  Max: 11
+  Max: 12
 
 Metrics/MethodLength:
   Max: 112
@@ -29,7 +29,7 @@ Metrics/ModuleLength:
   Max: 150
 
 Metrics/PerceivedComplexity:
-  Max: 11
+  Max: 12
 
 Metrics/LineLength:
   Max: 200 # TODO: discuss and set this

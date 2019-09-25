@@ -38,6 +38,12 @@ Naming/MethodName:
   Description: From foreman's rubocop-config. Neccessary for overloading methods in foreman.
   Enabled: false
 
+Style/FormatString:
+  EnforcedStyle: format
+
+Style/FormatStringToken:
+  EnforcedStyle: template
+
 Style/FrozenStringLiteralComment:
   Description: Apparently, Deface hates frozen string literals
   Exclude:
@@ -52,6 +58,9 @@ Style/HashSyntax:
 
 Style/NumericPredicate:
   Enabled: false
+
+Style/RaiseArgs:
+  EnforcedStyle: compact
 
 Style/SymbolArray:
   Description: Using percent style obscures symbolic intent of array's contents.

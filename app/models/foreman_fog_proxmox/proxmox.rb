@@ -57,8 +57,8 @@ module ForemanFogProxmox
     end
 
     def version_suitable?
-      logger.debug(format(_('Proxmox compute resource version is %<version>s'), version: version))
-      raise ::Foreman::Exception, format(_('Proxmox version %<version>s is not semver suitable'), version: version) unless ForemanFogProxmox::Semver.is_semver?(version)
+      logger.debug(format(_('Proxmox compute resource version is %{version}'), version: version))
+      raise ::Foreman::Exception.new(N_('Proxmox version %{version} is not semver suitable'), version: version) unless ForemanFogProxmox::Semver.is_semver?(version)
 
       ForemanFogProxmox::Semver.to_semver(version) >= ForemanFogProxmox::Semver.to_semver('5.3.0') && ForemanFogProxmox::Semver.to_semver(version) < ForemanFogProxmox::Semver.to_semver('5.5.0')
     end
@@ -128,7 +128,7 @@ module ForemanFogProxmox
         when 'lxc'
           host.compute_attributes['config_attributes'].store('hostname', host.name)
         when 'qemu'
-          raise ::Foreman::Exception, format(_('Operating system family %<type>s is not consistent with %<ostype>s'), type: host.operatingsystem.type, ostype: ostype) unless compute_os_types(host).include?(ostype)
+          raise ::Foreman::Exception.new(N_('Operating system family %{type} is not consistent with %{ostype}'), type: host.operatingsystem.type, ostype: ostype) unless compute_os_types(host).include?(ostype)
         end
       end
     end
@@ -137,12 +137,12 @@ module ForemanFogProxmox
       host.interfaces.select(&:physical?).each.with_index.reduce({}) do |hash, (nic, index)|
         # Set default interface identifier to net[n]
         nic.identifier = format('net%{index}', index: index) if nic.identifier.empty?
-        raise ::Foreman::Exception, _(format('Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0', index: index)) unless Fog::Proxmox::NicHelper.nic?(nic.identifier)
+        raise ::Foreman::Exception.new(N_('Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0'), index: index) unless Fog::Proxmox::NicHelper.nic?(nic.identifier)
 
         # Set default container interface name to eth[n]
         container = host.compute_attributes['type'] == 'lxc'
         nic.compute_attributes['name'] = format('eth%{index}', index: index) if container && nic.compute_attributes['name'].empty?
-        raise ::Foreman::Exception, _(format('Invalid name interface[%{index}]. Must be eth[n] with n integer >= 0', index: index)) if container && !/^(eth)(\d+)$/.match?(nic.compute_attributes['name'])
+        raise ::Foreman::Exception.new(N_('Invalid name interface[%{index}]. Must be eth[n] with n integer >= 0'), index: index) if container && !/^(eth)(\d+)$/.match?(nic.compute_attributes['name'])
 
         nic_compute_attributes = nic.compute_attributes.merge(id: nic.identifier)
         mac = nic.mac
@@ -256,7 +256,7 @@ module ForemanFogProxmox
     def create_vm(args = {})
       vmid = args[:vmid].to_i
       type = args[:type]
-      raise ::Foreman::Exception, format(N_('invalid vmid=%{vmid}'), vmid: vmid) unless node.servers.id_valid?(vmid)
+      raise ::Foreman::Exception.new(N_('invalid vmid=%{vmid}'), vmid: vmid) unless node.servers.id_valid?(vmid)
 
       image_id = args[:image_id]
       if image_id
@@ -348,7 +348,7 @@ module ForemanFogProxmox
             vm.detach('unused' + device.to_s)
           else
             diff_size = volume_attributes['size'].to_i - disk.size
-            raise ::Foreman::Exception, format(_('Unable to shrink %<id>s size. Proxmox allows only increasing size.'), id: id) unless diff_size >= 0
+            raise ::Foreman::Exception.new(N_('Unable to shrink %{id} size. Proxmox allows only increasing size.'), id: id) unless diff_size >= 0
 
             if diff_size > 0
               extension = '+' + (diff_size / GIGA).to_s + 'G'
@@ -419,7 +419,7 @@ module ForemanFogProxmox
       store
     rescue StandardError => e
       logger.error(e)
-      raise ::Foreman::Exception, N_('Unable to store X509 certificates')
+      raise ::Foreman::Exception.new(N_('Unable to store X509 certificates'))
     end
 
     def ssl_verify_peer
@@ -452,7 +452,7 @@ module ForemanFogProxmox
         WsProxy.start(:host => host, :host_port => vnc_console['port'], :password => vnc_console['ticket']).merge(:name => vm.name, :type => type_console)
       rescue StandardError => e
         logger.error(e)
-        raise ::Foreman::Exception, _('%s console is not supported at this time') % type_console
+        raise ::Foreman::Exception.new(N_('%s console is not supported at this time'), type_console)
       end
     end
 

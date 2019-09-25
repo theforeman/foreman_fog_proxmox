@@ -292,7 +292,6 @@ module ForemanFogProxmox
       true
     end
 
-
     def find_vm_by_uuid(uuid)
       begin
         vm = node.servers.get(uuid)

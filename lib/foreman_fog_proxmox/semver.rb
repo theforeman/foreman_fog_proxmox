@@ -19,7 +19,7 @@
 
 module ForemanFogProxmox
   module Semver
-    SEMVER_REGEX = /^(\d+)[.](\d+)([.](\d+))?(-([.\w]+))?$/.freeze
+    SEMVER_REGEX = /^(\d+)[.](\d+)([.-](\d+))?(-([.\w]+))?$/.freeze
     class SemverClass
       attr_accessor :major
       attr_accessor :minor

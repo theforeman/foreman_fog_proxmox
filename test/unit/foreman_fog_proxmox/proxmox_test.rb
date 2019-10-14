@@ -72,6 +72,19 @@ module ForemanFogProxmox
           cr.find_vm_by_uuid('100')
         end
       end
+
+      it 'finds vm on other node in cluster' do
+        args = { vmid: '100', type: 'qemu' }
+        servers = mock('servers')
+        servers.stubs(:id_valid?).returns(true)
+        servers.stubs(:get).with(args[:vmid]).returns(args)
+        cr = mock_cluster_nodes_servers_containers(
+          ForemanFogProxmox::Proxmox.new,
+          empty_servers, empty_servers, # node1
+          servers, empty_servers        # node2
+        )
+        assert_equal args, cr.find_vm_by_uuid(args[:vmid])
+      end
     end
 
     describe 'host_interfaces_attrs' do

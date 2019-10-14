@@ -293,21 +293,15 @@ module ForemanFogProxmox
     end
 
     def find_vm_by_uuid(uuid)
-      begin
-        vm = node.servers.get(uuid)
-      rescue Fog::Errors::NotFound
-        vm = nil
-      rescue Fog::Errors::Error => e
-        Foreman::Logging.exception(format(_('Failed retrieving proxmox server vm by vmid=%<vmid>s'), vmid: uuid), e)
-        raise(ActiveRecord::RecordNotFound)
-      end
-      begin
-        vm ||= node.containers.get(uuid)
-      rescue Fog::Errors::NotFound
-        vm = nil
-      rescue Fog::Errors::Error => e
-        Foreman::Logging.exception(format(_('Failed retrieving proxmox container vm by vmid=%<vmid>s'), vmid: uuid), e)
-        raise(ActiveRecord::RecordNotFound)
+      # look for the uuid on all known nodes
+      vm = nil
+      nodes.each do |node|
+        vm = save_find_vm_in_servers_by_uuid(node.servers, uuid)
+        vm ||= save_find_vm_in_servers_by_uuid(node.containers, uuid)
+        unless vm.nil?
+          logger.debug("found vm #{uuid} on node #{node.node}")
+          break
+        end
       end
       vm
     end
@@ -582,6 +576,15 @@ module ForemanFogProxmox
 
     def host
       URI.parse(url).host
+    end
+
+    def save_find_vm_in_servers_by_uuid(servers, uuid)
+      servers.get(uuid)
+    rescue Fog::Errors::NotFound
+      nil
+    rescue StandardError => e
+      Foreman::Logging.exception(format(_('Failed retrieving proxmox server vm by vmid=%<vmid>s'), vmid: uuid), e)
+      raise(ActiveRecord::RecordNotFound)
     end
   end
 end

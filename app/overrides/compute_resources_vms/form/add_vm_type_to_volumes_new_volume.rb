@@ -19,6 +19,7 @@ Deface::Override.new(
   :virtual_path => 'compute_resources_vms/form/_volumes',
   :name => 'add_vm_type_to_volumes_new_volume',
   :replace => "erb[silent]:contains('volume = compute_resource.new_volume')",
-  :text => '<% volume = compute_resource.new_volume(type: f.object.type) %>',
+  :text => '<%- opts = compute_resource.class == ForemanFogProxmox::Proxmox ? {type: f.object.type} : {}
+    volume = compute_resource.new_volume(opts) -%>',
   :original => '<% volume = compute_resource.new_volume %>'
 )

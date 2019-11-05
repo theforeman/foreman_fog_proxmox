@@ -20,6 +20,8 @@
 require 'test_plugin_helper'
 require 'models/compute_resources/compute_resource_test_helpers'
 require 'unit/foreman_fog_proxmox/proxmox_test_helpers'
+require 'active_support/core_ext/hash/indifferent_access'
+
 
 module ForemanFogProxmox
   class ProxmoxTest < ActiveSupport::TestCase
@@ -216,11 +218,12 @@ module ForemanFogProxmox
         vm = mock('vm')
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
+        vm.stubs(:templated?).returns(false)
         vm.stubs(:type).returns('qemu')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
-        attr = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' } }
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
-        expected_attr = { :cores => '1', :cpulimit => '1' }
+        attr = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0')
+        expected_attr = { :cores => '1', :cpulimit => '1' }.with_indifferent_access
         vm.expects(:update, expected_attr)
         @cr.save_vm(uuid, attr)
       end
@@ -245,7 +248,7 @@ module ForemanFogProxmox
         config = mock('config')
         disks = mock('disks')
         disk = mock('disk')
-        disk.stubs(:size).returns(1_073_741_824)
+        disk.stubs(:size).returns(1073741824)
         disk.stubs(:storage).returns('local-lvm')
         disk.stubs(:id).returns('virtio0')
         disks.stubs(:get).returns
@@ -265,15 +268,18 @@ module ForemanFogProxmox
           'volumes_attributes' => {
             '0' => {
               'id' => 'scsi0',
+              '_delete' => '',
+              'device' => '0',
+              'controller' => 'scsi',
               'storage' => 'local-lvm',
               'size' => '2147483648',
               'cache' => 'none'
             }
           }
-        }
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
+        }.with_indifferent_access
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
-        expected_volume_attr = { id: 'scsi0', storage: 'local:lvm', size: (2_147_483_648 / GIGA).to_s }
+        expected_volume_attr = { id: 'scsi0', storage: 'local:lvm', size: (2147483648 / GIGA).to_s }
         vm.expects(:attach, expected_volume_attr)
         vm.expects(:update, expected_config_attr)
         @cr.save_vm(uuid, new_attributes)
@@ -284,7 +290,7 @@ module ForemanFogProxmox
         config = mock('config')
         disks = mock('disks')
         disk = mock('disk')
-        disk.stubs(:size).returns(1_073_741_824)
+        disk.stubs(:size).returns(1073741824)
         disk.stubs(:storage).returns('local-lvm')
         disk.stubs(:id).returns('virtio0')
         disks.stubs(:get).returns(disk)
@@ -293,6 +299,7 @@ module ForemanFogProxmox
         vm = mock('vm')
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
+        vm.stubs(:templated?).returns(false)
         vm.stubs(:type).returns('qemu')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         new_attributes = {
@@ -305,13 +312,16 @@ module ForemanFogProxmox
             '0' => {
               '_delete' => '1',
               'id' => 'scsi0',
+              'volid' => 'local-lvm:vm-100-disk-0',
+              'device' => '0',
+              'controller' => 'scsi',
               'storage' => 'local-lvm',
               'size' => '2147483648',
               'cache' => 'none'
             }
           }
-        }
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
+        }.with_indifferent_access
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'config_attributes' => {'onboot' => '0'})
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = 'scsi0'
         vm.expects(:detach, expected_volume_attr)
@@ -346,13 +356,14 @@ module ForemanFogProxmox
               'id' => 'net0'
             }
           }
-        }
+        }.with_indifferent_access
         @cr.stubs(:parse_server_vm).returns(
           'vmid' => '100',
           'type' => 'qemu',
           'cores' => '1',
           'cpulimit' => '1',
-          'delete' => 'net0'
+          'delete' => 'net0',
+          'onboot' => '0'
         )
         expected_config_attr = { :cores => '1', :cpulimit => '1', :delete => 'net0' }
         vm.expects(:update, expected_config_attr)
@@ -364,7 +375,7 @@ module ForemanFogProxmox
         config = mock('config')
         disks = mock('disks')
         disk = mock('disk')
-        disk.stubs(:size).returns(1_073_741_824)
+        disk.stubs(:size).returns(1073741824)
         disk.stubs(:storage).returns('local-lvm')
         disks.stubs(:get).returns(disk)
         config.stubs(:disks).returns(disks)
@@ -372,6 +383,7 @@ module ForemanFogProxmox
         vm = mock('vm')
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
+        vm.stubs(:templated?).returns(false)
         vm.stubs(:type).returns('qemu')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         new_attributes = {
@@ -383,12 +395,16 @@ module ForemanFogProxmox
           'volumes_attributes' => {
             '0' => {
               'id' => 'scsi0',
+              '_delete' => '',
+              'volid' => 'local-lvm:vm-100-disk-0',
+              'device' => '0',
+              'controller' => 'scsi',
               'storage' => 'local-lvm',
               'size' => '2147483648',
               'cache' => 'none'
             }
           }
-        }
+        }.with_indifferent_access
         @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = ['scsi0', '+1G']
@@ -402,7 +418,7 @@ module ForemanFogProxmox
         config = mock('config')
         disks = mock('disks')
         disk = mock('disk')
-        disk.stubs(:size).returns(1_073_741_824)
+        disk.stubs(:size).returns(1073741824)
         disk.stubs(:storage).returns('local-lvm')
         disks.stubs(:get).returns(disk)
         config.stubs(:disks).returns(disks)
@@ -421,15 +437,17 @@ module ForemanFogProxmox
           'volumes_attributes' => {
             '0' => {
               'id' => 'scsi0',
+              '_delete' => '',
+              'volid' => 'local-lvm:vm-100-disk-0',
+              'device' => '0',
+              'controller' => 'scsi',
               'storage' => 'local-lvm',
               'size' => '2',
               'cache' => 'none'
             }
           }
-        }
+        }.with_indifferent_access
         @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
-        # FIXME: is this neccessary?
-        # expected_config_attr = { :cores => '1', :cpulimit => '1' }
         err = assert_raises Foreman::Exception do
           @cr.save_vm(uuid, new_attributes)
         end
@@ -441,7 +459,7 @@ module ForemanFogProxmox
         config = mock('config')
         disks = mock('disks')
         disk = mock('disk')
-        disk.stubs(:size).returns(1_073_741_824)
+        disk.stubs(:size).returns(1073741824)
         disk.stubs(:storage).returns('local-lvm')
         disks.stubs(:get).returns(disk)
         config.stubs(:disks).returns(disks)
@@ -460,12 +478,16 @@ module ForemanFogProxmox
           'volumes_attributes' => {
             '0' => {
               'id' => 'scsi0',
+              '_delete' => '',
+              'volid' => 'local-lvm:vm-100-disk-0',
+              'device' => '0',
+              'controller' => 'scsi',
               'storage' => 'local-lvm2',
               'size' => '1073741824',
               'cache' => 'none'
             }
           }
-        }
+        }.with_indifferent_access
         @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = ['scsi0', 'local-lvm2']
@@ -483,7 +505,7 @@ module ForemanFogProxmox
         vm.stubs(:container?).returns(true)
         vm.stubs(:type).returns('lxc')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
-        attr = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1' } }
+        attr = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
         @cr.stubs(:parse_container_vm).returns('vmid' => '100', 'type' => 'lxc', 'cores' => '1', 'cpulimit' => '1')
         expected_attr = { :cores => '1', :cpulimit => '1' }
         vm.expects(:update, expected_attr)
@@ -495,7 +517,7 @@ module ForemanFogProxmox
         config = mock('config')
         disks = mock('disks')
         disk = mock('disk')
-        disk.stubs(:size).returns(1_073_741_824)
+        disk.stubs(:size).returns(1073741824)
         disk.stubs(:storage).returns('local-lvm')
         disk.stubs(:id).returns('rootfs')
         disks.stubs(:get).returns
@@ -503,7 +525,7 @@ module ForemanFogProxmox
         config.stubs(:attributes).returns(:cores => '')
         vm = mock('vm')
         vm.stubs(:config).returns(config)
-        vm.stubs(:container?).returns(false)
+        vm.stubs(:container?).returns(true)
         vm.stubs(:type).returns('lxc')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         new_attributes = {
@@ -515,13 +537,16 @@ module ForemanFogProxmox
           'volumes_attributes' => {
             '0' => {
               'id' => 'mp0',
+              '_delete' => '',
+              'volid' => 'local-lvm:vm-100-disk-0',
+              'device' => '0',
               'storage' => 'local-lvm',
               'size' => '2147483648',
               'cache' => 'none',
               'mp' => '/opt/path'
             }
           }
-        }
+        }.with_indifferent_access
         @cr.stubs(:parse_container_vm).returns('vmid' => '100', 'type' => 'lxc', 'cores' => '1', 'cpulimit' => '1')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr =
@@ -529,7 +554,7 @@ module ForemanFogProxmox
             {
               id: 'mp0',
               storage: 'local:lvm',
-              size: (2_147_483_648 / GIGA).to_s
+              size: (2147483648 / GIGA).to_s
             },
             {
               mp: '/opt/path'
@@ -545,7 +570,7 @@ module ForemanFogProxmox
         config = mock('config')
         disks = mock('disks')
         disk = mock('disk')
-        disk.stubs(:size).returns(1_073_741_824)
+        disk.stubs(:size).returns(1073741824)
         disk.stubs(:storage).returns('local-lvm')
         disk.stubs(:id).returns('rootfs')
         disks.stubs(:get).returns(disk)
@@ -553,7 +578,7 @@ module ForemanFogProxmox
         config.stubs(:attributes).returns(:cores => '')
         vm = mock('vm')
         vm.stubs(:config).returns(config)
-        vm.stubs(:container?).returns(false)
+        vm.stubs(:container?).returns(true)
         vm.stubs(:type).returns('lxc')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         new_attributes =
@@ -561,17 +586,21 @@ module ForemanFogProxmox
             'templated' => '0',
             'config_attributes' => {
               'cores' => '1',
-              'cpulimit' => '1'
+              'cpulimit' => '1',
+              'onboot' => '0'
             },
             'volumes_attributes' => {
               '0' => {
                 'id' => 'rootfs',
+                '_delete' => '',
+                'volid' => 'local-lvm:1073741824',
+                'device' => '0',
                 'storage' => 'local-lvm',
                 'size' => '2147483648',
                 'cache' => 'none'
               }
             }
-          }
+          }.with_indifferent_access
         @cr.stubs(:parse_container_vm).returns(
           'vmid' => '100',
           'type' => 'lxc',
@@ -598,8 +627,8 @@ module ForemanFogProxmox
         assert err.message.end_with?('invalid vmid=100')
       end
 
-      it 'creates server' do
-        args = { vmid: '100', type: 'qemu' }
+      it 'creates server without bootstart' do
+        args = { vmid: '100', type: 'qemu', config_attributes: {onboot: '0'} }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
@@ -611,17 +640,46 @@ module ForemanFogProxmox
         cr.create_vm(args)
       end
 
-      it 'creates container' do
-        args = { vmid: '100', type: 'lxc' }
+      it 'creates server with bootstart' do
+        args = { vmid: '100', type: 'qemu', config_attributes: {onboot: '1'} }
+        servers = mock('servers')
+        servers.stubs(:id_valid?).returns(true)
+        cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
+        cr.stubs(:convert_sizes).with(args)
+        cr.stubs(:parse_server_vm).with(args).returns(args)
+        vm = mock('vm')
+        servers.stubs(:create).with(args).returns(vm)
+        cr.stubs(:find_vm_by_uuid).with((args[:vmid]).to_s).returns(vm)
+        cr.stubs(:start_on_boot).with(vm,args).returns(vm)
+        cr.create_vm(args)
+      end
+
+      it 'creates container without bootstart' do
+        args = { vmid: '100', type: 'lxc', config_attributes: {onboot: '0'} }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         containers = mock('containers')
-        containers.stubs(:create).with(vmid: 100, type: 'lxc')
+        containers.stubs(:create).with(vmid: 100, type: 'lxc', config_attributes: {onboot: '0'})
         cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
         cr.stubs(:convert_sizes).with(args)
         cr.stubs(:parse_container_vm).with(args).returns(args)
         vm = mock('vm')
         cr.stubs(:find_vm_by_uuid).with((args[:vmid]).to_s).returns(vm)
+        cr.create_vm(args)
+      end
+
+      it 'creates container with bootstart' do
+        args = { vmid: '100', type: 'lxc', config_attributes: {onboot: '0'} }
+        servers = mock('servers')
+        servers.stubs(:id_valid?).returns(true)
+        containers = mock('containers')
+        vm = mock('vm')
+        containers.stubs(:create).with(vmid: 100, type: 'lxc', config_attributes: {onboot: '0'}).returns(vm)
+        cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
+        cr.stubs(:convert_sizes).with(args)
+        cr.stubs(:parse_container_vm).with(args).returns(args)
+        cr.stubs(:find_vm_by_uuid).with((args[:vmid]).to_s).returns(vm)
+        cr.stubs(:start_on_boot).with(vm,args).returns(vm)
         cr.create_vm(args)
       end
 

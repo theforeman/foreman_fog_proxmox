@@ -156,7 +156,7 @@ module ForemanFogProxmox
         mac = nic.mac
         mac ||= nic.attributes['mac']
         nic_compute_attributes.store(:macaddr, mac) if mac.present?
-        interface_compute_attributes = host.compute_attributes['interfaces_attributes'].select { |_k, v| v['id'] == nic.identifier }
+        interface_compute_attributes = host.compute_attributes['interfaces_attributes'] ? host.compute_attributes['interfaces_attributes'].select { |_k, v| v['id'] == nic.identifier } : {}
         nic_compute_attributes.store(:_delete, interface_compute_attributes[interface_compute_attributes.keys[0]]['_delete']) unless interface_compute_attributes.empty?
         nic_compute_attributes.store(:ip, nic.ip) if nic.ip.present?
         nic_compute_attributes.store(:ip6, nic.ip6) if nic.ip6.present?
@@ -261,6 +261,12 @@ module ForemanFogProxmox
       vm
     end
 
+    def start_on_boot(vm,args)
+      startonboot = args[:config_attributes][:onboot].blank? ? false : Foreman::Cast.to_bool(args[:config_attributes][:onboot])
+      vm.start if startonboot
+      vm
+    end
+
     def create_vm(args = {})
       vmid = args[:vmid].to_i
       type = args[:type]
@@ -284,6 +290,7 @@ module ForemanFogProxmox
           hash = hash.merge(vmid: vmid)
           vm = node.containers.create(hash.reject { |key, _value| ['ostemplate_storage', 'ostemplate_file'].include? key })
         end
+        start_on_boot(vm,args)
       end
     rescue StandardError => e
       logger.warn(format(_('failed to create vm: %{e}'), e: e))
@@ -293,7 +300,7 @@ module ForemanFogProxmox
 
     def destroy_vm(uuid)
       vm = find_vm_by_uuid(uuid)
-      vm.stop
+      vm.stop if vm.ready?
       vm.destroy
     rescue ActiveRecord::RecordNotFound
       # if the VM does not exists, we don't really care.
@@ -346,11 +353,17 @@ module ForemanFogProxmox
 
     def save_volumes(vm, volumes_attributes)
       volumes_attributes&.each_value do |volume_attributes|
-        id = volume_attributes['id']
-        disk = vm.config.disks.get(id)
-        delete = volume_attributes['_delete']
+        volid = volume_attributes['volid']
+        if volid.blank?
+          device = vm.container? ? 'mp' : volume_attributes['controller']
+          id = device + volume_attributes['device']
+        else
+          id = volume_attributes['id']
+          disk = vm.config.disks.get(id)
+        end
+        delete = volume_attributes['_delete'].blank? ? false : Foreman::Cast.to_bool(volume_attributes['_delete'])
         if disk
-          if delete == '1'
+          if delete
             vm.detach(id)
             device = Fog::Proxmox::DiskHelper.extract_device(id)
             vm.detach('unused' + device.to_s)
@@ -369,7 +382,7 @@ module ForemanFogProxmox
           options = {}
           options.store(:mp, volume_attributes['mp']) if vm.container?
           disk_attributes = { id: id, storage: volume_attributes['storage'], size: (volume_attributes['size'].to_i / GIGA).to_s }
-          vm.attach(disk_attributes, options) unless delete == '1'
+          vm.attach(disk_attributes, options) unless delete
         end
       end
     end
@@ -383,11 +396,13 @@ module ForemanFogProxmox
         volumes_attributes = new_attributes['volumes_attributes']
         save_volumes(vm, volumes_attributes)
         parsed_attr = vm.container? ? parse_container_vm(new_attributes.merge(type: vm.type)) : parse_server_vm(new_attributes.merge(type: vm.type))
-        config_attributes = parsed_attr.reject { |key, _value| [:templated, :ostemplate, :ostemplate_file, :ostemplate_storage, :volumes_attributes].include? key.to_sym }
+        logger.debug("parsed_attr=#{parsed_attr}")
+        config_attributes = parsed_attr.reject { |key, _value| [:vmid, :templated, :ostemplate, :ostemplate_file, :ostemplate_storage, :volumes_attributes].include? key.to_sym }
         config_attributes = config_attributes.reject { |_key, value| ForemanFogProxmox::Value.empty?(value) }
         cdrom_attributes = parsed_attr.select { |_key, value| Fog::Proxmox::DiskHelper.cdrom?(value.to_s) }
         config_attributes = config_attributes.reject { |key, _value| Fog::Proxmox::DiskHelper.disk?(key) }
         vm.update(config_attributes.merge(cdrom_attributes))
+        start_on_boot(vm,new_attributes)
       end
       find_vm_by_uuid(uuid)
     end

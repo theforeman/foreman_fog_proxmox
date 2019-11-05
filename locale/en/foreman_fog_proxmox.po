@@ -35,6 +35,9 @@ msgstr ""
 msgid "Ballooning Device"
 msgstr ""
 
+msgid "Boot device order"
+msgstr ""
+
 msgid "Bridge"
 msgstr ""
 
@@ -107,10 +110,19 @@ msgstr ""
 msgid "Extended"
 msgstr ""
 
-msgid "Failed retrieving proxmox vm by vmid=%{vmid} and type=%{type}"
+msgid "Failed retrieving proxmox server vm by vmid=%<vmid>s"
+msgstr ""
+
+msgid "Failed to undo update compute %{compute_resource} instance %{name}: %{e}"
+msgstr ""
+
+msgid "Failed to update a compute %{compute_resource} instance %{name}: %{e}"
 msgstr ""
 
 msgid "Firewall"
+msgstr ""
+
+msgid "Floppy disk (a), hard disk (c), cdrom (d), network (n). Default cdn"
 msgstr ""
 
 msgid "Foreman Fog Proxmox widget"
@@ -125,9 +137,6 @@ msgstr ""
 msgid "Hostname"
 msgstr ""
 
-msgid "Identifier interface[%{index}] required."
-msgstr ""
-
 msgid "Image"
 msgstr ""
 
@@ -135,12 +144,6 @@ msgid "Image ISO"
 msgstr ""
 
 msgid "Image VMID"
-msgstr ""
-
-msgid "Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0"
-msgstr ""
-
-msgid "Invalid uuid=[%{uuid}]."
 msgstr ""
 
 msgid "KVM"
@@ -190,7 +193,7 @@ msgstr ""
 msgid "Operating System"
 msgstr ""
 
-msgid "Operating system family %{type} is not consistent with %{ostype}"
+msgid "Operating system family %<type>s is not consistent with %<ostype>s"
 msgstr ""
 
 msgid "Optionally provide a CA, or a correctly ordered CA chain. If left blank, disable ssl_verify_peer."
@@ -202,6 +205,9 @@ msgstr ""
 msgid "Password to authenticate with - used for SSH finish step."
 msgstr ""
 
+msgid "Path"
+msgstr ""
+
 msgid "Physical"
 msgstr ""
 
@@ -211,10 +217,19 @@ msgstr ""
 msgid "Proxmox Node Statistics: %s"
 msgstr ""
 
+msgid "Proxmox compute resource version is %<version>s"
+msgstr ""
+
+msgid "Proxmox version %<version>s is not semver suitable"
+msgstr ""
+
 msgid "Qemu Agent"
 msgstr ""
 
 msgid "Rate limit"
+msgstr ""
+
+msgid "Renew expired token ?"
 msgstr ""
 
 msgid "Root password"
@@ -244,9 +259,6 @@ msgstr ""
 msgid "Start at boot"
 msgstr ""
 
-msgid "Start/Shutdown order"
-msgstr ""
-
 msgid "Storage"
 msgstr ""
 
@@ -265,10 +277,22 @@ msgstr ""
 msgid "Time"
 msgstr ""
 
+msgid "Token expires on"
+msgstr ""
+
+msgid "Token expires on #{token_deadline}"
+msgstr ""
+
+msgid "Token has expired?"
+msgstr ""
+
 msgid "Type"
 msgstr ""
 
 msgid "URL"
+msgstr ""
+
+msgid "Unable to shrink %<id>s size. Proxmox allows only increasing size."
 msgstr ""
 
 msgid "Unable to store X509 certificates"
@@ -289,16 +313,19 @@ msgstr ""
 msgid "VM ID"
 msgstr ""
 
+msgid "Version"
+msgstr ""
+
 msgid "X509 Certification Authorities"
 msgstr ""
 
 msgid "add new storage volume"
 msgstr ""
 
-msgid "create_vm(): %{args}"
+msgid "create_vm(): clone %{image_id} in %{vmid}"
 msgstr ""
 
-msgid "create_vm(): clone %{image_id} in %{vmid}"
+msgid "e.g. /path/to/"
 msgstr ""
 
 msgid "e.g. https://127.0.0.1:8006/api2/json"
@@ -326,9 +353,6 @@ msgid "remove network interface"
 msgstr ""
 
 msgid "remove storage volume"
-msgstr ""
-
-msgid "save_vm(): %{attr}"
 msgstr ""
 
 msgid "vmid of template vm."

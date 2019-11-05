@@ -35,6 +35,9 @@ msgstr "Charge moyenne du serveur (x100)"
 msgid "Ballooning Device"
 msgstr "Périphérique à gonflement"
 
+msgid "Boot device order"
+msgstr ""
+
 msgid "Bridge"
 msgstr "Pont"
 
@@ -107,11 +110,20 @@ msgstr "Activer/désactiver la virtualisation matérielle de KVM"
 msgid "Extended"
 msgstr "Etendu"
 
-msgid "Failed retrieving proxmox vm by vmid=%{vmid} and type=%{type}"
-msgstr "Echec de récupération de la vm proxmox avec vmid=%{vmid} et type=%{type}"
+msgid "Failed retrieving proxmox server vm by vmid=%<vmid>s"
+msgstr ""
+
+msgid "Failed to undo update compute %{compute_resource} instance %{name}: %{e}"
+msgstr ""
+
+msgid "Failed to update a compute %{compute_resource} instance %{name}: %{e}"
+msgstr ""
 
 msgid "Firewall"
 msgstr "Pare-feu"
+
+msgid "Floppy disk (a), hard disk (c), cdrom (d), network (n). Default cdn"
+msgstr ""
 
 msgid "Foreman Fog Proxmox widget"
 msgstr ""
@@ -125,9 +137,6 @@ msgstr "Général"
 msgid "Hostname"
 msgstr "Nom d'hôte"
 
-msgid "Identifier interface[%{index}] required."
-msgstr "L'identifiant de interface[%{index}] est obligatoire."
-
 msgid "Image"
 msgstr ""
 
@@ -135,12 +144,6 @@ msgid "Image ISO"
 msgstr ""
 
 msgid "Image VMID"
-msgstr ""
-
-msgid "Invalid identifier interface[%{index}]. Must be net[n] with n integer >= 0"
-msgstr "L'identifiant de interface[%{index}] est incorrect. La syntaxe correcte est net[n] avec n un entier naturel positif"
-
-msgid "Invalid uuid=[%{uuid}]."
 msgstr ""
 
 msgid "KVM"
@@ -190,8 +193,8 @@ msgstr "Type de système d'exploitation"
 msgid "Operating System"
 msgstr "Système d'exploitation"
 
-msgid "Operating system family %{type} is not consistent with %{ostype}"
-msgstr "La famille %{type} du système d'exploitation n'est pas cohérente avec %{ostype}"
+msgid "Operating system family %<type>s is not consistent with %<ostype>s"
+msgstr ""
 
 msgid "Optionally provide a CA, or a correctly ordered CA chain. If left blank, disable ssl_verify_peer."
 msgstr "Vous pouvez éventuellement fournir un certificat ou une chaîne de certificats. Si non renseigné, alors désactivez ssl_verify_peer."
@@ -202,6 +205,9 @@ msgstr ""
 msgid "Password to authenticate with - used for SSH finish step."
 msgstr "Mot de passe d'authentification - utilisé dans la dernière phase avec SSH."
 
+msgid "Path"
+msgstr ""
+
 msgid "Physical"
 msgstr "Physique"
 
@@ -211,11 +217,20 @@ msgstr "Alimentation"
 msgid "Proxmox Node Statistics: %s"
 msgstr "Statistiques du noeud Proxmox: %s"
 
+msgid "Proxmox compute resource version is %<version>s"
+msgstr ""
+
+msgid "Proxmox version %<version>s is not semver suitable"
+msgstr ""
+
 msgid "Qemu Agent"
 msgstr "Agent Qemu"
 
 msgid "Rate limit"
 msgstr "Taux limite"
+
+msgid "Renew expired token ?"
+msgstr ""
 
 msgid "Root password"
 msgstr "Mot de passe root"
@@ -244,9 +259,6 @@ msgstr ""
 msgid "Start at boot"
 msgstr "Démarrer au boot"
 
-msgid "Start/Shutdown order"
-msgstr "Ordre au démarrage/arrêt"
-
 msgid "Storage"
 msgstr "Stockage"
 
@@ -265,10 +277,22 @@ msgstr "Le compte utilisé pour SSH, en général compte cloud, ubuntu ou root, 
 msgid "Time"
 msgstr "Temps"
 
+msgid "Token expires on"
+msgstr ""
+
+msgid "Token expires on #{token_deadline}"
+msgstr ""
+
+msgid "Token has expired?"
+msgstr ""
+
 msgid "Type"
 msgstr ""
 
 msgid "URL"
+msgstr ""
+
+msgid "Unable to shrink %<id>s size. Proxmox allows only increasing size."
 msgstr ""
 
 msgid "Unable to store X509 certificates"
@@ -289,16 +313,19 @@ msgstr "Etiquette VLAN"
 msgid "VM ID"
 msgstr ""
 
+msgid "Version"
+msgstr ""
+
 msgid "X509 Certification Authorities"
 msgstr "Autorités de certification X509"
 
 msgid "add new storage volume"
 msgstr "ajouter un nouveau volume de stockage"
 
-msgid "create_vm(): %{args}"
+msgid "create_vm(): clone %{image_id} in %{vmid}"
 msgstr ""
 
-msgid "create_vm(): clone %{image_id} in %{vmid}"
+msgid "e.g. /path/to/"
 msgstr ""
 
 msgid "e.g. https://127.0.0.1:8006/api2/json"
@@ -327,9 +354,6 @@ msgstr "retirer l'interface réseau"
 
 msgid "remove storage volume"
 msgstr "retirer le stockage de volume"
-
-msgid "save_vm(): %{attr}"
-msgstr ""
 
 msgid "vmid of template vm."
 msgstr "vmid de la VM modèle."

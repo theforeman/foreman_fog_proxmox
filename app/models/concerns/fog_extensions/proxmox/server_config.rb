@@ -28,11 +28,11 @@ module FogExtensions
       end
 
       def spectre
-        Fog::Proxmox::CpuHelper.extract_spectre(cpu)
+        Fog::Proxmox::CpuHelper.has_spectre?(cpu)
       end
 
       def pcid
-        Fog::Proxmox::CpuHelper.extract_pcid(cpu)
+        Fog::Proxmox::CpuHelper.has_pcid?(cpu)
       end
 
       def cdrom

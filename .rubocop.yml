@@ -1,10 +1,6 @@
 Rails:
   Enabled: true
 
-# TODO: remove this file by either moving cops here or fixing code
-inherit_from:
-  - .rubocop_todo.yml
-
 # Don't enforce documentation
 Style/Documentation:
   Enabled: false

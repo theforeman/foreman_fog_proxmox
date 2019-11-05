@@ -108,11 +108,9 @@ module ProxmoxServerHelper
     disk = {}
     id = args['id']
     id = "#{args['controller']}#{args['device']}" if args.key?('controller') && args.key?('device') && !id
-    logger.error "###### ID: #{id};  attrs:#{args.inspect}"
+    delete = args['_delete'].to_i == 1
     return args if ForemanFogProxmox::Value.empty?(id) || id == 'rootfs'
 
-    # TODO: Delete disk if requested:
-    # delete = args['_delete'].to_i == 1
     args.delete_if { |_key, value| ForemanFogProxmox::Value.empty?(value) }
     disk.store(:id, id)
     disk.store(:volid, args['volid']) if args.key?('volid')

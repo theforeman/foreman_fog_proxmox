@@ -23,3 +23,11 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <td><%= _("Version") %></td>
   <td><%= @compute_resource.version%></td>
 </tr>
+<tr>
+  <td><%= _("Token has expired?") %></td>
+  <td><%= @compute_resource.token_expired?%></td>
+</tr>
+<tr>
+  <td><%= _("Token expires on") %></td>
+  <td><%= @compute_resource.token_deadline%></td>
+</tr>

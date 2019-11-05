@@ -63,6 +63,14 @@ module ForemanFogProxmox
       ForemanFogProxmox::Semver.to_semver(version) >= ForemanFogProxmox::Semver.to_semver('5.3.0') && ForemanFogProxmox::Semver.to_semver(version) < ForemanFogProxmox::Semver.to_semver('5.5.0')
     end
 
+    def token_expired?
+      Fog::Proxmox.credentials_has_expired?
+    end
+
+    def token_deadline
+      Fog::Proxmox.credentials[:deadline]
+    end
+
     def test_connection(options = {})
       super
       credentials_valid?
@@ -430,6 +438,14 @@ module ForemanFogProxmox
       attrs[:ssl_verify_peer] = value
     end
 
+    def renew
+      attrs[:renew].blank? ? false : Foreman::Cast.to_bool(attrs[:renew])
+    end
+
+    def renew=(value)
+      attrs[:renew] = value
+    end
+
     def connection_options
       opts = http_proxy ? { proxy: http_proxy.full_url } : { disable_proxy: 1 }
       opts.store(:ssl_verify_peer, ssl_verify_peer)
@@ -463,11 +479,14 @@ module ForemanFogProxmox
 
     private
 
-    def fog_credentials
-      { pve_url: url,
+    def fog_credentials      
+      credentials = { pve_url: url,
         pve_username: user,
         pve_password: password,
         connection_options: connection_options }
+      ticket = Fog::Proxmox.credentials[:ticket]
+      credentials.store(:pve_ticket, ticket) if renew
+      credentials
     end
 
     def client

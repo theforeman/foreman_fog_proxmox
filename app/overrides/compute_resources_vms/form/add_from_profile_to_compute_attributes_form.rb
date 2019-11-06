@@ -20,7 +20,8 @@ Deface::Override.new(
   :name => 'add_from_profile_to_compute_attributes_form',
   :replace => "erb[loud]:contains('render')",
   :partial => 'compute_resources_vms/form/proxmox/add_from_profile_to_compute_attributes_form',
-  :original => '0e01b2f93b6855afc207e0e301515cdd300a1c61'
+  :original => '0e01b2f93b6855afc207e0e301515cdd300a1c61',
+  :namespaced => true
 )
 
 Deface::Override.new(
@@ -28,5 +29,6 @@ Deface::Override.new(
   :name => 'add_from_profile_to_compute_form',
   :replace => "erb[loud]:contains('provider_partial')",
   :partial => 'compute_resources_vms/form/proxmox/add_from_profile_to_compute_form',
-  :original => '107f930f8e6b2bdd3e728757d8320d483f19ff9e'
+  :original => '107f930f8e6b2bdd3e728757d8320d483f19ff9e',
+  :namespaced => true
 )

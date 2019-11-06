@@ -20,5 +20,6 @@ Deface::Override.new(
   :name => 'add_vm_type_to_volumes_edit',
   :replace_contents => 'div.children_fields',
   :partial => 'compute_resources_vms/form/proxmox/add_vm_type_to_volumes_edit',
-  :original => '741194531465d567107d762aa11de9d00628c841'
+  :original => '741194531465d567107d762aa11de9d00628c841',
+  :namespaced => true
 )

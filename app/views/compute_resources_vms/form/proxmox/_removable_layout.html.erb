@@ -14,9 +14,14 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
-
+<% if compute_resource.class == ForemanFogProxmox::Proxmox %>
 <% volume_rootfs = f.object.respond_to?(:rootfs?) && f.object.rootfs? %>
 
 <% unless volume_rootfs %>
     <%= remove_child_link('X', f, { :method => :'_delete', :title => local_assigns[:remove_title], :class => 'label label-danger' }) %>
+<% end %>
+<% else %>
+<% if new_vm %>
+    <%= remove_child_link('X', f, { :method => :'_delete', :title => local_assigns[:remove_title], :class => 'label label-danger' }) %>
+<% end %>
 <% end %>

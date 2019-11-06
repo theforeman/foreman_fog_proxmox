@@ -14,7 +14,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
-
+<% if compute_resource.class == ForemanFogProxmox::Proxmox %>
 <% type = f.object.type %>
 <% server = type == 'qemu' %>
 <% container = type == 'lxc' %>
@@ -52,5 +52,19 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
     <%= add_child_link_typed '+ ' + _("Add Volume"), :volumes, 'server', { :class => "info #{'hide' unless server}", :title => _('add new storage volume') } %>
     <%= add_child_link_typed '+ ' + _("Add Volume"), :volumes, 'container', { :class => "info #{'hide' unless container}", :title => _('add new storage volume') } %>
+<% else %>
+<%= new_child_fields_template(f, :volumes, {
+              :object  => volume,
+              :partial => provider_partial(compute_resource, 'volume'),
+              :form_builder_attrs => { :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume') },
+              :layout => "compute_resources_vms/form/#{item_layout}_layout" }) %>
 
+<%= f.fields_for :volumes do |i| %>
+    <%= render :partial => provider_partial(compute_resource, 'volume'), :locals => { :f => i, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume') }, :layout => "compute_resources_vms/form/#{item_layout}_layout" %>
+<% end %>
+
+<% if new_vm %>
+    <%= add_child_link '+ ' + _("Add Volume"), :volumes, { :class => "info", :title => _('add new storage volume') } %>
+<% end %>
+<% end %>
 

@@ -14,7 +14,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
-
+<% if compute_resource.class == ForemanFogProxmox::Proxmox %>
 <% vm_type = f.object.respond_to?('type') ? f.object.type : nil %>
 
 <%= new_child_fields_template(f, compute_resource.interfaces_attrs_name, {
@@ -22,4 +22,10 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
         :partial => provider_partial(compute_resource, 'network'),
         :form_builder_attrs => { :vm_type => vm_type, :compute_resource => compute_resource, :new_host => new_host, :new_vm => new_vm, :remove_title => _('remove network interface') },
         :layout => 'compute_resources_vms/form/deletable_layout' }) %>
-
+<% else %>
+<%= new_child_fields_template(f, compute_resource.interfaces_attrs_name, {
+        :object => compute_resource.new_interface,
+        :partial => provider_partial(compute_resource, 'network'),
+        :form_builder_attrs => { :compute_resource => compute_resource, :new_host => new_host, :new_vm => new_vm, :remove_title => _('remove network interface') },
+        :layout => 'compute_resources_vms/form/deletable_layout' }) %>
+<% end %>

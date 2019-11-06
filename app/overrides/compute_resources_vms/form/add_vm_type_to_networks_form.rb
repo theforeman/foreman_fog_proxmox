@@ -20,7 +20,8 @@ Deface::Override.new(
   :name => 'add_vm_type_to_networks_form',
   :replace => "erb[loud]:contains('render')",
   :partial => 'compute_resources_vms/form/proxmox/add_vm_type_to_networks_form',
-  :original => 'ce82feb03418d25628001c9fc5f5f78025c5e5f8'
+  :original => 'ce82feb03418d25628001c9fc5f5f78025c5e5f8',
+  :namespaced => true
 )
 
 Deface::Override.new(
@@ -28,5 +29,6 @@ Deface::Override.new(
   :name => 'add_vm_type_to_networks_new_childs_form',
   :replace => "erb[loud]:contains('new_child_fields_template')",
   :partial => 'compute_resources_vms/form/proxmox/add_vm_type_to_networks_new_childs_form',
-  :original => '4ba200e5e02810ade03827374de9b0b8b6a2f6a9'
+  :original => '4ba200e5e02810ade03827374de9b0b8b6a2f6a9',
+  :namespaced => true
 )

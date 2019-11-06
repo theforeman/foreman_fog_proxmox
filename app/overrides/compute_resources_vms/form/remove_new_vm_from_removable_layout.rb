@@ -20,5 +20,6 @@ Deface::Override.new(
   :name => 'remove_new_vm_from_removable_layout',
   :replace_contents => 'div.remove-button',
   :partial => 'compute_resources_vms/form/proxmox/removable_layout',
-  :original => '8b7383e57fbe158fc12bf8bc1003431f2f2cb6f5'
+  :original => '8b7383e57fbe158fc12bf8bc1003431f2f2cb6f5',
+  :namespaced => true
 )

@@ -106,7 +106,8 @@ module ProxmoxServerHelper
 
   def parse_server_volume(args)
     disk = {}
-    id = args['id']
+    volid = args['volid'] if args.key?('volid')
+    id = args['id'] if volid
     id = "#{args['controller']}#{args['device']}" if args.key?('controller') && args.key?('device') && !id
     delete = args['_delete'].to_i == 1
     return args if ForemanFogProxmox::Value.empty?(id) || id == 'rootfs'

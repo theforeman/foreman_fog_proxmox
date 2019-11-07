@@ -18,7 +18,7 @@ If you like it and need more features you can [support](.github/SUPPORT.md) it.
 |--|--|--|--|--|
 |<0.6|<5.3|<0.6|<=1.20|>=2.3|
 |=0.6|=5.3|=0.6|=1.21|>=2.3|
-|>=0.7|=5.4|>=0.7|>=1.22|>=2.3|
+|<= 0.8 |=5.4|>=0.7|>=1.22|>=2.3|
 
 ## Installation
 
@@ -131,6 +131,10 @@ gem 'simplecov' # test
 bundle install --without libvirt postgresql mysql2
 ```
 
+```shell
+npm install
+```
+
 * Configure foreman settings:
 
 ```shell
@@ -167,6 +171,12 @@ or just one:
 ```shell
 export DISABLE_SPRING=true
 bundle exec bin/rake test TEST=test/functional/compute_resources_controller_test.rb
+```
+
+* See deface overrides result:
+
+```shell
+bundle exec bin/rake deface:get_result['hosts/_compute_detail']
 ```
 
 * In foreman directory, after you modify foreman_fog_proxmox specific assets (proxmox.js, etc) you have to precompile it:

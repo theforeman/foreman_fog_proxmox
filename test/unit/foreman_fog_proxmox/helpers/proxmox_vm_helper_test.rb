@@ -144,27 +144,27 @@ module ForemanFogProxmox
       teardown { Fog.unmock! }
 
       it '#server qemu' do
-        config_hash = object_to_config_hash(server, 'qemu')
+        config_hash = object_to_config_hash(server)
         expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(server.config.attributes).reject { |key, _value| ['templated', 'ide2', 'scsi0', 'net0', 'net1'].include? key }
         assert_equal expected_config_hash, config_hash['config_attributes']
       end
 
       it '#server lxc' do
-        config_hash = object_to_config_hash(server, 'lxc')
+        config_hash = object_to_config_hash(server)
         assert config_hash.key?('config_attributes')
         expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(server.config.attributes).reject { |key, _value| ['templated', 'ide2', 'scsi0', 'net0', 'net1'].include? key }
         assert_equal expected_config_hash, config_hash['config_attributes']
       end
 
       it '#container qemu' do
-        config_hash = object_to_config_hash(container, 'qemu')
+        config_hash = object_to_config_hash(container)
         assert config_hash.key?('config_attributes')
         expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(container.config.attributes).reject { |key, _value| ['templated', 'rootfs', 'mp0', 'net0', 'net1'].include? key }
         assert_equal expected_config_hash, config_hash['config_attributes']
       end
 
       it '#container lxc' do
-        config_hash = object_to_config_hash(container, 'lxc')
+        config_hash = object_to_config_hash(container)
         assert config_hash.key?('config_attributes')
         expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(container.config.attributes).reject { |key, _value| ['templated', 'rootfs', 'mp0', 'net0', 'net1'].include? key }
         assert_equal expected_config_hash, config_hash['config_attributes']

@@ -26,8 +26,7 @@ module ProxmoxVmHelper
   MEGA = KILO * KILO
   GIGA = KILO * MEGA
 
-  # FIXME: parameter 'type' is never used here!
-  def object_to_config_hash(vm, type)
+  def object_to_config_hash(vm)
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
     main_a = ['hostname', 'name', 'vmid']
     type = vm.config.attributes['type']

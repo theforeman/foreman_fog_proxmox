@@ -250,7 +250,7 @@ module ForemanFogProxmox
         disk = mock('disk')
         disk.stubs(:size).returns(1073741824)
         disk.stubs(:storage).returns('local-lvm')
-        disk.stubs(:id).returns('virtio0')
+        disk.stubs(:id).returns('scsi0')
         disks.stubs(:get).returns
         config.stubs(:disks).returns(disks)
         config.stubs(:attributes).returns(:cores => '')
@@ -519,7 +519,7 @@ module ForemanFogProxmox
         disk = mock('disk')
         disk.stubs(:size).returns(1073741824)
         disk.stubs(:storage).returns('local-lvm')
-        disk.stubs(:id).returns('rootfs')
+        disk.stubs(:id).returns('mp0')
         disks.stubs(:get).returns
         config.stubs(:disks).returns(disks)
         config.stubs(:attributes).returns(:cores => '')
@@ -538,7 +538,6 @@ module ForemanFogProxmox
             '0' => {
               'id' => 'mp0',
               '_delete' => '',
-              'volid' => 'local-lvm:vm-100-disk-0',
               'device' => '0',
               'storage' => 'local-lvm',
               'size' => '2147483648',

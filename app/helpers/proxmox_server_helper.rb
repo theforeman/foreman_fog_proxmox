@@ -22,9 +22,6 @@ require 'fog/proxmox/helpers/nic_helper'
 require 'foreman_fog_proxmox/value'
 
 module ProxmoxServerHelper
-  KILO = 1024
-  MEGA = KILO * KILO
-  GIGA = KILO * MEGA
 
   def parse_server_vm(args)
     logger.debug("parse_server_vm args=#{args}")

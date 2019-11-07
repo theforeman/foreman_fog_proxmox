@@ -1,3 +1,9 @@
+AllCops:
+  TargetRubyVersion: 2.3
+  TargetRailsVersion: 5.2
+  Exclude:
+    - 'node_modules/**/*'
+
 Rails:
   Enabled: true
 

@@ -22,6 +22,26 @@ require 'fog/proxmox/helpers/nic_helper'
 require 'foreman_fog_proxmox/value'
 
 module ProxmoxContainerHelper
+  def config_keys
+    keys = { general: ['node_id', 'name', 'type', 'config_attributes', 'volumes_attributes', 'interfaces_attributes', 'firmware_type', 'provision_method', 'container_volumes', 'server_volumes'] }
+    keys.store(:main, ['name', 'type', 'node_id', 'vmid', 'interfaces', 'mount_points', 'disks'])
+    keys.store(:cpu, ['arch', 'cpulimit', 'cpuunits', 'cores'])
+    keys.store(:memory, ['memory', 'swap'])
+    keys
+  end
+
+  def ostemplate_keys
+    ['ostemplate', 'ostemplate_storage', 'ostemplate_file']
+  end
+
+  def parse_ostemplate_without_keys(args)
+    parse_container_ostemplate(args.select { |key, _value| ostemplate_keys.include? key })
+  end
+
+  def config_general_or_ostemplate_key?(key)
+    config_keys[:general].include?(key) || ostemplate_keys.include?(key)
+  end
+
   def parse_container_vm(args)
     logger.debug("parse_container_vm args=#{args}")
     args = ActiveSupport::HashWithIndifferentAccess.new(args)
@@ -30,27 +50,17 @@ module ProxmoxContainerHelper
     return {} unless args['type'] == 'lxc'
 
     config = args['config_attributes']
-    main_a = ['name', 'type', 'node_id', 'vmid', 'interfaces', 'mount_points', 'disks']
-    config ||= args.reject { |key, _value| main_a.include? key }
-    ostemplate_a = ['ostemplate', 'ostemplate_storage', 'ostemplate_file']
-    ostemplate = parse_container_ostemplate(args.select { |key, _value| ostemplate_a.include? key })
-    ostemplate = parse_container_ostemplate(config.select { |key, _value| ostemplate_a.include? key }) unless ostemplate[:ostemplate]
+    config ||= args.reject { |key, _value| config_keys[:main].include? key }
+    ostemplate = parse_ostemplate_without_keys(args)
+    ostemplate = parse_ostemplate_without_keys(config) unless ostemplate[:ostemplate]
     volumes = parse_container_volumes(args['volumes_attributes'])
-    cpu_a = ['arch', 'cpulimit', 'cpuunits', 'cores']
-    cpu = parse_container_cpu(config.select { |key, _value| cpu_a.include? key })
-    memory_a = ['memory', 'swap']
-    memory = parse_container_memory(config.select { |key, _value| memory_a.include? key })
+    cpu = parse_container_cpu(config.select { |key, _value| config_keys[:cpu].include? key })
+    memory = parse_container_memory(config.select { |key, _value| config_keys[:memory].include? key })
     interfaces_attributes = args['interfaces_attributes']
     interfaces_to_add, interfaces_to_delete = parse_container_interfaces(interfaces_attributes)
-    general_a = ['node_id', 'name', 'type', 'config_attributes', 'volumes_attributes', 'interfaces_attributes', 'firmware_type', 'provision_method', 'container_volumes', 'server_volumes']
-    logger.debug("general_a: #{general_a}")
-    parsed_vm = args.reject { |key, value| general_a.include?(key) || ostemplate_a.include?(key) || ForemanFogProxmox::Value.empty?(value) }
-    config_a = []
-    config_a += cpu_a
-    config_a += memory_a
-    config_a += main_a
-    config_a += general_a
-    parsed_config = config.reject { |key, value| config_a.include?(key) || ForemanFogProxmox::Value.empty?(value) }
+    logger.debug("config_keys[:general]: #{config_keys[:general]}")
+    parsed_vm = args.reject { |key, value| config_general_or_ostemplate_key?(key) || ForemanFogProxmox::Value.empty?(value) }
+    parsed_config = config.reject { |key, value| config_keys.include?(key) || ForemanFogProxmox::Value.empty?(value) }
     logger.debug("parse_container_config(): #{parsed_config}")
     parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory).merge(ostemplate)
     interfaces_to_add.each { |interface| parsed_vm = parsed_vm.merge(interface) }

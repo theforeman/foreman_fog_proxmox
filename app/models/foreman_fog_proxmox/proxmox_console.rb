@@ -34,7 +34,7 @@ module ForemanFogProxmox
         WsProxy.start(:host => host, :host_port => vnc_console['port'], :password => vnc_console['ticket']).merge(:name => vm.name, :type => type_console)
       rescue StandardError => e
         logger.error(e)
-        raise ::Foreman::Exception, _('%s console is not supported at this time') % type_console
+        raise ::Foreman::Exception, _('%<s>s console is not supported at this time') % type_console
       end
     end
   end

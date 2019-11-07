@@ -44,7 +44,7 @@ module ForemanFogProxmox
 
     def volume_exists?(volume_attributes)
       volid = volume_attributes.key?('volid') ? volume_attributes['volid'] : ''
-      !volid.blank?
+      volid.present?
     end
 
     def volume_to_delete?(volume_attributes)

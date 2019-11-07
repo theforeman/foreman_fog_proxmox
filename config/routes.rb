@@ -18,8 +18,8 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 Rails.application.routes.draw do
-    namespace :foreman_fog_proxmox do
-        match 'isos/:storage', :to => 'compute_resources#isos', :via => 'get'
-        match 'ostemplates/:storage', :to => 'compute_resources#ostemplates', :via => 'get'
-    end
+  namespace :foreman_fog_proxmox do
+    match 'isos/:storage', :to => 'compute_resources#isos', :via => 'get'
+    match 'ostemplates/:storage', :to => 'compute_resources#ostemplates', :via => 'get'
+  end
 end

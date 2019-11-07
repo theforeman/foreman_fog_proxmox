@@ -25,35 +25,19 @@ require 'factories/foreman_fog_proxmox/proxmox_container_mock_factory'
 require 'active_support/core_ext/hash/indifferent_access'
 
 module ForemanFogProxmox
-  class ProxmoxTest < ActiveSupport::TestCase
+  class ProxmoxVmCommandsServerTest < ActiveSupport::TestCase
     include ComputeResourceTestHelpers
     include ProxmoxNodeMockFactory
     include ProxmoxServerMockFactory
     include ProxmoxContainerMockFactory
     include ProxmoxVmHelper
 
-    should validate_presence_of(:url)
-    should validate_presence_of(:user)
-    should validate_presence_of(:password)
-    should validate_presence_of(:node_id)
-    should allow_value('root@pam').for(:user)
-    should_not allow_value('root').for(:user)
-    should_not allow_value('a').for(:url)
-    should allow_values('http://foo.com', 'http://bar.com/baz').for(:url)
-
-    test '#associated_host matches any NIC' do
-      mac = 'ca:d0:e6:32:16:97'
-      host = FactoryBot.create(:host, :mac => mac)
-      cr = FactoryBot.build_stubbed(:proxmox_cr)
-      vm = mock('vm', :mac => mac)
-      assert_equal host, (as_admin { cr.associated_host(vm) })
-    end
-
-    test '#node' do
-      node = mock('node')
-      cr = FactoryBot.build_stubbed(:proxmox_cr)
-      cr.stubs(:node).returns(node)
-      assert_equal node, (as_admin { cr.node })
+    describe 'destroy_vm' do
+      it 'handles situation when vm is not present' do
+        cr = mock_cr_servers(ForemanFogProxmox::Proxmox.new, empty_servers)
+        cr.expects(:find_vm_by_uuid).raises(ActiveRecord::RecordNotFound)
+        assert cr.destroy_vm('abc')
+      end
     end
   end
 end

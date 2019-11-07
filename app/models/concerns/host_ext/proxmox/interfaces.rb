@@ -28,7 +28,9 @@ module HostExt
 
       def add_interfaces_to_compute_attributes(attributes)
         attributes['compute_attributes']['interfaces_attributes'] = {}
-        attributes['interfaces_attributes'].each { |index, interface_attributes| add_interface_to_compute_attributes(index, interface_attributes, attributes['compute_attributes']['interfaces_attributes']) }
+        attributes['interfaces_attributes'].each do |index, interface_attributes|
+          add_interface_to_compute_attributes(index, interface_attributes, attributes['compute_attributes']['interfaces_attributes'])
+        end
       end
 
       def add_interface_to_compute_attributes(index, interface_attributes, compute_attributes)

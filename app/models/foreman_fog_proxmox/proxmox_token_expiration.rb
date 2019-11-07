@@ -18,16 +18,13 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 module ForemanFogProxmox
-    module ProxmoxTokenExpiration
-
-        def token_expired?
-            Fog::Proxmox.credentials_has_expired?
-        end
-    
-        def token_deadline
-            Fog::Proxmox.credentials[:deadline]
-        end
-
+  module ProxmoxTokenExpiration
+    def token_expired?
+      Fog::Proxmox.credentials_has_expired?
     end
 
+    def token_deadline
+      Fog::Proxmox.credentials[:deadline]
+    end
+  end
 end

@@ -60,7 +60,7 @@ module ForemanFogProxmox
 
     def self.model_name
       ComputeResource.model_name
-    end    
+    end
 
     def associated_host(vm)
       associate_by('mac', vm.mac)
@@ -128,11 +128,10 @@ module ForemanFogProxmox
 
     def network_client
       @network_client ||= ::Fog::Proxmox::Network.new(fog_credentials)
-    end 
+    end
 
     def host
       URI.parse(url).host
     end
-    
   end
 end

@@ -33,6 +33,9 @@ Metrics/LineLength:
 Naming/MethodName:
   Description: From foreman's rubocop-config. Neccessary for overloading methods in foreman.
   Enabled: false
+  
+Naming/UncommunicativeMethodParamName:
+  MinNameLength: 1
 
 Style/FrozenStringLiteralComment:
   Description: Apparently, Deface hates frozen string literals

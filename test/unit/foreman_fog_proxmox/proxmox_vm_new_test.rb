@@ -25,35 +25,47 @@ require 'factories/foreman_fog_proxmox/proxmox_container_mock_factory'
 require 'active_support/core_ext/hash/indifferent_access'
 
 module ForemanFogProxmox
-  class ProxmoxTest < ActiveSupport::TestCase
+  class ProxmoxVmNewTest < ActiveSupport::TestCase
     include ComputeResourceTestHelpers
     include ProxmoxNodeMockFactory
     include ProxmoxServerMockFactory
     include ProxmoxContainerMockFactory
     include ProxmoxVmHelper
 
-    should validate_presence_of(:url)
-    should validate_presence_of(:user)
-    should validate_presence_of(:password)
-    should validate_presence_of(:node_id)
-    should allow_value('root@pam').for(:user)
-    should_not allow_value('root').for(:user)
-    should_not allow_value('a').for(:url)
-    should allow_values('http://foo.com', 'http://bar.com/baz').for(:url)
+    describe 'new_vm' do
+      before do
+        @cr = FactoryBot.build_stubbed(:proxmox_cr)
+      end
 
-    test '#associated_host matches any NIC' do
-      mac = 'ca:d0:e6:32:16:97'
-      host = FactoryBot.create(:host, :mac => mac)
-      cr = FactoryBot.build_stubbed(:proxmox_cr)
-      vm = mock('vm', :mac => mac)
-      assert_equal host, (as_admin { cr.associated_host(vm) })
-    end
+      it 'new server with attr empty' do
+        attr = {}
+        vm = mock('vm')
+        config = mock('config')
+        config.stubs(:inspect).returns('config')
+        vm.stubs(:config).returns(config)
+        @cr.stubs(:new_server_vm).with(attr).returns(vm)
+        assert_equal vm, @cr.new_vm(attr)
+      end
 
-    test '#node' do
-      node = mock('node')
-      cr = FactoryBot.build_stubbed(:proxmox_cr)
-      cr.stubs(:node).returns(node)
-      assert_equal node, (as_admin { cr.node })
+      it 'new server with attr not empty' do
+        attr = { 'type' => 'qemu' }
+        vm = mock('vm')
+        config = mock('config')
+        config.stubs(:inspect).returns('config')
+        vm.stubs(:config).returns(config)
+        @cr.stubs(:new_server_vm).with(attr).returns(vm)
+        assert_equal vm, @cr.new_vm(attr)
+      end
+
+      it 'new container with attr not empty' do
+        attr = { 'type' => 'lxc' }
+        vm = mock('vm')
+        config = mock('config')
+        config.stubs(:inspect).returns('config')
+        vm.stubs(:config).returns(config)
+        @cr.stubs(:new_container_vm).with(attr).returns(vm)
+        assert_equal vm, @cr.new_vm(attr)
+      end
     end
   end
 end

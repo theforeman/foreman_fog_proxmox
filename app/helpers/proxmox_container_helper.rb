@@ -22,7 +22,6 @@ require 'fog/proxmox/helpers/nic_helper'
 require 'foreman_fog_proxmox/value'
 
 module ProxmoxContainerHelper
-
   def parse_container_vm(args)
     logger.debug("parse_container_vm args=#{args}")
     args = ActiveSupport::HashWithIndifferentAccess.new(args)

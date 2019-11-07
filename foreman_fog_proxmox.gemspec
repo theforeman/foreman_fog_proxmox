@@ -1,4 +1,3 @@
-
 # frozen_string_literal: true
 
 # Copyright 2018 Tristan Robert
@@ -34,8 +33,8 @@ Gem::Specification.new do |s|
   s.files = Dir['{app,config,db,lib,locale}/**/*'] + ['LICENSE', 'Rakefile', 'README.md']
   s.test_files = Dir['test/**/*']
 
-  s.add_dependency 'fog-proxmox', '~> 0.8'
   s.add_dependency 'deface'
+  s.add_dependency 'fog-proxmox', '~> 0.8'
   s.add_development_dependency 'rdoc'
   s.add_development_dependency 'rubocop'
   s.add_development_dependency 'simplecov'

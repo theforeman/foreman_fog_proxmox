@@ -29,8 +29,6 @@ module ProxmoxVmHelper
   def object_to_config_hash(vm)
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
     main_a = ['hostname', 'name', 'vmid']
-    type = vm.config.attributes['type']
-    type ||= vm.type
     main = vm.attributes.select { |key, _value| main_a.include? key }
     main_a += ['templated']
     config = vm.config.attributes.reject { |key, _value| main_a.include?(key) || Fog::Proxmox::DiskHelper.disk?(key) || Fog::Proxmox::NicHelper.nic?(key) }

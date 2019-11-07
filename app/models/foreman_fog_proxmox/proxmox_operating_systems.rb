@@ -18,35 +18,32 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 module ForemanFogProxmox
-    module ProxmoxOperatingSystems
-
-        def compute_os_types(host)
-            os_linux_types_mapping(host).empty? ? os_windows_types_mapping(host) : os_linux_types_mapping(host)
-        end
-    
-        def available_operating_systems
-            operating_systems = ['other', 'solaris']
-            operating_systems += available_linux_operating_systems
-            operating_systems += available_windows_operating_systems
-            operating_systems
-        end
-    
-        def available_linux_operating_systems
-            ['l24', 'l26', 'debian', 'ubuntu', 'centos', 'fedora', 'opensuse', 'archlinux', 'gentoo', 'alpine']
-        end
-    
-        def available_windows_operating_systems
-            ['wxp', 'w2k', 'w2k3', 'w2k8', 'wvista', 'win7', 'win8', 'win10']
-        end
-    
-        def os_linux_types_mapping(host)
-            ['Debian', 'Redhat', 'Suse', 'Altlinux', 'Archlinux', 'CoreOs', 'Gentoo'].include?(host.operatingsystem.type) ? available_linux_operating_systems : []
-        end
-    
-        def os_windows_types_mapping(host)
-            ['Windows'].include?(host.operatingsystem.type) ? available_windows_operating_systems : []
-        end
-
+  module ProxmoxOperatingSystems
+    def compute_os_types(host)
+      os_linux_types_mapping(host).empty? ? os_windows_types_mapping(host) : os_linux_types_mapping(host)
     end
 
+    def available_operating_systems
+      operating_systems = ['other', 'solaris']
+      operating_systems += available_linux_operating_systems
+      operating_systems += available_windows_operating_systems
+      operating_systems
+    end
+
+    def available_linux_operating_systems
+      ['l24', 'l26', 'debian', 'ubuntu', 'centos', 'fedora', 'opensuse', 'archlinux', 'gentoo', 'alpine']
+    end
+
+    def available_windows_operating_systems
+      ['wxp', 'w2k', 'w2k3', 'w2k8', 'wvista', 'win7', 'win8', 'win10']
+    end
+
+    def os_linux_types_mapping(host)
+      ['Debian', 'Redhat', 'Suse', 'Altlinux', 'Archlinux', 'CoreOs', 'Gentoo'].include?(host.operatingsystem.type) ? available_linux_operating_systems : []
+    end
+
+    def os_windows_types_mapping(host)
+      ['Windows'].include?(host.operatingsystem.type) ? available_windows_operating_systems : []
+    end
+  end
 end

@@ -22,7 +22,6 @@ require 'fog/proxmox/helpers/nic_helper'
 require 'foreman_fog_proxmox/value'
 
 module ProxmoxServerHelper
-
   def parse_server_vm(args)
     logger.debug("parse_server_vm args=#{args}")
     args = ActiveSupport::HashWithIndifferentAccess.new(args)
@@ -106,7 +105,6 @@ module ProxmoxServerHelper
     volid = args['volid'] if args.key?('volid')
     id = args['id'] if volid
     id = "#{args['controller']}#{args['device']}" if args.key?('controller') && args.key?('device') && !id
-    delete = args['_delete'].to_i == 1
     return args if ForemanFogProxmox::Value.empty?(id) || id == 'rootfs'
 
     args.delete_if { |_key, value| ForemanFogProxmox::Value.empty?(value) }

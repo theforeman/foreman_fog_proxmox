@@ -113,10 +113,10 @@ msgstr ""
 msgid "Failed retrieving proxmox server vm by vmid=%<vmid>s"
 msgstr ""
 
-msgid "Failed to undo update compute %{compute_resource} instance %{name}: %{e}"
+msgid "Failed to undo update compute %<compute_resource>s instance %<name>s: %<e>s"
 msgstr ""
 
-msgid "Failed to update a compute %{compute_resource} instance %{name}: %{e}"
+msgid "Failed to update a compute %<compute_resource>s instance %<name>s: %<e>s"
 msgstr ""
 
 msgid "Firewall"
@@ -322,7 +322,7 @@ msgstr ""
 msgid "add new storage volume"
 msgstr ""
 
-msgid "create_vm(): clone %{image_id} in %{vmid}"
+msgid "create_vm(): clone %<image_id>s in %<vmid>s"
 msgstr ""
 
 msgid "e.g. /path/to/"
@@ -334,19 +334,19 @@ msgstr ""
 msgid "e.g. root@pam"
 msgstr ""
 
-msgid "failed to create vm: %{e}"
+msgid "failed to create vm: %<e>s"
 msgstr ""
 
-msgid "invalid vmid=%{vmid}"
+msgid "invalid vmid=%<vmid>s"
 msgstr ""
 
-msgid "new_container_vm() vm.config=%{config}"
+msgid "new_container_vm() vm.config=%<config>s"
 msgstr ""
 
-msgid "new_server_vm() vm.config=%{config}"
+msgid "new_server_vm() vm.config=%<config>s"
 msgstr ""
 
-msgid "new_vm() vm.config=%{config}"
+msgid "new_vm() vm.config=%<config>s"
 msgstr ""
 
 msgid "remove network interface"

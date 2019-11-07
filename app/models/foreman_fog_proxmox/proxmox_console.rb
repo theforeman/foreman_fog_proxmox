@@ -18,27 +18,24 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 module ForemanFogProxmox
-    module ProxmoxConsole
-
-        def console(uuid)
-          vm = find_vm_by_uuid(uuid)
-          options = {}
-          if vm.container?
-            type_console = 'vnc'
-            options.store(:console, type_console)
-          else
-            type_console = vm.config.type_console
-          end
-          options.store(:websocket, 1) if type_console == 'vnc'
-          begin
-            vnc_console = vm.start_console(options)
-            WsProxy.start(:host => host, :host_port => vnc_console['port'], :password => vnc_console['ticket']).merge(:name => vm.name, :type => type_console)
-          rescue StandardError => e
-            logger.error(e)
-            raise ::Foreman::Exception, _('%s console is not supported at this time') % type_console
-          end
-        end        
-
+  module ProxmoxConsole
+    def console(uuid)
+      vm = find_vm_by_uuid(uuid)
+      options = {}
+      if vm.container?
+        type_console = 'vnc'
+        options.store(:console, type_console)
+      else
+        type_console = vm.config.type_console
+      end
+      options.store(:websocket, 1) if type_console == 'vnc'
+      begin
+        vnc_console = vm.start_console(options)
+        WsProxy.start(:host => host, :host_port => vnc_console['port'], :password => vnc_console['ticket']).merge(:name => vm.name, :type => type_console)
+      rescue StandardError => e
+        logger.error(e)
+        raise ::Foreman::Exception, _('%s console is not supported at this time') % type_console
+      end
     end
-
+  end
 end

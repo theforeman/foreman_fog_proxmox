@@ -27,7 +27,7 @@ module Orchestration
         final_compute_attributes = compute_attributes.merge(compute_resource.host_compute_attrs(self))
         compute_resource.save_vm uuid, final_compute_attributes
       rescue StandardError => e
-        failure format(_('Failed to update a compute %{compute_resource} instance %{name}: %{e}'), :compute_resource => compute_resource, :name => name, :e => e), e
+        failure format(_('Failed to update a compute %<compute_resource>s instance %<name>s: %<e>s'), :compute_resource => compute_resource, :name => name, :e => e), e
       end
 
       def delComputeUpdate
@@ -35,7 +35,7 @@ module Orchestration
         final_compute_attributes = old.compute_attributes.merge(compute_resource.host_compute_attrs(old))
         compute_resource.save_vm uuid, final_compute_attributes
       rescue StandardError => e
-        failure format(_('Failed to undo update compute %{compute_resource} instance %{name}: %{e}'), :compute_resource => compute_resource, :name => name, :e => e), e
+        failure format(_('Failed to undo update compute %<compute_resource>s instance %<name>s: %<e>s'), :compute_resource => compute_resource, :name => name, :e => e), e
       end
     end
   end

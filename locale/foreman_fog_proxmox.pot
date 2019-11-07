@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: foreman_fog_proxmox 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-05 15:35+0100\n"
-"PO-Revision-Date: 2019-11-05 15:35+0100\n"
+"POT-Creation-Date: 2019-11-07 14:18+0100\n"
+"PO-Revision-Date: 2019-11-07 14:18+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -35,63 +35,63 @@ msgid "Change the password"
 msgstr ""
 
 #: ../app/models/concerns/orchestration/proxmox/compute.rb:30
-msgid "Failed to update a compute %{compute_resource} instance %{name}: %{e}"
+msgid "Failed to update a compute %<compute_resource>s instance %<name>s: %<e>s"
 msgstr ""
 
 #: ../app/models/concerns/orchestration/proxmox/compute.rb:38
-msgid "Failed to undo update compute %{compute_resource} instance %{name}: %{e}"
+msgid "Failed to undo update compute %<compute_resource>s instance %<name>s: %<e>s"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:60
-msgid "Proxmox compute resource version is %<version>s"
-msgstr ""
-
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:61
-msgid "Proxmox version %<version>s is not semver suitable"
-msgstr ""
-
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:139
-msgid "Operating system family %<type>s is not consistent with %<ostype>s"
-msgstr ""
-
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:242
-msgid "new_vm() vm.config=%{config}"
-msgstr ""
-
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:251
-msgid "new_container_vm() vm.config=%{config}"
-msgstr ""
-
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:260
-msgid "new_server_vm() vm.config=%{config}"
-msgstr ""
-
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:273
-msgid "invalid vmid=%{vmid}"
-msgstr ""
-
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:277
-msgid "create_vm(): clone %{image_id} in %{vmid}"
-msgstr ""
-
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:296
-msgid "failed to create vm: %{e}"
-msgstr ""
-
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:372
-msgid "Unable to shrink %<id>s size. Proxmox allows only increasing size."
-msgstr ""
-
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:445
+#: ../app/models/foreman_fog_proxmox/proxmox.rb:100
 msgid "Unable to store X509 certificates"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:486
+#: ../app/models/foreman_fog_proxmox/proxmox_compute_attributes.rb:31
+msgid "Operating system family %<type>s is not consistent with %<ostype>s"
+msgstr ""
+
+#: ../app/models/foreman_fog_proxmox/proxmox_console.rb:37
 msgid "%s console is not supported at this time"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox.rb:620
+#: ../app/models/foreman_fog_proxmox/proxmox_images.rb:46
+msgid "create_vm(): clone %<image_id>s in %<vmid>s"
+msgstr ""
+
+#: ../app/models/foreman_fog_proxmox/proxmox_version.rb:25
+msgid "Proxmox compute resource version is %<version>s"
+msgstr ""
+
+#: ../app/models/foreman_fog_proxmox/proxmox_version.rb:26
+msgid "Proxmox version %<version>s is not semver suitable"
+msgstr ""
+
+#: ../app/models/foreman_fog_proxmox/proxmox_vm_commands.rb:33
+msgid "invalid vmid=%<vmid>s"
+msgstr ""
+
+#: ../app/models/foreman_fog_proxmox/proxmox_vm_commands.rb:52
+msgid "failed to create vm: %<e>s"
+msgstr ""
+
+#: ../app/models/foreman_fog_proxmox/proxmox_vm_new.rb:140
+msgid "new_vm() vm.config=%<config>s"
+msgstr ""
+
+#: ../app/models/foreman_fog_proxmox/proxmox_vm_new.rb:149
+msgid "new_container_vm() vm.config=%<config>s"
+msgstr ""
+
+#: ../app/models/foreman_fog_proxmox/proxmox_vm_new.rb:158
+msgid "new_server_vm() vm.config=%<config>s"
+msgstr ""
+
+#: ../app/models/foreman_fog_proxmox/proxmox_vm_queries.rb:70
 msgid "Failed retrieving proxmox server vm by vmid=%<vmid>s"
+msgstr ""
+
+#: ../app/models/foreman_fog_proxmox/proxmox_volumes.rb:35
+msgid "Unable to shrink %<id>s size. Proxmox allows only increasing size."
 msgstr ""
 
 #: ../app/views/compute_resources/form/_proxmox.html.erb:9
@@ -151,7 +151,9 @@ msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_networks_form.html.erb:6
+#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_networks_form.html.erb:10
 #: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_networks_new_childs_form.html.erb:8
+#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_networks_new_childs_form.html.erb:14
 msgid "remove network interface"
 msgstr ""
 
@@ -161,18 +163,22 @@ msgstr ""
 #: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:25
 #: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:29
 #: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:33
+#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:44
+#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:48
 msgid "remove storage volume"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:38
 #: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:39
+#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:52
 msgid "Add Volume"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:38
 #: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:39
+#: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:52
 msgid "add new storage volume"
 msgstr ""
 
@@ -552,7 +558,7 @@ msgstr ""
 msgid "Foreman Fog Proxmox widget"
 msgstr ""
 
-#: gemspec.rb:2
+#: gemspec.rb:4
 msgid ""
 "ForemanFogProxmox plugin adds Proxmox VE compute resource to Foreman using fog"
 "-proxmox gem."

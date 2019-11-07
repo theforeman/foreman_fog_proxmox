@@ -25,35 +25,39 @@ require 'factories/foreman_fog_proxmox/proxmox_container_mock_factory'
 require 'active_support/core_ext/hash/indifferent_access'
 
 module ForemanFogProxmox
-  class ProxmoxTest < ActiveSupport::TestCase
+  class ProxmoxVmQueriesTest < ActiveSupport::TestCase
     include ComputeResourceTestHelpers
     include ProxmoxNodeMockFactory
     include ProxmoxServerMockFactory
     include ProxmoxContainerMockFactory
     include ProxmoxVmHelper
 
-    should validate_presence_of(:url)
-    should validate_presence_of(:user)
-    should validate_presence_of(:password)
-    should validate_presence_of(:node_id)
-    should allow_value('root@pam').for(:user)
-    should_not allow_value('root').for(:user)
-    should_not allow_value('a').for(:url)
-    should allow_values('http://foo.com', 'http://bar.com/baz').for(:url)
+    describe 'find_vm_by_uuid' do
+      it 'returns nil when the uuid does not match' do
+        cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, empty_servers, empty_servers)
+        assert cr.find_vm_by_uuid('100').nil?
+      end
 
-    test '#associated_host matches any NIC' do
-      mac = 'ca:d0:e6:32:16:97'
-      host = FactoryBot.create(:host, :mac => mac)
-      cr = FactoryBot.build_stubbed(:proxmox_cr)
-      vm = mock('vm', :mac => mac)
-      assert_equal host, (as_admin { cr.associated_host(vm) })
-    end
+      it 'raises RecordNotFound when the compute raises error' do
+        exception = Fog::Errors::Error.new
+        cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers_raising_exception(exception))
+        assert_raises ActiveRecord::RecordNotFound do
+          cr.find_vm_by_uuid('100')
+        end
+      end
 
-    test '#node' do
-      node = mock('node')
-      cr = FactoryBot.build_stubbed(:proxmox_cr)
-      cr.stubs(:node).returns(node)
-      assert_equal node, (as_admin { cr.node })
+      it 'finds vm on other node in cluster' do
+        args = { vmid: '100', type: 'qemu' }
+        servers = mock('servers')
+        servers.stubs(:id_valid?).returns(true)
+        servers.stubs(:get).with(args[:vmid]).returns(args)
+        cr = mock_cluster_nodes_servers_containers(
+          ForemanFogProxmox::Proxmox.new,
+          empty_servers, empty_servers, # node1
+          servers, empty_servers        # node2
+        )
+        assert_equal args, cr.find_vm_by_uuid(args[:vmid])
+      end
     end
   end
 end

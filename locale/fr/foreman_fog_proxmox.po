@@ -113,10 +113,10 @@ msgstr "Etendu"
 msgid "Failed retrieving proxmox server vm by vmid=%<vmid>s"
 msgstr ""
 
-msgid "Failed to undo update compute %{compute_resource} instance %{name}: %{e}"
+msgid "Failed to undo update compute %<compute_resource>s instance %<name>s: %<e>s"
 msgstr ""
 
-msgid "Failed to update a compute %{compute_resource} instance %{name}: %{e}"
+msgid "Failed to update a compute %<compute_resource>s instance %<name>s: %<e>s"
 msgstr ""
 
 msgid "Firewall"
@@ -322,7 +322,7 @@ msgstr "Autorités de certification X509"
 msgid "add new storage volume"
 msgstr "ajouter un nouveau volume de stockage"
 
-msgid "create_vm(): clone %{image_id} in %{vmid}"
+msgid "create_vm(): clone %<image_id>s in %<vmid>s"
 msgstr ""
 
 msgid "e.g. /path/to/"
@@ -334,19 +334,19 @@ msgstr "par exemple https://127.0.0.1:8006/api2/json"
 msgid "e.g. root@pam"
 msgstr "par exemple root@pam"
 
-msgid "failed to create vm: %{e}"
-msgstr "échec à la création de la VM: %{e}"
+msgid "failed to create vm: %<e>s"
+msgstr "échec à la création de la VM: %<e>s"
 
-msgid "invalid vmid=%{vmid}"
-msgstr "vmid=%{vmid} incorrect"
+msgid "invalid vmid=%<vmid>s"
+msgstr "vmid=%<vmid>s incorrect"
 
-msgid "new_container_vm() vm.config=%{config}"
+msgid "new_container_vm() vm.config=%<config>s"
 msgstr ""
 
-msgid "new_server_vm() vm.config=%{config}"
+msgid "new_server_vm() vm.config=%<config>s"
 msgstr ""
 
-msgid "new_vm() vm.config=%{config}"
+msgid "new_vm() vm.config=%<config>s"
 msgstr ""
 
 msgid "remove network interface"

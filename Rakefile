@@ -1,4 +1,6 @@
 #!/usr/bin/env rake
+# frozen_string_literal: true
+
 begin
   require 'bundler/setup'
 rescue LoadError
@@ -38,7 +40,7 @@ task default: :test
 begin
   require 'rubocop/rake_task'
   RuboCop::RakeTask.new
-rescue StandardError => _
+rescue StandardError => _e
   puts 'Rubocop not loaded.'
 end
 

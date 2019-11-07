@@ -20,20 +20,17 @@
 require 'foreman_fog_proxmox/semver'
 
 module ForemanFogProxmox
-    module ProxmoxVersion
+  module ProxmoxVersion
+    def version_suitable?
+      logger.debug(format(_('Proxmox compute resource version is %<version>s'), version: version))
+      raise ::Foreman::Exception, format(_('Proxmox version %<version>s is not semver suitable'), version: version) unless ForemanFogProxmox::Semver.semver?(version)
 
-        def version_suitable?
-            logger.debug(format(_('Proxmox compute resource version is %<version>s'), version: version))
-            raise ::Foreman::Exception, format(_('Proxmox version %<version>s is not semver suitable'), version: version) unless ForemanFogProxmox::Semver.is_semver?(version)
-        
-            ForemanFogProxmox::Semver.to_semver(version) >= ForemanFogProxmox::Semver.to_semver('5.3.0') && ForemanFogProxmox::Semver.to_semver(version) < ForemanFogProxmox::Semver.to_semver('5.5.0')
-        end
-
-        def version
-            v = identity_client.read_version
-            "#{v['version']}.#{v['release']}"
-        end
-
+      ForemanFogProxmox::Semver.to_semver(version) >= ForemanFogProxmox::Semver.to_semver('5.3.0') && ForemanFogProxmox::Semver.to_semver(version) < ForemanFogProxmox::Semver.to_semver('5.5.0')
     end
 
+    def version
+      v = identity_client.read_version
+      "#{v['version']}.#{v['release']}"
+    end
+  end
 end

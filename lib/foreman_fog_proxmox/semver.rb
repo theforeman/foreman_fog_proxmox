@@ -25,6 +25,7 @@ module ForemanFogProxmox
       attr_accessor :minor
       attr_accessor :patch
       attr_accessor :qualifier
+
       def initialize(major, minor, patch, qualifier = '')
         @major = major.to_i
         @minor = minor.to_i
@@ -41,57 +42,37 @@ module ForemanFogProxmox
       def <=(other)
         raise TypeError unless other.is_a?(SemverClass)
 
-        if @major == other.major
-          if @minor == other.minor
-            return @patch <= other.patch
-          else
-            return @minor <= other.minor
-          end
-        else
-          return @major <= other.major
-        end
+        result = @patch <= other.patch
+        result = @major <= other.major unless @major == other.major
+        result = @minor < other.minor unless @minor == other.minor
+        result
       end
 
       def <(other)
         raise TypeError unless other.is_a?(SemverClass)
 
-        if @major == other.major
-          if @minor == other.minor
-            return @patch < other.patch
-          else
-            return @minor < other.minor
-          end
-        else
-          return @major < other.major
-        end
+        result = @patch < other.patch
+        result = @major < other.major unless @major == other.major
+        result = @minor < other.minor unless @minor == other.minor
+        result
       end
 
       def >(other)
         raise TypeError unless other.is_a?(SemverClass)
 
-        if @major == other.major
-          if @minor == other.minor
-            return @patch > other.patch
-          else
-            return @minor > other.minor
-          end
-        else
-          return @major > other.major
-        end
+        result = @patch > other.patch
+        result = @major > other.major unless @major == other.major
+        result = @minor > other.minor unless @minor > other.minor
+        result
       end
 
       def >=(other)
         raise TypeError unless other.is_a?(SemverClass)
 
-        if @major == other.major
-          if @minor == other.minor
-            return @patch >= other.patch
-          else
-            return @minor >= other.minor
-          end
-        else
-          return @major >= other.major
-        end
+        result = @patch >= other.patch
+        result = @major >= other.major unless @major == other.major
+        result = @minor >= other.minor unless @minor == other.minor
+        result
       end
 
       def ==(other)
@@ -100,12 +81,13 @@ module ForemanFogProxmox
         @major == other.major && @minor == other.minor && @patch == other.patch && @qualifier == other.qualifier
       end
     end
-    def self.is_semver?(version)
+
+    def self.semver?(version)
       version.is_a?(String) && version.match(SEMVER_REGEX)
     end
 
     def self.to_semver(version)
-      raise ArgumentError unless is_semver?(version)
+      raise ArgumentError unless semver?(version)
 
       version_a = version.scan(SEMVER_REGEX)
       raise ArgumentError if version_a.empty?

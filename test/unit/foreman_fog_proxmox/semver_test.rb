@@ -21,15 +21,15 @@ require 'foreman_fog_proxmox/semver'
 
 module ForemanFogProxmox
   class SemverTest < ActiveSupport::TestCase
-    describe 'is_semver?' do
+    describe 'semver?' do
       it '#5.3.2 returns true' do
-        assert ForemanFogProxmox::Semver.is_semver?('5.3.2')
+        assert ForemanFogProxmox::Semver.semver?('5.3.2')
       end
       it '#6.0-6 returns true' do
-        assert ForemanFogProxmox::Semver.is_semver?('6.0-6')
+        assert ForemanFogProxmox::Semver.semver?('6.0-6')
       end
       it '#5.3beta returns false' do
-        assert_not ForemanFogProxmox::Semver.is_semver?('5.3beta')
+        assert_not ForemanFogProxmox::Semver.semver?('5.3beta')
       end
     end
     describe 'to_semver' do

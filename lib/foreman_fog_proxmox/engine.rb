@@ -87,15 +87,15 @@ module ForemanFogProxmox
       require 'fog/compute/proxmox/models/volume'
       require 'fog/compute/proxmox/models/node'
 
-      Fog::Proxmox::Compute::Server.send :include, FogExtensions::Proxmox::Server
-      Fog::Proxmox::Compute::ServerConfig.send :include, FogExtensions::Proxmox::ServerConfig
-      Fog::Proxmox::Compute::Disk.send :include, FogExtensions::Proxmox::Disk
-      Fog::Proxmox::Compute::Interface.send :include, FogExtensions::Proxmox::Interface
-      Fog::Proxmox::Compute::Volume.send :include, FogExtensions::Proxmox::Volume
-      ::ComputeResourcesController.send :include, ForemanFogProxmox::Controller::Parameters::ComputeResource
-      Fog::Proxmox::Compute::Node.send :include, FogExtensions::Proxmox::Node
-      ::Host::Managed.send :include, Orchestration::Proxmox::Compute
-      ::Host::Managed.send :include, HostExt::Proxmox::Interfaces
+      Fog::Proxmox::Compute::Server.include FogExtensions::Proxmox::Server
+      Fog::Proxmox::Compute::ServerConfig.include FogExtensions::Proxmox::ServerConfig
+      Fog::Proxmox::Compute::Disk.include FogExtensions::Proxmox::Disk
+      Fog::Proxmox::Compute::Interface.include FogExtensions::Proxmox::Interface
+      Fog::Proxmox::Compute::Volume.include FogExtensions::Proxmox::Volume
+      ::ComputeResourcesController.include ForemanFogProxmox::Controller::Parameters::ComputeResource
+      Fog::Proxmox::Compute::Node.include FogExtensions::Proxmox::Node
+      ::Host::Managed.include Orchestration::Proxmox::Compute
+      ::Host::Managed.include HostExt::Proxmox::Interfaces
     end
   end
 end

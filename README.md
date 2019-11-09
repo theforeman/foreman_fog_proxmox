@@ -108,7 +108,7 @@ Redhat, CentOS or Fedora users should also [setup Selinux](https://projects.thef
 
 * Fork this github repo.
 * Clone it on your local machine
-* Install foreman v1.22 on your machine:
+* Install foreman v1.22+ on your machine:
 
 ```shell
 git clone https://github.com/theforeman/foreman -b develop
@@ -212,6 +212,8 @@ bundle exec foreman start
 See details in [foreman plugin development](https://projects.theforeman.org/projects/foreman/wiki/How_to_Create_a_Plugin)
 
 ## Contributing
+
+If you like it and still want to improve it, [sponsor me](https://github.com/sponsors/tristanrobert)!
 
 You can reach the [contributors](.github/CONTRIBUTORS.md).
 Bug reports and pull requests are welcome on GitHub at [ForemanFogProxmox](https://github.com/theforeman/foreman_fog_proxmox).

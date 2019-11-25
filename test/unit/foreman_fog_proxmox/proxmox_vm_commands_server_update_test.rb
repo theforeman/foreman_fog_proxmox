@@ -319,6 +319,50 @@ module ForemanFogProxmox
         vm.expects(:update, expected_config_attr)
         @cr.save_vm(uuid, new_attributes)
       end
+
+      it 'saves modified server config with modified volumes options' do
+        uuid = '100'
+        config = mock('config')
+        disks = mock('disks')
+        disk = mock('disk')
+        disk.stubs(:size).returns(1_073_741_824)
+        disk.stubs(:storage).returns('local-lvm')
+        disk.stubs(:volid).returns('local-lvm:vm-100-disk-0')
+        disk.stubs(:id).returns('scsi0')
+        disks.stubs(:get).returns(disk)
+        config.stubs(:disks).returns(disks)
+        config.stubs(:attributes).returns(:cores => '')
+        vm = mock('vm')
+        vm.stubs(:config).returns(config)
+        vm.stubs(:container?).returns(false)
+        vm.stubs(:type).returns('qemu')
+        @cr.stubs(:find_vm_by_uuid).returns(vm)
+        new_attributes = {
+          'templated' => '0',
+          'config_attributes' => {
+            'cores' => '1',
+            'cpulimit' => '1'
+          },
+          'volumes_attributes' => {
+            '0' => {
+              'id' => 'scsi0',
+              '_delete' => '',
+              'volid' => 'local-lvm:vm-100-disk-0',
+              'device' => '0',
+              'controller' => 'scsi',
+              'storage' => 'local-lvm',
+              'size' => '1073741824',
+              'cache' => 'directsync'
+            }
+          }
+        }.with_indifferent_access
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
+        expected_config_attr = { :cores => '1', :cpulimit => '1' }
+        expected_volume_attr = {:id => 'scsi0', :volid => 'local-lvm:vm-100-disk-0', :size => 1_073_741_824}, {:cache => 'directsync'}
+        vm.expects(:attach, expected_volume_attr)
+        vm.expects(:update, expected_config_attr)
+        @cr.save_vm(uuid, new_attributes)
+      end
     end
   end
 end

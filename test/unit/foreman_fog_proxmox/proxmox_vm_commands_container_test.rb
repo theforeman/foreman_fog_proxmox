@@ -151,6 +151,51 @@ module ForemanFogProxmox
         vm.expects(:update, expected_config_attr)
         @cr.save_vm(uuid, new_attributes)
       end
+      
+      it 'saves modified container config with modified volumes options' do
+        uuid = '100'
+        config = mock('config')
+        disks = mock('disks')
+        disk = mock('disk')
+        disk.stubs(:rootfs?).returns(false)
+        disk.stubs(:volid).returns('local-lvm:vm-100-disk-0')
+        disk.stubs(:id).returns('mp0')
+        disk.stubs(:size).returns(1_073_741_824)
+        disk.stubs(:storage).returns('local-lvm')
+        disks.stubs(:get).returns(disk)
+        config.stubs(:disks).returns(disks)
+        config.stubs(:attributes).returns(:cores => '')
+        vm = mock('vm')
+        vm.stubs(:config).returns(config)
+        vm.stubs(:container?).returns(true)
+        vm.stubs(:type).returns('lxc')
+        @cr.stubs(:find_vm_by_uuid).returns(vm)
+        new_attributes = {
+          'templated' => '0',
+          'config_attributes' => {
+            'cores' => '1',
+            'cpulimit' => '1'
+          },
+          'volumes_attributes' => {
+            '0' => {
+              'id' => 'mp0',
+              '_delete' => '',
+              'volid' => 'local-lvm:vm-100-disk-0',
+              'device' => '0',
+              'controller' => 'mp',
+              'storage' => 'local-lvm',
+              'size' => '1073741824',
+              'mp' => '/opt/toto'
+            }
+          }
+        }.with_indifferent_access
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
+        expected_config_attr = { :cores => '1', :cpulimit => '1' }
+        expected_volume_attr = {:id => 'mp0', :volid => 'local-lvm:vm-100-disk-0', :size => 1_073_741_824}, {:mp => '/opt/toto'}
+        vm.expects(:attach, expected_volume_attr)
+        vm.expects(:update, expected_config_attr)
+        @cr.save_vm(uuid, new_attributes)
+      end
     end
 
     describe 'create_vm' do

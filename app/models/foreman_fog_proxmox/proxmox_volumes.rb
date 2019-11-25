@@ -29,7 +29,7 @@ module ForemanFogProxmox
       vm.detach('unused' + device.to_s)
     end
 
-    def extend_or_move_volume(vm, id, volume_attributes)
+    def update_volume(vm, id, volume_attributes)
       disk = vm.config.disks.get(id)
       diff_size = volume_attributes['size'].to_i - disk.size
       raise ::Foreman::Exception, format(_('Unable to shrink %<id>s size. Proxmox allows only increasing size.'), id: id) unless diff_size >= 0
@@ -39,6 +39,11 @@ module ForemanFogProxmox
         vm.extend(id, extension)
       elsif disk.storage != volume_attributes['storage']
         vm.move(id, volume_attributes['storage'])
+      else
+        options = {}
+        options.store(:cache, volume_attributes['cache']) unless vm.container?
+        options.store(:mp, volume_attributes['mp']) if vm.container? && !disk.rootfs?
+        vm.attach({:id => disk.id, :volid => disk.volid, :size => disk.size}, options)
       end
     end
 
@@ -75,7 +80,7 @@ module ForemanFogProxmox
         if volume_to_delete?(volume_attributes)
           delete_volume(vm, id)
         else
-          extend_or_move_volume(vm, id, volume_attributes)
+          update_volume(vm, id, volume_attributes)
         end
       else
         add_volume(vm, id, volume_attributes)

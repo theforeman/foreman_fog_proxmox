@@ -59,8 +59,17 @@ module ForemanFogProxmox
     end
     # rubocop:disable Lint/UselessComparison
     describe 'semverclass comparators' do
-      it '#5.3.0 <= 5.4.0 returns true' do
-        assert ForemanFogProxmox::Semver.to_semver('5.3.0') <= ForemanFogProxmox::Semver.to_semver('5.4.0')
+      it '#5.3.0 <= 5.4.3 returns true' do
+        assert ForemanFogProxmox::Semver.to_semver('5.3.0') <= ForemanFogProxmox::Semver.to_semver('5.4.3')
+      end
+      it '#5.3.0 <= 6.0.1 returns true' do
+        assert ForemanFogProxmox::Semver.to_semver('5.3.0') <= ForemanFogProxmox::Semver.to_semver('6.0.1')
+      end
+      it '#5.4.3 < 6.1.0 returns true' do
+        assert ForemanFogProxmox::Semver.to_semver('5.4.3') < ForemanFogProxmox::Semver.to_semver('6.1.0')
+      end
+      it '#6.0.1 < 6.1.0 returns true' do
+        assert ForemanFogProxmox::Semver.to_semver('6.0.1') < ForemanFogProxmox::Semver.to_semver('6.1.0')
       end
       it '#2.4.0 >= 1.3.0 returns true' do
         assert ForemanFogProxmox::Semver.to_semver('2.4.0') >= ForemanFogProxmox::Semver.to_semver('1.3.0')
@@ -85,6 +94,17 @@ module ForemanFogProxmox
         assert ForemanFogProxmox::Semver.to_semver('1.10.2') < ForemanFogProxmox::Semver.to_semver('1.20.0')
       end
       it '#0.10.2 < 1.20.0 returns true' do
+        assert_equal 0, ForemanFogProxmox::Semver.to_semver('0.10.2').major
+        assert_equal 10, ForemanFogProxmox::Semver.to_semver('0.10.2').minor
+        assert_equal 2, ForemanFogProxmox::Semver.to_semver('0.10.2').patch
+        assert_equal 1, ForemanFogProxmox::Semver.to_semver('1.20.0').major
+        assert_equal 20, ForemanFogProxmox::Semver.to_semver('1.20.0').minor
+        assert_equal 0, ForemanFogProxmox::Semver.to_semver('1.20.0').patch
+        assert ForemanFogProxmox::Semver.to_semver('0.10.2').major < ForemanFogProxmox::Semver.to_semver('1.20.0').major
+        assert_equal false, ForemanFogProxmox::Semver.to_semver('0.10.2').major == ForemanFogProxmox::Semver.to_semver('1.20.0').major
+        assert_equal false, ForemanFogProxmox::Semver.to_semver('0.10.2').minor == ForemanFogProxmox::Semver.to_semver('1.20.0').minor
+        assert ForemanFogProxmox::Semver.to_semver('0.10.2').minor < ForemanFogProxmox::Semver.to_semver('1.20.0').minor
+        assert ForemanFogProxmox::Semver.to_semver('0.10.2').patch > ForemanFogProxmox::Semver.to_semver('1.20.0').patch
         assert ForemanFogProxmox::Semver.to_semver('0.10.2') < ForemanFogProxmox::Semver.to_semver('1.20.0')
       end
     end

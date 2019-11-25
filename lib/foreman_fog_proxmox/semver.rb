@@ -42,36 +42,36 @@ module ForemanFogProxmox
       def <=(other)
         raise TypeError unless other.is_a?(SemverClass)
 
-        result = @patch <= other.patch
-        result = @major <= other.major unless @major == other.major
-        result = @minor < other.minor unless @minor == other.minor
+        result = @major <= other.major
+        result = @minor <= other.minor if @major == other.major
+        result = @patch <= other.patch if @minor == other.minor && @major == other.major
         result
       end
 
       def <(other)
         raise TypeError unless other.is_a?(SemverClass)
 
-        result = @patch < other.patch
-        result = @major < other.major unless @major == other.major
-        result = @minor < other.minor unless @minor == other.minor
+        result = @major < other.major
+        result = @minor < other.minor if @major == other.major
+        result = @patch < other.patch if @minor == other.minor && @major == other.major
         result
       end
 
       def >(other)
         raise TypeError unless other.is_a?(SemverClass)
 
-        result = @patch > other.patch
-        result = @major > other.major unless @major == other.major
-        result = @minor > other.minor unless @minor > other.minor
+        result = @major > other.major
+        result = @minor > other.minor if @major == other.major
+        result = @patch > other.patch if @minor == other.minor && @major == other.major
         result
       end
 
       def >=(other)
         raise TypeError unless other.is_a?(SemverClass)
 
-        result = @patch >= other.patch
-        result = @major >= other.major unless @major == other.major
-        result = @minor >= other.minor unless @minor == other.minor
+        result = @major >= other.major
+        result = @minor >= other.minor if @major == other.major
+        result = @patch >= other.patch if @minor == other.minor && @major == other.major
         result
       end
 

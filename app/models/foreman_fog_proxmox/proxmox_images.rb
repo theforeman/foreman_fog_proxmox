@@ -44,10 +44,13 @@ module ForemanFogProxmox
 
     def clone_from_image(image_id, args, vmid)
       logger.debug(format(_('create_vm(): clone %<image_id>s in %<vmid>s'), image_id: image_id, vmid: vmid))
-      image = node.servers.get image_id
+      image = find_vm_by_uuid(image_id)
       image.clone(vmid)
-      clone = node.servers.get vmid
-      clone.update(name: args[:name])
+      clone = find_vm_by_uuid(vmid)
+      options = {}
+      options.store(:name, args[:name]) unless clone.container?
+      options.store(:hostname, args[:name]) if clone.container?
+      clone.update(options)
     end
   end
 end

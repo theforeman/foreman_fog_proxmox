@@ -232,19 +232,8 @@ module ForemanFogProxmox
         args = { vmid: '100', type: 'lxc', image_id: '999', name: 'name' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
-        containers = mock('containers')
-        containers.stubs(:create).with(vmid: 100, type: 'lxc')
-        image = mock('image')
-        clone = mock('clone')
-        image.stubs(:clone).with(100)
-        servers.stubs(:get).with(100).returns(clone)
-        servers.stubs(:get).with('999').returns(image)
-        clone.stubs(:update).with(name: 'name')
-        cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
-        cr.stubs(:convert_sizes).with(args)
-        cr.stubs(:parse_container_vm).with(args).returns(args)
-        vm = mock('vm')
-        cr.stubs(:find_vm_by_uuid).with((args[:vmid]).to_s).returns(vm)
+        cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
+        cr.expects(:clone_from_image).with('999', args, 100)
         cr.create_vm(args)
       end
     end

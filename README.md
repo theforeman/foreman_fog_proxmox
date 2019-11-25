@@ -10,7 +10,14 @@
 
 It is intended to satisfy this [feature](http://projects.theforeman.org/issues/2186).
 
-If you like it and need more features you can [support](.github/SUPPORT.md) it.
+If you like it and need more features you can [contribute](.github/CONTRIBUTING.md) or simply [support](.github/SUPPORT.md) it:
+
+## Support
+
+You can support the plugin development via the following methods:
+
+* [Donate by PayPal](https://paypal.me/TristanRobert)
+* [Sponsor by Github](https://github.com/sponsors/tristanrobert)
 
 ## Compatibility versions
 

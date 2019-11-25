@@ -7,3 +7,4 @@ However, the amount of effort needed to maintain and develop the project could b
 You can support ForemanFogProxmox plugin development via the following methods:
 
 * [Donate by PayPal](https://paypal.me/TristanRobert)
+* [Sponsor by Github](https://github.com/sponsors/tristanrobert)

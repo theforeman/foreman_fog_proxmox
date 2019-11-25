@@ -29,6 +29,13 @@ module ForemanFogProxmox
       vm.detach('unused' + device.to_s)
     end
 
+    def volume_options(vm, id, volume_attributes)
+      options = {}
+      options.store(:mp, volume_attributes['mp']) if vm.container? && id != 'rootfs'
+      options.store(:cache, volume_attributes['cache']) unless vm.container?
+      options
+    end
+
     def update_volume(vm, id, volume_attributes)
       disk = vm.config.disks.get(id)
       diff_size = volume_attributes['size'].to_i - disk.size
@@ -40,9 +47,7 @@ module ForemanFogProxmox
       elsif disk.storage != volume_attributes['storage']
         vm.move(id, volume_attributes['storage'])
       else
-        options = {}
-        options.store(:cache, volume_attributes['cache']) unless vm.container?
-        options.store(:mp, volume_attributes['mp']) if vm.container? && !disk.rootfs?
+        options = volume_options(vm, id, volume_attributes)
         vm.attach({:id => disk.id, :volid => disk.volid, :size => disk.size}, options)
       end
     end
@@ -68,8 +73,7 @@ module ForemanFogProxmox
     end
 
     def add_volume(vm, id, volume_attributes)
-      options = {}
-      options.store(:mp, volume_attributes['mp']) if vm.container?
+      options = volume_options(vm, id, volume_attributes)
       disk_attributes = { id: id, storage: volume_attributes['storage'], size: (volume_attributes['size'].to_i / GIGA).to_s }
       vm.attach(disk_attributes, options)
     end

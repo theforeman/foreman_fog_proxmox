@@ -48,7 +48,7 @@ module ForemanFogProxmox
         vm.move(id, volume_attributes['storage'])
       else
         options = volume_options(vm, id, volume_attributes)
-        vm.attach({:id => disk.id, :volid => disk.volid, :size => disk.size}, options)
+        vm.attach({ :id => disk.id, :volid => disk.volid, :size => disk.size }, options)
       end
     end
 

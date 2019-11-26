@@ -151,7 +151,7 @@ module ForemanFogProxmox
         vm.expects(:update, expected_config_attr)
         @cr.save_vm(uuid, new_attributes)
       end
-      
+
       it 'saves modified container config with modified volumes options' do
         uuid = '100'
         config = mock('config')
@@ -191,7 +191,7 @@ module ForemanFogProxmox
         }.with_indifferent_access
         @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
-        expected_volume_attr = {:id => 'mp0', :volid => 'local-lvm:vm-100-disk-0', :size => 1_073_741_824}, {:mp => '/opt/toto'}
+        expected_volume_attr = { :id => 'mp0', :volid => 'local-lvm:vm-100-disk-0', :size => 1_073_741_824 }, { :mp => '/opt/toto' }
         vm.expects(:attach, expected_volume_attr)
         vm.expects(:update, expected_config_attr)
         @cr.save_vm(uuid, new_attributes)

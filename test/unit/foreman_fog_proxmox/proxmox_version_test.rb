@@ -29,7 +29,8 @@ module ForemanFogProxmox
     wrong_version = { version: '5.a', release: '1' }.with_indifferent_access
     supported_version = { version: '5.4', release: '3' }.with_indifferent_access
     supported_6_version = { version: '6.0', release: '1' }.with_indifferent_access
-    unsupported_version = { version: '6.2', release: '2' }.with_indifferent_access
+    supported_6_1_version = { version: '6.1', release: '3' }.with_indifferent_access
+    unsupported_version = { version: '5.2', release: '2' }.with_indifferent_access
 
     describe 'version' do
       before do
@@ -48,9 +49,9 @@ module ForemanFogProxmox
         assert_equal '5.4.3', @cr.version
       end
 
-      it 'returns 6.2.2 with 6.2-2' do
+      it 'returns 5.2.2 with 5.2-2' do
         @identity_client.stubs(:read_version).returns(unsupported_version)
-        assert_equal '6.2.2', @cr.version
+        assert_equal '5.2.2', @cr.version
       end
     end
 
@@ -79,7 +80,12 @@ module ForemanFogProxmox
         assert_equal true, @cr.version_suitable?
       end
 
-      it 'is false with 6.2-2' do
+      it 'is true with 6.1-3' do
+        @identity_client.stubs(:read_version).returns(supported_6_1_version)
+        assert_equal true, @cr.version_suitable?
+      end
+
+      it 'is false with 5.2-2' do
         @identity_client.stubs(:read_version).returns(unsupported_version)
         assert_equal false, @cr.version_suitable?
       end

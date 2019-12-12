@@ -15,26 +15,27 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-<% title @vm.name %>
+<% title @vm.name unless @vm.nil? %>
 <div class='span12'>
   <table class="table table-bordered table-striped">
     <tr>
       <th colspan="2">Properties</th>
     </tr>
-
-    <%= prop :name %>
-    <%= prop :type %>
-    <%= prop :node_id %>
-    <%= prop :templated? %>
-    <%= prop :memory %>
-    <% unless @vm.container? %>
-      <%= prop :vga %>
+    <% unless @vm.nil? %>
+      <%= prop :name %>
+      <%= prop :type %>
+      <%= prop :node_id %>
+      <%= prop :templated? %>
+      <%= prop :memory %>
+      <% unless @vm.container? %>
+        <%= prop :vga %>
+      <% end %>
+      <%= prop :cpus %>
+      <%= prop :uptime %>
+      <%= prop :vmid %>
+      <%= prop :description %>
+      <%= prop :disks %>
+      <%= prop :nics %>
     <% end %>
-    <%= prop :cpus %>
-    <%= prop :uptime %>
-    <%= prop :vmid %>
-    <%= prop :description %>
-    <%= prop :disks %>
-    <%= prop :nics %>
   </table>
 </div>

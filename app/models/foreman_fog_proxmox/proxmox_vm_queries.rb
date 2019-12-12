@@ -63,7 +63,7 @@ module ForemanFogProxmox
     end
 
     def find_vm_in_servers_by_uuid(servers, uuid)
-      servers.get(uuid)
+      servers.get(uuid) if uuid != nil && !uuid.to_s.empty?
     rescue Fog::Errors::NotFound
       nil
     rescue StandardError => e

@@ -22,12 +22,12 @@ module HostExt
     module Interfaces
       extend ActiveSupport::Concern
       def update(attributes = {})
-        add_interfaces_to_compute_attributes(attributes) if self.provider == 'Proxmox' && attributes != nil && attributes.has_key?('compute_attributes')
+        add_interfaces_to_compute_attributes(attributes) if provider == 'Proxmox' && !attributes.nil? && attributes.key?('compute_attributes')
         super(attributes)
       end
 
       def add_interfaces_to_compute_attributes(attributes)
-        attributes['compute_attributes'].store('interfaces_attributes',{})
+        attributes['compute_attributes'].store('interfaces_attributes', {})
         attributes['interfaces_attributes'].each do |index, interface_attributes|
           add_interface_to_compute_attributes(index, interface_attributes, attributes['compute_attributes']['interfaces_attributes'])
         end

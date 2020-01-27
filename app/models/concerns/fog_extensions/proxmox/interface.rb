@@ -17,12 +17,19 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
+require 'fog/proxmox/helpers/ip_helper'
+
 module FogExtensions
   module Proxmox
     module Interface
       extend ActiveSupport::Concern
+      attr_accessor :dhcp
       def mac
         macaddr
+      end
+
+      def cidr_suffix
+        Fog::Proxmox::IpHelper.suffix(ip) if ip
       end
     end
   end

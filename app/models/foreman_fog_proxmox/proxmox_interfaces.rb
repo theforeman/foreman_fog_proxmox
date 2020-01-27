@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
+require 'fog/proxmox/helpers/ip_helper'
+
 module ForemanFogProxmox
   module ProxmoxInterfaces
     def editable_network_interfaces?
@@ -41,6 +43,26 @@ module ForemanFogProxmox
       raise ::Foreman::Exception, _(format('Invalid name interface[%<index>s]. Must be eth[n] with n integer >= 0', index: index)) unless container_nic_name_valid?(nic)
     end
 
+    def set_ip(host, nic, nic_compute_attributes)
+      return 'dhcp' if dhcp?(nic_compute_attributes)
+
+      cidr_suffix = nic_compute_attributes['cidr_suffix'] if nic_compute_attributes['cidr_suffix'].present?
+      return nic.ip unless container?(host) || cidr_suffix
+      unless Fog::Proxmox::IpHelper.cidr_suffix?(nic.compute_attributes['cidr_suffix'])
+        raise ::Foreman::Exception, _(format('Invalid Interface Proxmox CIDR IPv4. If IPv4 is not empty, Proxmox CIDR suffix must be an integer between 0 and 32.'))
+      end
+
+      Fog::Proxmox::IpHelper.to_cidr(nic.ip, cidr_suffix)
+    end
+
+    def to_boolean(value)
+      [1, true, '1', 'true'].include?(value)
+    end
+
+    def dhcp?(nic_compute_attributes)
+      to_boolean(nic_compute_attributes['dhcp']) if nic_compute_attributes['dhcp'].present?
+    end
+
     def host_interfaces_attrs(host)
       host.interfaces.select(&:physical?).each.with_index.reduce({}) do |hash, (nic, index)|
         set_nic_identifier(nic, index)
@@ -51,7 +73,7 @@ module ForemanFogProxmox
         nic_compute_attributes.store(:macaddr, mac) if mac.present?
         interface_compute_attributes = host.compute_attributes['interfaces_attributes'] ? host.compute_attributes['interfaces_attributes'].select { |_k, v| v['id'] == nic.identifier } : {}
         nic_compute_attributes.store(:_delete, interface_compute_attributes[interface_compute_attributes.keys[0]]['_delete']) unless interface_compute_attributes.empty?
-        nic_compute_attributes.store(:ip, nic.ip) if nic.ip.present?
+        nic_compute_attributes.store(:ip, set_ip(host, nic, nic_compute_attributes))
         nic_compute_attributes.store(:ip6, nic.ip6) if nic.ip6.present?
         hash.merge(index.to_s => nic_compute_attributes)
       end

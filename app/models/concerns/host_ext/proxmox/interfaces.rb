@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
+require 'fog/proxmox/helpers/ip_helper'
+
 module HostExt
   module Proxmox
     module Interfaces
@@ -33,11 +35,16 @@ module HostExt
         end
       end
 
+      def cidr_ip(interface_attributes)
+        Fog::Proxmox::IpHelper.to_cidr(interface_attributes['ip'], interface_attributes['compute_attributes']['cidr_suffix'])
+      end
+
       def add_interface_to_compute_attributes(index, interface_attributes, compute_attributes)
         compute_attributes[index] = {}
         compute_attributes[index].store('id', interface_attributes['identifier'])
         compute_attributes[index].store('_delete', interface_attributes['_destroy'])
         compute_attributes[index].store('macaddr', interface_attributes['mac'])
+        compute_attributes[index].store('ip', cidr_ip(interface_attributes))
         compute_attributes[index].merge!(interface_attributes['compute_attributes'].reject { |k, _v| k == 'id' })
       end
     end

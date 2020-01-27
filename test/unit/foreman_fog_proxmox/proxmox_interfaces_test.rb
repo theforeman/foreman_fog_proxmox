@@ -46,8 +46,8 @@ module ForemanFogProxmox
         assert err.message.end_with?('Invalid identifier interface[0]. Must be net[n] with n integer >= 0')
       end
 
-      it 'sets compute id with identifier, ip and ip6' do
-        ip = IPAddr.new(1, Socket::AF_INET).to_s
+      it 'sets server compute id with identifier, ip and ip6' do
+        ip = '192.168.56.100'
         ip6 = Array.new(4) { format('%<x>s', x: rand(16**4)) }.join(':') + '::1'
         physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6)
         host = FactoryBot.build(
@@ -64,6 +64,49 @@ module ForemanFogProxmox
         nic_attr = nic_attributes.first
         assert_equal 'net0', nic_attr[:id]
         assert_equal ip, nic_attr[:ip]
+        assert_equal ip6, nic_attr[:ip6]
+      end
+
+      it 'sets container compute id with identifier, ip/CIDR and ip6' do
+        ip = '192.168.56.100'
+        cidr_suffix = '31'
+        ip6 = Array.new(4) { format('%<x>s', x: rand(16**4)) }.join(':') + '::1'
+        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6, :compute_attributes => { 'cidr_suffix' => cidr_suffix })
+        host = FactoryBot.build(
+          :host_empty,
+          :interfaces => [physical_nic],
+          :compute_attributes => {
+            'type' => 'lxc',
+            'interfaces_attributes' => {
+              '0' => physical_nic
+            }
+          }
+        )
+        nic_attributes = @cr.host_interfaces_attrs(host).values.select(&:present?)
+        nic_attr = nic_attributes.first
+        assert_equal 'net0', nic_attr[:id]
+        assert_equal Fog::Proxmox::IpHelper.to_cidr(ip, cidr_suffix), nic_attr[:ip]
+        assert_equal ip6, nic_attr[:ip6]
+      end
+
+      it 'sets container compute id with identifier, ip DHCP and ip6' do
+        ip = '192.168.56.100'
+        ip6 = Array.new(4) { format('%<x>s', x: rand(16**4)) }.join(':') + '::1'
+        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6, :compute_attributes => { 'dhcp' => '1' })
+        host = FactoryBot.build(
+          :host_empty,
+          :interfaces => [physical_nic],
+          :compute_attributes => {
+            'type' => 'lxc',
+            'interfaces_attributes' => {
+              '0' => physical_nic
+            }
+          }
+        )
+        nic_attributes = @cr.host_interfaces_attrs(host).values.select(&:present?)
+        nic_attr = nic_attributes.first
+        assert_equal 'net0', nic_attr[:id]
+        assert_equal 'dhcp', nic_attr[:ip]
         assert_equal ip6, nic_attr[:ip6]
       end
     end

@@ -29,7 +29,7 @@ module ForemanFogProxmox
     end
 
     def available_images
-      templates.collect { |template| OpenStruct.new(id: template.vmid) }
+      templates.collect { |template| OpenStruct.new(id: template.vmid.to_s) }
     end
 
     def templates

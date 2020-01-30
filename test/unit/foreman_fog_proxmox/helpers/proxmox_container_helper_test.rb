@@ -56,8 +56,8 @@ module ForemanFogProxmox
             '1' => { 'id' => 'mp0', 'storage' => 'local-lvm', 'size' => '1073741824', 'mp' => '/opt/path' }
           },
           'interfaces_attributes' => {
-            '0' => { 'id' => 'net0', 'name' => 'eth0', 'bridge' => 'vmbr0', 'ip' => 'dhcp', 'ip6' => 'dhcp', 'rate' => '' },
-            '1' => { 'id' => 'net1', 'name' => 'eth1', 'bridge' => 'vmbr0', 'ip' => 'dhcp', 'ip6' => 'dhcp' }
+            '0' => { 'id' => 'net0', 'name' => 'eth0', 'bridge' => 'vmbr0', 'ip' => 'dhcp', 'ip6' => 'dhcp', 'rate' => '', 'gw' => '192.168.56.100', 'gw6' => '2001:0:1234::c1c0:abcd:876' },
+            '1' => { 'id' => 'net1', 'name' => 'eth1', 'bridge' => 'vmbr0', 'ip' => 'dhcp', 'ip6' => 'dhcp', 'gw' => '192.168.56.100', 'gw6' => '2001:0:1234::c1c0:abcd:876' }
           } }
       end
 
@@ -82,8 +82,8 @@ module ForemanFogProxmox
           'password' => 'proxmox01',
           :rootfs => 'local-lvm:1073741824',
           :mp0 => 'local-lvm:1073741824,mp=/opt/path',
-          'net0' => 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp',
-          'net1' => 'model=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp' }
+          'net0' => 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876',
+          'net1' => 'model=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876' }
       end
 
       let(:host_delete) do
@@ -125,7 +125,7 @@ module ForemanFogProxmox
         vm = parse_container_vm(host)
         assert_equal 536_870_912, vm[:memory]
         assert_equal 'local-lvm:1073741824', vm[:rootfs]
-        assert_equal 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp', vm[:net0]
+        assert_equal 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876', vm[:net0]
         assert_not vm.key?(:config)
         assert_not vm.key?(:node)
         assert_not vm.key?(:type)
@@ -145,8 +145,8 @@ module ForemanFogProxmox
           :ostemplate => 'local:vztmpl/alpine-3.7-default_20171211_amd64.tar.xz',
           :ostemplate_file => 'local:vztmpl/alpine-3.7-default_20171211_amd64.tar.xz',
           :ostemplate_storage => 'local',
-          :net0 => 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp',
-          :net1 => 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp',
+          :net0 => 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876',
+          :net1 => 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876',
           :rootfs => 'local-lvm:1073741824',
           :mp0 => 'local-lvm:1073741824,mp=/opt/path'
         )
@@ -171,7 +171,7 @@ module ForemanFogProxmox
         add_container_interface(host['interfaces_attributes']['0'], deletes, nics)
         assert 1, nics.length
         assert nics[0].key?(:net0)
-        assert_equal 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp', nics[0][:net0]
+        assert_equal 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876', nics[0][:net0]
       end
 
       test '#interface with name eth1 and bridge' do
@@ -180,7 +180,7 @@ module ForemanFogProxmox
         add_container_interface(host['interfaces_attributes']['1'], deletes, nics)
         assert 1, nics.length
         assert nics[0].key?(:net1)
-        assert_equal 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp', nics[0][:net1]
+        assert_equal 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876', nics[0][:net1]
       end
 
       test '#interface delete net0' do
@@ -196,8 +196,8 @@ module ForemanFogProxmox
         interfaces_to_add, interfaces_to_delete = parse_container_interfaces(host['interfaces_attributes'])
         assert interfaces_to_delete.empty?
         assert_equal 2, interfaces_to_add.length
-        assert interfaces_to_add.include?(net0: 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp')
-        assert interfaces_to_add.include?(net1: 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp')
+        assert interfaces_to_add.include?(net0: 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876')
+        assert interfaces_to_add.include?(net1: 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876')
       end
     end
   end

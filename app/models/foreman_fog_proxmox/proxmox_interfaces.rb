@@ -43,24 +43,43 @@ module ForemanFogProxmox
       raise ::Foreman::Exception, _(format('Invalid name interface[%<index>s]. Must be eth[n] with n integer >= 0', index: index)) unless container_nic_name_valid?(nic)
     end
 
-    def set_ip(host, nic, nic_compute_attributes)
-      return 'dhcp' if dhcp?(nic_compute_attributes)
+    def cidr_prefix(nic_compute_attributes, v6 = false)
+      attr_name = 'cidrv'
+      attr_name += v6 ? '6' : '4'
+      attr_name += '_prefix'
+      nic_compute_attributes[attr_name] if nic_compute_attributes[attr_name].present?
+    end
 
-      cidr_suffix = nic_compute_attributes['cidr_suffix'] if nic_compute_attributes['cidr_suffix'].present?
-      return nic.ip unless container?(host) || cidr_suffix
-      unless Fog::Proxmox::IpHelper.cidr_suffix?(nic.compute_attributes['cidr_suffix'])
-        raise ::Foreman::Exception, _(format('Invalid Interface Proxmox CIDR IPv4. If IPv4 is not empty, Proxmox CIDR suffix must be an integer between 0 and 32.'))
+    def set_ip(host, nic, nic_compute_attributes, v6 = false)
+      return 'dhcp' if dhcp?(nic_compute_attributes, v6)
+
+      ip = v6 ? nic.ip6 : nic.ip
+      return ip unless container?(host) || cidr_prefix(nic_compute_attributes, v6)
+
+      valid = v6 ? Fog::Proxmox::IpHelper.cidr6_prefix?(cidr_prefix(nic_compute_attributes, v6)) : Fog::Proxmox::IpHelper.cidr_prefix?(cidr_prefix(nic_compute_attributes, v6))
+      ipv = v6 ? 'IPv6' : 'IPv4'
+      max = v6 ? 128 : 32
+      unless valid
+        raise ::Foreman::Exception, _(format('Invalid Interface Proxmox CIDR %<ip>s. If %<ip>s is not empty, Proxmox CIDR prefix must be an integer between 0 and %<max>i.', ip: ipv, max: max))
       end
 
-      Fog::Proxmox::IpHelper.to_cidr(nic.ip, cidr_suffix)
+      v6 ? Fog::Proxmox::IpHelper.to_cidr6(nic.ip6, cidr_prefix(nic_compute_attributes, v6)) : Fog::Proxmox::IpHelper.to_cidr(nic.ip, cidr_prefix(nic_compute_attributes, v6))
+    end
+
+    def set_gw(nic_compute_attributes, v6 = false)
+      attr_name = 'gwv'
+      attr_name += v6 ? '6' : '4'
+      nic_compute_attributes[attr_name] if nic_compute_attributes[attr_name].present?
     end
 
     def to_boolean(value)
       [1, true, '1', 'true'].include?(value)
     end
 
-    def dhcp?(nic_compute_attributes)
-      to_boolean(nic_compute_attributes['dhcp']) if nic_compute_attributes['dhcp'].present?
+    def dhcp?(nic_compute_attributes, v6 = false)
+      attr_name = 'dhcpv'
+      attr_name += v6 ? '6' : '4'
+      to_boolean(nic_compute_attributes[attr_name]) if nic_compute_attributes[attr_name].present?
     end
 
     def host_interfaces_attrs(host)
@@ -74,7 +93,9 @@ module ForemanFogProxmox
         interface_compute_attributes = host.compute_attributes['interfaces_attributes'] ? host.compute_attributes['interfaces_attributes'].select { |_k, v| v['id'] == nic.identifier } : {}
         nic_compute_attributes.store(:_delete, interface_compute_attributes[interface_compute_attributes.keys[0]]['_delete']) unless interface_compute_attributes.empty?
         nic_compute_attributes.store(:ip, set_ip(host, nic, nic_compute_attributes))
-        nic_compute_attributes.store(:ip6, nic.ip6) if nic.ip6.present?
+        nic_compute_attributes.store(:gw, set_gw(nic_compute_attributes))
+        nic_compute_attributes.store(:ip6, set_ip(host, nic, nic_compute_attributes, true))
+        nic_compute_attributes.store(:gw6, set_gw(nic_compute_attributes, true))
         hash.merge(index.to_s => nic_compute_attributes)
       end
     end

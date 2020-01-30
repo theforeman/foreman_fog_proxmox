@@ -150,6 +150,8 @@ module ProxmoxContainerHelper
       nic.store(:bridge, interface_attributes['bridge'].to_s) if interface_attributes['bridge']
       nic.store(:ip, interface_attributes['ip'].to_s) if interface_attributes['ip']
       nic.store(:ip6, interface_attributes['ip6'].to_s) if interface_attributes['ip6']
+      nic.store(:gw, interface_attributes['gw'].to_s) if interface_attributes['gw']
+      nic.store(:gw6, interface_attributes['gw6'].to_s) if interface_attributes['gw6']
       nic.store(:rate, interface_attributes['rate'].to_i) if interface_attributes['rate']
       nic.store(:tag, interface_attributes['tag'].to_i) if interface_attributes['tag']
       logger.debug("parse_container_interface(): add nic=#{nic}")

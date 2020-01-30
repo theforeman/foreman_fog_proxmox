@@ -67,11 +67,11 @@ module ForemanFogProxmox
         assert_equal ip6, nic_attr[:ip6]
       end
 
-      it 'sets container compute id with identifier, ip/CIDR and ip6' do
+      it 'sets container compute id with identifier, ip/CIDR, gw and ip6' do
         ip = '192.168.56.100'
         cidr_suffix = '31'
         ip6 = Array.new(4) { format('%<x>s', x: rand(16**4)) }.join(':') + '::1'
-        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6, :compute_attributes => { 'cidr_suffix' => cidr_suffix })
+        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6, :compute_attributes => { 'cidrv4_prefix' => cidr_suffix, 'gwv4' => ip, 'dhcpv6' => '1' })
         host = FactoryBot.build(
           :host_empty,
           :interfaces => [physical_nic],
@@ -86,13 +86,15 @@ module ForemanFogProxmox
         nic_attr = nic_attributes.first
         assert_equal 'net0', nic_attr[:id]
         assert_equal Fog::Proxmox::IpHelper.to_cidr(ip, cidr_suffix), nic_attr[:ip]
-        assert_equal ip6, nic_attr[:ip6]
+        assert_equal ip, nic_attr[:gw]
+        assert_equal 'dhcp', nic_attr[:ip6]
       end
 
-      it 'sets container compute id with identifier, ip DHCP and ip6' do
+      it 'sets container compute id with identifier, ip DHCP, gw6 and ip6' do
         ip = '192.168.56.100'
-        ip6 = Array.new(4) { format('%<x>s', x: rand(16**4)) }.join(':') + '::1'
-        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6, :compute_attributes => { 'dhcp' => '1' })
+        cidr6_suffix = '100'
+        ip6 = '2001:0:1234::c1c0:abcd:876'
+        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6, :compute_attributes => { 'cidrv6_prefix' => cidr6_suffix, 'dhcpv4' => '1', 'gwv6' => ip6 })
         host = FactoryBot.build(
           :host_empty,
           :interfaces => [physical_nic],
@@ -107,7 +109,8 @@ module ForemanFogProxmox
         nic_attr = nic_attributes.first
         assert_equal 'net0', nic_attr[:id]
         assert_equal 'dhcp', nic_attr[:ip]
-        assert_equal ip6, nic_attr[:ip6]
+        assert_equal Fog::Proxmox::IpHelper.to_cidr6(ip6, cidr6_suffix), nic_attr[:ip6]
+        assert_equal ip6, nic_attr[:gw6]
       end
     end
   end

@@ -47,7 +47,7 @@ module ForemanFogProxmox
       attr_name = 'cidrv'
       attr_name += v6 ? '6' : '4'
       attr_name += '_prefix'
-      nic_compute_attributes[attr_name] if nic_compute_attributes[attr_name].present?
+      nic_compute_attributes[attr_name] if nic_compute_attributes[attr_name].presence
     end
 
     def set_ip(host, nic, nic_compute_attributes, v6 = false)
@@ -69,7 +69,7 @@ module ForemanFogProxmox
     def set_gw(nic_compute_attributes, v6 = false)
       attr_name = 'gwv'
       attr_name += v6 ? '6' : '4'
-      nic_compute_attributes[attr_name] if nic_compute_attributes[attr_name].present?
+      nic_compute_attributes[attr_name] if nic_compute_attributes[attr_name].presence
     end
 
     def to_boolean(value)

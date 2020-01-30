@@ -18,7 +18,7 @@
 FROM ruby:2.6.5
 LABEL MAINTAINER="tristan.robert.44@gmail.com"
 RUN apt-get update -qq && apt-get install -y build-essential libpq-dev libsystemd-dev libvirt-dev
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 RUN apt-get install -y nodejs
 RUN mkdir /usr/local/foreman_fog_proxmox
 WORKDIR /usr/local/foreman_fog_proxmox

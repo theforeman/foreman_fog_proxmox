@@ -183,6 +183,12 @@ export DISABLE_SPRING=true
 bundle exec bin/rake test TEST=test/functional/compute_resources_controller_test.rb
 ```
 
+* Check code syntax with rubocop and foreman rules:
+
+```shell
+bundle exec bin/rake foreman_fog_proxmox:rubocop
+```
+
 * See deface overrides result:
 
 ```shell

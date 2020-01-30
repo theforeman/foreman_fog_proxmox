@@ -145,7 +145,7 @@ module ForemanFogProxmox
       options = new_attr
       options = options.merge(node_id: node_id).merge(type: 'lxc').merge(vmid: next_vmid)
       options = vm_container_instance_defaults.merge(options) if new_attr.empty?
-      vm = node.containers.new(parse_container_vm(options).deep_symbolize_keys)
+      vm = (client.nodes.get args[:node_id]).containers.new(parse_container_vm(options).deep_symbolize_keys)
       logger.debug(format(_('new_container_vm() vm.config=%<config>s'), config: vm.config.inspect))
       vm
     end
@@ -154,7 +154,7 @@ module ForemanFogProxmox
       options = new_attr
       options = options.merge(node_id: node_id).merge(type: 'qemu').merge(vmid: next_vmid)
       options = vm_server_instance_defaults.merge(options) if new_attr.empty?
-      vm = node.servers.new(parse_server_vm(options).deep_symbolize_keys)
+      vm = (client.nodes.get args[:node_id]).servers.new(parse_server_vm(options).deep_symbolize_keys)
       logger.debug(format(_('new_server_vm() vm.config=%<config>s'), config: vm.config.inspect))
       vm
     end

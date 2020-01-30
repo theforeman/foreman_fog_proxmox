@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-FROM ruby:2.3.7
+FROM ruby:2.6.5
 LABEL MAINTAINER="tristan.robert.44@gmail.com"
 RUN apt-get update -qq && apt-get install -y build-essential libpq-dev libsystemd-dev libvirt-dev
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -

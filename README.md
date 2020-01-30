@@ -28,6 +28,7 @@ You can support the plugin development via the following methods:
 |<=0.8 |<6.0|>=0.7|>=1.22|>=2.3|
 |<0.9 |<6.0|=0.9|>=1.22|>=2.3|
 |>=0.9 |>=5.4|>=0.9.1|>=1.22|>=2.3|
+|>=0.10 |>=5.4|>=0.9.4|>=1.22|>=2.5|
 
 ## Installation
 
@@ -110,7 +111,7 @@ Redhat, CentOS or Fedora users should also [setup Selinux](https://projects.thef
 ### Prerequisites
 
 * You need a Proxmox VE 5.4+ server running.
-* You need ruby >= 2.3. You can install it with [rbenv](https://github.com/rbenv/rbenv).
+* You need ruby >= 2.5. You can install it with [rbenv](https://github.com/rbenv/rbenv).
 * You also need nodejs in your dev machine to run webpack-dev-server. You can install it with [nvm](https://github.com/creationix/nvm).
 
 ### Platform

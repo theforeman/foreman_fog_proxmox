@@ -35,6 +35,22 @@ module ForemanFogProxmox
         @cr = FactoryBot.build_stubbed(:proxmox_cr)
       end
 
+      it 'migrates server from node to another one in the cluster' do
+        uuid = '100'
+        config = mock('config')
+        config.stubs(:attributes).returns(:cores => '')
+        vm = mock('vm')
+        vm.stubs(:config).returns(config)
+        vm.stubs(:container?).returns(false)
+        vm.stubs(:templated?).returns(false)
+        vm.stubs(:type).returns('qemu')
+        vm.stubs(:node_id).returns('pve')
+        @cr.stubs(:find_vm_by_uuid).returns(vm)
+        attr = { 'templated' => '0', 'node_id' => 'pve2' }
+        vm.expects(:migrate)
+        @cr.save_vm(uuid, attr)
+      end
+
       it 'saves modified server config with same volumes' do
         uuid = '100'
         config = mock('config')
@@ -44,9 +60,10 @@ module ForemanFogProxmox
         vm.stubs(:container?).returns(false)
         vm.stubs(:templated?).returns(false)
         vm.stubs(:type).returns('qemu')
+        vm.stubs(:node_id).returns('pve')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
-        attr = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0')
+        attr = { 'templated' => '0', 'node_id' => 'pve', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'pve', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0')
         expected_attr = { :cores => '1', :cpulimit => '1' }.with_indifferent_access
         vm.expects(:update, expected_attr)
         @cr.save_vm(uuid, attr)
@@ -80,9 +97,11 @@ module ForemanFogProxmox
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
         vm.stubs(:type).returns('qemu')
+        vm.stubs(:node_id).returns('pve')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         new_attributes = {
           'templated' => '0',
+          'node_id' => 'pve',
           'config_attributes' => {
             'cores' => '1',
             'cpulimit' => '1'
@@ -96,6 +115,7 @@ module ForemanFogProxmox
         }.with_indifferent_access
         @cr.stubs(:parse_server_vm).returns(
           'vmid' => '100',
+          'node_id' => 'pve',
           'type' => 'qemu',
           'cores' => '1',
           'cpulimit' => '1',

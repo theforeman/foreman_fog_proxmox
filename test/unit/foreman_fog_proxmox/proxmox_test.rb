@@ -35,7 +35,6 @@ module ForemanFogProxmox
     should validate_presence_of(:url)
     should validate_presence_of(:user)
     should validate_presence_of(:password)
-    should validate_presence_of(:node_id)
     should allow_value('root@pam').for(:user)
     should_not allow_value('root').for(:user)
     should_not allow_value('a').for(:url)

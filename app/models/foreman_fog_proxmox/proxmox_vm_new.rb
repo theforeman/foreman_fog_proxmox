@@ -66,7 +66,7 @@ module ForemanFogProxmox
     end
 
     def interface_container_defaults(id = 'net0')
-      { id: id, name: 'eth0', bridge: bridges.first.identity.to_s }
+      { id: id, name: 'eth0', bridge: bridges.first.identity.to_s, dhcpv4: 1, dhcpv6: 1 }
     end
 
     def new_interface(attr = {})
@@ -92,12 +92,24 @@ module ForemanFogProxmox
       Fog::Proxmox::Compute::Interface.new(opts)
     end
 
+    def default_node
+      nodes.first
+    end
+
+    def default_node_id
+      default_node.node
+    end
+
+    def next_vmid
+      default_node.servers.next_id
+    end
+
     def vm_server_instance_defaults
       ActiveSupport::HashWithIndifferentAccess.new(
         name: "foreman_#{Time.now.to_i}",
         vmid: next_vmid,
         type: 'qemu',
-        node_id: node_id,
+        node_id: default_node_id,
         cores: 1,
         sockets: 1,
         kvm: 1,
@@ -117,14 +129,14 @@ module ForemanFogProxmox
         name: "foreman_#{Time.now.to_i}",
         vmid: next_vmid,
         type: 'lxc',
-        node_id: node_id,
+        node_id: default_node_id,
         memory: 512 * MEGA,
         templated: 0
       ).merge(Fog::Proxmox::DiskHelper.flatten(volume_container_defaults)).merge(Fog::Proxmox::DiskHelper.flatten(volume_server_defaults)).merge(Fog::Proxmox::NicHelper.flatten(interface_defaults))
     end
 
     def vm_instance_defaults
-      super.merge(vmid: next_vmid, node_id: node_id)
+      super.merge(vmid: next_vmid, node_id: default_node_id)
     end
 
     def new_vm(new_attr = {})
@@ -143,7 +155,7 @@ module ForemanFogProxmox
 
     def new_container_vm(new_attr = {})
       options = new_attr
-      options = options.merge(node_id: node_id).merge(type: 'lxc').merge(vmid: next_vmid)
+      options = options.merge(node_id: default_node_id).merge(type: 'lxc').merge(vmid: next_vmid)
       options = vm_container_instance_defaults.merge(options) if new_attr.empty?
       vm = node.containers.new(parse_container_vm(options).deep_symbolize_keys)
       logger.debug(format(_('new_container_vm() vm.config=%<config>s'), config: vm.config.inspect))
@@ -152,7 +164,7 @@ module ForemanFogProxmox
 
     def new_server_vm(new_attr = {})
       options = new_attr
-      options = options.merge(node_id: node_id).merge(type: 'qemu').merge(vmid: next_vmid)
+      options = options.merge(node_id: default_node_id).merge(type: 'qemu').merge(vmid: next_vmid)
       options = vm_server_instance_defaults.merge(options) if new_attr.empty?
       vm = node.servers.new(parse_server_vm(options).deep_symbolize_keys)
       logger.debug(format(_('new_server_vm() vm.config=%<config>s'), config: vm.config.inspect))

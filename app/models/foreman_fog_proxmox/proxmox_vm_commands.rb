@@ -30,6 +30,7 @@ module ForemanFogProxmox
     def create_vm(args = {})
       vmid = args[:vmid].to_i
       type = args[:type]
+      node = client.nodes.get(args[:node_id])
       raise ::Foreman::Exception, format(N_('invalid vmid=%<vmid>s'), vmid: vmid) unless node.servers.id_valid?(vmid)
 
       image_id = args[:image_id]
@@ -88,9 +89,13 @@ module ForemanFogProxmox
     def save_vm(uuid, new_attributes)
       vm = find_vm_by_uuid(uuid)
       templated = new_attributes['templated']
+      node_id = new_attributes['node_id']
       if templated == '1' && !vm.templated?
         vm.create_template
+      elsif vm.node_id != node_id
+        vm.migrate(node_id)
       else
+        convert_memory_sizes(new_attributes)
         volumes_attributes = new_attributes['volumes_attributes']
         volumes_attributes&.each_value { |volume_attributes| save_volume(vm, volume_attributes) }
         parsed_attr = vm.container? ? parse_container_vm(new_attributes.merge(type: vm.type)) : parse_server_vm(new_attributes.merge(type: vm.type))

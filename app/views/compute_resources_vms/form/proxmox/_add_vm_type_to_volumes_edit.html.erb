@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% if compute_resource.class == ForemanFogProxmox::Proxmox %>
 <% type = f.object.type %>
+<% node_id = f.object.node_id %>
 <% server = type == 'qemu' %>
 <% container = type == 'lxc' %>
 
@@ -23,13 +24,13 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
               :type => 'server',
               :object  => compute_resource.new_volume_server,
               :partial => provider_partial(compute_resource, 'server/volume'),
-              :form_builder_attrs => { :type => type, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume') },
+              :form_builder_attrs => { :type => type, :node_id => node_id, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume') },
               :layout => "compute_resources_vms/form/#{item_layout}_layout" }) %>
 <%= new_child_fields_template_typed(f, :volumes, {
               :type => 'container',
               :object  => compute_resource.new_volume_container(id: 'mp0'),
               :partial => provider_partial(compute_resource, 'container/volume_mp'),
-              :form_builder_attrs => { :type => type, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume') },
+              :form_builder_attrs => { :type => type, :node_id => node_id, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume') },
               :layout => "compute_resources_vms/form/#{item_layout}_layout" }) %>
 
 
@@ -37,15 +38,15 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     <%= f.fields_for :volumes do |i| %>
             <% if i.object.rootfs? %>
             <div id="container_volumes_rootfs" style="<%= 'display: ' + (container ? 'block' : 'none') + ';' %>">
-                <%= render :partial => provider_partial(compute_resource, 'container/volume_rootfs'), :locals => { :f => i, :type => type, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume'), :disabled => !container }, :layout => "compute_resources_vms/form/#{item_layout}_layout" %>
+                <%= render :partial => provider_partial(compute_resource, 'container/volume_rootfs'), :locals => { :f => i, :type => type, :node_id => node_id, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume'), :disabled => !container }, :layout => "compute_resources_vms/form/#{item_layout}_layout" %>
             </div>  
             <% elsif i.object.mount_point? %>
             <div id="container_volumes_mp" style="<%= 'display: ' + (container ? 'block' : 'none') + ';' %>">
-                <%= render :partial => provider_partial(compute_resource, 'container/volume_mp'), :locals => { :f => i, :type => type, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume'), :disabled => !container }, :layout => "compute_resources_vms/form/#{item_layout}_layout" %>
+                <%= render :partial => provider_partial(compute_resource, 'container/volume_mp'), :locals => { :f => i, :type => type, :node_id => node_id, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume'), :disabled => !container }, :layout => "compute_resources_vms/form/#{item_layout}_layout" %>
             </div>
             <% elsif i.object.controller? %>
             <div id="server_volumes" style="<%= 'display: ' + (server ? 'block' : 'none') + ';' %>">
-                <%= render :partial => provider_partial(compute_resource, 'server/volume'), :locals => { :f => i, :type => type, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume'), :disabled => !server }, :layout => "compute_resources_vms/form/#{item_layout}_layout" %>
+                <%= render :partial => provider_partial(compute_resource, 'server/volume'), :locals => { :f => i, :type => type, :node_id => node_id, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume'), :disabled => !server }, :layout => "compute_resources_vms/form/#{item_layout}_layout" %>
             </div>
             <% end %> 
     <% end %>  

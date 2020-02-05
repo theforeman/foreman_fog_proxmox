@@ -43,7 +43,7 @@ module ForemanFogProxmox
       end
 
       it 'creates server without bootstart' do
-        args = { vmid: '100', type: 'qemu', config_attributes: { onboot: '0' } }
+        args = { vmid: '100', type: 'qemu', node_id: 'pve', config_attributes: { onboot: '0' } }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
@@ -56,7 +56,7 @@ module ForemanFogProxmox
       end
 
       it 'creates server with bootstart' do
-        args = { vmid: '100', type: 'qemu', config_attributes: { onboot: '1' } }
+        args = { vmid: '100', type: 'qemu', node_id: 'pve', config_attributes: { onboot: '1' } }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)

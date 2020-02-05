@@ -41,7 +41,6 @@ module ForemanFogProxmox
     validates :url, :format => { :with => URI::DEFAULT_PARSER.make_regexp }, :presence => true
     validates :user, :format => { :with => /(\w+)[@]{1}(\w+)/ }, :presence => true
     validates :password, :presence => true
-    validates :node_id, :presence => true
     before_create :test_connection
 
     def provided_attributes
@@ -64,18 +63,6 @@ module ForemanFogProxmox
 
     def associated_host(vm)
       associate_by('mac', vm.mac)
-    end
-
-    def node_id
-      attrs[:node_id]
-    end
-
-    def node_id=(value)
-      attrs[:node_id] = value
-    end
-
-    def node
-      client.nodes.get node_id
     end
 
     def ssl_certs

@@ -15,5 +15,5 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-<%= render :partial => "compute_resources_vms/form/proxmox/server/network", :locals => { :f => f, :type => vm_type, :compute_resource =>  compute_resource, :new_vm => new_vm } %>
-<%= render :partial => "compute_resources_vms/form/proxmox/container/network", :locals => { :f => f, :type => vm_type, :compute_resource =>  compute_resource, :new_vm => new_vm } %>
+<%= render :partial => "compute_resources_vms/form/proxmox/server/network", :locals => { :f => f, :vm_type => vm_type, :node_id => node_id, :compute_resource =>  compute_resource, :new_vm => new_vm } %>
+<%= render :partial => "compute_resources_vms/form/proxmox/container/network", :locals => { :f => f, :vm_type => vm_type, :node_id => node_id, :compute_resource =>  compute_resource, :new_vm => new_vm } %>

@@ -21,11 +21,6 @@ module FogExtensions
   module Proxmox
     module Node
       extend ActiveSupport::Concern
-      def all(_options = {})
-        vms = servers.all
-        vms += containers.all
-        vms
-      end
 
       def each(collection_filters = {})
         if block_given?

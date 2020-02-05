@@ -16,11 +16,12 @@ You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <% container = f.object.type == 'lxc' %>  
+<% node_id = f.object.node_id %>  
 
 <%= field_set_tag _("Extended"), :id => "container_config_ext", :class => ('hide' unless (new_vm && container)), :disabled => (!container || !new_vm) do %>
   <div id="ostemplate_form">
-    <%= select_f f, :ostemplate_storage, compute_resource.storages('vztmpl'), :storage, :storage, { :include_blank => true }, :disabled => !new_vm, :class => ('hide' unless new_vm), :label => _('Template storage'), :label_size => "col-md-2", :onchange => 'storageOstemplateSelected(this)' %>
-    <%= select_f f, :ostemplate_file, compute_resource.images_by_storage(f.object.ostemplate_storage, 'vztmpl'), :volid, :volid, { :include_blank => true }, :disabled => !new_vm, :class => ('hide' unless new_vm), :label => _('OS Template'), :label_size => "col-md-2", :required => true %>
+    <%= select_f f, :ostemplate_storage, compute_resource.storages(node_id,'vztmpl'), :storage, :storage, { :include_blank => true }, :disabled => !new_vm, :class => ('hide' unless new_vm), :label => _('Template storage'), :label_size => "col-md-2", :onchange => 'storageOstemplateSelected(this)' %>
+    <%= select_f f, :ostemplate_file, compute_resource.images_by_storage(node_id,f.object.ostemplate_storage, 'vztmpl'), :volid, :volid, { :include_blank => true }, :disabled => !new_vm, :class => ('hide' unless new_vm), :label => _('OS Template'), :label_size => "col-md-2", :required => true %>
   </div>
   <%= password_proxmox_f f, :password, :label => _("Root password"), :required => true %>
 <% end %>

@@ -35,6 +35,23 @@ module ForemanFogProxmox
         @cr = FactoryBot.build_stubbed(:proxmox_cr)
       end
 
+      it 'migrates container from one node to another in the cluster' do
+        uuid = '100'
+        config = mock('config')
+        config.stubs(:attributes).returns(:cores => '')
+        vm = mock('vm')
+        vm.stubs(:config).returns(config)
+        vm.stubs(:container?).returns(true)
+        vm.stubs(:type).returns('lxc')
+        vm.stubs(:node_id).returns('pve')
+        @cr.stubs(:find_vm_by_uuid).returns(vm)
+        attr = { 'templated' => '0', 'node_id' => 'pve', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
+        @cr.stubs(:parse_container_vm).returns('vmid' => '100', 'node_id' => 'pve2', 'type' => 'lxc', 'cores' => '1', 'cpulimit' => '1')
+        expected_attr = { :cores => '1', :cpulimit => '1' }
+        vm.expects(:update, expected_attr)
+        @cr.save_vm(uuid, attr)
+      end
+
       it 'saves modified container config' do
         uuid = '100'
         config = mock('config')
@@ -43,9 +60,10 @@ module ForemanFogProxmox
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(true)
         vm.stubs(:type).returns('lxc')
+        vm.stubs(:node_id).returns('pve')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
-        attr = { 'templated' => '0', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
-        @cr.stubs(:parse_container_vm).returns('vmid' => '100', 'type' => 'lxc', 'cores' => '1', 'cpulimit' => '1')
+        attr = { 'templated' => '0', 'node_id' => 'pve', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
+        @cr.stubs(:parse_container_vm).returns('vmid' => '100', 'node_id' => 'pve', 'type' => 'lxc', 'cores' => '1', 'cpulimit' => '1')
         expected_attr = { :cores => '1', :cpulimit => '1' }
         vm.expects(:update, expected_attr)
         @cr.save_vm(uuid, attr)
@@ -66,9 +84,11 @@ module ForemanFogProxmox
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(true)
         vm.stubs(:type).returns('lxc')
+        vm.stubs(:node_id).returns('pve')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         new_attributes = {
           'templated' => '0',
+          'node_id' => 'pve',
           'config_attributes' => {
             'cores' => '1',
             'cpulimit' => '1'
@@ -85,7 +105,7 @@ module ForemanFogProxmox
             }
           }
         }.with_indifferent_access
-        @cr.stubs(:parse_container_vm).returns('vmid' => '100', 'type' => 'lxc', 'cores' => '1', 'cpulimit' => '1')
+        @cr.stubs(:parse_container_vm).returns('vmid' => '100', 'node_id' => 'pve', 'type' => 'lxc', 'cores' => '1', 'cpulimit' => '1')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr =
           [
@@ -118,10 +138,12 @@ module ForemanFogProxmox
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(true)
         vm.stubs(:type).returns('lxc')
+        vm.stubs(:node_id).returns('pve')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         new_attributes =
           {
             'templated' => '0',
+            'node_id' => 'pve',
             'config_attributes' => {
               'cores' => '1',
               'cpulimit' => '1',
@@ -141,6 +163,7 @@ module ForemanFogProxmox
           }.with_indifferent_access
         @cr.stubs(:parse_container_vm).returns(
           'vmid' => '100',
+          'node_id' => 'pve',
           'type' => 'lxc',
           'cores' => '1',
           'cpulimit' => '1'
@@ -169,9 +192,11 @@ module ForemanFogProxmox
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(true)
         vm.stubs(:type).returns('lxc')
+        vm.stubs(:node_id).returns('pve')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         new_attributes = {
           'templated' => '0',
+          'node_id' => 'pve',
           'config_attributes' => {
             'cores' => '1',
             'cpulimit' => '1'
@@ -189,7 +214,7 @@ module ForemanFogProxmox
             }
           }
         }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'pve', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = { :id => 'mp0', :volid => 'local-lvm:vm-100-disk-0', :size => 1_073_741_824 }, { :mp => '/opt/toto' }
         vm.expects(:attach, expected_volume_attr)
@@ -200,11 +225,11 @@ module ForemanFogProxmox
 
     describe 'create_vm' do
       it 'creates container without bootstart' do
-        args = { vmid: '100', type: 'lxc', config_attributes: { onboot: '0' } }
+        args = { vmid: '100', type: 'lxc', node_id: 'pve', config_attributes: { onboot: '0' } }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         containers = mock('containers')
-        containers.stubs(:create).with(vmid: 100, type: 'lxc', config_attributes: { onboot: '0' })
+        containers.stubs(:create).with(vmid: 100, type: 'lxc', node_id: 'pve', config_attributes: { onboot: '0' })
         cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
         cr.stubs(:convert_sizes).with(args)
         cr.stubs(:parse_container_vm).with(args).returns(args)
@@ -214,12 +239,12 @@ module ForemanFogProxmox
       end
 
       it 'creates container with bootstart' do
-        args = { vmid: '100', type: 'lxc', config_attributes: { onboot: '0' } }
+        args = { vmid: '100', type: 'lxc', node_id: 'pve', config_attributes: { onboot: '0' } }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         containers = mock('containers')
         vm = mock('vm')
-        containers.stubs(:create).with(vmid: 100, type: 'lxc', config_attributes: { onboot: '0' }).returns(vm)
+        containers.stubs(:create).with(vmid: 100, type: 'lxc', node_id: 'pve', config_attributes: { onboot: '0' }).returns(vm)
         cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
         cr.stubs(:convert_sizes).with(args)
         cr.stubs(:parse_container_vm).with(args).returns(args)

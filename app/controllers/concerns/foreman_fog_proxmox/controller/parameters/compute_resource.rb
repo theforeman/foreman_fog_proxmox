@@ -27,7 +27,7 @@ module ForemanFogProxmox
           def compute_resource_params_filter
             super.tap do |filter|
               filter.permit :ssl_verify_peer,
-                            :ssl_certs, :node_id, :disable_proxy, :cr_id, :renew
+                            :ssl_certs, :disable_proxy, :cr_id, :renew
             end
           end
 

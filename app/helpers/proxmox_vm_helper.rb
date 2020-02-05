@@ -57,6 +57,17 @@ module ProxmoxVmHelper
     end
   end
 
+  def convert_memory_sizes(args)
+    convert_memory_size(args['config_attributes'], 'memory')
+    convert_memory_size(args['config_attributes'], 'min_memory')
+    convert_memory_size(args['config_attributes'], 'shares')
+    convert_memory_size(args['config_attributes'], 'swap')
+  end
+
+  def convert_volumes_size(args)
+    args['volumes_attributes'].each_value { |value| value['size'] = (value['size'].to_i / GIGA).to_s unless ForemanFogProxmox::Value.empty?(value['size']) }
+  end
+
   def convert_sizes(args)
     convert_memory_size(args['config_attributes'], 'memory')
     convert_memory_size(args['config_attributes'], 'min_memory')
@@ -73,5 +84,13 @@ module ProxmoxVmHelper
     # default unit memory size is Mb
     memory = (config_hash[key].to_i / MEGA).to_s == '0' ? config_hash[key] : (config_hash[key].to_i / MEGA).to_s
     config_hash.store(key, memory)
+  end
+
+  def vm_type(host)
+    host.compute_object.type
+  end
+
+  def node_id(host)
+    host.compute_object.node_id
   end
 end

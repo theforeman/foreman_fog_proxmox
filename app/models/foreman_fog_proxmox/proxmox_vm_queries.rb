@@ -19,8 +19,8 @@
 
 module ForemanFogProxmox
   module ProxmoxVmQueries
-    def next_vmid
-      node.servers.next_id
+    def node
+      default_node
     end
 
     def nodes
@@ -33,19 +33,25 @@ module ForemanFogProxmox
       pools.sort_by(&:poolid)
     end
 
-    def storages(type = 'images')
+    def storages(node_id = default_node_id, type = 'images')
+      node = client.nodes.get node_id
+      node ||= default_node
       storages = node.storages.list_by_content_type type
       storages.sort_by(&:storage)
     end
 
-    def bridges
+    def bridges(node_id = default_node_id)
       node = network_client.nodes.get node_id
+      node ||= network_client.nodes.first
       bridges = node.networks.all(type: 'any_bridge')
       bridges.sort_by(&:iface)
     end
-
+  
+    # TODO: Pagination with filters
     def vms(_opts = {})
-      node
+      vms = []
+      nodes.each { |node| vms += node.servers.all + node.containers.all }
+      ForemanFogProxmox::Vms.new(vms)
     end
 
     def find_vm_by_uuid(uuid)

@@ -15,12 +15,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-<% server = type == 'qemu' %>
+<% server = vm_type == 'qemu' %>
+<% index = f.index ? f.index.present? : 0 %>
 
-<%= field_set_tag _("Nic"), :id => "server_network_#{f.index}", :style => ('display: none;' unless server), :disabled => !server do %> 
+<%= field_set_tag _("Nic"), :id => "server_network_#{index}", :style => ('display: none;' unless server), :disabled => !server do %> 
     <%= f.hidden_field :id if !new_vm %>
     <%= select_f f, :model, proxmox_networkcards_map, :id, :name, { }, :label => _('Card'), :label_size => "col-md-2" %>
-    <%= select_f f, :bridge, compute_resource.bridges, :iface, :iface, { }, :label => _('Bridge'), :label_size => "col-md-2" %>
+    <%= select_f f, :bridge, compute_resource.bridges(node_id), :iface, :iface, { }, :label => _('Bridge'), :label_size => "col-md-2" %>
     <%= counter_f f, :tag, :class => "input-mini", :label => _('VLAN tag'), :label_size => "col-md-2" %>
     <%= counter_f f, :rate, :class => "input-mini", :label => _('Rate limit'), :label_size => "col-md-2" %>
     <%= counter_f f, :queues, :class => "input-mini", :label => _('Multiqueue'), :label_size => "col-md-2" %>

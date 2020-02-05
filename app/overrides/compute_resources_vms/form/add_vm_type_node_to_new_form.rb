@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Copyright 2018 Tristan Robert
 
 # This file is part of ForemanFogProxmox.
@@ -17,11 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-Rails.application.routes.draw do
-  namespace :foreman_fog_proxmox do
-    match 'isos/:node_id/:storage', :to => 'compute_resources#isos_by_node_and_storage', :via => 'get'
-    match 'ostemplates/:node_id/:storage', :to => 'compute_resources#ostemplates_by_node_and_storage', :via => 'get'
-    match 'isos/:node_id', :to => 'compute_resources#isos_by_node', :via => 'get'
-    match 'ostemplates/:node_id', :to => 'compute_resources#ostemplates_by_node', :via => 'get'
-  end
-end
+Deface::Override.new(
+  :virtual_path => 'compute_resources_vms/new',
+  :name => 'add_vm_type_to_networks_form',
+  :replace => "erb[loud]:contains('compute_resources_vms/form/networks')",
+  :partial => 'compute_resources_vms/form/proxmox/add_vm_type_node_to_new_form',
+  :original => '10d73563b7c13f01702aadfffd95956da8bff1ad',
+  :namespaced => true
+)

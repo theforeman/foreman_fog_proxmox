@@ -14,24 +14,11 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
+<% if compute_resource.class == ForemanFogProxmox::Proxmox %>
+    <% vm_type = f.object.respond_to?('type') ? f.object.type : nil %>
+    <% node_id = f.object.respond_to?('node_id') ? f.object.node_id : nil %>
 
-<tr>
-  <td><%= _("URL") %></td>
-  <td><%= @compute_resource.url %></td>
-</tr>
-<tr>
-  <td><%= _("Version") %></td>
-  <td><%= @compute_resource.version%></td>
-</tr>
-<tr>
-  <td><%= _("Token has expired?") %></td>
-  <td><%= @compute_resource.token_expired?%></td>
-</tr>
-<tr>
-  <td><%= _("Token expires on") %></td>
-  <td><%= @compute_resource.token_deadline%></td>
-</tr>
-<tr>
-  <td><%= _("Cluster nodes") %></td>
-  <td><%= @compute_resource.nodes.collect { |node| node.node }%></td>
-</tr>
+    <%= render :partial => 'compute_resources_vms/form/networks', :locals => { :f => f, :compute_resource => @compute_resource, :new_host => true, :new_vm => true, :item_layout => 'removable', :vm_type => vm_type, :node_id => node_id } %>
+<% else %>
+    <%= render :partial => 'compute_resources_vms/form/networks', :locals => { :f => f, :compute_resource => @compute_resource, :new_host => true, :new_vm => true, :item_layout => 'removable' } %>
+<% end %>

@@ -17,11 +17,21 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-Rails.application.routes.draw do
-  namespace :foreman_fog_proxmox do
-    match 'isos/:node_id/:storage', :to => 'compute_resources#isos_by_node_and_storage', :via => 'get'
-    match 'ostemplates/:node_id/:storage', :to => 'compute_resources#ostemplates_by_node_and_storage', :via => 'get'
-    match 'isos/:node_id', :to => 'compute_resources#isos_by_node', :via => 'get'
-    match 'ostemplates/:node_id', :to => 'compute_resources#ostemplates_by_node', :via => 'get'
+module ForemanFogProxmox
+  class Vms
+    attr_reader :items
+
+    # TODO: Pagination with filters
+    def all(_filters = {})
+      items
+    end
+
+    def each
+      items.each
+    end
+
+    def initialize(items = [])
+      @items = items
+    end
   end
 end

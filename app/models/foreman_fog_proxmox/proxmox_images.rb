@@ -23,7 +23,9 @@ module ForemanFogProxmox
       !find_vm_by_uuid(image).nil?
     end
 
-    def images_by_storage(storage_id, type = 'iso')
+    def images_by_storage(node_id, storage_id, type = 'iso')
+      node = client.nodes.get node_id
+      node ||= default_node
       storage = node.storages.get storage_id if storage_id
       storage.volumes.list_by_content_type(type).sort_by(&:volid) if storage
     end
@@ -33,9 +35,12 @@ module ForemanFogProxmox
     end
 
     def templates
-      storage = storages.first
-      images = storage.volumes.list_by_content_type('images')
-      images.select(&:templated?)
+      volumes = []
+      nodes.each do |node|
+        storage = storages(node.node).first
+        volumes += storage.volumes.list_by_content_type('images')
+      end
+      volumes.select(&:templated?)
     end
 
     def template(vmid)

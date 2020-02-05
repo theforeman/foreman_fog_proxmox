@@ -21,26 +21,41 @@ module ForemanFogProxmox
   module ProxmoxNodeMockFactory
     def mock_node_servers(cr, servers)
       node = mock('node')
+      nodes = mock('nodes')
+      node.stubs(:node).returns('pve')
       node.stubs(:servers).returns(servers)
-      cr.stubs(:nodes).returns([node])
-      cr.stubs(:node).returns(node)
+      nodes.stubs(:get).returns(node)
+      nodes.stubs(:all).returns([node])
+      client = mock('client')
+      client.stubs(:nodes).returns(nodes)
+      cr.stubs(:client).returns(client)
       cr
     end
 
     def mock_node_containers(cr, containers)
       node = mock('node')
+      nodes = mock('nodes')
+      node.stubs(:node).returns('pve')
       node.stubs(:containers).returns(containers)
-      cr.stubs(:node).returns(node)
-      cr.stubs(:nodes).returns([node])
+      nodes.stubs(:get).returns(node)
+      nodes.stubs(:all).returns([node])
+      client = mock('client')
+      client.stubs(:nodes).returns(nodes)
+      cr.stubs(:client).returns(client)
       cr
     end
 
     def mock_node_servers_containers(cr, servers, containers)
       node = mock('node')
+      node.stubs(:node).returns('pve')
       node.stubs(:containers).returns(containers)
       node.stubs(:servers).returns(servers)
-      cr.stubs(:node).returns(node)
-      cr.stubs(:nodes).returns([node])
+      nodes = mock('nodes')
+      nodes.stubs(:get).returns(node)
+      nodes.stubs(:all).returns([node])
+      client = mock('client')
+      client.stubs(:nodes).returns(nodes)
+      cr.stubs(:client).returns(client)
       cr
     end
 
@@ -53,8 +68,13 @@ module ForemanFogProxmox
       node2.stubs(:node).returns('node2')
       node2.stubs(:servers).returns(n2s)
       node2.stubs(:containers).returns(n2c)
-      cr.stubs(:node).returns(node1)
-      cr.stubs(:nodes).returns([node1, node2])
+      nodes = mock('nodes')
+      nodes.stubs(:get).with('pve').returns(node1)
+      nodes.stubs(:get).with('pve2').returns(node2)
+      nodes.stubs(:all).returns([node1, node2])
+      client = mock('client')
+      client.stubs(:nodes).returns(nodes)
+      cr.stubs(:client).returns(client)
       cr
     end
   end

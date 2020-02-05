@@ -96,3 +96,66 @@ function toggleFieldset(fieldset, index, fieldsets){
       break;
   }
 }
+
+function nodeSelected(item) {
+  var node_id = $(item).val();
+  var type = $("#host_compute_attributes_type").val();
+  if (type == undefined) type = $("#compute_attribute_vm_attrs_type").val();
+  switch (type) {
+    case 'qemu':
+      break;
+    case 'lxc':
+      updateOstemplateOptions(node_id);
+      break;
+    default:
+      console.log("unkown type=" + type);
+      break;
+  }
+}
+
+function emptySelect(select, index, select_ids){
+  $(select).empty();
+  $(select).append($("<option></option>").val('').text(''));
+  $(select).val('');
+}
+
+function initOstemplateStorage(){
+  console.log('initOstemplateStorage');
+  var select_ids = ['#host_compute_attributes_ostemplate_storage','#compute_attribute_vm_attrs_ostemplate_storage'];
+  select_ids.forEach(function(select){
+    $(select + ' option:selected').prop('selected',false);
+    $(select).val('');
+  });
+}
+
+function initOstemplateOptions(){
+  console.log('initOstemplateOptions');
+  var select_ids = ['#host_compute_attributes_ostemplate_file','#compute_attribute_vm_attrs_ostemplate_file'];
+  select_ids.forEach(emptySelect);
+}
+
+function updateOstemplateOptions(node_id) {
+    tfm.tools.showSpinner();
+    $.getJSON({
+      type: 'get',
+      url: '/foreman_fog_proxmox/ostemplates/' + node_id,
+      complete: function(){
+        tfm.tools.hideSpinner();
+      },
+      error: function(j,status,error){
+        console.log("Error=" + error +", status=" + status + " loading os templates for storage=" + storage);
+      },
+      success: function(ostemplates) {
+        initOstemplateStorage();
+        initOstemplateOptions();
+        $.each(ostemplates, function(i,ostemplate){
+          $('#host_compute_attributes_ostemplate_storage').append($("<option></option>").val(ostemplate.storage).text(ostemplate.storage));
+          $('#compute_attribute_vm_attrs_ostemplate_storage').append($("<option></option>").val(ostemplate.storage).text(ostemplate.storage));
+        });
+      },
+      complete: function(item){
+        // eslint-disable-next-line no-undef
+        reloadOnAjaxComplete(item);
+      }
+    });
+}

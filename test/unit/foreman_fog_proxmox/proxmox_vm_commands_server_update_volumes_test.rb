@@ -50,9 +50,11 @@ module ForemanFogProxmox
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
         vm.stubs(:type).returns('qemu')
+        vm.stubs(:node_id).returns('pve')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         new_attributes = {
           'templated' => '0',
+          'node_id' => 'pve',
           'config_attributes' => {
             'cores' => '1',
             'cpulimit' => '1'
@@ -69,7 +71,7 @@ module ForemanFogProxmox
             }
           }
         }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0')
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'pve', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = { id: 'scsi0', storage: 'local:lvm', size: (2_147_483_648 / GIGA).to_s }
         vm.expects(:attach, expected_volume_attr)
@@ -93,9 +95,11 @@ module ForemanFogProxmox
         vm.stubs(:container?).returns(false)
         vm.stubs(:templated?).returns(false)
         vm.stubs(:type).returns('qemu')
+        vm.stubs(:node_id).returns('pve')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         new_attributes = {
           'templated' => '0',
+          'node_id' => 'pve',
           'config_attributes' => {
             'cores' => '1',
             'cpulimit' => '1'
@@ -113,7 +117,7 @@ module ForemanFogProxmox
             }
           }
         }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'config_attributes' => { 'onboot' => '0' })
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'pve', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'config_attributes' => { 'onboot' => '0' })
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = 'scsi0'
         vm.expects(:detach, expected_volume_attr)
@@ -137,9 +141,11 @@ module ForemanFogProxmox
         vm.stubs(:container?).returns(false)
         vm.stubs(:templated?).returns(false)
         vm.stubs(:type).returns('qemu')
+        vm.stubs(:node_id).returns('pve')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         new_attributes = {
           'templated' => '0',
+          'node_id' => 'pve',
           'config_attributes' => {
             'cores' => '1',
             'cpulimit' => '1'
@@ -157,7 +163,7 @@ module ForemanFogProxmox
             }
           }
         }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'pve', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = ['scsi0', '+1G']
         vm.expects(:extend, expected_volume_attr)
@@ -179,9 +185,11 @@ module ForemanFogProxmox
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
         vm.stubs(:type).returns('qemu')
+        vm.stubs(:node_id).returns('pve')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         new_attributes = {
           'templated' => '0',
+          'node_id' => 'pve',
           'config_attributes' => {
             'cores' => '1',
             'cpulimit' => '1'
@@ -199,7 +207,7 @@ module ForemanFogProxmox
             }
           }
         }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'pve', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
         err = assert_raises Foreman::Exception do
           @cr.save_vm(uuid, new_attributes)
         end
@@ -220,9 +228,11 @@ module ForemanFogProxmox
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
         vm.stubs(:type).returns('qemu')
+        vm.stubs(:node_id).returns('pve')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         new_attributes = {
           'templated' => '0',
+          'node_id' => 'pve',
           'config_attributes' => {
             'cores' => '1',
             'cpulimit' => '1'
@@ -240,7 +250,7 @@ module ForemanFogProxmox
             }
           }
         }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'pve', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = ['scsi0', 'local-lvm2']
         vm.expects(:move, expected_volume_attr)
@@ -264,9 +274,11 @@ module ForemanFogProxmox
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
         vm.stubs(:type).returns('qemu')
+        vm.stubs(:node_id).returns('pve')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         new_attributes = {
           'templated' => '0',
+          'node_id' => 'pve',
           'config_attributes' => {
             'cores' => '1',
             'cpulimit' => '1'
@@ -284,7 +296,7 @@ module ForemanFogProxmox
             }
           }
         }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'pve', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = { :id => 'scsi0', :volid => 'local-lvm:vm-100-disk-0', :size => 1_073_741_824 }, { :cache => 'directsync' }
         vm.expects(:attach, expected_volume_attr)

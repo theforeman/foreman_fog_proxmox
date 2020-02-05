@@ -56,6 +56,7 @@ module ForemanFogProxmox
 
       let(:host_delete) do
         { 'vmid' => '100',
+          'node_id' => 'pve',
           'name' => 'test',
           'type' => 'qemu',
           'cdrom' => 'image',

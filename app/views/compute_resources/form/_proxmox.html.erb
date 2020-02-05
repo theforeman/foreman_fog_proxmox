@@ -18,7 +18,6 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <%= javascript_include_tag 'foreman_fog_proxmox/proxmox_compute_resource', "data-turbolinks-track" => true %>
 
 <% nodes = f.object.nodes rescue nil %>
-<% node_id = !!f.object.node_id ? f.object.node_id : '' %>
 <% token_expired = f.object.token_expired? %>
 <% token_deadline = f.object.token_deadline %>
 <%= checkbox_f f, :renew, :label => _("Renew expired token ?"), :checked_value => '1', :label_help => _("Token expires on #{token_deadline}") %>
@@ -28,4 +27,3 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <%= checkbox_f f, :ssl_verify_peer, :label => _("SSL verify peer"), :checked_value => '1', :onchange => "sslVerifyPeerSelected()" %>
 <%= textarea_f f, :ssl_certs, :label => _("X509 Certification Authorities"), :size => "col-md-4",
   :placeholder => _("Optionally provide a CA, or a correctly ordered CA chain. If left blank, disable ssl_verify_peer.") %>
-<%= select_f f, :node_id, nodes, :node, :node, { :include_blank => true }, :label => _('Node'), :label_size => "col-md-2", :required => true, :disabled => (node_id != '') %>

@@ -19,6 +19,7 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <thead>
   <tr>
     <th><%= _('Name') -%></th>
+    <th><%= _('Node') -%></th>
     <th><%= _('Type') -%></th>
     <th><%= _('CPUs') -%></th>
     <th><%= _('Memory') -%></th>
@@ -31,9 +32,10 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <% @vms.each do |vm| -%>
       <tr>
         <td><%= link_to_if_authorized vm.name, hash_for_compute_resource_vm_path(:compute_resource_id => @compute_resource, :id => vm.identity) %></td>
+        <td><%= vm.node_id %></td>
         <td><%= vm.type %></td>
-        <td><%= vm.maxcpu %></td>
-        <td><%= (vm.maxmem.to_i / (1024 * 1024)).to_s %> MB</td>
+        <td><%= vm.cpus %></td>
+        <td><%= Fog::Proxmox::DiskHelper.to_human_bytes(vm.maxmem) %></td>
         <td> <span <%= vm_power_class(vm.ready?) %>> <%= vm_state(vm) %></span> </td>
         <td><%= vm.uptime %></td>
         <td>

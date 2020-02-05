@@ -24,7 +24,7 @@ module FogExtensions
       attr_accessor :image_id, :templated, :ostemplate_storage, :ostemplate_file, :password
 
       def start
-        action('start')
+        ready? ? state : action('start')
       end
 
       def stop

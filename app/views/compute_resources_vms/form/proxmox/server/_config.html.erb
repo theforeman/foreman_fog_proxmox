@@ -20,6 +20,18 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% server = type == 'qemu' %>
 
 <%= field_set_tag n_("Main option", "Main options", 2), :id => "server_config_options", :class => 'hide', :disabled => !server do %>
+  <%= checkbox_f f, :start, {
+    :checked => !(
+      params &&
+      params[:host] &&
+      params[:host][:compute_attributes] &&
+      params[:host][:compute_attributes][:config_attributes] &&
+      params[:host][:compute_attributes][:config_attributes][:start] == '0'
+    ),
+    :help_inline => _("Power ON this machine"),
+    :label => _('Start'),
+    :label_size => "col-md-2"
+  } if new_vm && controller_name != "compute_attributes" %>
   <%= textarea_f f, :description, :label => _('Description'), :label_size => "col-md-2" %>
   <%= text_f f, :boot, :label => _('Boot device order'), :label_size => "col-md-2", :label_help => _('Floppy disk (a), hard disk (c), cdrom (d), network (n). Default cdn')  %>
   <%= checkbox_f f, :onboot, :label => _('Start at boot') %>

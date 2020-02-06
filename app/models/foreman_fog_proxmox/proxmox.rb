@@ -107,14 +107,23 @@ module ForemanFogProxmox
 
     def client
       @client ||= ::Fog::Proxmox::Compute.new(fog_credentials)
+    rescue StandardError => e
+      logger.error(e)
+      raise ::Foreman::Exception, format(N_('Failed retrieving proxmox compute client caused by %<e>s'), e: e)
     end
 
     def identity_client
       @identity_client ||= ::Fog::Proxmox::Identity.new(fog_credentials)
+    rescue StandardError => e
+      logger.error(e)
+      raise ::Foreman::Exception, format(N_('Failed retrieving proxmox identity client caused by %<e>s'), e: e)
     end
 
     def network_client
       @network_client ||= ::Fog::Proxmox::Network.new(fog_credentials)
+    rescue StandardError => e
+      logger.error(e)
+      raise ::Foreman::Exception, format(N_('Failed retrieving proxmox network client caused by %<e>s'), e: e) 
     end
 
     def host

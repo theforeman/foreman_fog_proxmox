@@ -123,7 +123,7 @@ module ForemanFogProxmox
       @network_client ||= ::Fog::Proxmox::Network.new(fog_credentials)
     rescue StandardError => e
       logger.error(e)
-      raise ::Foreman::Exception, format(N_('Failed retrieving proxmox network client caused by %<e>s'), e: e) 
+      raise ::Foreman::Exception, format(N_('Failed retrieving proxmox network client caused by %<e>s'), e: e)
     end
 
     def host

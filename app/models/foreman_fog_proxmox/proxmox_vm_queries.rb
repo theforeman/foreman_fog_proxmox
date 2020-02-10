@@ -46,7 +46,7 @@ module ForemanFogProxmox
       bridges = node.networks.all(type: 'any_bridge')
       bridges.sort_by(&:iface)
     end
-  
+
     # TODO: Pagination with filters
     def vms(_opts = {})
       vms = []

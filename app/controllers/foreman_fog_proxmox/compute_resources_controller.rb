@@ -47,9 +47,17 @@ module ForemanFogProxmox
 
     # GET foreman_fog_proxmox/ostemplates/:node_id
     def ostemplates_by_node
-      volumes = @compute_resource.images_by_storage(params[:node_id], 'vztmpl')
+      storages = @compute_resource.storages(params[:node_id], 'vztmpl')
       respond_to do |format|
-        format.json { render :json => volumes }
+        format.json { render :json => storages }
+      end
+    end
+
+    # GET foreman_fog_proxmox/storages/:node_id
+    def storages_by_node
+      storages = @compute_resource.storages(params[:node_id])
+      respond_to do |format|
+        format.json { render :json => storages }
       end
     end
 

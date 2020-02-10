@@ -23,5 +23,6 @@ Rails.application.routes.draw do
     match 'ostemplates/:node_id/:storage', :to => 'compute_resources#ostemplates_by_node_and_storage', :via => 'get'
     match 'isos/:node_id', :to => 'compute_resources#isos_by_node', :via => 'get'
     match 'ostemplates/:node_id', :to => 'compute_resources#ostemplates_by_node', :via => 'get'
+    match 'storages/:node_id', :to => 'compute_resources#storages_by_node', :via => 'get'
   end
 end

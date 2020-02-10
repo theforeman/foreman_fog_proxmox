@@ -103,9 +103,12 @@ function nodeSelected(item) {
   if (type == undefined) type = $("#compute_attribute_vm_attrs_type").val();
   switch (type) {
     case 'qemu':
+      updateOptions('storages', 'volumes_attributes_0_storage', undefined, 'storage', node_id);
       break;
     case 'lxc':
-      updateOstemplateOptions(node_id);
+      // updateOstemplateOptions(node_id);
+      updateOptions('ostemplates', 'ostemplate_storage', 'ostemplate_file', 'storage', node_id);
+      updateOptions('storages', 'volumes_attributes_0_storage', undefined, 'storage', node_id);
       break;
     default:
       console.log("unkown type=" + type);
@@ -128,8 +131,8 @@ function initOstemplateStorage(){
   });
 }
 
-function initOstemplateOptions(){
-  console.log('initOstemplateOptions');
+function initOstemplateFileOptions(){
+  console.log('initOstemplateFileOptions');
   var select_ids = ['#host_compute_attributes_ostemplate_file','#compute_attribute_vm_attrs_ostemplate_file'];
   select_ids.forEach(emptySelect);
 }
@@ -147,7 +150,7 @@ function updateOstemplateOptions(node_id) {
       },
       success: function(ostemplates) {
         initOstemplateStorage();
-        initOstemplateOptions();
+        initOstemplateFileOptions();
         $.each(ostemplates, function(i,ostemplate){
           $('#host_compute_attributes_ostemplate_storage').append($("<option></option>").val(ostemplate.storage).text(ostemplate.storage));
           $('#compute_attribute_vm_attrs_ostemplate_storage').append($("<option></option>").val(ostemplate.storage).text(ostemplate.storage));
@@ -158,4 +161,51 @@ function updateOstemplateOptions(node_id) {
         reloadOnAjaxComplete(item);
       }
     });
+}
+
+function initOptions(select_ids,options_id){
+  console.log('initOptions(' + options_id + ')');
+  select_ids.forEach(emptySelect);
+  select_ids.forEach(function(select){
+    $(select + ' option:selected').prop('selected',false);
+    $(select).val('');
+  });
+}
+
+function updateOption(select_id, option, option_id){
+  console.log('update '+ select_id + ' with '+ option[option_id]);
+  $(select_id).append($('<option></option>').val(option[option_id]).text(option[option_id]));
+}
+
+function updateOptions(options_path, options_id, second_options_id, option_id, node_id) {
+  var select_ids = ['#host_compute_attributes_' + options_id,'#compute_attribute_vm_attrs_' + options_id];
+  if (second_options_id != undefined) {
+    var second_select_ids = ['#host_compute_attributes_' + second_options_id,'#compute_attribute_vm_attrs_' + second_options_id];
+  }
+  tfm.tools.showSpinner();
+  $.getJSON({
+    type: 'get',
+    url: '/foreman_fog_proxmox/' + options_path +  '/' + node_id,
+    complete: function(){
+      tfm.tools.hideSpinner();
+    },
+    error: function(j,status,error){
+      console.log('Error=' + error + ', status=' + status + ' loading ' + options_path + ' for node_id=' + node_id);
+    },
+    success: function(options) {
+      initOptions(select_ids, options_id);
+      if (second_select_ids != undefined && second_options_id != undefined) {
+        initOptions(second_select_ids, second_options_id);
+      }
+      $.each(options, function(i,option){
+        for (let j = 0; j < select_ids.length; j++) {
+          updateOption(select_ids[j], option, option_id);
+        }
+      });
+    },
+    complete: function(item){
+      // eslint-disable-next-line no-undef
+      reloadOnAjaxComplete(item);
+    }
+  });
 }

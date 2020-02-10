@@ -20,14 +20,11 @@
 module ForemanFogProxmox
   class Vms
     attr_reader :items
+    delegate :each, to: @items.each
 
     # TODO: Pagination with filters
     def all(_filters = {})
       items
-    end
-
-    def each
-      items.each
     end
 
     def initialize(items = [])

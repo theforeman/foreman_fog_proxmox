@@ -19,10 +19,6 @@
 
 module ForemanFogProxmox
   module ProxmoxVmQueries
-    def node
-      default_node
-    end
-
     def nodes
       nodes = client.nodes.all if client
       nodes&.sort_by(&:node)

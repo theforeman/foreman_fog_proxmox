@@ -24,5 +24,7 @@ Rails.application.routes.draw do
     match 'isos/:node_id', :to => 'compute_resources#isos_by_node', :via => 'get'
     match 'ostemplates/:node_id', :to => 'compute_resources#ostemplates_by_node', :via => 'get'
     match 'storages/:node_id', :to => 'compute_resources#storages_by_node', :via => 'get'
+    match 'isostorages/:node_id', :to => 'compute_resources#iso_storages_by_node', :via => 'get'
+    match 'bridges/:node_id', :to => 'compute_resources#bridges_by_node', :via => 'get'
   end
 end

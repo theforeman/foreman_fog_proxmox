@@ -61,6 +61,22 @@ module ForemanFogProxmox
       end
     end
 
+    # GET foreman_fog_proxmox/isostorages/:node_id
+    def iso_storages_by_node
+      storages = @compute_resource.storages(params[:node_id], 'iso')
+      respond_to do |format|
+        format.json { render :json => storages }
+      end
+    end
+
+    # GET foreman_fog_proxmox/bridges/:node_id
+    def bridges_by_node
+      bridges = @compute_resource.bridges(params[:node_id])
+      respond_to do |format|
+        format.json { render :json => bridges }
+      end
+    end
+
     private
 
     def load_compute_resource

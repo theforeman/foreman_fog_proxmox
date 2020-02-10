@@ -103,12 +103,14 @@ function nodeSelected(item) {
   if (type == undefined) type = $("#compute_attribute_vm_attrs_type").val();
   switch (type) {
     case 'qemu':
-      updateOptions('storages', 'volumes_attributes_0_storage', undefined, 'storage', node_id);
+      updateOptions('isostorages', 'compute_attributes_config_attributes', 'cdrom_storage', 'compute_attributes_config_attributes', 'cdrom_iso', 'storage', node_id);
+      updateOptions('storages', 'compute_attributes_volumes_attributes', 'storage', undefined, undefined, 'storage', node_id);
+      updateOptions('bridges', 'interfaces_attributes', 'compute_attributes_bridge', undefined, undefined, 'iface', node_id);
       break;
     case 'lxc':
-      // updateOstemplateOptions(node_id);
-      updateOptions('ostemplates', 'ostemplate_storage', 'ostemplate_file', 'storage', node_id);
-      updateOptions('storages', 'volumes_attributes_0_storage', undefined, 'storage', node_id);
+      updateOptions('ostemplates', 'compute_attributes_ostemplate', 'storage', 'compute_attributes_ostemplate', 'file', 'storage', node_id);
+      updateOptions('storages', 'compute_attributes_volumes_attributes', 'storage', undefined, undefined, 'storage', node_id);
+      updateOptions('bridges', 'interfaces_attributes', 'compute_attributes_bridge', undefined, undefined, 'iface', node_id);
       break;
     default:
       console.log("unkown type=" + type);
@@ -116,55 +118,14 @@ function nodeSelected(item) {
   }
 }
 
-function emptySelect(select, index, select_ids){
+function emptySelect(select){
   $(select).empty();
   $(select).append($("<option></option>").val('').text(''));
   $(select).val('');
 }
 
-function initOstemplateStorage(){
-  console.log('initOstemplateStorage');
-  var select_ids = ['#host_compute_attributes_ostemplate_storage','#compute_attribute_vm_attrs_ostemplate_storage'];
-  select_ids.forEach(function(select){
-    $(select + ' option:selected').prop('selected',false);
-    $(select).val('');
-  });
-}
-
-function initOstemplateFileOptions(){
-  console.log('initOstemplateFileOptions');
-  var select_ids = ['#host_compute_attributes_ostemplate_file','#compute_attribute_vm_attrs_ostemplate_file'];
-  select_ids.forEach(emptySelect);
-}
-
-function updateOstemplateOptions(node_id) {
-    tfm.tools.showSpinner();
-    $.getJSON({
-      type: 'get',
-      url: '/foreman_fog_proxmox/ostemplates/' + node_id,
-      complete: function(){
-        tfm.tools.hideSpinner();
-      },
-      error: function(j,status,error){
-        console.log("Error=" + error +", status=" + status + " loading os templates for storage=" + storage);
-      },
-      success: function(ostemplates) {
-        initOstemplateStorage();
-        initOstemplateFileOptions();
-        $.each(ostemplates, function(i,ostemplate){
-          $('#host_compute_attributes_ostemplate_storage').append($("<option></option>").val(ostemplate.storage).text(ostemplate.storage));
-          $('#compute_attribute_vm_attrs_ostemplate_storage').append($("<option></option>").val(ostemplate.storage).text(ostemplate.storage));
-        });
-      },
-      complete: function(item){
-        // eslint-disable-next-line no-undef
-        reloadOnAjaxComplete(item);
-      }
-    });
-}
-
-function initOptions(select_ids,options_id){
-  console.log('initOptions(' + options_id + ')');
+function initOptions(select_ids){
+  console.log('initOptions(' + select_ids[0] + ')');
   select_ids.forEach(emptySelect);
   select_ids.forEach(function(select){
     $(select + ' option:selected').prop('selected',false);
@@ -177,25 +138,39 @@ function updateOption(select_id, option, option_id){
   $(select_id).append($('<option></option>').val(option[option_id]).text(option[option_id]));
 }
 
-function updateOptions(options_path, options_id, second_options_id, option_id, node_id) {
-  var select_ids = ['#host_compute_attributes_' + options_id,'#compute_attribute_vm_attrs_' + options_id];
-  if (second_options_id != undefined) {
-    var second_select_ids = ['#host_compute_attributes_' + second_options_id,'#compute_attribute_vm_attrs_' + second_options_id];
+function selectIds(start_options_id, end_options_id){
+  let select_host_id = 'select[id^=host_' + start_options_id + ']';
+  let compute_attributes_regex = /compute_attributes_/gi;
+  let select_profile_id = 'select[id^=compute_attribute_vm_attrs_' + start_options_id.replace(compute_attributes_regex, '') + ']';
+  if (end_options_id != undefined) {
+    select_host_id += '[id$=' + end_options_id + ']';
+    select_profile_id += '[id$=' + end_options_id.replace(compute_attributes_regex, '') + ']';
   }
+  return [select_host_id, select_profile_id];
+}
+
+function updateOptions(options_path, start_options_id, end_options_id, start_second_options_id, end_second_options_id, option_id, node_id, second_id = undefined) {
+  
+  let select_ids = selectIds(start_options_id, end_options_id);
+  let select_second_ids;
+  if ( start_second_options_id != undefined && end_second_options_id != undefined) {
+    select_second_ids = selectIds(start_second_options_id, end_second_options_id);
+  }
+  var url = '/foreman_fog_proxmox/' + options_path +  '/' + node_id;
+  if (second_id != undefined) url += '/' + second_id;
   tfm.tools.showSpinner();
   $.getJSON({
     type: 'get',
-    url: '/foreman_fog_proxmox/' + options_path +  '/' + node_id,
-    complete: function(){
-      tfm.tools.hideSpinner();
-    },
+    url: url,
     error: function(j,status,error){
-      console.log('Error=' + error + ', status=' + status + ' loading ' + options_path + ' for node_id=' + node_id);
+      var errorMsg = 'Error=' + error + ', status=' + status + ' loading ' + options_path + ' for node_id=' + node_id;
+      if (second_id != undefined) errorMsg += ' and second_id=' + second_id;
+      console.log(errorMsg);
     },
     success: function(options) {
-      initOptions(select_ids, options_id);
-      if (second_select_ids != undefined && second_options_id != undefined) {
-        initOptions(second_select_ids, second_options_id);
+      initOptions(select_ids);
+      if (select_second_ids != undefined) {
+        initOptions(select_second_ids);
       }
       $.each(options, function(i,option){
         for (let j = 0; j < select_ids.length; j++) {
@@ -206,6 +181,7 @@ function updateOptions(options_path, options_id, second_options_id, option_id, n
     complete: function(item){
       // eslint-disable-next-line no-undef
       reloadOnAjaxComplete(item);
+      tfm.tools.hideSpinner();
     }
   });
 }

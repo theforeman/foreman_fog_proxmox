@@ -57,31 +57,7 @@ function initCdromOptions(name) {
 function storageIsoSelected(item) {
   var storage = $(item).val();
   var node_id = $('#host_compute_attributes_node_id').val();
-  if (storage != '') {
-    tfm.tools.showSpinner();
-    $.getJSON({
-      type: 'get',
-      url: '/foreman_fog_proxmox/isos/' + node_id + '/' + storage,
-      complete: function () {
-        tfm.tools.hideSpinner();
-      },
-      error: function (j, status, error) {
-        console.log("Error=" + error + ", status=" + status + " loading isos for storage=" + storage + " and node_id=" + node_id);
-      },
-      success: function (isos) {
-        initCdromOptions('iso');
-        $.each(isos, function (i, iso) {
-          $('#host_compute_attributes_config_attributes_cdrom_iso').append($("<option></option>").val(iso.volid).text(iso.volid));
-        });
-      },
-      complete: function(item){
-        // eslint-disable-next-line no-undef
-        reloadOnAjaxComplete(item);
-      }
-    });
-  } else {
-    initCdromOptions('iso');
-  }
+  updateOptions('isos', 'compute_attributes_config_attributes', 'cdrom_iso', undefined, undefined, 'volid', node_id, storage);
 }
 
 function attributesPrefixSelector(profile, type) {

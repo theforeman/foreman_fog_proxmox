@@ -17,8 +17,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n>1;\n"
 "\n"
 
-msgid "%s console is not supported at this time"
-msgstr "%s console pas encore supportée"
+msgid "%<s>s console is not supported at this time"
+msgstr ""
 
 msgid "Add Volume"
 msgstr "Ajouter un volume"
@@ -47,6 +47,12 @@ msgstr ""
 msgid "CDROM"
 msgstr ""
 
+msgid "CIDR IPv4 prefix"
+msgstr ""
+
+msgid "CIDR IPv6 prefix"
+msgstr ""
+
 msgid "CPU"
 msgstr ""
 
@@ -62,14 +68,14 @@ msgstr ""
 msgid "Cache"
 msgstr ""
 
-msgid "Caps lock ON"
-msgstr "Touches verrouillées"
-
 msgid "Card"
 msgstr "Carte"
 
 msgid "Change the password"
 msgstr "Changer le mot de passe"
+
+msgid "Cluster nodes"
+msgstr "Noeuds de la ferme"
 
 msgid "Controller"
 msgstr "Contrôleur"
@@ -79,6 +85,12 @@ msgstr "Coeurs"
 
 msgid "Create image?"
 msgstr "Créer image?"
+
+msgid "DHCP IPv4"
+msgstr ""
+
+msgid "DHCP IPv6"
+msgstr ""
 
 msgid "DNS"
 msgstr ""
@@ -110,6 +122,15 @@ msgstr "Activer/désactiver la virtualisation matérielle de KVM"
 msgid "Extended"
 msgstr "Etendu"
 
+msgid "Failed retrieving proxmox compute client caused by %<e>s"
+msgstr ""
+
+msgid "Failed retrieving proxmox identity client caused by %<e>s"
+msgstr ""
+
+msgid "Failed retrieving proxmox network client caused by %<e>s"
+msgstr ""
+
 msgid "Failed retrieving proxmox server vm by vmid=%<vmid>s"
 msgstr ""
 
@@ -130,6 +151,12 @@ msgstr ""
 
 msgid "ForemanFogProxmox plugin adds Proxmox VE compute resource to Foreman using fog-proxmox gem."
 msgstr "Le plugin ForemanFogProxmox ajoute la ressource de calcul Proxmox VE à foreman en utilisant le gem fog-proxmox"
+
+msgid "Gateway IPv4"
+msgstr ""
+
+msgid "Gateway IPv6"
+msgstr ""
 
 msgid "General"
 msgstr "Général"
@@ -206,7 +233,7 @@ msgid "Password to authenticate with - used for SSH finish step."
 msgstr "Mot de passe d'authentification - utilisé dans la dernière phase avec SSH."
 
 msgid "Path"
-msgstr ""
+msgstr "Chemin"
 
 msgid "Physical"
 msgstr "Physique"
@@ -230,7 +257,7 @@ msgid "Rate limit"
 msgstr "Taux limite"
 
 msgid "Renew expired token ?"
-msgstr ""
+msgstr "Renouveler jeton expiré?"
 
 msgid "Root password"
 msgstr "Mot de passe root"
@@ -278,13 +305,10 @@ msgid "Time"
 msgstr "Temps"
 
 msgid "Token expires on"
-msgstr ""
-
-msgid "Token expires on #{token_deadline}"
-msgstr ""
+msgstr "Jeton expire le "
 
 msgid "Token has expired?"
-msgstr ""
+msgstr "Jeton expiré?"
 
 msgid "Type"
 msgstr ""

@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "\n"
 
-msgid "%s console is not supported at this time"
+msgid "%<s>s console is not supported at this time"
 msgstr ""
 
 msgid "Add Volume"
@@ -47,6 +47,12 @@ msgstr ""
 msgid "CDROM"
 msgstr ""
 
+msgid "CIDR IPv4 prefix"
+msgstr ""
+
+msgid "CIDR IPv6 prefix"
+msgstr ""
+
 msgid "CPU"
 msgstr ""
 
@@ -62,13 +68,13 @@ msgstr ""
 msgid "Cache"
 msgstr ""
 
-msgid "Caps lock ON"
-msgstr ""
-
 msgid "Card"
 msgstr ""
 
 msgid "Change the password"
+msgstr ""
+
+msgid "Cluster nodes"
 msgstr ""
 
 msgid "Controller"
@@ -78,6 +84,12 @@ msgid "Cores"
 msgstr ""
 
 msgid "Create image?"
+msgstr ""
+
+msgid "DHCP IPv4"
+msgstr ""
+
+msgid "DHCP IPv6"
 msgstr ""
 
 msgid "DNS"
@@ -110,6 +122,15 @@ msgstr ""
 msgid "Extended"
 msgstr ""
 
+msgid "Failed retrieving proxmox compute client caused by %<e>s"
+msgstr ""
+
+msgid "Failed retrieving proxmox identity client caused by %<e>s"
+msgstr ""
+
+msgid "Failed retrieving proxmox network client caused by %<e>s"
+msgstr ""
+
 msgid "Failed retrieving proxmox server vm by vmid=%<vmid>s"
 msgstr ""
 
@@ -129,6 +150,12 @@ msgid "Foreman Fog Proxmox widget"
 msgstr ""
 
 msgid "ForemanFogProxmox plugin adds Proxmox VE compute resource to Foreman using fog-proxmox gem."
+msgstr ""
+
+msgid "Gateway IPv4"
+msgstr ""
+
+msgid "Gateway IPv6"
 msgstr ""
 
 msgid "General"
@@ -278,9 +305,6 @@ msgid "Time"
 msgstr ""
 
 msgid "Token expires on"
-msgstr ""
-
-msgid "Token expires on #{token_deadline}"
 msgstr ""
 
 msgid "Token has expired?"

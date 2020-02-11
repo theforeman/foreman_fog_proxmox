@@ -23,7 +23,9 @@ require 'foreman_fog_proxmox/value'
 
 module ProxmoxContainerHelper
   def config_keys
-    keys = { general: ['node_id', 'name', 'type', 'config_attributes', 'volumes_attributes', 'interfaces_attributes', 'firmware_type', 'provision_method', 'container_volumes', 'server_volumes'] }
+    general_a = ['node_id', 'name', 'type', 'config_attributes', 'volumes_attributes', 'interfaces_attributes']
+    general_a += ['firmware_type', 'provision_method', 'container_volumes', 'server_volumes', 'start_after_create']
+    keys = { general: general_a }
     keys.store(:main, ['name', 'type', 'node_id', 'vmid', 'interfaces', 'mount_points', 'disks'])
     keys.store(:cpu, ['arch', 'cpulimit', 'cpuunits', 'cores'])
     keys.store(:memory, ['memory', 'swap'])

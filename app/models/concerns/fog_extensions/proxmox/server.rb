@@ -21,7 +21,7 @@ module FogExtensions
   module Proxmox
     module Server
       extend ActiveSupport::Concern
-      attr_accessor :image_id, :templated, :ostemplate_storage, :ostemplate_file, :password
+      attr_accessor :image_id, :templated, :ostemplate_storage, :ostemplate_file, :password, :start_after_create
 
       def start
         action('start')

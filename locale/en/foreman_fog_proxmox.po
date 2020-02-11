@@ -283,6 +283,9 @@ msgstr ""
 msgid "Spectre-CTRL"
 msgstr ""
 
+msgid "Start after creation?"
+msgstr ""
+
 msgid "Start at boot"
 msgstr ""
 

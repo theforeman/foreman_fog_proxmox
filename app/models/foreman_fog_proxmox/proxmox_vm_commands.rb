@@ -22,7 +22,7 @@ module ForemanFogProxmox
     include ProxmoxVolumes
 
     def start_on_boot(vm, args)
-      startonboot = args[:config_attributes][:onboot].blank? ? false : Foreman::Cast.to_bool(args[:config_attributes][:onboot])
+      startonboot = args[:start_after_create].blank? ? false : Foreman::Cast.to_bool(args[:start_after_create])
       vm.start if startonboot
       vm
     end
@@ -105,7 +105,6 @@ module ForemanFogProxmox
         cdrom_attributes = parsed_attr.select { |_key, value| Fog::Proxmox::DiskHelper.cdrom?(value.to_s) }
         config_attributes = config_attributes.reject { |key, _value| Fog::Proxmox::DiskHelper.disk?(key) }
         vm.update(config_attributes.merge(cdrom_attributes))
-        start_on_boot(vm, new_attributes)
       end
       find_vm_by_uuid(uuid)
     end

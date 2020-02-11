@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: foreman_fog_proxmox 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-10 14:53+0100\n"
-"PO-Revision-Date: 2020-02-10 14:53+0100\n"
+"POT-Creation-Date: 2020-02-11 09:46+0100\n"
+"PO-Revision-Date: 2020-02-11 09:46+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -86,15 +86,15 @@ msgstr ""
 msgid "new_vm() vm.config=%<config>s"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox_vm_new.rb:161
+#: ../app/models/foreman_fog_proxmox/proxmox_vm_new.rb:163
 msgid "new_container_vm() vm.config=%<config>s"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox_vm_new.rb:170
+#: ../app/models/foreman_fog_proxmox/proxmox_vm_new.rb:174
 msgid "new_server_vm() vm.config=%<config>s"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox_vm_queries.rb:76
+#: ../app/models/foreman_fog_proxmox/proxmox_vm_queries.rb:72
 msgid "Failed retrieving proxmox server vm by vmid=%<vmid>s"
 msgstr ""
 
@@ -208,7 +208,11 @@ msgstr ""
 msgid "Node"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_general.html.erb:18
+#: ../app/views/compute_resources_vms/form/proxmox/_general.html.erb:9
+msgid "Start after creation?"
+msgstr ""
+
+#: ../app/views/compute_resources_vms/form/proxmox/_general.html.erb:19
 #: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:37
 msgid "Image"
 msgstr ""

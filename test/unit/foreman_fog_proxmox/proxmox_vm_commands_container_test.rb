@@ -225,11 +225,11 @@ module ForemanFogProxmox
 
     describe 'create_vm' do
       it 'creates container without bootstart' do
-        args = { vmid: '100', type: 'lxc', node_id: 'pve', config_attributes: { onboot: '0' } }
+        args = { vmid: '100', type: 'lxc', node_id: 'pve', start_after_create: '0' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         containers = mock('containers')
-        containers.stubs(:create).with(vmid: 100, type: 'lxc', node_id: 'pve', config_attributes: { onboot: '0' })
+        containers.stubs(:create).with(vmid: 100, type: 'lxc', node_id: 'pve', start_after_create: '0')
         cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
         cr.stubs(:convert_sizes).with(args)
         cr.stubs(:parse_container_vm).with(args).returns(args)
@@ -239,12 +239,12 @@ module ForemanFogProxmox
       end
 
       it 'creates container with bootstart' do
-        args = { vmid: '100', type: 'lxc', node_id: 'pve', config_attributes: { onboot: '0' } }
+        args = { vmid: '100', type: 'lxc', node_id: 'pve', start_after_create: '1' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         containers = mock('containers')
         vm = mock('vm')
-        containers.stubs(:create).with(vmid: 100, type: 'lxc', node_id: 'pve', config_attributes: { onboot: '0' }).returns(vm)
+        containers.stubs(:create).with(vmid: 100, type: 'lxc', node_id: 'pve', start_after_create: '1').returns(vm)
         cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
         cr.stubs(:convert_sizes).with(args)
         cr.stubs(:parse_container_vm).with(args).returns(args)

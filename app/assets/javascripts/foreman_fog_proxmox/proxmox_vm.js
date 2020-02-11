@@ -139,9 +139,9 @@ function updateOption(select_id, option, option_id){
 }
 
 function selectIds(start_options_id, end_options_id){
-  let select_host_id = 'select[id^=host_' + start_options_id + ']';
-  let compute_attributes_regex = /compute_attributes_/gi;
-  let select_profile_id = 'select[id^=compute_attribute_vm_attrs_' + start_options_id.replace(compute_attributes_regex, '') + ']';
+  var select_host_id = 'select[id^=host_' + start_options_id + ']';
+  var compute_attributes_regex = /compute_attributes_/gi;
+  var select_profile_id = 'select[id^=compute_attribute_vm_attrs_' + start_options_id.replace(compute_attributes_regex, '') + ']';
   if (end_options_id != undefined) {
     select_host_id += '[id$=' + end_options_id + ']';
     select_profile_id += '[id$=' + end_options_id.replace(compute_attributes_regex, '') + ']';
@@ -151,8 +151,8 @@ function selectIds(start_options_id, end_options_id){
 
 function updateOptions(options_path, start_options_id, end_options_id, start_second_options_id, end_second_options_id, option_id, node_id, second_id = undefined) {
   
-  let select_ids = selectIds(start_options_id, end_options_id);
-  let select_second_ids;
+  var select_ids = selectIds(start_options_id, end_options_id);
+  var select_second_ids;
   if ( start_second_options_id != undefined && end_second_options_id != undefined) {
     select_second_ids = selectIds(start_second_options_id, end_second_options_id);
   }
@@ -173,7 +173,7 @@ function updateOptions(options_path, start_options_id, end_options_id, start_sec
         initOptions(select_second_ids);
       }
       $.each(options, function(i,option){
-        for (let j = 0; j < select_ids.length; j++) {
+        for (var j = 0; j < select_ids.length; j++) {
           updateOption(select_ids[j], option, option_id);
         }
       });

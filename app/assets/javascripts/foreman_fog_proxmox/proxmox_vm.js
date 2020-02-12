@@ -103,14 +103,14 @@ function nodeSelected(item) {
   if (type == undefined) type = $("#compute_attribute_vm_attrs_type").val();
   switch (type) {
     case 'qemu':
-      updateOptions('isostorages', 'compute_attributes_config_attributes', 'cdrom_storage', 'compute_attributes_config_attributes', 'cdrom_iso', 'storage', node_id);
-      updateOptions('storages', 'compute_attributes_volumes_attributes', 'storage', undefined, undefined, 'storage', node_id);
-      updateOptions('bridges', 'interfaces_attributes', 'compute_attributes_bridge', undefined, undefined, 'iface', node_id);
+      updateOptions('isostorages', 'compute_attributes_config_attributes', 'cdrom_storage', 'compute_attributes_config_attributes', 'cdrom_iso', 'storage', node_id, undefined);
+      updateOptions('storages', 'compute_attributes_volumes_attributes', 'storage', undefined, undefined, 'storage', node_id, undefined);
+      updateOptions('bridges', 'interfaces_attributes', 'compute_attributes_bridge', undefined, undefined, 'iface', node_id, undefined);
       break;
     case 'lxc':
-      updateOptions('ostemplates', 'compute_attributes_ostemplate', 'storage', 'compute_attributes_ostemplate', 'file', 'storage', node_id);
-      updateOptions('storages', 'compute_attributes_volumes_attributes', 'storage', undefined, undefined, 'storage', node_id);
-      updateOptions('bridges', 'interfaces_attributes', 'compute_attributes_bridge', undefined, undefined, 'iface', node_id);
+      updateOptions('ostemplates', 'compute_attributes_ostemplate', 'storage', 'compute_attributes_ostemplate', 'file', 'storage', node_id, undefined);
+      updateOptions('storages', 'compute_attributes_volumes_attributes', 'storage', undefined, undefined, 'storage', node_id, undefined);
+      updateOptions('bridges', 'interfaces_attributes', 'compute_attributes_bridge', undefined, undefined, 'iface', node_id, undefined);
       break;
     default:
       console.log("unkown type=" + type);
@@ -149,7 +149,7 @@ function selectIds(start_options_id, end_options_id){
   return [select_host_id, select_profile_id];
 }
 
-function updateOptions(options_path, start_options_id, end_options_id, start_second_options_id, end_second_options_id, option_id, node_id, second_id = undefined) {
+function updateOptions(options_path, start_options_id, end_options_id, start_second_options_id, end_second_options_id, option_id, node_id, second_id) {
   
   var select_ids = selectIds(start_options_id, end_options_id);
   var select_second_ids;

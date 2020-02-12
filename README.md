@@ -29,6 +29,7 @@ You can support the plugin development via the following methods:
 |<0.9 |<6.0|=0.9|>=1.22|>=2.3|
 |>=0.9 |>=5.4|>=0.9.1|>=1.22|>=2.3|
 |>=0.10 |>=5.4|>=0.9.4|>=1.22|>=2.5|
+|>=0.11 |>=5.4|>=0.10|>=1.22|>=2.5|
 
 ## Installation
 

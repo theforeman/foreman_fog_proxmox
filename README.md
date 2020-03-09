@@ -233,8 +233,9 @@ See details in [foreman plugin development](https://projects.theforeman.org/proj
 
 If you like it and still want to improve it, [sponsor me](https://github.com/sponsors/tristanrobert)!
 
-You can reach the [contributors](.github/CONTRIBUTORS.md).
-Bug reports and pull requests are welcome on GitHub at [ForemanFogProxmox](https://github.com/theforeman/foreman_fog_proxmox).
+* You can reach the [contributors](.github/CONTRIBUTORS.md).
+* [Translate it in your favorite language](https://www.transifex.com/foreman/foreman/foreman_fog_proxmox/)
+* Bug reports and pull requests are welcome on GitHub at [ForemanFogProxmox](https://github.com/theforeman/foreman_fog_proxmox).
 
 Please read more information about [how to contribute](.github/CONTRIBUTING.md).
 

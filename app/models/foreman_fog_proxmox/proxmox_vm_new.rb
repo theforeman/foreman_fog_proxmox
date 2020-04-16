@@ -39,9 +39,9 @@ module ForemanFogProxmox
       type ||= 'qemu'
       case type
       when 'lxc'
-        return new_volume_server(attr)
+        new_volume_server(attr)
       when 'qemu'
-        return new_volume_container(attr)
+        new_volume_container(attr)
       end
     end
 
@@ -74,9 +74,9 @@ module ForemanFogProxmox
       type ||= 'qemu'
       case type
       when 'lxc'
-        return new_container_interface(attr)
+        new_container_interface(attr)
       when 'qemu'
-        return new_server_interface(attr)
+        new_server_interface(attr)
       end
     end
 

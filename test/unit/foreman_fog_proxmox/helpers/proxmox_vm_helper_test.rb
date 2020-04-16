@@ -209,7 +209,7 @@ module ForemanFogProxmox
 
       it '#container swap empty' do
         convert_memory_size(host_container['config_attributes'], 'swap')
-        assert host_container['config_attributes']['swap'].empty?
+        assert_empty host_container['config_attributes']['swap']
       end
     end
   end

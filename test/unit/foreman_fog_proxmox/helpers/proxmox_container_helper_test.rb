@@ -187,17 +187,17 @@ module ForemanFogProxmox
         deletes = []
         nics = []
         add_container_interface(host_delete['interfaces_attributes']['0'], deletes, nics)
-        assert nics.empty?
+        assert_empty nics
         assert_equal 1, deletes.length
         assert_equal 'net0', deletes[0]
       end
 
       test '#interfaces' do
         interfaces_to_add, interfaces_to_delete = parse_container_interfaces(host['interfaces_attributes'])
-        assert interfaces_to_delete.empty?
+        assert_empty interfaces_to_delete
         assert_equal 2, interfaces_to_add.length
-        assert interfaces_to_add.include?(net0: 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876')
-        assert interfaces_to_add.include?(net1: 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876')
+        assert_includes interfaces_to_add, { net0: 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876' }
+        assert_includes interfaces_to_add, { net1: 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876' }
       end
     end
   end

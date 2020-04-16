@@ -33,14 +33,14 @@ Metrics/ModuleLength:
 Metrics/PerceivedComplexity:
   Max: 11
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 200 # TODO: discuss and set this
 
 Naming/MethodName:
   Description: From foreman's rubocop-config. Neccessary for overloading methods in foreman.
   Enabled: false
   
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   MinNameLength: 1
 
 Style/FrozenStringLiteralComment:

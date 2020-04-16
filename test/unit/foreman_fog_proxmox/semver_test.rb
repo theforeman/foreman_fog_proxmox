@@ -57,7 +57,6 @@ module ForemanFogProxmox
         end
       end
     end
-    # rubocop:disable Lint/UselessComparison
     describe 'semverclass comparators' do
       it '#5.3.0 <= 5.4.3 returns true' do
         assert ForemanFogProxmox::Semver.to_semver('5.3.0') <= ForemanFogProxmox::Semver.to_semver('5.4.3')
@@ -78,7 +77,7 @@ module ForemanFogProxmox
         assert ForemanFogProxmox::Semver.to_semver('1.0.10') <= ForemanFogProxmox::Semver.to_semver('1.0.20')
       end
       it '#1.2.3-beta == 1.2.3-beta returns true' do
-        assert ForemanFogProxmox::Semver.to_semver('1.2.3-beta') == ForemanFogProxmox::Semver.to_semver('1.2.3-beta')
+        assert_equal ForemanFogProxmox::Semver.to_semver('1.2.3-beta'), ForemanFogProxmox::Semver.to_semver('1.2.3-beta')
       end
       it '#1.2.3-beta >= 1.-beta raises ArgumentError' do
         assert_raises ArgumentError do
@@ -101,13 +100,12 @@ module ForemanFogProxmox
         assert_equal 20, ForemanFogProxmox::Semver.to_semver('1.20.0').minor
         assert_equal 0, ForemanFogProxmox::Semver.to_semver('1.20.0').patch
         assert ForemanFogProxmox::Semver.to_semver('0.10.2').major < ForemanFogProxmox::Semver.to_semver('1.20.0').major
-        assert_equal false, ForemanFogProxmox::Semver.to_semver('0.10.2').major == ForemanFogProxmox::Semver.to_semver('1.20.0').major
-        assert_equal false, ForemanFogProxmox::Semver.to_semver('0.10.2').minor == ForemanFogProxmox::Semver.to_semver('1.20.0').minor
+        assert_not ForemanFogProxmox::Semver.to_semver('0.10.2').major == ForemanFogProxmox::Semver.to_semver('1.20.0').major
+        assert_not ForemanFogProxmox::Semver.to_semver('0.10.2').minor == ForemanFogProxmox::Semver.to_semver('1.20.0').minor
         assert ForemanFogProxmox::Semver.to_semver('0.10.2').minor < ForemanFogProxmox::Semver.to_semver('1.20.0').minor
         assert ForemanFogProxmox::Semver.to_semver('0.10.2').patch > ForemanFogProxmox::Semver.to_semver('1.20.0').patch
         assert ForemanFogProxmox::Semver.to_semver('0.10.2') < ForemanFogProxmox::Semver.to_semver('1.20.0')
       end
     end
-    # rubocop:enable Lint/UselessComparison
   end
 end

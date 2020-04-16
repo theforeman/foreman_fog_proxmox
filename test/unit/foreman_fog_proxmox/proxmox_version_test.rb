@@ -72,22 +72,22 @@ module ForemanFogProxmox
 
       it 'is true with 5.4-3' do
         @identity_client.stubs(:read_version).returns(supported_version)
-        assert_equal true, @cr.version_suitable?
+        assert @cr.version_suitable?
       end
 
       it 'is true with 6.0-1' do
         @identity_client.stubs(:read_version).returns(supported_6_version)
-        assert_equal true, @cr.version_suitable?
+        assert @cr.version_suitable?
       end
 
       it 'is true with 6.1-3' do
         @identity_client.stubs(:read_version).returns(supported_6_1_version)
-        assert_equal true, @cr.version_suitable?
+        assert @cr.version_suitable?
       end
 
       it 'is false with 5.2-2' do
         @identity_client.stubs(:read_version).returns(unsupported_version)
-        assert_equal false, @cr.version_suitable?
+        assert_not @cr.version_suitable?
       end
     end
   end

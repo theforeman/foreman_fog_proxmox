@@ -111,7 +111,7 @@ module ForemanFogProxmox
         interfaces_to_delete = []
         interfaces_to_add = []
         add_server_interface(host['interfaces_attributes']['0'], interfaces_to_delete, interfaces_to_add)
-        assert interfaces_to_delete.empty?
+        assert_empty interfaces_to_delete
         assert_equal 1, interfaces_to_add.length
         assert interfaces_to_add[0].key?(:net0)
         assert_equal 'model=virtio,bridge=vmbr0,firewall=0,link_down=0', interfaces_to_add[0][:net0]
@@ -121,7 +121,7 @@ module ForemanFogProxmox
         interfaces_to_delete = []
         interfaces_to_add = []
         add_server_interface(host['interfaces_attributes']['1'], interfaces_to_delete, interfaces_to_add)
-        assert interfaces_to_delete.empty?
+        assert_empty interfaces_to_delete
         assert_equal 1, interfaces_to_add.length
         assert interfaces_to_add[0].key?(:net1)
         assert_equal 'model=e1000,bridge=vmbr0,firewall=0,link_down=0', interfaces_to_add[0][:net1]
@@ -131,17 +131,17 @@ module ForemanFogProxmox
         interfaces_to_delete = []
         interfaces_to_add = []
         add_server_interface(host_delete['interfaces_attributes']['0'], interfaces_to_delete, interfaces_to_add)
-        assert interfaces_to_add.empty?
+        assert_empty interfaces_to_add
         assert_equal 1, interfaces_to_delete.length
         assert_equal 'net0', interfaces_to_delete[0]
       end
 
       test '#interfaces' do
         interfaces_to_add, interfaces_to_delete = parse_server_interfaces(host['interfaces_attributes'])
-        assert interfaces_to_delete.empty?
+        assert_empty interfaces_to_delete
         assert_equal 2, interfaces_to_add.length
-        assert interfaces_to_add.include?(net0: 'model=virtio,bridge=vmbr0,firewall=0,link_down=0')
-        assert interfaces_to_add.include?(net1: 'model=e1000,bridge=vmbr0,firewall=0,link_down=0')
+        assert_includes interfaces_to_add, { net0: 'model=virtio,bridge=vmbr0,firewall=0,link_down=0' }
+        assert_includes interfaces_to_add, { net1: 'model=e1000,bridge=vmbr0,firewall=0,link_down=0' }
       end
     end
   end

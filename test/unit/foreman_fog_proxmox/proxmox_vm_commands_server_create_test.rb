@@ -69,6 +69,20 @@ module ForemanFogProxmox
         cr.create_vm(args)
       end
 
+      it 'creates server within pool' do
+        args = { vmid: '100', type: 'qemu', node_id: 'pve', start_after_create: '0', pool: 'pool1' }
+        servers = mock('servers')
+        servers.stubs(:id_valid?).returns(true)
+        cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
+        cr.stubs(:convert_sizes).with(args)
+        cr.stubs(:parse_server_vm).with(args).returns(args)
+        vm = mock('vm')
+        servers.stubs(:create).with(args).returns(vm)
+        cr.stubs(:find_vm_by_uuid).with((args[:vmid]).to_s).returns(vm)
+        cr.stubs(:start_on_boot).with(vm, args).returns(vm)
+        cr.create_vm(args)
+      end
+
       it 'clones server' do
         args = { vmid: '100', type: 'qemu', image_id: '999', name: 'name' }
         servers = mock('servers')

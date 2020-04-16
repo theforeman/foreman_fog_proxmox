@@ -75,6 +75,12 @@ module ForemanFogProxmox
       client = mock('client')
       client.stubs(:nodes).returns(nodes)
       cr.stubs(:client).returns(client)
+      identity_client = mock('identity_client')
+      pools = mock('pools')
+      pools.stubs(:select).returns([])
+      pools.stubs(:all).returns([])
+      identity_client.stubs(:pools).returns(pools)
+      cr.stubs(:identity_client).returns(identity_client)
       cr
     end
   end

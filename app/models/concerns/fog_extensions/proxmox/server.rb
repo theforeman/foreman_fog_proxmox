@@ -77,6 +77,7 @@ module FogExtensions
       end
 
       delegate :vga, to: :config
+      delegate :pool, to: :config
 
       def interfaces_attributes=(attrs); end
 

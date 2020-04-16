@@ -20,6 +20,7 @@
 module ForemanFogProxmox
   module ProxmoxVmCommands
     include ProxmoxVolumes
+    include ProxmoxPools
 
     def start_on_boot(vm, args)
       startonboot = args[:start_after_create].blank? ? false : Foreman::Cast.to_bool(args[:start_after_create])
@@ -100,11 +101,13 @@ module ForemanFogProxmox
         volumes_attributes&.each_value { |volume_attributes| save_volume(vm, volume_attributes) }
         parsed_attr = vm.container? ? parse_container_vm(new_attributes.merge(type: vm.type)) : parse_server_vm(new_attributes.merge(type: vm.type))
         logger.debug("parsed_attr=#{parsed_attr}")
-        config_attributes = parsed_attr.reject { |key, _value| [:vmid, :templated, :ostemplate, :ostemplate_file, :ostemplate_storage, :volumes_attributes].include? key.to_sym }
+        config_attributes = parsed_attr.reject { |key, _value| [:vmid, :templated, :ostemplate, :ostemplate_file, :ostemplate_storage, :volumes_attributes, :pool].include? key.to_sym }
         config_attributes = config_attributes.reject { |_key, value| ForemanFogProxmox::Value.empty?(value) }
         cdrom_attributes = parsed_attr.select { |_key, value| Fog::Proxmox::DiskHelper.cdrom?(value.to_s) }
         config_attributes = config_attributes.reject { |key, _value| Fog::Proxmox::DiskHelper.disk?(key) }
         vm.update(config_attributes.merge(cdrom_attributes))
+        poolid = new_attributes['pool'] if new_attributes.key?('pool')
+        update_pool(vm, poolid) if poolid
       end
       find_vm_by_uuid(uuid)
     end

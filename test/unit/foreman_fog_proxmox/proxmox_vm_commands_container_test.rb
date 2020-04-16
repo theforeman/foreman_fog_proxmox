@@ -253,6 +253,20 @@ module ForemanFogProxmox
         cr.create_vm(args)
       end
 
+      it 'creates container within pool' do
+        args = { vmid: '100', type: 'lxc', node_id: 'pve', start_after_create: '0', pool: 'pool1' }
+        servers = mock('servers')
+        servers.stubs(:id_valid?).returns(true)
+        containers = mock('containers')
+        vm = mock('vm')
+        containers.stubs(:create).with(vmid: 100, type: 'lxc', node_id: 'pve', start_after_create: '0', pool: 'pool1').returns(vm)
+        cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
+        cr.stubs(:convert_sizes).with(args)
+        cr.stubs(:parse_container_vm).with(args).returns(args)
+        cr.stubs(:find_vm_by_uuid).with((args[:vmid]).to_s).returns(vm)
+        cr.create_vm(args)
+      end
+
       it 'clones container' do
         args = { vmid: '100', type: 'lxc', image_id: '999', name: 'name' }
         servers = mock('servers')

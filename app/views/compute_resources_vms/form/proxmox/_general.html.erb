@@ -35,4 +35,5 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
       :label_size => "col-md-2" %>
     </div>
   <% end %>
+  <%= select_f f, :pool, compute_resource.pools, :poolid, :poolid, { :include_blank => true }, :label => _('Pool'), :label_size => "col-md-2", :required => false %>
 <% end %>

@@ -19,14 +19,11 @@
 
 module ForemanFogProxmox
   module ProxmoxVmQueries
+    include ProxmoxPools
+
     def nodes
       nodes = client.nodes.all if client
       nodes&.sort_by(&:node)
-    end
-
-    def pools
-      pools = identity_client.pools.all
-      pools.sort_by(&:poolid)
     end
 
     def storages(node_id = default_node_id, type = 'images')
@@ -65,12 +62,14 @@ module ForemanFogProxmox
     end
 
     def find_vm_in_servers_by_uuid(servers, uuid)
-      servers.get(uuid) if !uuid.nil? && !uuid.to_s.empty?
+      vm = servers.get(uuid) if !uuid.nil? && !uuid.to_s.empty?
+      pool_owner(vm) if vm
+      vm
     rescue Fog::Errors::NotFound
       nil
     rescue StandardError => e
       Foreman::Logging.exception(format(_('Failed retrieving proxmox server vm by vmid=%<vmid>s'), vmid: uuid), e)
-      raise(ActiveRecord::RecordNotFound)
+      raise(ActiveRecord::RecordNotFound, e)
     end
   end
 end

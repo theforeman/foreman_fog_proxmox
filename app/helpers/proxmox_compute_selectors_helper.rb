@@ -47,6 +47,15 @@ module ProxmoxComputeSelectorsHelper
      ForemanFogProxmox::OptionsSelect.new(name: 'VirtIO Block', id: 'virtio', range: 15)]
   end
 
+  def proxmox_scsi_controllers_map
+      [OpenStruct.new(id: 'lsi', name: 'LSI 53C895A (Default)'),
+       OpenStruct.new(id: 'lsi53c810', name: 'LSI 53C810'),
+       OpenStruct.new(id: 'virtio-scsi-pci', name: 'VirtIO SCSI'),
+       OpenStruct.new(id: 'virtio-scsi-single', name: 'VirtIO SCSI Single'),
+       OpenStruct.new(id: 'megasas', name: 'MegaRAID SAS 8708EM2'),
+       OpenStruct.new(id: 'pvscsi', name: 'VMware PVSCSI')]
+  end
+
   def proxmox_operating_systems_map
     [OpenStruct.new(id: 'other', name: 'Unspecified OS'),
      OpenStruct.new(id: 'wxp', name: 'Microsoft Windows XP'),

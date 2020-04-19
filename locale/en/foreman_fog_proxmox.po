@@ -238,6 +238,9 @@ msgstr ""
 msgid "Physical"
 msgstr ""
 
+msgid "Pool"
+msgstr ""
+
 msgid "Power"
 msgstr ""
 
@@ -263,6 +266,9 @@ msgid "Root password"
 msgstr ""
 
 msgid "Rootfs"
+msgstr ""
+
+msgid "SCSI Controller"
 msgstr ""
 
 msgid "SSL verify peer"
@@ -349,6 +355,9 @@ msgstr ""
 msgid "add new storage volume"
 msgstr ""
 
+msgid "add_vm_to_pool(%<poolid>s, %<vmid>s)"
+msgstr ""
+
 msgid "create_vm(): clone %<image_id>s in %<vmid>s"
 msgstr ""
 
@@ -364,6 +373,9 @@ msgstr ""
 msgid "failed to create vm: %<e>s"
 msgstr ""
 
+msgid "found vm: %<vmid>s member of pool: %<poolid>s"
+msgstr ""
+
 msgid "invalid vmid=%<vmid>s"
 msgstr ""
 
@@ -376,10 +388,16 @@ msgstr ""
 msgid "new_vm() vm.config=%<config>s"
 msgstr ""
 
+msgid "pool_owner(%<vmid>s)"
+msgstr ""
+
 msgid "remove network interface"
 msgstr ""
 
 msgid "remove storage volume"
+msgstr ""
+
+msgid "remove_vm_from_pool(%<poolid>s, %<vmid>s)"
 msgstr ""
 
 msgid "vmid of template vm."

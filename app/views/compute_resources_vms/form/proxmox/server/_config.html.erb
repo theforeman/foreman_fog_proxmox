@@ -41,11 +41,11 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= checkbox_f f, :spectre, :label => _('Spectre-CTRL') %>
 <% end %>
 <%= field_set_tag _("Memory"), :id => "server_config_memory", :class => 'hide', :disabled => !server do %>
-  <% ballooned = f.object.balloon == 1 %>
+  <% ballooned = f.object.ballooned %>
   <%= byte_size_f f, :memory, :class => "input-mini", :label => _('Memory'), :label_size => "col-md-2" %>
-  <%= byte_size_f f, :min_memory, :class => "input-mini", :label => _('Minimum memory'), :label_size => "col-md-2", :disabled => !ballooned %>
+  <%= byte_size_f f, :balloon, :class => "input-mini", :label => _('Minimum memory'), :label_size => "col-md-2", :disabled => !ballooned %>
   <%= counter_f f, :shares, :class => "input-mini", :label => _('Shares'), :label_size => "col-md-2", :disabled => !ballooned %>
-  <%= checkbox_f f, :balloon, :label => _('Ballooning Device'), :onchange => 'balloonSelected(this)' %>
+  <%= checkbox_f f, :ballooned, :label => _('Ballooning Device?'), :onchange => 'balloonedSelected(this)' %>
 <% end %>
 <%= field_set_tag _("CD-ROM"), :id => "server_config_cdrom", :class => 'hide', :disabled => !server do %>
   <%= radio_button_f f, :cdrom, :value => 'none', :text => _('None'), :onclick => 'cdromSelected(this)' %>

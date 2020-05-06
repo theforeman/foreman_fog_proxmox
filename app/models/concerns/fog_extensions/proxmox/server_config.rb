@@ -66,6 +66,11 @@ module FogExtensions
       def rootfs_file
         disks.rootfs&.volid
       end
+
+      def ballooned
+        false unless balloon
+        balloon < memory if balloon
+      end
     end
   end
 end

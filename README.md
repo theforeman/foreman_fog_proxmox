@@ -130,8 +130,8 @@ git clone https://github.com/theforeman/foreman -b develop
 * Add this line:
 
 ```ruby
-gem 'foreman_fog_proxmox', :path => '/your_path_to/foreman_fog_proxmox'
-gem 'fog-proxmox', :path => '/your_path_to/fog-proxmox' # optional if you need to modify fog-proxmox code too
+gem 'foreman_fog_proxmox', :path => '../../theforeman/foreman_fog_proxmox'
+gem 'fog-proxmox', :path => '../../fog/fog-proxmox' # optional if you need to modify fog-proxmox code too
 gem 'ruby-debug-ide' # dev
 gem 'debase' # dev
 gem 'simplecov' # test
@@ -140,7 +140,8 @@ gem 'simplecov' # test
 * In foreman directory, install dependencies:
 
 ```shell
-bundle install --without libvirt postgresql mysql2
+bundle config set without 'libvirt ovirt postgresql mysql2'
+bundle install
 ```
 
 ```shell

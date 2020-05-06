@@ -59,7 +59,7 @@ module ProxmoxVmHelper
 
   def convert_memory_sizes(args)
     convert_memory_size(args['config_attributes'], 'memory')
-    convert_memory_size(args['config_attributes'], 'min_memory')
+    convert_memory_size(args['config_attributes'], 'balloon')
     convert_memory_size(args['config_attributes'], 'shares')
     convert_memory_size(args['config_attributes'], 'swap')
   end
@@ -70,7 +70,7 @@ module ProxmoxVmHelper
 
   def convert_sizes(args)
     convert_memory_size(args['config_attributes'], 'memory')
-    convert_memory_size(args['config_attributes'], 'min_memory')
+    convert_memory_size(args['config_attributes'], 'balloon')
     convert_memory_size(args['config_attributes'], 'shares')
     convert_memory_size(args['config_attributes'], 'swap')
     args['volumes_attributes'].each_value { |value| value['size'] = (value['size'].to_i / GIGA).to_s unless ForemanFogProxmox::Value.empty?(value['size']) }

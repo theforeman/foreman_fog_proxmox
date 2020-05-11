@@ -1,6 +1,6 @@
 language: ruby
 rvm:
-  - 2.6.5
+  - 2.6.6
 sudo: required
 services: 
   - docker
@@ -9,6 +9,7 @@ addons:
     packages:
       - docker-ce
 install:
+  - docker run --name foreman-db -e POSTGRES_DB="foreman-test" -e POSTGRES_USER=foreman -e POSTGRES_PASSWORD=foreman -p 5432:5432 -d postgres
   - docker build -t foreman/proxmox .
 script:
   - docker run foreman/proxmox

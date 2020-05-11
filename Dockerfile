@@ -15,10 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-FROM ruby:2.6.5
+FROM ruby:2.6.6
 LABEL MAINTAINER="tristan.robert.44@gmail.com"
 RUN apt-get update -qq && apt-get install -y build-essential libpq-dev libsystemd-dev libvirt-dev
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt-get install -y nodejs
 RUN mkdir /usr/local/foreman_fog_proxmox
 WORKDIR /usr/local/foreman_fog_proxmox
@@ -39,6 +39,6 @@ ENV RAILS_ENV=test
 ENV DISABLE_SPRING=true
 RUN bundle install --jobs 20
 RUN bundle exec bin/rake db:migrate
-RUN bundle exec bin/rake db:seed
+RUN bundle exec bin/rake db:seed assets:precompile locale:pack webpack:compile
 ENTRYPOINT ["bundle", "exec"]
 CMD ["bin/rake", "foreman_fog_proxmox:rubocop", "test:foreman_fog_proxmox"]

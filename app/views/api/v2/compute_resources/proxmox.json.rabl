@@ -1,3 +1,3 @@
 # frozen_string_literal: true
 
-attributes :user, :url, :ssl_verify_peer, :disable_proxy
+attributes :url, :user, :password, :ssl_verify_peer, :ssl_certs, :renew

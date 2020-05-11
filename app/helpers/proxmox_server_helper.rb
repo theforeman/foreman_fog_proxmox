@@ -38,7 +38,7 @@ module ProxmoxServerHelper
     volumes = parse_server_volumes(vols)
     cpu_a = ['cpu_type', 'spectre', 'pcid']
     cpu = parse_server_cpu(config.select { |key, _value| cpu_a.include? key })
-    memory_a = ['memory', 'ballooned', 'balloon', 'shares']
+    memory_a = ['memory', 'balloon', 'shares']
     memory = parse_server_memory(config.select { |key, _value| memory_a.include? key })
     interfaces_attributes = args['interfaces_attributes']
     interfaces_to_add, interfaces_to_delete = parse_server_interfaces(interfaces_attributes)
@@ -64,11 +64,8 @@ module ProxmoxServerHelper
   def parse_server_memory(args)
     memory = {}
     memory.store(:memory, args['memory'].to_i) if args['memory']
-    ballooned = args['ballooned'].to_i == 1
-    if ballooned
-      memory.store(:shares, args['shares'].to_i) if args['shares']
-      memory.store(:balloon, args['balloon'].to_i) if args['balloon']
-    end
+    memory.store(:shares, args['shares'].to_i) if args['shares']
+    memory.store(:balloon, args['balloon'].to_i) if args['balloon']
     logger.debug("parse_server_memory(): #{memory}")
     memory
   end

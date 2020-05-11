@@ -32,9 +32,6 @@ msgstr ""
 msgid "Average load (x100)"
 msgstr ""
 
-msgid "Ballooning Device"
-msgstr ""
-
 msgid "Boot device order"
 msgstr ""
 

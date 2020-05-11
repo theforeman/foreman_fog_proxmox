@@ -123,25 +123,3 @@ function computeControllerMaxDevice(controller) {
       return 1;
   }
 }
-
-function balloonedSelected(item) {
-  var ballooned = $(item).is(':checked');
-  var memory_f = $("input[name$='[config_attributes][memory]']:hidden");
-  var balloon_f = $("input[id$='config_attributes_balloon']");
-  var balloon_hidden_f = $("input[name$='[config_attributes][balloon]']:hidden");
-  var shares_f = $("input[id$='config_attributes_shares']");
-  var shares_hidden_f = $("input[name$='[config_attributes][shares]']:hidden");
-  if (ballooned) {
-    balloon_f.removeAttr('disabled');
-    shares_f.removeAttr('disabled');
-    var max = memory_f.val();
-    console.log("max=" + max);
-    balloon_f.attr('data-soft-max', max);
-  } else {
-    balloon_f.attr('disabled', 'disabled');
-    balloon_hidden_f.attr('value', '');
-    shares_f.attr('disabled', 'disabled');
-    shares_hidden_f.attr('value', '');
-  }
-  tfm.numFields.initAll();
-}

@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: foreman_fog_proxmox 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-19 16:02+0200\n"
-"PO-Revision-Date: 2020-04-19 16:02+0200\n"
+"POT-Creation-Date: 2020-05-11 16:25+0200\n"
+"PO-Revision-Date: 2020-05-11 16:25+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -229,7 +229,7 @@ msgid "Start after creation?"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/_general.html.erb:19
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:38
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:36
 msgid "Image"
 msgstr ""
 
@@ -267,7 +267,7 @@ msgstr ""
 #: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:16
 #: ../app/views/compute_resources_vms/form/proxmox/server/_advanced.html.erb:10
 #: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:28
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:30
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:29
 #: ../app/views/compute_resources_vms/index/_proxmox.html.erb:10
 msgid "Memory"
 msgstr ""
@@ -339,13 +339,13 @@ msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:24
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:44
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:42
 msgid "Operating System"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:25
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:45
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:43
 msgid "OS type"
 msgstr ""
 
@@ -437,7 +437,7 @@ msgstr ""
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_volume_mp.html.erb:8
 #: ../app/views/compute_resources_vms/form/proxmox/container/_volume_rootfs.html.erb:7
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:40
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:38
 #: ../app/views/compute_resources_vms/form/proxmox/server/_volume.html.erb:8
 msgid "Storage"
 msgstr ""
@@ -526,31 +526,27 @@ msgstr ""
 msgid "Spectre-CTRL"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:31
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:30
 msgid "Minimum memory"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:32
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:31
 msgid "Shares"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:33
-msgid "Ballooning Device"
-msgstr ""
-
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:35
 msgid "CD-ROM"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:36
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:34
 msgid "None"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:37
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:35
 msgid "Physical"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:41
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:39
 msgid "Image ISO"
 msgstr ""
 

@@ -35,9 +35,8 @@ module ForemanFogProxmox
           'type' => 'qemu',
           'config_attributes' => {
             'memory' => '536870912',
-            'min_memory' => '',
-            'ballon' => '',
-            'shares' => '',
+            'balloon' => '268435456',
+            'shares' => '5',
             'cpu_type' => 'kvm64',
             'spectre' => '1',
             'pcid' => '0',
@@ -83,6 +82,8 @@ module ForemanFogProxmox
         assert_equal '1', vm['sockets']
         assert_equal 'cputype=kvm64,flags=+spec-ctrl', vm[:cpu]
         assert_equal 536_870_912, vm[:memory]
+        assert_equal 268_435_456, vm[:balloon]
+        assert_equal 5, vm[:shares]
         assert_equal 'local-lvm:1073741824,cache=none', vm[:scsi0]
         assert_equal 'model=virtio,bridge=vmbr0,firewall=0,link_down=0', vm[:net0]
         assert_not vm.key?(:config)

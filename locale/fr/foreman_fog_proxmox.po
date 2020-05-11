@@ -32,9 +32,6 @@ msgstr ""
 msgid "Average load (x100)"
 msgstr "Charge moyenne du serveur (x100)"
 
-msgid "Ballooning Device"
-msgstr "Périphérique à gonflement"
-
 msgid "Boot device order"
 msgstr ""
 

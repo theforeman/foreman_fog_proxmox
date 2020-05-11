@@ -140,7 +140,7 @@ gem 'simplecov' # test
 * In foreman directory, install dependencies:
 
 ```shell
-bundle config set without 'libvirt ovirt postgresql mysql2'
+bundle config set without 'libvirt ovirt mysql2'
 bundle install
 ```
 
@@ -154,14 +154,25 @@ npm install
 cp config/settings.yaml.test config/settings.yaml
 ```
 
-* Install foreman database (sqlite is default in rails development):
+* Install foreman database in postgresql (sqlite is no more default in rails development):
 
 ```shell
 cp config/model.mappings.example config/model.mappings
 cp config/database.yml.example config/database.yml
+```
+
+add these lines to config/database.yml:
+
+```yaml
+    username: foreman
+    password: foreman
+```
+
+```shell
 cp config/ignored_environments.yml.sample config/ignored_environments.yml
+docker run --name foreman-db -e POSTGRES_DB=foreman -e POSTGRES_USER=foreman -e POSTGRES_PASSWORD=foreman -p 5432:5432 -d postgres
 bundle exec bin/rake db:migrate
-bundle exec bin/rake db:seed
+bundle exec bin/rake db:seed assets:precompile locale:pack webpack:compile
 ```
 
 * You can reset admin password if needed:
@@ -171,6 +182,13 @@ bundle exec bin/rake permissions:reset
 ```
 
 * You should write tests and you can execute those specific to this plugin:
+
+first, create database `foreman-test` with psql commands:
+
+```shell
+docker exec -it foreman-db psql -U foreman
+foreman=# create database "foreman-test";
+```
 
 all:
 
@@ -210,16 +228,28 @@ bundle exec bin/rake plugin:assets:precompile[foreman_fog_proxmox]
 bundle exec bin/rake plugin:gettext[foreman_fog_proxmox]
 ```
 
-* In foreman directory, run rails server:
-
-```shell
-bundle exec bin/rails server
-```
-
 * In foreman directory, run in a new terminal the webpack-dev-server:
 
 ```shell
 ./node_modules/.bin/webpack-dev-server --config config/webpack.config.js
+```
+
+* Or without webpack-dev-server, add this line in config/settings.yml:
+
+```yml
+:webpack_dev_server: false
+```
+
+then compile webpack assets:
+
+```shell
+bundle exec bin/rake webpack:compile
+```
+
+* In foreman directory, run rails server:
+
+```shell
+bundle exec bin/rails server
 ```
 
 * Or you can launch all together:

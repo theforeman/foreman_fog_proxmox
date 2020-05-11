@@ -38,7 +38,3 @@ RUN cp /usr/local/foreman/config/ignored_environments.yml.sample /usr/local/fore
 ENV RAILS_ENV=test
 ENV DISABLE_SPRING=true
 RUN bundle install --jobs 20
-RUN bundle exec bin/rake db:migrate
-RUN bundle exec bin/rake db:seed assets:precompile locale:pack webpack:compile
-ENTRYPOINT ["bundle", "exec"]
-CMD ["bin/rake", "foreman_fog_proxmox:rubocop", "test:foreman_fog_proxmox"]

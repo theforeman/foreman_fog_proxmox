@@ -8,8 +8,9 @@ addons:
   apt:
     packages:
       - docker-ce
-install:
-  - docker run --name foreman-db -e POSTGRES_DB="foreman-test" -e POSTGRES_USER=foreman -e POSTGRES_PASSWORD=foreman -p 5432:5432 -d postgres
-  - docker build -t foreman/proxmox .
+before_install:
+  - docker run -e POSTGRES_DB="foreman-test" -e POSTGRES_USER=foreman -e POSTGRES_PASSWORD=foreman -p 127.0.0.1:5432:5432 -d postgres
+  - docker run foreman/proxmox /bin/sh -c "bundle exec bin/rake db:migrate"
+  - docker run foreman/proxmox /bin/sh -c "bundle exec bin/rake db:seed assets:precompile locale:pack webpack:compile"
 script:
-  - docker run foreman/proxmox
+  - docker run foreman/proxmox /bin/sh -c "bundle exec bin/rake foreman_fog_proxmox:rubocop test:foreman_fog_proxmox"

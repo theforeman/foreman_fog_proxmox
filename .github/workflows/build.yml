@@ -15,9 +15,9 @@ jobs:
         image: postgres:12
         ports: ['5432:5432']
         env:
-          POSTGRES_USER=foreman
-          POSTGRES_PASSWORD=foreman
-          POSTGRES_DB=foreman
+          POSTGRES_USER: foreman
+          POSTGRES_PASSWORD: foreman
+          POSTGRES_DB: foreman
         options: >-
           --health-cmd pg_isready
           --health-interval 10s

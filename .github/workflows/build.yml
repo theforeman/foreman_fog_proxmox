@@ -1,4 +1,4 @@
-name: CI
+name: CI test foreman plugin
 
 on:
   push:
@@ -14,10 +14,10 @@ jobs:
       db:
         image: postgres:12
         ports: ['5432:5432']
-        environment:
-            - POSTGRES_USER=foreman
-            - POSTGRES_PASSWORD=foreman
-            - POSTGRES_DB=foreman
+        env:
+          POSTGRES_USER=foreman
+          POSTGRES_PASSWORD=foreman
+          POSTGRES_DB=foreman
         options: >-
           --health-cmd pg_isready
           --health-interval 10s

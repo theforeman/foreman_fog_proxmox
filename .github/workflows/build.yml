@@ -1,10 +1,6 @@
 name: CI test foreman plugin
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -53,11 +49,9 @@ jobs:
       run: |
         sudo apt-get -yqq install libpq-dev
         gem install bundler
-        echo "gem 'foreman_fog_proxmox', :path => '../foreman_fog_proxmox'\n" > bundler.d/Gemfile.local.rb
-        echo "gem 'fog-proxmox', :path => '../fog-proxmox'\n" >> bundler.d/Gemfile.local.rb
-        echo "gem 'simplecov'" >> bundler.d/Gemfile.local.rb
+        echo -n -e "gem 'foreman_fog_proxmox', :path => '../foreman_fog_proxmox'\n gem 'fog-proxmox', :path => '../fog-proxmox'\n gem 'simplecov'" > bundler.d/Gemfile.local.rb
         cp config/settings.yaml.test config/settings.yaml
-        echo "test:\n adapter: postgresql \n port: 5432 \n database: foreman \n encoding: utf8 \n pool: 10" > config/database.yml
+        echo -n -e "test:\n adapter: postgresql \n port: 5432 \n database: foreman \n encoding: utf8 \n pool: 10" > config/database.yml
         cp config/model.mappings.example config/model.mappings
         cp config/ignored_environments.yml.sample config/ignored_environments.yml
         bundle install --jobs 4 --retry 3

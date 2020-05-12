@@ -47,7 +47,7 @@ jobs:
         DISABLE_SPRING: true
       working-directory: ./foreman 
       run: |
-        sudo apt-get -yqq install libpq-dev libsystemd-dev libvirt-dev
+        sudo apt-get -yqq install build-essential libpq-dev libsystemd-dev libvirt-dev libcurl-dev
         gem install bundler
         echo -n -e "gem 'foreman_fog_proxmox', :path => '../foreman_fog_proxmox'\n gem 'fog-proxmox', :path => '../fog-proxmox'\n gem 'simplecov'" > bundler.d/Gemfile.local.rb
         cp config/settings.yaml.test config/settings.yaml

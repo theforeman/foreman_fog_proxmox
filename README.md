@@ -1,6 +1,6 @@
 ![ForemanFogProxmox](.github/images/foremanproxmox.png)
 
-[![Build Status](https://travis-ci.com/theforeman/foreman_fog_proxmox.svg?branch=master)](https://travis-ci.com/theforeman/foreman_fog_proxmox)
+![CI](https://github.com/theforeman/foreman_fog_proxmox/workflows/CI/badge.svg)
 [![Maintainability](https://api.codeclimate.com/v1/badges/922162c278e0fa9207ba/maintainability)](https://codeclimate.com/github/theforeman/foreman_fog_proxmox/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/922162c278e0fa9207ba/test_coverage)](https://codeclimate.com/github/theforeman/foreman_fog_proxmox/test_coverage)
 [![Gem Version](https://badge.fury.io/rb/foreman_fog_proxmox.svg)](https://badge.fury.io/rb/foreman_fog_proxmox)
@@ -31,6 +31,7 @@ You can support the plugin development via the following methods:
 |>=0.9 |>=5.4|>=0.9.1|>=1.22|>=2.3|
 |>=0.10 |>=5.4|>=0.9.4|>=1.22|>=2.5|
 |>=0.11 |>=5.4|>=0.10|>=1.22|>=2.5|
+|>=0.12 |>=6.1|>=0.11|>=2.0|>=2.5|
 
 ## Installation
 

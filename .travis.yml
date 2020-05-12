@@ -5,13 +5,13 @@ sudo: required
 services: 
   - docker
   - postgresql
-before_script:
+before_install:
   - psql -c 'create user foreman;' -U postgres
   - psql -c 'create database "foreman-test";' -U postgres
   - psql -c 'GRANT ALL PRIVILEGES ON DATABASE foreman TO foreman;' -U postgres
-before_install:
+install:
   - docker build -t foreman/proxmox .
   - docker run foreman/proxmox /bin/sh -c "bundle exec bin/rake db:migrate"
   - docker run foreman/proxmox /bin/sh -c "bundle exec bin/rake db:seed assets:precompile locale:pack webpack:compile"
-script:
+script:  
   - docker run foreman/proxmox /bin/sh -c "bundle exec bin/rake foreman_fog_proxmox:rubocop test:foreman_fog_proxmox"

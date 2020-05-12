@@ -8,7 +8,7 @@ services:
 before_install:
   - psql -c 'create user foreman;' -U postgres
   - psql -c 'create database "foreman-test";' -U postgres
-  - psql -c 'GRANT ALL PRIVILEGES ON DATABASE foreman TO foreman;' -U postgres
+  - psql -c 'GRANT ALL PRIVILEGES ON DATABASE foreman-test TO foreman;' -U postgres
 install:
   - docker build -t foreman/proxmox .
   - docker run foreman/proxmox /bin/sh -c "bundle exec bin/rake db:migrate"

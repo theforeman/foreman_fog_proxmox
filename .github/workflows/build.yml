@@ -55,21 +55,21 @@ jobs:
       run: |
         sudo apt-get -yqq install libpq-dev
         gem install bundler
-        echo "gem 'foreman_fog_proxmox', :path => 'foreman_fog_proxmox'\n" > foreman/bundler.d/Gemfile.local.rb
-        echo "gem 'fog-proxmox', :path => 'fog-proxmox'\n" >> foreman/bundler.d/Gemfile.local.rb
-        echo "gem 'simplecov'" >> foreman/bundler.d/Gemfile.local.rb
-        cp foreman/config/settings.yaml.test foreman/config/settings.yaml
-        echo "test:\n adapter: postgresql \n port: 5432 \n database: foreman \n encoding: utf8 \n pool: 10" > foreman/config/database.yml
-        cp foreman/config/model.mappings.example foreman/config/model.mappings
-        cp foreman/config/ignored_environments.yml.sample foreman/config/ignored_environments.yml
+        echo "gem 'foreman_fog_proxmox', :path => './foreman_fog_proxmox'\n" > ./foreman/bundler.d/Gemfile.local.rb
+        echo "gem 'fog-proxmox', :path => './fog-proxmox'\n" >> ./foreman/bundler.d/Gemfile.local.rb
+        echo "gem 'simplecov'" >> ./foreman/bundler.d/Gemfile.local.rb
+        cp ./foreman/config/settings.yaml.test ./foreman/config/settings.yaml
+        echo "test:\n adapter: postgresql \n port: 5432 \n database: foreman \n encoding: utf8 \n pool: 10" > ./foreman/config/database.yml
+        cp ./foreman/config/model.mappings.example ./foreman/config/model.mappings
+        cp ./foreman/config/ignored_environments.yml.sample ./foreman/config/ignored_environments.yml
         bundle install --jobs 4 --retry 3
-        bundle exec foreman/bin/rake db:migrate
-        bundle exec foreman/bin/rake db:seed assets:precompile locale:pack webpack:compile
+        bundle exec ./foreman/bin/rake db:migrate
+        bundle exec ./foreman/bin/rake db:seed assets:precompile locale:pack webpack:compile
     - uses: actions/setup-node@v1
       with:
         node-version: '12'
     - run: npm install
     - name: Run test suite
       run: |
-        bundle exec foreman/bin/rake foreman_fog_proxmox:rubocop
-        bundle exec foreman/bin/rake test:foreman_fog_proxmox
+        bundle exec ./foreman/bin/rake foreman_fog_proxmox:rubocop
+        bundle exec ./foreman/bin/rake test:foreman_fog_proxmox

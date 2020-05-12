@@ -5,6 +5,15 @@ sudo: required
 services: 
   - docker
   - postgresql
+addons:
+  postgresql: "12"
+  apt:
+    packages:
+    - postgresql-12
+    - postgresql-client-12
+  env:
+    global:
+    - PGPORT=5432
 before_install:
   - psql -c 'create user foreman;' -U postgres
   - psql -c 'create database "foreman-test";' -U postgres

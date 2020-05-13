@@ -39,6 +39,10 @@ jobs:
         ruby-version: '2.6'
     - name: Setup foreman
       env:
+        PGHOST: 127.0.0.1
+        PGDB: foreman
+        PGPWD: foreman
+        PGUSER: foreman
         RAILS_ENV: test
         DISABLE_SPRING: true
       working-directory: ./foreman 

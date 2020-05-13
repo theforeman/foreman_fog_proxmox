@@ -63,6 +63,9 @@ jobs:
         node-version: '12'
     - name: Setup node assets
       working-directory: ./foreman
+      env:
+        RAILS_ENV: test
+        DISABLE_SPRING: true
       run: |
         npm install        
         bundle exec bin/rake assets:precompile locale:pack webpack:compile

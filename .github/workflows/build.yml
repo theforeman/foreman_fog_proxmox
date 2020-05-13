@@ -64,6 +64,10 @@ jobs:
     - name: Setup node assets
       working-directory: ./foreman
       env:
+        PGHOST: 127.0.0.1
+        PGDB: foreman
+        PGPWD: foreman
+        PGUSER: foreman
         RAILS_ENV: test
         DISABLE_SPRING: true
       run: |
@@ -71,6 +75,13 @@ jobs:
         bundle exec bin/rake assets:precompile locale:pack webpack:compile
     - name: Run test suite
       working-directory: ./foreman 
+      env:
+        PGHOST: 127.0.0.1
+        PGDB: foreman
+        PGPWD: foreman
+        PGUSER: foreman
+        RAILS_ENV: test
+        DISABLE_SPRING: true
       run: |
         bundle exec bin/rake foreman_fog_proxmox:rubocop
         bundle exec bin/rake test:foreman_fog_proxmox

@@ -85,3 +85,19 @@ jobs:
       run: |
         bundle exec bin/rake foreman_fog_proxmox:rubocop
         bundle exec bin/rake test:foreman_fog_proxmox
+  publish:
+      needs: [ build ]
+      name: publish
+      runs-on: ubuntu-latest
+      if: contains(github.ref, '/tags/') && contains(github.ref, '-release')
+      steps:
+        - name: Publish to RubyGems
+          env:
+            GEM_HOST_API_KEY: ${{secrets.RUBYGEMS_AUTH_TOKEN}}
+          run: |
+            mkdir -p $HOME/.gem
+            touch $HOME/.gem/credentials
+            chmod 0600 $HOME/.gem/credentials
+            printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
+            gem build *.gemspec
+            gem push *.gem

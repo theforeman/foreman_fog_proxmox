@@ -57,12 +57,15 @@ jobs:
         bundle config set without 'libvirt ovirt mysql2'
         bundle install --jobs 4 --retry 3
         bundle exec bin/rake db:migrate
-        bundle exec bin/rake db:seed assets:precompile locale:pack webpack:compile
+        bundle exec bin/rake db:seed
     - uses: actions/setup-node@v1
       with:
         node-version: '12'
-    - run: npm install
-      working-directory: ./foreman 
+    - name: Setup node assets
+      working-directory: ./foreman
+      run: |
+        npm install        
+        bundle exec bin/rake assets:precompile locale:pack webpack:compile
     - name: Run test suite
       working-directory: ./foreman 
       run: |

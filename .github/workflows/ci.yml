@@ -1,4 +1,4 @@
-name: CI test foreman plugin
+name: CI
 
 on: [push, pull_request]
 

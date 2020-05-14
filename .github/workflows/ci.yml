@@ -1,6 +1,9 @@
 name: CI
-
-on: [push, pull_request]
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
   build:
@@ -90,7 +93,7 @@ jobs:
       needs: [ build ]
       name: publish
       runs-on: ubuntu-latest
-      if: contains(github.ref, '/tags/') && contains(github.ref, '-release')
+      if: contains(github.ref, '/tags/v')
       steps:
         - uses: actions/checkout@v2
         - name: Set up Ruby 2.6

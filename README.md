@@ -155,7 +155,13 @@ npm install
 cp config/settings.yaml.test config/settings.yaml
 ```
 
-* Install foreman database in postgresql (sqlite is no more default in rails development):
+* SQLite is no more default rails dev or test database, instead add:
+
+```shell
+DATABASE_URL=nulldb://nohost
+```
+
+* (Optional) test and dev with postgresql database:
 
 ```shell
 cp config/model.mappings.example config/model.mappings
@@ -202,7 +208,7 @@ or just one:
 
 ```shell
 export DISABLE_SPRING=true
-bundle exec bin/rake test TEST=test/functional/compute_resources_controller_test.rb
+bundle exec bin/rake test TEST=test/functional/compute_resources_controller_test.rb DATABASE_URL=nulldb://nohost
 ```
 
 * Check code syntax with rubocop and foreman rules:

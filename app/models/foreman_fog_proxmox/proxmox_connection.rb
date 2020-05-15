@@ -22,7 +22,7 @@ require 'fog/proxmox'
 module ForemanFogProxmox
   module ProxmoxConnection
     def connection_options
-      opts = http_proxy ? { proxy: http_proxy.full_url } : { disable_proxy: 1 }
+      opts = super
       opts.store(:ssl_verify_peer, ssl_verify_peer)
       opts.store(:ssl_cert_store, certs_to_store) if Foreman::Cast.to_bool(ssl_verify_peer)
       opts

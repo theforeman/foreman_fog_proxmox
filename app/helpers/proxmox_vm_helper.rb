@@ -85,12 +85,4 @@ module ProxmoxVmHelper
     memory = (config_hash[key].to_i / MEGA).to_s == '0' ? config_hash[key] : (config_hash[key].to_i / MEGA).to_s
     config_hash.store(key, memory)
   end
-
-  def vm_type(host)
-    host.compute_object.type
-  end
-
-  def node_id(host)
-    host.compute_object.node_id
-  end
 end

@@ -39,7 +39,7 @@ module ForemanFogProxmox
     end
 
     def os_linux_types_mapping(host)
-      ['Debian', 'Redhat', 'Suse', 'Altlinux', 'Archlinux', 'CoreOs', 'Gentoo'].include?(host.operatingsystem.type) ? available_linux_operating_systems : []
+      ['Debian', 'Redhat', 'Suse', 'Altlinux', 'Archlinux', 'Coreos', 'Gentoo'].include?(host.operatingsystem.type) ? available_linux_operating_systems : []
     end
 
     def os_windows_types_mapping(host)

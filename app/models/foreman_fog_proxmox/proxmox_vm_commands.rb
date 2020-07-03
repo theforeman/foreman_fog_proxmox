@@ -32,6 +32,10 @@ module ForemanFogProxmox
       vmid = args[:vmid].to_i
       type = args[:type]
       node = client.nodes.get(args[:node_id])
+      if vmid == 0
+        vmid = node.servers.next_id
+        args = args.merge(vmid: vmid)
+      end
       raise ::Foreman::Exception, format(N_('invalid vmid=%<vmid>s'), vmid: vmid) unless node.servers.id_valid?(vmid)
 
       image_id = args[:image_id]

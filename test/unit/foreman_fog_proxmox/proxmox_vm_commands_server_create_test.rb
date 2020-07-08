@@ -31,7 +31,7 @@ module ForemanFogProxmox
     include ProxmoxVmHelper
 
     describe 'create_vm' do
-      it 'raises Foreman::Exception when vmid is invalid' do
+      it 'raises Foreman::Exception when vmid <= 100 and vmid > 0' do
         args = { vmid: '100' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(false)
@@ -40,6 +40,20 @@ module ForemanFogProxmox
           cr.create_vm(args)
         end
         assert err.message.end_with?('invalid vmid=100')
+      end
+
+      it 'computes next vmid when vmid == 0 and creates server' do
+        args = { vmid: '0', type: 'qemu', node_id: 'pve', start_after_create: '0' }
+        servers = mock('servers')
+        servers.stubs(:id_valid?).returns(true)
+        servers.stubs(:next_id).returns('101')
+        cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
+        cr.stubs(:convert_sizes).with(args)
+        cr.stubs(:parse_server_vm).with(args).returns(args)
+        servers.stubs(:create).with(args)
+        vm = mock('vm')
+        cr.stubs(:find_vm_by_uuid).with((args[:vmid]).to_s).returns(vm)
+        cr.create_vm(args)
       end
 
       it 'creates server without bootstart' do

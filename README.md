@@ -155,6 +155,12 @@ npm install
 cp config/settings.yaml.test config/settings.yaml
 ```
 
+add these lines to config/settings.yml:
+
+```yaml
+    :webpack_dev_server: true
+```
+
 * SQLite is no more default rails dev or test database, instead add:
 
 ```shell

@@ -96,7 +96,11 @@ module ForemanFogProxmox
         assert_equal volume_attributes, vm_attrs[:volumes_attributes]['0']
         assert_not vm_attrs[:config_attributes].key?(:interfaces)
         assert vm_attrs.key?(:interfaces_attributes)
-        assert_equal interface_attributes, vm_attrs[:interfaces_attributes]['0']
+        assert_equal interface_attributes[:id], vm_attrs[:interfaces_attributes]['0'][:id]
+        assert_equal interface_attributes[:id], vm_attrs[:interfaces_attributes]['0'][:identifier]
+        assert_equal interface_attributes[:macaddr], vm_attrs[:interfaces_attributes]['0'][:mac]
+        assert_equal interface_attributes[:model], vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:model]
+        assert_equal interface_attributes[:bridge], vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:bridge]
       end
 
       it 'converts a container to hash' do
@@ -109,7 +113,11 @@ module ForemanFogProxmox
         assert vm_attrs.key?(:volumes_attributes)
         assert_equal volume_attributes, vm_attrs[:volumes_attributes]['0']
         assert vm_attrs.key?(:interfaces_attributes)
-        assert_equal interface_attributes, vm_attrs[:interfaces_attributes]['0']
+        assert_equal interface_attributes[:id], vm_attrs[:interfaces_attributes]['0'][:id]
+        assert_equal interface_attributes[:id], vm_attrs[:interfaces_attributes]['0'][:identifier]
+        assert_equal interface_attributes[:name], vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:name]
+        assert_equal interface_attributes[:mac], vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:mac]
+        assert_equal interface_attributes[:bridge], vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:bridge]
       end
     end
   end

@@ -176,4 +176,9 @@ module ProxmoxComputeSelectorsHelper
      OpenStruct.new(id: 'rtl8139', name: 'Realtek RTL8139'),
      OpenStruct.new(id: 'vmxnet3', name: 'VMware vmxnet3')]
   end
+
+  def proxmox_bios_map
+    [OpenStruct.new(id: 'seabios', name: '(Default) Seabios'),
+     OpenStruct.new(id: 'ovmf', name: 'OVMF (UEFI)')]
+  end
 end

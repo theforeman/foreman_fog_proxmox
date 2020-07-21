@@ -141,6 +141,8 @@ gem 'simplecov' # test
 * In foreman directory, install dependencies:
 
 ```shell
+gem install bundler
+# prerequisites postgresql-client library on OS
 bundle config set without 'libvirt ovirt mysql2'
 bundle install
 ```

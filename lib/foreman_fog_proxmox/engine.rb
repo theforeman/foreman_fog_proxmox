@@ -45,7 +45,7 @@ module ForemanFogProxmox
         # add dashboard widget
         widget 'foreman_fog_proxmox_widget', name: N_('Foreman Fog Proxmox widget'), sizex: 8, sizey: 1
         security_block :foreman_fog_proxmox do
-          permission :view_compute_resource, { :foreman_fog_proxmox/compute_resources =>
+          permission :view_compute_resource, { :compute_resources =>
           [:ostemplates_by_node_and_storage, :isos_by_node_and_storage, :ostemplates_by_node, :isos_by_node, :storages_by_node, :iso_storages_by_node, :bridges_by_node] }
         end
       end

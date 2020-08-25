@@ -216,7 +216,7 @@ or just one:
 
 ```shell
 export DISABLE_SPRING=true
-bundle exec bin/rake test TEST=test/functional/compute_resources_controller_test.rb DATABASE_URL=nulldb://nohost
+bundle exec bin/rake test TEST=../foreman_fog_proxmox/test/functional/compute_resources_controller_test.rb DATABASE_URL=nulldb://nohost
 ```
 
 * Check code syntax with rubocop and foreman rules:

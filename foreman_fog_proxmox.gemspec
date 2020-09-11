@@ -36,6 +36,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'deface'
   s.add_dependency 'fog-proxmox', '~> 0.13'
   s.add_development_dependency 'rdoc'
-  s.add_development_dependency 'rubocop'
+  s.add_development_dependency 'rubocop', '~> 0.80.0'
+  s.add_development_dependency 'rubocop-rails', '~> 2.4.2'
   s.add_development_dependency 'simplecov'
 end

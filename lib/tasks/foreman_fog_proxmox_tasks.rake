@@ -32,6 +32,3 @@ namespace :foreman_fog_proxmox do
 end
 
 Rake::Task[:test].enhance ['test:foreman_fog_proxmox']
-
-load 'tasks/jenkins.rake'
-Rake::Task['jenkins:unit'].enhance ['test:foreman_fog_proxmox', 'foreman_fog_proxmox:rubocop'] if Rake::Task.task_defined?(:'jenkins:unit')

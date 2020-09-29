@@ -8,7 +8,7 @@ The form automatically changes.
 
 Server VM Proxmox config tab:
 
-![Create host server](images/create_host_server.png)
+![Create host server](images/create_host_sever.png)
 
 Advanced options could also be modified in Server VM Proxmox config tab.
 

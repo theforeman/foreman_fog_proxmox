@@ -114,8 +114,8 @@ Redhat, CentOS or Fedora users should also [setup Selinux](https://projects.thef
 ### Prerequisites
 
 * You need a Proxmox VE 5.4+ server running.
-* You need ruby >= 2.5. You can install it with [rbenv](https://github.com/rbenv/rbenv).
-* You also need nodejs in your dev machine to run webpack-dev-server. You can install it with [nvm](https://github.com/creationix/nvm).
+* You need ruby >= 2.5. You can install it with [asdf-vm](https://asdf-vm.com).
+* You also need nodejs in your dev machine to run webpack-dev-server. You can install it with [asdf-vm](https://asdf-vm.com).
 
 ### Platform
 

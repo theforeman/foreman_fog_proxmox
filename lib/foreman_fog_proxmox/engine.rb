@@ -93,7 +93,6 @@ module ForemanFogProxmox
 
       Fog::Proxmox::Compute::Server.include FogExtensions::Proxmox::Server
       Fog::Proxmox::Compute::ServerConfig.include FogExtensions::Proxmox::ServerConfig
-      Fog::Proxmox::Compute::Disk.include FogExtensions::Proxmox::Disk
       Fog::Proxmox::Compute::Interface.include FogExtensions::Proxmox::Interface
       Fog::Proxmox::Compute::Volume.include FogExtensions::Proxmox::Volume
       ::ComputeResourcesController.include ForemanFogProxmox::Controller::Parameters::ComputeResource

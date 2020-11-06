@@ -86,7 +86,7 @@ module FogExtensions
       def config_attributes=(attrs); end
 
       def templated?
-        volumes.any?(&:templated?)
+        volumes.any?(&:template?)
       end
     end
   end

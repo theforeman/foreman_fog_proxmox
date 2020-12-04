@@ -30,7 +30,7 @@ module ForemanFogProxmox
 
     def version
       v = identity_client.read_version
-      "#{v['version']}.#{v['release']}"
+      "#{v['version']}"
     end
   end
 end

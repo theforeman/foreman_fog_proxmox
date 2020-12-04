@@ -26,11 +26,11 @@ module ForemanFogProxmox
     include ComputeResourceTestHelpers
     include ProxmoxVmHelper
 
-    wrong_version = { version: '5.a', release: '1' }.with_indifferent_access
-    supported_version = { version: '5.4', release: '3' }.with_indifferent_access
-    supported_6_version = { version: '6.0', release: '1' }.with_indifferent_access
-    supported_6_1_version = { version: '6.1', release: '3' }.with_indifferent_access
-    unsupported_version = { version: '5.2', release: '2' }.with_indifferent_access
+    wrong_version = { version: '5.a', release: '5.a-1' }.with_indifferent_access
+    supported_version = { version: '5.4', release: '5.4-3' }.with_indifferent_access
+    supported_6_version = { version: '6.0', release: '6.0-1' }.with_indifferent_access
+    supported_6_1_version = { version: '6.1', release: '6.1-3' }.with_indifferent_access
+    unsupported_version = { version: '5.2', release: '5.2-2' }.with_indifferent_access
 
     describe 'version' do
       before do
@@ -41,17 +41,17 @@ module ForemanFogProxmox
 
       it 'returns 5.a.1 with 5.a-1' do
         @identity_client.stubs(:read_version).returns(wrong_version)
-        assert_equal '5.a.1', @cr.version
+        assert_equal '5.a', @cr.version
       end
 
       it 'returns 5.4.3 with 5.4-3' do
         @identity_client.stubs(:read_version).returns(supported_version)
-        assert_equal '5.4.3', @cr.version
+        assert_equal '5.4', @cr.version
       end
 
       it 'returns 5.2.2 with 5.2-2' do
         @identity_client.stubs(:read_version).returns(unsupported_version)
-        assert_equal '5.2.2', @cr.version
+        assert_equal '5.2', @cr.version
       end
     end
 
@@ -62,12 +62,12 @@ module ForemanFogProxmox
         @cr.stubs(:identity_client).returns(@identity_client)
       end
 
-      it 'raises error with 5.a.1' do
+      it 'raises error with 5.a' do
         @identity_client.stubs(:read_version).returns(wrong_version)
         err = assert_raises Foreman::Exception do
           @cr.version_suitable?
         end
-        assert err.message.end_with?('Proxmox version 5.a.1 is not semver suitable')
+        assert err.message.end_with?('Proxmox version 5.a is not semver suitable')
       end
 
       it 'is true with 5.4-3' do

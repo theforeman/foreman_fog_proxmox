@@ -96,13 +96,13 @@ module ForemanFogProxmox
       vm.stubs(:config).returns(config)
       vm.stubs(:type).returns('lxc')
       vm.stubs(:identity).returns(100)
-      vm.stubs(:node_id).returns('pve')
+      vm.stubs(:node_id).returns('proxmox')
       vm.stubs(:identity).returns(100)
       service = mock('service')
       vm_attributes = {
         vmid: 100,
         id: 'lxc/100',
-        node_id: 'pve',
+        node_id: 'proxmox',
         service: service,
         config: config,
         name: 'test',

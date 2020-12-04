@@ -84,12 +84,12 @@ module ForemanFogProxmox
     end
 
     config.to_prepare do
-      require 'fog/compute/proxmox/models/server'
-      require 'fog/compute/proxmox/models/server_config'
-      require 'fog/compute/proxmox/models/disk'
-      require 'fog/compute/proxmox/models/interface'
-      require 'fog/compute/proxmox/models/volume'
-      require 'fog/compute/proxmox/models/node'
+      require 'fog/proxmox/compute/models/server'
+      require 'fog/proxmox/compute/models/server_config'
+      require 'fog/proxmox/compute/models/disk'
+      require 'fog/proxmox/compute/models/interface'
+      require 'fog/proxmox/compute/models/volume'
+      require 'fog/proxmox/compute/models/node'
 
       Fog::Proxmox::Compute::Server.include FogExtensions::Proxmox::Server
       Fog::Proxmox::Compute::ServerConfig.include FogExtensions::Proxmox::ServerConfig

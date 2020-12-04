@@ -21,17 +21,17 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 </tr>
 <tr>
   <td><%= _("Version") %></td>
-  <td><%= @compute_resource.version%></td>
+  <td><%= @compute_resource.version %></td>
 </tr>
 <tr>
-  <td><%= _("Token has expired?") %></td>
-  <td><%= @compute_resource.token_expired?%></td>
+  <td><%= _("Authentication method") %></td>
+  <td><%= @compute_resource.auth_method %></td>
 </tr>
 <tr>
-  <td><%= _("Token expires on") %></td>
-  <td><%= @compute_resource.token_deadline%></td>
+  <td><%= _("User token expires") %></td>
+  <td><%= user_token_expiration_date(@compute_resource) %></td>
 </tr>
 <tr>
   <td><%= _("Cluster nodes") %></td>
-  <td><%= @compute_resource.nodes.collect { |node| node.node }%></td>
+  <td><%= @compute_resource.nodes.collect { |node| node.node } %></td>
 </tr>

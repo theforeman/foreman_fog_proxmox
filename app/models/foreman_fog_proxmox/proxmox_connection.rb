@@ -28,18 +28,22 @@ module ForemanFogProxmox
       opts
     end
 
-    def fog_credentials
-      credentials = { pve_url: url,
-                      pve_username: user,
-                      pve_password: password,
-                      connection_options: connection_options }
-      ticket = Fog::Proxmox.credentials[:ticket]
-      credentials.store(:pve_ticket, ticket) if renew
-      credentials
+    def access_ticket?
+      auth_method == 'access_ticket' 
+    end
+
+    def user_token?
+      auth_method == 'user_token' 
     end
 
     def credentials_valid?
-      errors[:url].empty? && errors[:user].empty? && errors[:user].include?('@') && errors[:password].empty? && errors[:node_id].empty?
+      errors[:url].empty? && errors[:auth_method].empty?
+      errors[:user].empty? && errors[:user].include?('@') && errors[:password].empty? && errors[:node_id].empty? if access_ticket?
+      errors[:user].empty? && errors[:user].include?('@') && errors[:token_id].empty? && errors[:token].empty? && errors[:node_id].empty? if user_token?
+    end
+
+    def current_user_token_expire
+      identity_client.expires
     end
 
     def test_connection(options = {})

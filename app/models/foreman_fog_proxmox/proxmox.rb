@@ -27,7 +27,6 @@ module ForemanFogProxmox
     include ProxmoxServerHelper
     include ProxmoxContainerHelper
     include ProxmoxConnection
-    include ProxmoxTokenExpiration
     include ProxmoxVmNew
     include ProxmoxVmCommands
     include ProxmoxVmQueries
@@ -39,9 +38,12 @@ module ForemanFogProxmox
     include ProxmoxVersion
     include ProxmoxConsole
     validates :url, :format => { :with => URI::DEFAULT_PARSER.make_regexp }, :presence => true
+    validates :auth_method, :presence => true, inclusion: { in: %w(access_ticket user_token),
+    message: "%{value} is not a valid authentication method" }
     validates :user, :format => { :with => /(\w+)[@]{1}(\w+)/ }, :presence => true
-    validates :password, :presence => true
-    before_create :test_connection
+    validates :password, :presence => true, if: :access_ticket? 
+    validates :token_id, :presence => true, if: :user_token?
+    validates :token, :presence => true, if: :user_token?
 
     def provided_attributes
       super.merge(
@@ -95,35 +97,53 @@ module ForemanFogProxmox
       attrs[:ssl_verify_peer] = value
     end
 
-    def renew
-      attrs[:renew].blank? ? false : Foreman::Cast.to_bool(attrs[:renew])
+    def auth_method
+      attrs[:auth_method] ? attrs[:auth_method] : 'access_ticket'
     end
 
-    def renew=(value)
-      attrs[:renew] = value
+    def auth_method=(value)
+      attrs[:auth_method] = value
+    end
+
+    def token_id
+      attrs[:token_id]
+    end
+
+    def token_id=(value)
+      attrs[:token_id] = value
+    end
+
+    def token
+      attrs[:token]
+    end
+
+    def token=(value)
+      attrs[:token] = value
     end
 
     private
 
+    def fog_credentials
+     hash = {
+      proxmox_url: url,
+      proxmox_auth_method: auth_method ? auth_method : 'access_ticket',
+      connection_options: connection_options
+     }
+     hash.merge!(proxmox_username: user, proxmox_password: password) if access_ticket?
+     hash.merge!(proxmox_userid: user, proxmox_tokenid: token_id, proxmox_token: token) if user_token?
+     hash
+    end
+
     def client
       @client ||= ::Fog::Proxmox::Compute.new(fog_credentials)
-    rescue StandardError => e
-      logger.error(e)
-      raise ::Foreman::Exception, format(N_('Failed retrieving proxmox compute client caused by %<e>s'), e: e)
     end
 
     def identity_client
       @identity_client ||= ::Fog::Proxmox::Identity.new(fog_credentials)
-    rescue StandardError => e
-      logger.error(e)
-      raise ::Foreman::Exception, format(N_('Failed retrieving proxmox identity client caused by %<e>s'), e: e)
     end
 
     def network_client
       @network_client ||= ::Fog::Proxmox::Network.new(fog_credentials)
-    rescue StandardError => e
-      logger.error(e)
-      raise ::Foreman::Exception, format(N_('Failed retrieving proxmox network client caused by %<e>s'), e: e)
     end
 
     def host

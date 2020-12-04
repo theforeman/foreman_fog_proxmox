@@ -17,13 +17,26 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <%= javascript_include_tag 'foreman_fog_proxmox/proxmox_compute_resource', "data-turbolinks-track" => true %>
 
-<% nodes = f.object.nodes rescue nil %>
-<% token_expired = f.object.token_expired? %>
-<% token_deadline = f.object.token_deadline %>
-<%= checkbox_f f, :renew, :label => _("Renew expired token ?"), :checked_value => '1', :label_help => _("Token expires on #{token_deadline}") %>
-<%= text_f f, :url, :help_block => _("e.g. https://127.0.0.1:8006/api2/json"), :help_inline_permanent => load_button_f(f, !!nodes, _("Test failed")) %>
-<%= text_f f, :user , :help_block => _("e.g. root@pam") %>
-<%= password_f f, :password, :keep_value => true, :unset => unset_password? %>
-<%= checkbox_f f, :ssl_verify_peer, :label => _("SSL verify peer"), :checked_value => '1', :onchange => "sslVerifyPeerSelected()" %>
-<%= textarea_f f, :ssl_certs, :label => _("X509 Certification Authorities"), :size => "col-md-4",
-  :placeholder => _("Optionally provide a CA, or a correctly ordered CA chain. If left blank, disable ssl_verify_peer.") %>
+<% user_token = f.object.auth_method == 'user_token' %>
+<% access_ticket = f.object.auth_method == 'access_ticket' %>
+<% ssl_verify_peer = f.object.ssl_verify_peer == '1' %>
+<%= select_f f, :auth_method, proxmox_auth_methods_map, :id, :name, { }, :label_help => _("Click Test connection button before changing it"), :label => _('Authentication method'), :label_size => "col-md-2", :required => true, :onchange => 'authMethodSelected();' %>
+<%= field_set_tag _("Common fields"), :id => "compute_ressource_common_field_set" do %>
+  <%= text_f f, :url, :help_block => _("e.g. https://127.0.0.1:8006/api2/json") %>
+  <%= text_f f, :user , :help_block => _("e.g. root@pam") %>
+<% end %>
+<%= field_set_tag _("User token fields"), :id => "compute_ressource_user_token_field_set", :class => ('hide' unless user_token), :disabled => !user_token do %>
+  <%= text_f f, :token_id, :label => _('User token id') %>
+  <%= text_f f, :token, :label => _('User token value') %>
+<% end %>
+<%= field_set_tag _("Access ticket fields"), :id => "compute_ressource_access_ticket_field_set", :class => ('hide' unless access_ticket), :disabled => !access_ticket do %>
+  <%= password_f f, :password, :keep_value => true, :unset => unset_password? %>
+<% end %>
+<%= field_set_tag _("SSL fields"), :id => "compute_ressource_ssl_field_set" do %>  
+  <%= checkbox_f f, :ssl_verify_peer, :label => _("SSL verify peer"), :label_help => _("Click Test connection button before changing it"), :checked_value => '1', :onchange => 'sslVerifyPeerSelected();' %>
+  <%= textarea_f f, :ssl_certs, :label => _("X509 Certification Authorities"), :size => "col-md-4",
+    :placeholder => _("Optionally provide a CA, or a correctly ordered CA chain. If left blank, disable ssl_verify_peer.") %>
+<% end %>
+<div class="col-md-offset-2">
+  <%= test_connection_button_f(f, (f.object.nodes rescue false)) %>
+</div>

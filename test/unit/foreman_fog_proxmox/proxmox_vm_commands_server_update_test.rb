@@ -44,9 +44,9 @@ module ForemanFogProxmox
         vm.stubs(:container?).returns(false)
         vm.stubs(:templated?).returns(false)
         vm.stubs(:type).returns('qemu')
-        vm.stubs(:node_id).returns('pve')
+        vm.stubs(:node_id).returns('proxmox')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
-        attr = { 'templated' => '0', 'node_id' => 'pve2' }
+        attr = { 'templated' => '0', 'node_id' => 'proxmox2' }
         vm.expects(:migrate)
         @cr.save_vm(uuid, attr)
       end
@@ -60,10 +60,10 @@ module ForemanFogProxmox
         vm.stubs(:container?).returns(false)
         vm.stubs(:templated?).returns(false)
         vm.stubs(:type).returns('qemu')
-        vm.stubs(:node_id).returns('pve')
+        vm.stubs(:node_id).returns('proxmox')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
-        attr = { 'templated' => '0', 'node_id' => 'pve', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'pve', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0')
+        attr = { 'templated' => '0', 'node_id' => 'proxmox', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0')
         expected_attr = { :cores => '1', :cpulimit => '1' }.with_indifferent_access
         vm.expects(:update, expected_attr)
         @cr.save_vm(uuid, attr)
@@ -97,11 +97,11 @@ module ForemanFogProxmox
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
         vm.stubs(:type).returns('qemu')
-        vm.stubs(:node_id).returns('pve')
+        vm.stubs(:node_id).returns('proxmox')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         new_attributes = {
           'templated' => '0',
-          'node_id' => 'pve',
+          'node_id' => 'proxmox',
           'config_attributes' => {
             'cores' => '1',
             'cpulimit' => '1'
@@ -115,7 +115,7 @@ module ForemanFogProxmox
         }.with_indifferent_access
         @cr.stubs(:parse_server_vm).returns(
           'vmid' => '100',
-          'node_id' => 'pve',
+          'node_id' => 'proxmox',
           'type' => 'qemu',
           'cores' => '1',
           'cpulimit' => '1',
@@ -136,7 +136,7 @@ module ForemanFogProxmox
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
         vm.stubs(:type).returns('qemu')
-        vm.stubs(:node_id).returns('pve')
+        vm.stubs(:node_id).returns('proxmox')
         vm.stubs(:vmid).returns(uuid)
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         identity_client = mock('identity_client')
@@ -154,9 +154,9 @@ module ForemanFogProxmox
         pools.expects(:get).with('pool2').returns(pool2)
         identity_client.stubs(:pools).returns(pools)
         @cr.stubs(:identity_client).returns(identity_client)
-        attr = { 'templated' => '0', 'node_id' => 'pve', 'pool' => 'pool2', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'pve', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0', 'pool' => 'pool2')
-        vm.expects(:update).with({ 'node_id' => 'pve', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' }.with_indifferent_access)
+        attr = { 'templated' => '0', 'node_id' => 'proxmox', 'pool' => 'pool2', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0', 'pool' => 'pool2')
+        vm.expects(:update).with({ 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' }.with_indifferent_access)
         @cr.save_vm(uuid, attr)
       end
 
@@ -169,7 +169,7 @@ module ForemanFogProxmox
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
         vm.stubs(:type).returns('qemu')
-        vm.stubs(:node_id).returns('pve')
+        vm.stubs(:node_id).returns('proxmox')
         vm.stubs(:vmid).returns(uuid)
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         identity_client = mock('identity_client')
@@ -183,9 +183,9 @@ module ForemanFogProxmox
         pools.expects(:get).with('').returns(nil)
         identity_client.stubs(:pools).returns(pools)
         @cr.stubs(:identity_client).returns(identity_client)
-        attr = { 'templated' => '0', 'node_id' => 'pve', 'pool' => '', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'pve', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0', 'pool' => '')
-        vm.expects(:update).with({ 'node_id' => 'pve', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' }.with_indifferent_access)
+        attr = { 'templated' => '0', 'node_id' => 'proxmox', 'pool' => '', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0', 'pool' => '')
+        vm.expects(:update).with({ 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' }.with_indifferent_access)
         @cr.save_vm(uuid, attr)
       end
 
@@ -198,7 +198,7 @@ module ForemanFogProxmox
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
         vm.stubs(:type).returns('qemu')
-        vm.stubs(:node_id).returns('pve')
+        vm.stubs(:node_id).returns('proxmox')
         vm.stubs(:vmid).returns(uuid)
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         identity_client = mock('identity_client')
@@ -212,9 +212,9 @@ module ForemanFogProxmox
         pools.expects(:get).with('').returns(nil)
         identity_client.stubs(:pools).returns(pools)
         @cr.stubs(:identity_client).returns(identity_client)
-        attr = { 'templated' => '0', 'node_id' => 'pve', 'pool' => 'pool2', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'pve', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0', 'pool' => 'pool2')
-        vm.expects(:update).with({ 'node_id' => 'pve', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' }.with_indifferent_access)
+        attr = { 'templated' => '0', 'node_id' => 'proxmox', 'pool' => 'pool2', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0', 'pool' => 'pool2')
+        vm.expects(:update).with({ 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' }.with_indifferent_access)
         @cr.save_vm(uuid, attr)
       end
     end

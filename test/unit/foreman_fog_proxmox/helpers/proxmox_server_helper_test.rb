@@ -31,7 +31,7 @@ module ForemanFogProxmox
       let(:host) do
         { 'vmid' => '100',
           'name' => 'test',
-          'node_id' => 'pve',
+          'node_id' => 'proxmox',
           'type' => 'qemu',
           'config_attributes' => {
             'memory' => '536870912',
@@ -55,7 +55,7 @@ module ForemanFogProxmox
 
       let(:host_delete) do
         { 'vmid' => '100',
-          'node_id' => 'pve',
+          'node_id' => 'proxmox',
           'name' => 'test',
           'type' => 'qemu',
           'cdrom' => 'image',

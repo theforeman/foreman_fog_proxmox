@@ -21,25 +21,25 @@ require 'test_plugin_helper'
 module ForemanFogProxmox
   class ComputeResourcesControllerTest < ActionController::TestCase
     test 'should get isos by node and storage' do
-      get :isos_by_node_and_storage, params: { :node_id => 'pve', :storage => 'local' }
+      get :isos_by_node_and_storage, params: { :node_id => 'proxmox', :storage => 'local' }
       assert_response :found
       show_response = @response.body
       assert_not show_response.empty?
     end
     test 'should get ostemplates by node and storage' do
-      get :ostemplates_by_node_and_storage, params: { :node_id => 'pve', :storage => 'local' }
+      get :ostemplates_by_node_and_storage, params: { :node_id => 'proxmox', :storage => 'local' }
       assert_response :found
       show_response = @response.body
       assert_not show_response.empty?
     end
     test 'should get isos by node' do
-      get :isos_by_node, params: { :node_id => 'pve' }
+      get :isos_by_node, params: { :node_id => 'proxmox' }
       assert_response :found
       show_response = @response.body
       assert_not show_response.empty?
     end
     test 'should get ostemplates by node' do
-      get :ostemplates_by_node, params: { :node_id => 'pve' }
+      get :ostemplates_by_node, params: { :node_id => 'proxmox' }
       assert_response :found
       show_response = @response.body
       assert_not show_response.empty?

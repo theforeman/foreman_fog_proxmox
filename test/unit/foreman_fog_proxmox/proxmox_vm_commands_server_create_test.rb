@@ -43,7 +43,7 @@ module ForemanFogProxmox
       end
 
       it 'computes next vmid when vmid == 0 and creates server' do
-        args = { vmid: '0', type: 'qemu', node_id: 'pve', start_after_create: '0' }
+        args = { vmid: '0', type: 'qemu', node_id: 'proxmox', start_after_create: '0' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         servers.stubs(:next_id).returns('101')
@@ -57,7 +57,7 @@ module ForemanFogProxmox
       end
 
       it 'creates server without bootstart' do
-        args = { vmid: '100', type: 'qemu', node_id: 'pve', start_after_create: '0' }
+        args = { vmid: '100', type: 'qemu', node_id: 'proxmox', start_after_create: '0' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
@@ -70,7 +70,7 @@ module ForemanFogProxmox
       end
 
       it 'creates server with bootstart' do
-        args = { vmid: '100', type: 'qemu', node_id: 'pve', start_after_create: '1' }
+        args = { vmid: '100', type: 'qemu', node_id: 'proxmox', start_after_create: '1' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
@@ -84,7 +84,7 @@ module ForemanFogProxmox
       end
 
       it 'creates server within pool' do
-        args = { vmid: '100', type: 'qemu', node_id: 'pve', start_after_create: '0', pool: 'pool1' }
+        args = { vmid: '100', type: 'qemu', node_id: 'proxmox', start_after_create: '0', pool: 'pool1' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)

@@ -18,14 +18,14 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 require 'test_plugin_helper'
-require 'fog/compute/proxmox/models/server'
-require 'fog/compute/proxmox/models/server_config'
-require 'fog/compute/proxmox/models/interface'
-require 'fog/compute/proxmox/models/interfaces'
-require 'fog/compute/proxmox/models/disk'
-require 'fog/compute/proxmox/models/disks'
-require 'fog/compute/proxmox/models/snapshots'
-require 'fog/compute/proxmox/models/tasks'
+require 'fog/proxmox/compute/models/server'
+require 'fog/proxmox/compute/models/server_config'
+require 'fog/proxmox/compute/models/interface'
+require 'fog/proxmox/compute/models/interfaces'
+require 'fog/proxmox/compute/models/disk'
+require 'fog/proxmox/compute/models/disks'
+require 'fog/proxmox/compute/models/snapshots'
+require 'fog/proxmox/compute/models/tasks'
 
 module ForemanFogProxmox
   class ProxmoxVmHelperTest < ActiveSupport::TestCase
@@ -39,7 +39,7 @@ module ForemanFogProxmox
         'vmid' => '100',
         'hostname' => 'test',
         :type => 'lxc',
-        :node_id => 'pve',
+        :node_id => 'proxmox',
         :service => service,
         'templated' => '0',
         'memory' => '536870912',
@@ -61,7 +61,7 @@ module ForemanFogProxmox
       Fog::Proxmox::Compute::Server.new(
         'vmid' => '100',
         'name' => 'test',
-        :node_id => 'pve',
+        :node_id => 'proxmox',
         :service => service,
         :type => 'qemu',
         'templated' => '0',
@@ -84,7 +84,7 @@ module ForemanFogProxmox
     let(:host_server) do
       { 'vmid' => '100',
         'name' => 'test',
-        'node_id' => 'pve',
+        'node_id' => 'proxmox',
         'type' => 'qemu',
         'config_attributes' => {
           'memory' => '536870912',
@@ -110,7 +110,7 @@ module ForemanFogProxmox
       { 'vmid' => '100',
         'name' => 'test',
         'type' => 'lxc',
-        'node_id' => 'pve',
+        'node_id' => 'proxmox',
         'ostemplate_storage' => 'local',
         'ostemplate_file' => 'local:vztmpl/alpine-3.7-default_20171211_amd64.tar.xz',
         'password' => 'proxmox01',

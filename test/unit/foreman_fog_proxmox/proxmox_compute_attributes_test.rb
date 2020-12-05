@@ -84,13 +84,14 @@ module ForemanFogProxmox
       before do
         @cr = FactoryBot.build_stubbed(:proxmox_cr)
       end
+      excluded_keys = %i[vmid disks interfaces]
 
       it 'converts a server to hash' do
         vm, config_attributes, volume_attributes, interface_attributes = mock_server_vm
         vm_attrs = @cr.vm_compute_attributes(vm)
         assert_not vm_attrs.key?(:config)
         assert vm_attrs.key?(:config_attributes)
-        assert_equal config_attributes.reject { |key, value| [:vmid, :disks, :interfaces].include?(key) || value.to_s.empty? }, vm_attrs[:config_attributes]
+        assert_equal config_attributes.reject { |key, value| excluded_keys.include?(key) || value.to_s.empty? }, vm_attrs[:config_attributes]
         assert_not vm_attrs[:config_attributes].key?(:disks)
         assert vm_attrs.key?(:volumes_attributes)
         assert_equal volume_attributes, vm_attrs[:volumes_attributes]['0']
@@ -108,7 +109,7 @@ module ForemanFogProxmox
         vm_attrs = @cr.vm_compute_attributes(vm)
         assert_not vm_attrs.key?(:config)
         assert vm_attrs.key?(:config_attributes)
-        assert_equal config_attributes.reject { |key, value| [:vmid, :disks, :interfaces].include?(key) || value.to_s.empty? }, vm_attrs[:config_attributes]
+        assert_equal config_attributes.reject { |key, value| excluded_keys.include?(key) || value.to_s.empty? }, vm_attrs[:config_attributes]
         assert_not vm_attrs[:config_attributes].key?(:disks)
         assert vm_attrs.key?(:volumes_attributes)
         assert_equal volume_attributes, vm_attrs[:volumes_attributes]['0']

@@ -38,10 +38,9 @@ module ForemanFogProxmox
     include ProxmoxVersion
     include ProxmoxConsole
     validates :url, :format => { :with => URI::DEFAULT_PARSER.make_regexp }, :presence => true
-    validates :auth_method, :presence => true, inclusion: { in: %w(access_ticket user_token),
-    message: "%{value} is not a valid authentication method" }
+    validates :auth_method, :presence => true, inclusion: { in: %w[access_ticket user_token], message: "%{value} is not a valid authentication method" }
     validates :user, :format => { :with => /(\w+)[@]{1}(\w+)/ }, :presence => true
-    validates :password, :presence => true, if: :access_ticket? 
+    validates :password, :presence => true, if: :access_ticket?
     validates :token_id, :presence => true, if: :user_token?
     validates :token, :presence => true, if: :user_token?
 
@@ -98,7 +97,7 @@ module ForemanFogProxmox
     end
 
     def auth_method
-      attrs[:auth_method] ? attrs[:auth_method] : 'access_ticket'
+      attrs[:auth_method] || 'access_ticket'
     end
 
     def auth_method=(value)
@@ -124,14 +123,20 @@ module ForemanFogProxmox
     private
 
     def fog_credentials
-     hash = {
-      proxmox_url: url,
-      proxmox_auth_method: auth_method ? auth_method : 'access_ticket',
-      connection_options: connection_options
-     }
-     hash.merge!(proxmox_username: user, proxmox_password: password) if access_ticket?
-     hash.merge!(proxmox_userid: user, proxmox_tokenid: token_id, proxmox_token: token) if user_token?
-     hash
+      hash = {
+        proxmox_url: url,
+        proxmox_auth_method: auth_method || 'access_ticket',
+        connection_options: connection_options
+      }
+      if access_ticket?
+        hash[:proxmox_username] = user
+        hash[:proxmox_password] = password
+      end
+      if user_token?
+        hash[:proxmox_userid] = user
+        hash[:proxmox_token] = token
+      end
+      hash
     end
 
     def client

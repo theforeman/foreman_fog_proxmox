@@ -181,9 +181,4 @@ module ProxmoxComputeSelectorsHelper
     [OpenStruct.new(id: 'seabios', name: '(Default) Seabios'),
      OpenStruct.new(id: 'ovmf', name: 'OVMF (UEFI)')]
   end
-
-  def proxmox_auth_methods_map
-    [OpenStruct.new(id: 'access_ticket', name: '(Default) Access ticket'),
-     OpenStruct.new(id: 'user_token', name: 'User token')]
-  end
 end

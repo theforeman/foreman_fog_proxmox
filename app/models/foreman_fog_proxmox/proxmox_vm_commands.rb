@@ -47,7 +47,8 @@ module ForemanFogProxmox
         when 'lxc'
           hash = parse_container_vm(args)
           hash = hash.merge(vmid: vmid)
-          vm = node.containers.create(hash.reject { |key, _value| ['ostemplate_storage', 'ostemplate_file'].include? key })
+          exculded_keys = %w[ostemplate_storage ostemplate_file]
+          vm = node.containers.create(hash.reject { |key, _value| exculded_keys.include? key })
         end
         start_on_boot(vm, args)
       end
@@ -70,22 +71,33 @@ module ForemanFogProxmox
       true
     end
 
+    def association_update_required?(new_attrs, association)
+      association_attributes = "#{association}_attributes".to_sym
+      new_association = "new_#{association}"
+      new_attrs[association_attributes]&.each do |key, interface|
+        return true if (interface[:id].blank? || interface[:_delete] == '1') && key != new_association # ignore the template
+      end
+    end
+
     def update_required?(old_attrs, new_attrs)
       return true if super(old_attrs, new_attrs)
 
-      new_attrs[:interfaces_attributes]&.each do |key, interface|
-        return true if (interface[:id].blank? || interface[:_delete] == '1') && key != 'new_interfaces' # ignore the template
-      end
-
-      new_attrs[:volumes_attributes]&.each do |key, volume|
-        return true if (volume[:id].blank? || volume[:_delete] == '1') && key != 'new_volumes' # ignore the template
-      end
-
+      association_update_required?(new_attrs, 'interfaces')
+      association_update_required?(new_attrs, 'volumes')
       false
     end
 
     def user_data_supported?
       true
+    end
+
+    def compute_config_cdrom_attributes(parsed_attr)
+      excluded_keys = %i[vmid templated ostemplate ostemplate_file ostemplate_storage volumes_attributes pool]
+      config_attributes = parsed_attr.reject { |key, _value| excluded_keys.include? key.to_sym }
+      config_attributes = config_attributes.reject { |_key, value| ForemanFogProxmox::Value.empty?(value) }
+      cdrom_attributes = parsed_attr.select { |_key, value| Fog::Proxmox::DiskHelper.cdrom?(value.to_s) }
+      config_attributes = config_attributes.reject { |key, _value| Fog::Proxmox::DiskHelper.disk?(key) }
+      { config_attributes: config_attributes, cdrom_attributes: cdrom_attributes }
     end
 
     def save_vm(uuid, new_attributes)
@@ -102,11 +114,8 @@ module ForemanFogProxmox
         volumes_attributes&.each_value { |volume_attributes| save_volume(vm, volume_attributes) }
         parsed_attr = vm.container? ? parse_container_vm(new_attributes.merge(type: vm.type)) : parse_server_vm(new_attributes.merge(type: vm.type))
         logger.debug("parsed_attr=#{parsed_attr}")
-        config_attributes = parsed_attr.reject { |key, _value| [:vmid, :templated, :ostemplate, :ostemplate_file, :ostemplate_storage, :volumes_attributes, :pool].include? key.to_sym }
-        config_attributes = config_attributes.reject { |_key, value| ForemanFogProxmox::Value.empty?(value) }
-        cdrom_attributes = parsed_attr.select { |_key, value| Fog::Proxmox::DiskHelper.cdrom?(value.to_s) }
-        config_attributes = config_attributes.reject { |key, _value| Fog::Proxmox::DiskHelper.disk?(key) }
-        vm.update(config_attributes.merge(cdrom_attributes))
+        config_cdrom_attributes = compute_config_cdrom_attributes(parsed_attr)
+        vm.update(config_cdrom_attributes[:config_attributes].merge(config_cdrom_attributes[:cdrom_attributes]))
         poolid = new_attributes['pool'] if new_attributes.key?('pool')
         update_pool(vm, poolid) if poolid
       end

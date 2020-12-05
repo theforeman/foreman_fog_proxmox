@@ -1,6 +1,6 @@
 AllCops:
-  TargetRubyVersion: 2.3
-  TargetRailsVersion: 5.2
+  TargetRubyVersion: 2.4
+  TargetRailsVersion: 6.0
   Exclude:
     - 'node_modules/**/*'
 

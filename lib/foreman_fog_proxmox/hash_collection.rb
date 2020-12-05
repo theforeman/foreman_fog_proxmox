@@ -17,16 +17,24 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-module ProxmoxComputeResourcesHelper
-  def user_token_expiration_date(compute_resource)
-    expire = compute_resource.current_user_token_expire
-    return 'Never' if expire == 0
+require 'foreman_fog_proxmox/value'
 
-    Time.at.utc(expire)
-  end
+module ForemanFogProxmox
+  module HashCollection
+    def self.add_and_format_element(dest, dest_key, origin, origin_key, format = :to_s)
+      dest[dest_key] = origin[origin_key].send(format) if origin[origin_key]
+    end
 
-  def proxmox_auth_methods_map
-    [OpenStruct.new(id: 'access_ticket', name: '(Default) Access ticket'),
-     OpenStruct.new(id: 'user_token', name: 'User token')]
+    def self.remove_empty_values(h)
+      h.delete_if { |_key, value| ForemanFogProxmox::Value.empty?(value) }
+    end
+    
+    def self.remove_keys(h, excluded_keys)
+      h.delete_if { |key, _value| excluded_keys.include?(key) }
+    end
+    
+    def self.new_hash_reject_keys(h, excluded_keys)
+      h.reject { |key, _value| excluded_keys.include?(key) }
+    end
   end
 end

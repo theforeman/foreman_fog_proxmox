@@ -29,11 +29,11 @@ module ForemanFogProxmox
     end
 
     def access_ticket?
-      auth_method == 'access_ticket' 
+      auth_method == 'access_ticket'
     end
 
     def user_token?
-      auth_method == 'user_token' 
+      auth_method == 'user_token'
     end
 
     def credentials_valid?

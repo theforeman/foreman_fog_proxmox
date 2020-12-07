@@ -28,11 +28,11 @@ module ForemanFogProxmox
     def self.remove_empty_values(h)
       h.delete_if { |_key, value| ForemanFogProxmox::Value.empty?(value) }
     end
-    
+
     def self.remove_keys(h, excluded_keys)
       h.delete_if { |key, _value| excluded_keys.include?(key) }
     end
-    
+
     def self.new_hash_reject_keys(h, excluded_keys)
       h.reject { |key, _value| excluded_keys.include?(key) }
     end

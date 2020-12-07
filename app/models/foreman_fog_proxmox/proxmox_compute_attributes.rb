@@ -45,7 +45,7 @@ module ForemanFogProxmox
       vm_attrs.store(:identifier, interface_attributes[:id])
       vm_attrs.store(:ip, interface_attributes[:ip])
       vm_attrs.store(:ip6, interface_attributes[:ip6])
-      excluded_attrs = %i[macaddr id]
+      excluded_attrs = [:macaddr, :id]
       vm_attrs[:compute_attributes] = interface_attributes.reject { |k, _v| excluded_attrs.include?(k) }
       vm_attrs
     end

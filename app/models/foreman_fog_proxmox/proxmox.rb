@@ -38,7 +38,7 @@ module ForemanFogProxmox
     include ProxmoxVersion
     include ProxmoxConsole
     validates :url, :format => { :with => URI::DEFAULT_PARSER.make_regexp }, :presence => true
-    validates :auth_method, :presence => true, inclusion: { in: %w[access_ticket user_token], message: "%{value} is not a valid authentication method" }
+    validates :auth_method, :presence => true, inclusion: { in: ['access_ticket', 'user_token'], message: ->(value) do format('%<value>s is not a valid authentication method', { value: value }) end }
     validates :user, :format => { :with => /(\w+)[@]{1}(\w+)/ }, :presence => true
     validates :password, :presence => true, if: :access_ticket?
     validates :token_id, :presence => true, if: :user_token?

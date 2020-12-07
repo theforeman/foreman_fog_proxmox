@@ -142,8 +142,8 @@ module ForemanFogProxmox
     describe 'object_to_config_hash' do
       setup { Fog.mock! }
       teardown { Fog.unmock! }
-      excluded_qemu_keys = %w[templated ide2 scsi0 net0 net1]
-      excluded_lxc_keys = %w[templated rootfs mp0 net0 net1]
+      excluded_qemu_keys = ['templated', 'ide2', 'scsi0', 'net0', 'net1']
+      excluded_lxc_keys = ['templated', 'rootfs', 'mp0', 'net0', 'net1']
 
       it '#server qemu' do
         config_hash = object_to_config_hash(server)

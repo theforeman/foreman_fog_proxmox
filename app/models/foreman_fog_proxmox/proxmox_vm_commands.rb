@@ -47,7 +47,7 @@ module ForemanFogProxmox
         when 'lxc'
           hash = parse_container_vm(args)
           hash = hash.merge(vmid: vmid)
-          exculded_keys = %w[ostemplate_storage ostemplate_file]
+          exculded_keys = ['ostemplate_storage', 'ostemplate_file']
           vm = node.containers.create(hash.reject { |key, _value| exculded_keys.include? key })
         end
         start_on_boot(vm, args)
@@ -92,7 +92,7 @@ module ForemanFogProxmox
     end
 
     def compute_config_cdrom_attributes(parsed_attr)
-      excluded_keys = %i[vmid templated ostemplate ostemplate_file ostemplate_storage volumes_attributes pool]
+      excluded_keys = [:vmid, :templated, :ostemplate, :ostemplate_file, :ostemplate_storage, :volumes_attributes, :pool]
       config_attributes = parsed_attr.reject { |key, _value| excluded_keys.include? key.to_sym }
       config_attributes = config_attributes.reject { |_key, value| ForemanFogProxmox::Value.empty?(value) }
       cdrom_attributes = parsed_attr.select { |_key, value| Fog::Proxmox::DiskHelper.cdrom?(value.to_s) }

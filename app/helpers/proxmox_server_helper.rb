@@ -99,7 +99,7 @@ module ProxmoxServerHelper
     cpu += ';' if spectre && pcid
     cpu += '+pcid' if pcid
     ForemanFogProxmox::HashCollection.remove_empty_values(args)
-    ForemanFogProxmox::HashCollection.remove_keys(args, %w[cpu_type spectre pcid])
+    ForemanFogProxmox::HashCollection.remove_keys(args, ['cpu_type', 'spectre', 'pcid'])
     args.each_value(&:to_i)
     parsed_cpu = { cpu: cpu }.merge(args)
     logger.debug("parse_server_cpu(): #{parsed_cpu}")
@@ -139,7 +139,7 @@ module ProxmoxServerHelper
   end
 
   def add_disk_options(disk, args)
-    options = ForemanFogProxmox::HashCollection.new_hash_reject_keys(args, %w[id volid controller device storage size _delete])
+    options = ForemanFogProxmox::HashCollection.new_hash_reject_keys(args, ['id', 'volid', 'controller', 'device', 'storage', 'size', '_delete'])
     disk[:options] = options
   end
 

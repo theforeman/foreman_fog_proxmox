@@ -63,12 +63,12 @@ module ProxmoxContainerHelper
 
   def parsed_config(args, parsed_vm)
     config = args['config_attributes']
-    config ||= ForemanFogProxmox::Value.new_hash_reject_keys(args, config_keys[:main])    
+    config ||= ForemanFogProxmox::Value.new_hash_reject_keys(args, config_keys[:main])
     cpu = parse_container_cpu(config.select { |key, _value| config_keys[:cpu].include? key })
     memory = parse_container_memory(config.select { |key, _value| config_keys[:memory].include? key })
     parsed_config = config.reject { |key, value| config_keys.include?(key) || ForemanFogProxmox::Value.empty?(value) }
-    logger.debug("parse_container_config(): #{parsed_config}") 
-    parsed_vm.merge(parsed_config).merge(cpu).merge(memory).merge(parse_ostemplate(args,config))
+    logger.debug("parse_container_config(): #{parsed_config}")
+    parsed_vm.merge(parsed_config).merge(cpu).merge(memory).merge(parse_ostemplate(args, config))
   end
 
   def parsed_interfaces(args, parsed_vm)
@@ -84,7 +84,7 @@ module ProxmoxContainerHelper
     parsed_vm
   end
 
-  def parse_ostemplate(args,config)
+  def parse_ostemplate(args, config)
     ostemplate = parse_ostemplate_without_keys(args)
     ostemplate = parse_ostemplate_without_keys(config) unless ostemplate[:ostemplate]
     ostemplate
@@ -133,7 +133,7 @@ module ProxmoxContainerHelper
     disk.store(:volid, args['volid'])
     disk.store(:storage, args['storage'].to_s)
     disk.store(:size, args['size'].to_i)
-    options = ForemanFogProxmox::HashCollection.new_hash_reject_keys(args, %w[id volid device storage size _delete])
+    options = ForemanFogProxmox::HashCollection.new_hash_reject_keys(args, ['id', 'volid', 'device', 'storage', 'size', '_delete'])
     disk.store(:options, options)
     logger.debug("parse_container_volume(): disk=#{disk}")
     Fog::Proxmox::DiskHelper.flatten(disk)

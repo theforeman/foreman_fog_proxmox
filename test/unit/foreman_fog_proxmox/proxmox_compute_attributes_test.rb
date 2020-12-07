@@ -84,7 +84,7 @@ module ForemanFogProxmox
       before do
         @cr = FactoryBot.build_stubbed(:proxmox_cr)
       end
-      excluded_keys = %i[vmid disks interfaces]
+      excluded_keys = [:vmid, :disks, :interfaces]
 
       it 'converts a server to hash' do
         vm, config_attributes, volume_attributes, interface_attributes = mock_server_vm

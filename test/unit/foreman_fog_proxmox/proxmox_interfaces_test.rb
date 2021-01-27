@@ -120,7 +120,8 @@ module ForemanFogProxmox
         mac_address = '36:25:8C:53:0C:50'
         ip6 = '2001:0:1234::c1c0:abcd:876'
         firewall = '1'
-        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6, :mac => mac_address, :compute_attributes => { 'dhcp' => '1', 'ip6' => ip6, 'firewall' => firewall })
+        compute_attributes = { 'dhcp' => '1', 'ip6' => ip6, 'firewall' => firewall }
+        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6, :mac => mac_address, :compute_attributes => compute_attributes)
         host = FactoryBot.build(
           :host_empty,
           :interfaces => [physical_nic],

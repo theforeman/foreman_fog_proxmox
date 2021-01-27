@@ -20,31 +20,28 @@
 require 'fog/proxmox/helpers/disk_helper'
 require 'fog/proxmox/helpers/nic_helper'
 require 'foreman_fog_proxmox/value'
+require 'foreman_fog_proxmox/hash_collection'
 
-module ProxmoxVmHelper
-  include ProxmoxVmInterfacesHelper
-  include ProxmoxVmVolumesHelper
-  include ProxmoxVmConfigHelper
-  include ProxmoxVmOsTemplateHelper
-  include ProxmoxVmCdromHelper
-
-  def vm_collection(type)
-    collection = :servers
-    collection = :containers if type == 'lxc'
-    collection
+module ProxmoxVmOsTemplateHelper
+  def ostemplate_keys
+    ['ostemplate_storage', 'ostemplate_file']
   end
 
-  # Convert a foreman form server/container vm hash into a fog-proxmox server/container attributes hash
-  def parse_typed_vm(args, type)
-    args = ActiveSupport::HashWithIndifferentAccess.new(args)
-    return {} unless args
-    return {} if args.empty?
-    return {} unless args['type'] == type
+  def parse_ostemplate_without_keys(args)
+    parse_container_ostemplate(args.select { |key, _value| ostemplate_keys.include? key })
+  end
 
-    parsed_vm = parsed_typed_config(args, type)
-    parsed_vm = parsed_typed_interfaces(args, type, parsed_vm)
-    parsed_vm = parsed_typed_volumes(args, type, parsed_vm)
-    logger.debug("parse_typed_vm(#{type}): parsed_vm=#{parsed_vm}")
-    parsed_vm
+  def parse_ostemplate(args, config)
+    ostemplate = parse_ostemplate_without_keys(args)
+    ostemplate = parse_ostemplate_without_keys(config) unless ostemplate[:ostemplate]
+    ostemplate
+  end
+
+  def parse_container_ostemplate(args)
+    ostemplate = args['ostemplate']
+    ostemplate_file = args['ostemplate_file']
+    ostemplate ||= ostemplate_file
+    parsed_ostemplate = { ostemplate: ostemplate }
+    parsed_ostemplate
   end
 end

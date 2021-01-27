@@ -33,5 +33,5 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 </tr>
 <tr>
   <td><%= _("Cluster nodes") %></td>
-  <td><%= @compute_resource.nodes.collect { |node| node.node } %></td>
+  <td><%= cluster_nodes(@compute_resource) %></td>
 </tr>

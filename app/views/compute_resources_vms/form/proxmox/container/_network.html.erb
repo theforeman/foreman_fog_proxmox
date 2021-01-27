@@ -20,14 +20,15 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <%= field_set_tag _("Nic"), :id => "container_network_#{index}", :style => ('display: none;' unless container), :disabled => !container do %>  
     <%= f.hidden_field :id if !new_vm %>
-    <%= text_f f, :name, :label => _('Name'), :label_size => "col-md-2" %>
-    <%= checkbox_f f, :dhcpv4, :label => _('DHCP IPv4') %>
-    <%= text_f f, :cidrv4_prefix, :label => _('CIDR IPv4 prefix'), :label_size => "col-md-2" %>
-    <%= text_f f, :gwv4, :label => _('Gateway IPv4'), :label_size => "col-md-2" %>
-    <%= checkbox_f f, :dhcpv6, :label => _('DHCP IPv6') %>
-    <%= text_f f, :cidrv6_prefix, :label => _('CIDR IPv6 prefix'), :label_size => "col-md-2" %>
-    <%= text_f f, :gwv6, :label => _('Gateway IPv6'), :label_size => "col-md-2" %>
+    <%= text_f f, :name, :label => _('Name'), :label_size => "col-md-2", :required => true, :label_help => _("eth[n] with n integer >= 0, e.g. eth0") %>
+    <%= checkbox_f f, :dhcp, :label => _('DHCP IPv4') %>
+    <%= text_f f, :cidr, :label => _('CIDR IPv4'), :label_size => "col-md-2", :label_help => _("integer within [0..32]") %>
+    <%= text_f f, :gw, :label => _('Gateway IPv4'), :label_size => "col-md-2" %>
+    <%= checkbox_f f, :dhcp6, :label => _('DHCP IPv6') %>
+    <%= text_f f, :cidr6, :label => _('CIDR IPv6'), :label_size => "col-md-2", :label_help => _("integer within [0..128]")%>
+    <%= text_f f, :gw6, :label => _('Gateway IPv6'), :label_size => "col-md-2" %>
     <%= counter_f f, :tag, :class => "input-mini", :label => _('VLAN tag'), :label_size => "col-md-2" %>
     <%= counter_f f, :rate, :class => "input-mini", :label => _('Rate limit'), :label_size => "col-md-2" %>
+    <%= checkbox_f f, :firewall, :label => _('Firewall') %>
     <%= select_f f, :bridge, compute_resource.bridges(node_id), :iface, :iface, { }, :label => _('Bridge'), :label_size => "col-md-2" %>
 <% end %>

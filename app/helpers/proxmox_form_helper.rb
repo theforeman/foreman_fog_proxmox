@@ -53,7 +53,8 @@ module ProxmoxFormHelper
     options[:form_builder_local] ||= :f
     options[:form_builder_attrs] ||= {}
 
-    tag(:div, :class => "#{options[:type]}_#{association}_fields_template form_template ", :style => 'display: none;') do
+    content_tag(:div, :class => "#{options[:type]}_#{association}_fields_template form_template", :style => 'display: none;') do
+      logger.debug("new_child_fields_template_typed options[:object]=#{options[:object].inspect}")
       form_builder.fields_for(association, options[:object], :child_index => "new_#{options[:type]}_#{association}") do |f|
         render(:partial => options[:partial], :layout => options[:layout],
                :locals => { options[:form_builder_local] => f }.merge(options[:form_builder_attrs]))

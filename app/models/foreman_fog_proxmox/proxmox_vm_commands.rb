@@ -21,6 +21,7 @@ module ForemanFogProxmox
   module ProxmoxVmCommands
     include ProxmoxVolumes
     include ProxmoxPools
+    include ProxmoxVmHelper
 
     def start_on_boot(vm, args)
       startonboot = args[:start_after_create].blank? ? false : Foreman::Cast.to_bool(args[:start_after_create])
@@ -41,15 +42,8 @@ module ForemanFogProxmox
       else
         convert_sizes(args)
         remove_deletes(args)
-        case type
-        when 'qemu'
-          vm = node.servers.create(parse_server_vm(args))
-        when 'lxc'
-          hash = parse_container_vm(args)
-          hash = hash.merge(vmid: vmid)
-          exculded_keys = ['ostemplate_storage', 'ostemplate_file']
-          vm = node.containers.create(hash.reject { |key, _value| exculded_keys.include? key })
-        end
+        logger.warn(format(_('create vm: args=%<args>s'), args: args))
+        vm = node.send(vm_collection(type)).create(parse_typed_vm(args, type))
         start_on_boot(vm, args)
       end
     rescue StandardError => e
@@ -69,22 +63,6 @@ module ForemanFogProxmox
 
     def supports_update?
       true
-    end
-
-    def association_update_required?(new_attrs, association)
-      association_attributes = "#{association}_attributes".to_sym
-      new_association = "new_#{association}"
-      new_attrs[association_attributes]&.each do |key, interface|
-        return true if (interface[:id].blank? || interface[:_delete] == '1') && key != new_association # ignore the template
-      end
-    end
-
-    def update_required?(old_attrs, new_attrs)
-      return true if super(old_attrs, new_attrs)
-
-      association_update_required?(new_attrs, 'interfaces')
-      association_update_required?(new_attrs, 'volumes')
-      false
     end
 
     def user_data_supported?
@@ -112,8 +90,7 @@ module ForemanFogProxmox
         convert_memory_sizes(new_attributes)
         volumes_attributes = new_attributes['volumes_attributes']
         volumes_attributes&.each_value { |volume_attributes| save_volume(vm, volume_attributes) }
-        parsed_attr = vm.container? ? parse_container_vm(new_attributes.merge(type: vm.type)) : parse_server_vm(new_attributes.merge(type: vm.type))
-        logger.debug("parsed_attr=#{parsed_attr}")
+        parsed_attr = parse_typed_vm(new_attributes.merge(type: vm.type), vm.type)
         config_cdrom_attributes = compute_config_cdrom_attributes(parsed_attr)
         vm.update(config_cdrom_attributes[:config_attributes].merge(config_cdrom_attributes[:cdrom_attributes]))
         poolid = new_attributes['pool'] if new_attributes.key?('pool')

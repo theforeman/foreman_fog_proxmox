@@ -21,14 +21,17 @@ require 'test_plugin_helper'
 
 module ForemanFogProxmox
   class ProxmoxServerHelperTest < ActiveSupport::TestCase
-    include ProxmoxServerHelper
     include ProxmoxVmHelper
 
     describe 'parse' do
       setup { Fog.mock! }
       teardown { Fog.unmock! }
 
-      let(:host) do
+      let(:type) do
+        'qemu'
+      end
+
+      let(:host_form) do
         { 'vmid' => '100',
           'name' => 'test',
           'node_id' => 'proxmox',
@@ -41,15 +44,16 @@ module ForemanFogProxmox
             'spectre' => '1',
             'pcid' => '0',
             'cores' => '1',
-            'sockets' => '1'
+            'sockets' => '1',
+            'cdrom' => 'none'
           },
           'volumes_attributes' => {
             '0' => { 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => 'none' },
             '1' => { 'controller' => 'virtio', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => 'none' }
           },
           'interfaces_attributes' => {
-            '0' => { 'id' => 'net0', 'model' => 'virtio', 'bridge' => 'vmbr0', 'firewall' => '0', 'link_down' => '0', 'rate' => nil },
-            '1' => { 'id' => 'net1', 'model' => 'e1000', 'bridge' => 'vmbr0', 'firewall' => '0', 'link_down' => '0' }
+            '0' => { 'id' => 'net0', 'compute_attributes' => { 'model' => 'virtio', 'bridge' => 'vmbr0', 'firewall' => '0', 'link_down' => '0', 'rate' => nil } },
+            '1' => { 'id' => 'net1', 'compute_attributes' => { 'model' => 'e1000', 'bridge' => 'vmbr0', 'firewall' => '0', 'link_down' => '0' } }
           } }
       end
 
@@ -58,26 +62,40 @@ module ForemanFogProxmox
           'node_id' => 'proxmox',
           'name' => 'test',
           'type' => 'qemu',
-          'cdrom' => 'image',
-          'cdrom_iso' => 'local-lvm:iso/debian-netinst.iso',
+          'config_attributes' => {
+            'cdrom' => 'image',
+            'cdrom_iso' => 'local-lvm:iso/debian-netinst.iso'
+          },
           'volumes_attributes' => { '0' => { '_delete' => '1', 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824' } },
-          'interfaces_attributes' => { '0' => { '_delete' => '1', 'id' => 'net0', 'model' => 'virtio' } } }
+          'interfaces_attributes' => { '0' => { '_delete' => '1', 'id' => 'net0', 'compute_attributes' => { 'model' => 'virtio' } } } }
       end
 
       test '#memory' do
-        memory = parse_server_memory(host['config_attributes'])
+        memory = parse_typed_memory(host_form['config_attributes'], type)
         assert memory.key?(:memory)
         assert_equal 536_870_912, memory[:memory]
       end
 
       test '#cpu' do
-        cpu = parse_server_cpu(host['config_attributes'])
+        cpu = parse_typed_cpu(host_form['config_attributes'], type)
         assert cpu.key?(:cpu)
         assert_equal 'cputype=kvm64,flags=+spec-ctrl', cpu[:cpu]
       end
 
+      test '#cdrom none' do
+        cdrom = parse_server_cdrom(host_form['config_attributes'])
+        assert cdrom.key?(:ide2)
+        assert_equal 'none,media=cdrom', cdrom[:ide2]
+      end
+
+      test '#cdrom image' do
+        cdrom = parse_server_cdrom(host_delete['config_attributes'])
+        assert cdrom.key?(:ide2)
+        assert_equal 'local-lvm:iso/debian-netinst.iso,media=cdrom', cdrom[:ide2]
+      end
+
       test '#vm' do
-        vm = parse_server_vm(host)
+        vm = parse_typed_vm(host_form, type)
         assert_equal '1', vm['cores']
         assert_equal '1', vm['sockets']
         assert_equal 'cputype=kvm64,flags=+spec-ctrl', vm[:cpu]
@@ -91,7 +109,7 @@ module ForemanFogProxmox
       end
 
       test '#volume with scsi 1Gb' do
-        volumes = parse_server_volumes(host['volumes_attributes'])
+        volumes = parse_typed_volumes(host_form['volumes_attributes'], type)
         assert_not volumes.empty?
         assert volumes.size, 2
         assert volume = volumes.first
@@ -100,7 +118,7 @@ module ForemanFogProxmox
       end
 
       test '#volume with virtio 1Gb' do
-        volumes = parse_server_volumes(host['volumes_attributes'])
+        volumes = parse_typed_volumes(host_form['volumes_attributes'], type)
         assert_not volumes.empty?
         assert volumes.size, 2
         assert volume = volumes[1]
@@ -111,7 +129,7 @@ module ForemanFogProxmox
       test '#interface with model virtio and bridge' do
         interfaces_to_delete = []
         interfaces_to_add = []
-        add_server_interface(host['interfaces_attributes']['0'], interfaces_to_delete, interfaces_to_add)
+        add_or_delete_typed_interface(host_form['interfaces_attributes']['0'], interfaces_to_delete, interfaces_to_add, type)
         assert_empty interfaces_to_delete
         assert_equal 1, interfaces_to_add.length
         assert interfaces_to_add[0].key?(:net0)
@@ -121,7 +139,7 @@ module ForemanFogProxmox
       test '#interface with model e1000 and bridge' do
         interfaces_to_delete = []
         interfaces_to_add = []
-        add_server_interface(host['interfaces_attributes']['1'], interfaces_to_delete, interfaces_to_add)
+        add_or_delete_typed_interface(host_form['interfaces_attributes']['1'], interfaces_to_delete, interfaces_to_add, type)
         assert_empty interfaces_to_delete
         assert_equal 1, interfaces_to_add.length
         assert interfaces_to_add[0].key?(:net1)
@@ -131,14 +149,14 @@ module ForemanFogProxmox
       test '#interface delete net0' do
         interfaces_to_delete = []
         interfaces_to_add = []
-        add_server_interface(host_delete['interfaces_attributes']['0'], interfaces_to_delete, interfaces_to_add)
+        add_or_delete_typed_interface(host_delete['interfaces_attributes']['0'], interfaces_to_delete, interfaces_to_add, type)
         assert_empty interfaces_to_add
         assert_equal 1, interfaces_to_delete.length
         assert_equal 'net0', interfaces_to_delete[0]
       end
 
       test '#interfaces' do
-        interfaces_to_add, interfaces_to_delete = parse_server_interfaces(host['interfaces_attributes'])
+        interfaces_to_add, interfaces_to_delete = parse_typed_interfaces(host_form, type)
         assert_empty interfaces_to_delete
         assert_equal 2, interfaces_to_add.length
         assert_includes interfaces_to_add, { net0: 'model=virtio,bridge=vmbr0,firewall=0,link_down=0' }

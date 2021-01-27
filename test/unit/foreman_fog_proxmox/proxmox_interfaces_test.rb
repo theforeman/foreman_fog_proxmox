@@ -46,10 +46,11 @@ module ForemanFogProxmox
         assert err.message.end_with?('Invalid identifier interface[0]. Must be net[n] with n integer >= 0')
       end
 
-      it 'sets server compute id with identifier, ip and ip6' do
+      it 'sets server compute id with identifier, ip and ip6 and mac adress' do
         ip = '192.168.56.100'
+        mac_address = '36:25:8C:53:0C:50'
         ip6 = Array.new(4) { format('%<x>s', x: rand(16**4)) }.join(':') + '::1'
-        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6)
+        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6, :mac => mac_address)
         host = FactoryBot.build(
           :host_empty,
           :interfaces => [physical_nic],
@@ -65,13 +66,14 @@ module ForemanFogProxmox
         assert_equal 'net0', nic_attr[:id]
         assert_equal ip, nic_attr[:ip]
         assert_equal ip6, nic_attr[:ip6]
+        assert_equal mac_address, nic_attr[:macaddr]
       end
 
       it 'sets container compute id with identifier, ip/CIDR, gw and ip6' do
         ip = '192.168.56.100'
-        cidr_suffix = '31'
+        cidr = '31'
         ip6 = Array.new(4) { format('%<x>s', x: rand(16**4)) }.join(':') + '::1'
-        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6, :compute_attributes => { 'cidrv4_prefix' => cidr_suffix, 'gwv4' => ip, 'dhcpv6' => '1' })
+        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6, :compute_attributes => { 'cidr' => cidr, 'gw' => ip, 'ip' => ip, 'dhcp6' => '1' })
         host = FactoryBot.build(
           :host_empty,
           :interfaces => [physical_nic],
@@ -85,16 +87,16 @@ module ForemanFogProxmox
         nic_attributes = @cr.host_interfaces_attrs(host).values.select(&:present?)
         nic_attr = nic_attributes.first
         assert_equal 'net0', nic_attr[:id]
-        assert_equal Fog::Proxmox::IpHelper.to_cidr(ip, cidr_suffix), nic_attr[:ip]
-        assert_equal ip, nic_attr[:gw]
+        assert_equal Fog::Proxmox::IpHelper.to_cidr(ip, cidr), nic_attr[:ip]
+        assert_equal ip, nic_attr['gw']
         assert_equal 'dhcp', nic_attr[:ip6]
       end
 
       it 'sets container compute id with identifier, ip DHCP, gw6 and ip6' do
         ip = '192.168.56.100'
-        cidr6_suffix = '100'
+        cidr6 = '100'
         ip6 = '2001:0:1234::c1c0:abcd:876'
-        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6, :compute_attributes => { 'cidrv6_prefix' => cidr6_suffix, 'dhcpv4' => '1', 'gwv6' => ip6 })
+        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6, :compute_attributes => { 'cidr6' => cidr6, 'dhcp' => '1', 'gw6' => ip6 })
         host = FactoryBot.build(
           :host_empty,
           :interfaces => [physical_nic],
@@ -109,8 +111,33 @@ module ForemanFogProxmox
         nic_attr = nic_attributes.first
         assert_equal 'net0', nic_attr[:id]
         assert_equal 'dhcp', nic_attr[:ip]
-        assert_equal Fog::Proxmox::IpHelper.to_cidr6(ip6, cidr6_suffix), nic_attr[:ip6]
-        assert_equal ip6, nic_attr[:gw6]
+        assert_equal Fog::Proxmox::IpHelper.to_cidr6(ip6, cidr6), nic_attr[:ip6]
+        assert_equal ip6, nic_attr['gw6']
+      end
+
+      it 'sets container compute id with identifier, ip DHCP, mac adress and firewall' do
+        ip = '192.168.56.100'
+        mac_address = '36:25:8C:53:0C:50'
+        ip6 = '2001:0:1234::c1c0:abcd:876'
+        firewall = '1'
+        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6, :mac => mac_address, :compute_attributes => { 'dhcp' => '1', 'ip6' => ip6, 'firewall' => firewall })
+        host = FactoryBot.build(
+          :host_empty,
+          :interfaces => [physical_nic],
+          :compute_attributes => {
+            'type' => 'lxc',
+            'interfaces_attributes' => {
+              '0' => physical_nic
+            }
+          }
+        )
+        nic_attributes = @cr.host_interfaces_attrs(host).values.select(&:present?)
+        nic_attr = nic_attributes.first
+        assert_equal 'net0', nic_attr[:id]
+        assert_equal 'dhcp', nic_attr[:ip]
+        assert_equal mac_address, nic_attr[:hwaddr]
+        assert_equal ip6, nic_attr[:ip6]
+        assert_equal firewall, nic_attr['firewall']
       end
     end
   end

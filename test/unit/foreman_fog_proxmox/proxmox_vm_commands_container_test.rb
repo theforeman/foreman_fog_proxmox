@@ -214,7 +214,7 @@ module ForemanFogProxmox
             }
           }
         }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
+        @cr.stubs(:parse_typed_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = { :id => 'mp0', :volid => 'local-lvm:vm-100-disk-0', :size => 1_073_741_824 }, { :mp => '/opt/toto' }
         vm.expects(:attach, expected_volume_attr)
@@ -229,10 +229,10 @@ module ForemanFogProxmox
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         containers = mock('containers')
-        containers.stubs(:create).with(vmid: 100, type: 'lxc', node_id: 'proxmox', start_after_create: '0')
+        containers.stubs(:create).with(args)
         cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
         cr.stubs(:convert_sizes).with(args)
-        cr.stubs(:parse_container_vm).with(args).returns(args)
+        cr.stubs(:parse_typed_vm).with(args, 'lxc').returns(args)
         vm = mock('vm')
         cr.stubs(:find_vm_by_uuid).with((args[:vmid]).to_s).returns(vm)
         cr.create_vm(args)
@@ -244,10 +244,10 @@ module ForemanFogProxmox
         servers.stubs(:id_valid?).returns(true)
         containers = mock('containers')
         vm = mock('vm')
-        containers.stubs(:create).with(vmid: 100, type: 'lxc', node_id: 'proxmox', start_after_create: '1').returns(vm)
+        containers.stubs(:create).with(args).returns(vm)
         cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
         cr.stubs(:convert_sizes).with(args)
-        cr.stubs(:parse_container_vm).with(args).returns(args)
+        cr.stubs(:parse_typed_vm).with(args, 'lxc').returns(args)
         cr.stubs(:find_vm_by_uuid).with((args[:vmid]).to_s).returns(vm)
         cr.stubs(:start_on_boot).with(vm, args).returns(vm)
         cr.create_vm(args)
@@ -259,10 +259,10 @@ module ForemanFogProxmox
         servers.stubs(:id_valid?).returns(true)
         containers = mock('containers')
         vm = mock('vm')
-        containers.stubs(:create).with(vmid: 100, type: 'lxc', node_id: 'proxmox', start_after_create: '0', pool: 'pool1').returns(vm)
+        containers.stubs(:create).with(args).returns(vm)
         cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
         cr.stubs(:convert_sizes).with(args)
-        cr.stubs(:parse_container_vm).with(args).returns(args)
+        cr.stubs(:parse_typed_vm).with(args, 'lxc').returns(args)
         cr.stubs(:find_vm_by_uuid).with((args[:vmid]).to_s).returns(vm)
         cr.create_vm(args)
       end

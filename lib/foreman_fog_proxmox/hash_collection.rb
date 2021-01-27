@@ -22,7 +22,7 @@ require 'foreman_fog_proxmox/value'
 module ForemanFogProxmox
   module HashCollection
     def self.add_and_format_element(dest, dest_key, origin, origin_key, format = :to_s)
-      dest[dest_key] = origin[origin_key].send(format) if origin[origin_key]
+      dest[dest_key] = origin[origin_key].send(format) if origin && origin[origin_key]
     end
 
     def self.remove_empty_values(h)

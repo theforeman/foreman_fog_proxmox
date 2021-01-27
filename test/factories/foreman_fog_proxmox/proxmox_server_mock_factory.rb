@@ -19,9 +19,8 @@
 
 module ForemanFogProxmox
   module ProxmoxServerMockFactory
-    def mock_server_vm
-      interface_attributes = {
-        id: 'net0',
+    def mock_server_interface_attributes
+      compute_attributes = {
         macaddr: '36:25:8C:53:0C:50',
         model: 'virtio',
         name: nil,
@@ -34,8 +33,19 @@ module ForemanFogProxmox
         queues: nil,
         tag: nil
       }
+      interface_attributes = {
+        id: 'net0',
+        mac: '36:25:8C:53:0C:50',
+        ip: nil,
+        ip6: nil,
+        compute_attributes: compute_attributes
+      }
+      interface_attributes
+    end
+
+    def mock_server_vm
       interface = mock('interface')
-      interface.stubs(:attributes).returns(interface_attributes)
+      interface.stubs(:attributes).returns(mock_server_interface_attributes)
       interfaces = [interface]
       volume_attributes = {
         id: 'scsi0',
@@ -128,7 +138,7 @@ module ForemanFogProxmox
       }
       vm.stubs(:attributes).returns(vm_attributes)
       vm.stubs(:container?).returns(false)
-      [vm, config_attributes, volume_attributes, interface_attributes]
+      [vm, config_attributes, volume_attributes, mock_server_interface_attributes]
     end
   end
 end

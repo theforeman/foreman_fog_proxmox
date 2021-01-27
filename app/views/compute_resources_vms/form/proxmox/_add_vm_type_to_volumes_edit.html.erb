@@ -16,25 +16,27 @@ You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% if compute_resource.class == ForemanFogProxmox::Proxmox %>
 <% type = f.object.type %>
+<% logger.debug("_add_vm_type_to_volumes_edit.html.erb: type=#{type}") %>
 <% node_id = f.object.node_id %>
 <% server = type == 'qemu' %>
 <% container = type == 'lxc' %>
 
 <%= new_child_fields_template_typed(f, :volumes, {
               :type => 'server',
-              :object  => compute_resource.new_volume_server,
+              :object  => compute_resource.new_typed_volume({},'qemu'),
               :partial => provider_partial(compute_resource, 'server/volume'),
               :form_builder_attrs => { :type => type, :node_id => node_id, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume') },
               :layout => "compute_resources_vms/form/#{item_layout}_layout" }) %>
 <%= new_child_fields_template_typed(f, :volumes, {
               :type => 'container',
-              :object  => compute_resource.new_volume_container(id: 'mp0'),
+              :object  => compute_resource.new_typed_volume({ id: 'mp0' }, 'lxc'),
               :partial => provider_partial(compute_resource, 'container/volume_mp'),
               :form_builder_attrs => { :type => type, :node_id => node_id, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume') },
               :layout => "compute_resources_vms/form/#{item_layout}_layout" }) %>
 
 
 
+<% logger.debug("_add_vm_type_to_volumes_edit.html.erb: volumes=#{f.object.volumes}") %>
     <%= f.fields_for :volumes do |i| %>
             <% if i.object.rootfs? %>
             <div id="container_volumes_rootfs" style="<%= 'display: ' + (container ? 'block' : 'none') + ';' %>">

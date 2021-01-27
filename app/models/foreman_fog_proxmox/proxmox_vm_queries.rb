@@ -62,7 +62,7 @@ module ForemanFogProxmox
     end
 
     def find_vm_in_servers_by_uuid(servers, uuid)
-      vm = servers.get(uuid) if !uuid.nil? && !uuid.to_s.empty?
+      vm = servers.get(uuid) unless ForemanFogProxmox::Value.empty?(uuid)
       pool_owner(vm) if vm
       vm
     rescue Fog::Errors::NotFound

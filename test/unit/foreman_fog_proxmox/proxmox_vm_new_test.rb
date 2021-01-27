@@ -43,7 +43,7 @@ module ForemanFogProxmox
         config = mock('config')
         config.stubs(:inspect).returns('config')
         vm.stubs(:config).returns(config)
-        @cr.stubs(:new_server_vm).with(attr).returns(vm)
+        @cr.stubs(:new_typed_vm).with(attr, 'qemu').returns(vm)
         assert_equal vm, @cr.new_vm(attr)
       end
 
@@ -53,7 +53,7 @@ module ForemanFogProxmox
         config = mock('config')
         config.stubs(:inspect).returns('config')
         vm.stubs(:config).returns(config)
-        @cr.stubs(:new_server_vm).with(attr).returns(vm)
+        @cr.stubs(:new_typed_vm).with(attr, 'qemu').returns(vm)
         assert_equal vm, @cr.new_vm(attr)
       end
 
@@ -63,7 +63,7 @@ module ForemanFogProxmox
         config = mock('config')
         config.stubs(:inspect).returns('config')
         vm.stubs(:config).returns(config)
-        @cr.stubs(:new_container_vm).with(attr).returns(vm)
+        @cr.stubs(:new_typed_vm).with(attr, 'lxc').returns(vm)
         assert_equal vm, @cr.new_vm(attr)
       end
     end

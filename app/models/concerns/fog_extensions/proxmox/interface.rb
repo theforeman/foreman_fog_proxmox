@@ -23,17 +23,32 @@ module FogExtensions
   module Proxmox
     module Interface
       extend ActiveSupport::Concern
-      attr_accessor :dhcpv4, :dhcpv6, :gwv4, :gwv6
       def mac
         macaddr
       end
 
-      def cidrv4_prefix
+      def dhcp
+        ip == 'dhcp'
+      end
+
+      def dhcp6
+        ip6 == 'dhcp'
+      end
+
+      def dhcp=(value)
+        @dhcp = value
+      end
+
+      def dhcp6=(value)
+        @dhcp6 = value
+      end
+
+      def cidr
         Fog::Proxmox::IpHelper.prefix(ip) if ip
       end
 
-      def cidrv6_prefix
-        Fog::Proxmox::IpHelper.prefix6(ip) if ip
+      def cidr6
+        Fog::Proxmox::IpHelper.prefix6(ip6) if ip6
       end
     end
   end

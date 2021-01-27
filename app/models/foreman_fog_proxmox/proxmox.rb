@@ -24,8 +24,6 @@ require 'foreman_fog_proxmox/value'
 module ForemanFogProxmox
   class Proxmox < ComputeResource
     include ProxmoxVmHelper
-    include ProxmoxServerHelper
-    include ProxmoxContainerHelper
     include ProxmoxConnection
     include ProxmoxVmNew
     include ProxmoxVmCommands
@@ -135,20 +133,40 @@ module ForemanFogProxmox
       if user_token?
         hash[:proxmox_userid] = user
         hash[:proxmox_token] = token
+        hash[:proxmox_tokenid] = token_id
       end
       hash
     end
 
+    def token_expired?(e)
+      e.response.reason_phrase == 'token expired'
+    end
+
     def client
       @client ||= ::Fog::Proxmox::Compute.new(fog_credentials)
+    rescue Excon::Errors::Unauthorized => e
+      raise ::Foreman::Exception, 'User token expired' if token_expired?(e)
+    rescue StandardError => e
+      logger.warn(format(_('failed to create compute client: %<e>s'), e: e))
+      raise e
     end
 
     def identity_client
       @identity_client ||= ::Fog::Proxmox::Identity.new(fog_credentials)
+    rescue Excon::Errors::Unauthorized => e
+      raise ::Foreman::Exception, 'User token expired' if token_expired?(e)
+    rescue StandardError => e
+      logger.warn(format(_('failed to create identity client: %<e>s'), e: e))
+      raise e
     end
 
     def network_client
       @network_client ||= ::Fog::Proxmox::Network.new(fog_credentials)
+    rescue Excon::Errors::Unauthorized => e
+      raise ::Foreman::Exception, 'User token expired' if token_expired?(e)
+    rescue StandardError => e
+      logger.warn(format(_('failed to create network client: %<e>s'), e: e))
+      raise e
     end
 
     def host

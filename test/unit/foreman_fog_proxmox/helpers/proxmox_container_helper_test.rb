@@ -21,14 +21,17 @@ require 'test_plugin_helper'
 
 module ForemanFogProxmox
   class ProxmoxContainerHelperTest < ActiveSupport::TestCase
-    include ProxmoxContainerHelper
     include ProxmoxVmHelper
 
     describe 'parse' do
       setup { Fog.mock! }
       teardown { Fog.unmock! }
 
-      let(:host) do
+      let(:type) do
+        'lxc'
+      end
+
+      let(:host_form) do
         { 'vmid' => '100',
           'name' => 'test',
           'type' => 'lxc',
@@ -56,8 +59,29 @@ module ForemanFogProxmox
             '1' => { 'id' => 'mp0', 'storage' => 'local-lvm', 'size' => '1073741824', 'mp' => '/opt/path' }
           },
           'interfaces_attributes' => {
-            '0' => { 'id' => 'net0', 'name' => 'eth0', 'bridge' => 'vmbr0', 'ip' => 'dhcp', 'ip6' => 'dhcp', 'rate' => '', 'gw' => '192.168.56.100', 'gw6' => '2001:0:1234::c1c0:abcd:876' },
-            '1' => { 'id' => 'net1', 'name' => 'eth1', 'bridge' => 'vmbr0', 'ip' => 'dhcp', 'ip6' => 'dhcp', 'gw' => '192.168.56.100', 'gw6' => '2001:0:1234::c1c0:abcd:876' }
+            '0' => {
+              'id' => 'net0',
+              'compute_attributes' => {
+                'name' => 'eth0',
+                'bridge' => 'vmbr0',
+                'ip' => 'dhcp',
+                'ip6' => 'dhcp',
+                'rate' => '',
+                'gw' => '192.168.56.100',
+                'gw6' => '2001:0:1234::c1c0:abcd:876'
+              }
+            },
+            '1' => {
+              'id' => 'net1',
+              'compute_attributes' => {
+                'name' => 'eth1',
+                'bridge' => 'vmbr0',
+                'ip' => 'dhcp',
+                'ip6' => 'dhcp',
+                'gw' => '192.168.56.100',
+                'gw6' => '2001:0:1234::c1c0:abcd:876'
+              }
+            }
           } }
       end
 
@@ -96,7 +120,7 @@ module ForemanFogProxmox
       end
 
       test '#memory' do
-        memory = parse_container_memory(host['config_attributes'])
+        memory = parse_typed_memory(host_form['config_attributes'], type)
         assert memory.key?(:memory)
         assert_equal 536_870_912, memory[:memory]
         assert memory.key?(:swap)
@@ -104,25 +128,23 @@ module ForemanFogProxmox
       end
 
       test '#cpu' do
-        cpu = parse_container_cpu(host['config_attributes'])
+        cpu = parse_typed_cpu(host_form['config_attributes'], type)
         assert cpu.key?(:cores)
-        assert_equal 1, cpu[:cores]
+        assert_equal '1', cpu[:cores]
         assert cpu.key?(:arch)
         assert_equal 'amd64', cpu[:arch]
       end
 
       test '#ostemplate' do
-        ostemplate = parse_container_ostemplate(host)
+        ostemplate = parse_container_ostemplate(host_form)
         expected_ostemplate = {
-          :ostemplate => 'local:vztmpl/alpine-3.7-default_20171211_amd64.tar.xz',
-          :ostemplate_storage => 'local',
-          :ostemplate_file => 'local:vztmpl/alpine-3.7-default_20171211_amd64.tar.xz'
+          :ostemplate => 'local:vztmpl/alpine-3.7-default_20171211_amd64.tar.xz'
         }
         assert_equal expected_ostemplate, ostemplate
       end
 
-      test '#vm host' do
-        vm = parse_container_vm(host)
+      test '#vm host_form' do
+        vm = parse_typed_vm(host_form, type)
         assert_equal 536_870_912, vm[:memory]
         assert_equal 'local-lvm:1073741824', vm[:rootfs]
         assert_equal 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876', vm[:net0]
@@ -132,19 +154,17 @@ module ForemanFogProxmox
       end
 
       test '#vm container' do
-        vm = parse_container_vm(host)
+        vm = parse_typed_vm(host_form, type)
         expected_vm = ActiveSupport::HashWithIndifferentAccess.new(
           :vmid => '100',
           :password => 'proxmox01',
+          :ostemplate => 'local:vztmpl/alpine-3.7-default_20171211_amd64.tar.xz',
           :onboot => '0',
-          :ostype => 'debian',
-          :arch => 'amd64',
-          :cores => 1,
           :memory => 536_870_912,
           :swap => 536_870_912,
-          :ostemplate => 'local:vztmpl/alpine-3.7-default_20171211_amd64.tar.xz',
-          :ostemplate_file => 'local:vztmpl/alpine-3.7-default_20171211_amd64.tar.xz',
-          :ostemplate_storage => 'local',
+          :cores => '1',
+          :arch => 'amd64',
+          :ostype => 'debian',
           :net0 => 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876',
           :net1 => 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876',
           :rootfs => 'local-lvm:1073741824',
@@ -154,7 +174,7 @@ module ForemanFogProxmox
       end
 
       test '#volume with rootfs 1Gb' do
-        volumes = parse_container_volumes(host['volumes_attributes'])
+        volumes = parse_typed_volumes(host_form['volumes_attributes'], type)
         assert_not volumes.empty?
         assert_equal 2, volumes.size
         assert rootfs = volumes.first
@@ -168,7 +188,7 @@ module ForemanFogProxmox
       test '#interface with name eth0 and bridge' do
         deletes = []
         nics = []
-        add_container_interface(host['interfaces_attributes']['0'], deletes, nics)
+        add_or_delete_typed_interface(host_form['interfaces_attributes']['0'], deletes, nics, type)
         assert 1, nics.length
         assert nics[0].key?(:net0)
         assert_equal 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876', nics[0][:net0]
@@ -177,7 +197,7 @@ module ForemanFogProxmox
       test '#interface with name eth1 and bridge' do
         deletes = []
         nics = []
-        add_container_interface(host['interfaces_attributes']['1'], deletes, nics)
+        add_or_delete_typed_interface(host_form['interfaces_attributes']['1'], deletes, nics, type)
         assert 1, nics.length
         assert nics[0].key?(:net1)
         assert_equal 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876', nics[0][:net1]
@@ -186,14 +206,14 @@ module ForemanFogProxmox
       test '#interface delete net0' do
         deletes = []
         nics = []
-        add_container_interface(host_delete['interfaces_attributes']['0'], deletes, nics)
+        add_or_delete_typed_interface(host_delete['interfaces_attributes']['0'], deletes, nics, type)
         assert_empty nics
         assert_equal 1, deletes.length
         assert_equal 'net0', deletes[0]
       end
 
       test '#interfaces' do
-        interfaces_to_add, interfaces_to_delete = parse_container_interfaces(host['interfaces_attributes'])
+        interfaces_to_add, interfaces_to_delete = parse_typed_interfaces(host_form, type)
         assert_empty interfaces_to_delete
         assert_equal 2, interfaces_to_add.length
         assert_includes interfaces_to_add, { net0: 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876' }

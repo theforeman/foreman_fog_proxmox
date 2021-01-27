@@ -35,8 +35,12 @@ module HostExt
         end
       end
 
-      def cidr_ip(interface_attributes)
-        Fog::Proxmox::IpHelper.to_cidr(interface_attributes['ip'], interface_attributes['compute_attributes']['cidr_suffix'])
+      def cidr_ip(interface_attributes, v = 4)
+        key_ip = 'ip'
+        key_ip += '6' if v == 6
+        key_cidr = 'cidr'
+        key_cidr += '6' if v == 6
+        Fog::Proxmox::IpHelper.to_cidr(interface_attributes[key_ip], interface_attributes['compute_attributes'][key_cidr])
       end
 
       def add_interface_to_compute_attributes(index, interface_attributes, compute_attributes)
@@ -45,6 +49,7 @@ module HostExt
         compute_attributes[index].store('_delete', interface_attributes['_destroy'])
         compute_attributes[index].store('macaddr', interface_attributes['mac'])
         compute_attributes[index].store('ip', cidr_ip(interface_attributes))
+        compute_attributes[index].store('ip6', cidr_ip(interface_attributes, 6))
         compute_attributes[index].merge!(interface_attributes['compute_attributes'].reject { |k, _v| k == 'id' })
       end
     end

@@ -61,7 +61,7 @@ module ForemanFogProxmox
       end
 
       it 'sets container hostname with host name' do
-        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :primary => true, :compute_attributes => { 'dhcpv4' => '1', 'dhcpv6' => '1' })
+        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :primary => true, :compute_attributes => { 'dhcp' => '1', 'dhcp6' => '1' })
         host = FactoryBot.build(
           :host_empty,
           :interfaces => [physical_nic],
@@ -98,10 +98,9 @@ module ForemanFogProxmox
         assert_not vm_attrs[:config_attributes].key?(:interfaces)
         assert vm_attrs.key?(:interfaces_attributes)
         assert_equal interface_attributes[:id], vm_attrs[:interfaces_attributes]['0'][:id]
-        assert_equal interface_attributes[:id], vm_attrs[:interfaces_attributes]['0'][:identifier]
-        assert_equal interface_attributes[:macaddr], vm_attrs[:interfaces_attributes]['0'][:mac]
-        assert_equal interface_attributes[:model], vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:model]
-        assert_equal interface_attributes[:bridge], vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:bridge]
+        assert_equal interface_attributes[:mac], vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:macaddr]
+        assert_equal interface_attributes[:compute_attributes][:model], vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:model]
+        assert_equal interface_attributes[:compute_attributes][:bridge], vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:bridge]
       end
 
       it 'converts a container to hash' do
@@ -115,10 +114,9 @@ module ForemanFogProxmox
         assert_equal volume_attributes, vm_attrs[:volumes_attributes]['0']
         assert vm_attrs.key?(:interfaces_attributes)
         assert_equal interface_attributes[:id], vm_attrs[:interfaces_attributes]['0'][:id]
-        assert_equal interface_attributes[:id], vm_attrs[:interfaces_attributes]['0'][:identifier]
-        assert_equal interface_attributes[:name], vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:name]
-        assert_equal interface_attributes[:mac], vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:mac]
-        assert_equal interface_attributes[:bridge], vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:bridge]
+        assert_equal interface_attributes[:compute_attributes][:name], vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:name]
+        assert_equal interface_attributes[:mac], vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:hwaddr]
+        assert_equal interface_attributes[:compute_attributes][:bridge], vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:bridge]
       end
     end
   end

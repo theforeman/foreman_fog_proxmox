@@ -20,18 +20,17 @@
 module ForemanFogProxmox
   module ProxmoxComputeAttributes
     def host_compute_attrs(host)
-      super.tap do |_attrs|
-        ostype = host.compute_attributes['config_attributes']['ostype']
-        type = host.compute_attributes['type']
-        case type
-        when 'lxc'
-          host.compute_attributes['config_attributes'].store('hostname', host.name)
-        when 'qemu'
-          unless compute_os_types(host).include?(ostype)
-            raise ::Foreman::Exception, format(_('Operating system family %<type>s is not consistent with %<ostype>s'), type: host.operatingsystem.type, ostype: ostype)
-          end
+      ostype = host.compute_attributes['config_attributes']['ostype']
+      type = host.compute_attributes['type']
+      case type
+      when 'lxc'
+        host.compute_attributes['config_attributes'].store('hostname', host.name)
+      when 'qemu'
+        unless compute_os_types(host).include?(ostype)
+          raise ::Foreman::Exception, format(_('Operating system family %<type>s is not consistent with %<ostype>s'), type: host.operatingsystem.type, ostype: ostype)
         end
       end
+      super
     end
 
     def not_config_key?(vm, key)
@@ -39,21 +38,16 @@ module ForemanFogProxmox
     end
 
     def interface_compute_attributes(interface_attributes)
-      vm_attrs = {}
-      vm_attrs.store(:mac, interface_attributes[:macaddr])
-      vm_attrs.store(:id, interface_attributes[:id])
-      vm_attrs.store(:identifier, interface_attributes[:id])
-      vm_attrs.store(:ip, interface_attributes[:ip])
-      vm_attrs.store(:ip6, interface_attributes[:ip6])
-      excluded_attrs = [:macaddr, :id]
-      vm_attrs[:compute_attributes] = interface_attributes.reject { |k, _v| excluded_attrs.include?(k) }
+      vm_attrs = ForemanFogProxmox::HashCollection.new_hash_reject_keys(interface_attributes, [:identifier, :mac])
+      vm_attrs[:dhcp] = interface_attributes[:ip] == 'dhcp' ? '1' : '0'
+      vm_attrs[:dhcp6] = interface_attributes[:ip6] == 'dhcp' ? '1' : '0'
       vm_attrs
     end
 
     def vm_compute_attributes(vm)
       vm_attrs = {}
+      vm_attrs = vm_attrs.merge(vmid: vm.identity, node_id: vm.node_id, type: vm.type)
       if vm.respond_to?(:config)
-        vm_attrs = vm_attrs.merge(vmid: vm.identity, node_id: vm.node_id, type: vm.type)
         vm_attrs[:volumes_attributes] = Hash[vm.config.disks.each_with_index.map { |disk, idx| [idx.to_s, disk.attributes] }] if vm.config.respond_to?(:disks)
         if vm.config.respond_to?(:interfaces)
           vm_attrs[:interfaces_attributes] = Hash[vm.config.interfaces.each_with_index.map { |interface, idx| [idx.to_s, interface_compute_attributes(interface.attributes)] }]

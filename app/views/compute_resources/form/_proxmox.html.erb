@@ -26,11 +26,11 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= text_f f, :user , :help_block => _("e.g. root@pam") %>
 <% end %>
 <%= field_set_tag _("User token fields"), :id => "compute_ressource_user_token_field_set", :class => ('hide' unless user_token), :disabled => !user_token do %>
-  <%= text_f f, :token_id, :label => _('User token id') %>
-  <%= text_f f, :token, :label => _('User token value') %>
+  <%= text_f f, :token_id, :label => _('User token id'), :required => user_token %>
+  <%= text_f f, :token, :label => _('User token value'), :required => user_token, :label_help => _("Click Test connection button to check token") %>
 <% end %>
 <%= field_set_tag _("Access ticket fields"), :id => "compute_ressource_access_ticket_field_set", :class => ('hide' unless access_ticket), :disabled => !access_ticket do %>
-  <%= password_f f, :password, :keep_value => true, :unset => unset_password? %>
+  <%= password_f f, :password, :keep_value => true, :unset => unset_password?, :required => access_ticket %>
 <% end %>
 <%= field_set_tag _("SSL fields"), :id => "compute_ressource_ssl_field_set" do %>  
   <%= checkbox_f f, :ssl_verify_peer, :label => _("SSL verify peer"), :label_help => _("Click Test connection button before changing it"), :checked_value => '1', :onchange => 'sslVerifyPeerSelected();' %>

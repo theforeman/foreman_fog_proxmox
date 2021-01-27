@@ -20,9 +20,26 @@
 module ProxmoxComputeResourcesHelper
   def user_token_expiration_date(compute_resource)
     expire = compute_resource.current_user_token_expire
+  rescue ::Foreman::Exception => e
+    return 'Has already expired. Please edit the compute resource to set a new valid one.' if e.message == 'User token expired'
+  rescue StandardError => e
+    logger.warn(format(_('failed to get identity client version: %<e>s'), e: e))
+    raise e
+  else
     return 'Never' if expire == 0
 
-    Time.at.utc(expire)
+    Time.at(expire).utc
+  end
+
+  def cluster_nodes(compute_resource)
+    nodes = compute_resource.nodes ? compute_resource.nodes.collect(&:node) : []
+  rescue ::Foreman::Exception => e
+    return [] if e.message == 'User token expired'
+  rescue StandardError => e
+    logger.warn(format(_('failed to get cluster nodes: %<e>s'), e: e))
+    raise e
+  else
+    nodes
   end
 
   def proxmox_auth_methods_map

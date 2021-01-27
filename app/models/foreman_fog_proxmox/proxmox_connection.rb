@@ -43,12 +43,13 @@ module ForemanFogProxmox
     end
 
     def current_user_token_expire
-      identity_client.expires
+      identity_client ? identity_client.expires : 0
     end
 
     def test_connection(options = {})
       super
       credentials_valid?
+      identity_client
       version_suitable?
     rescue StandardError => e
       errors[:base] << e.message

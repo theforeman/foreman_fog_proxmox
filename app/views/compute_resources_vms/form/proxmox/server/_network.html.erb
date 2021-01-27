@@ -25,6 +25,6 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     <%= counter_f f, :tag, :class => "input-mini", :label => _('VLAN tag'), :label_size => "col-md-2" %>
     <%= counter_f f, :rate, :class => "input-mini", :label => _('Rate limit'), :label_size => "col-md-2" %>
     <%= counter_f f, :queues, :class => "input-mini", :label => _('Multiqueue'), :label_size => "col-md-2" %>
-    <%= checkbox_f f, :firewall, :label => _('Firewall') %>
-    <%= checkbox_f f, :link_down, :label => _('Disconnect') %>
+    <%= checkbox_f f, :firewall, { :label => _('Firewall') }, '1', '0' %>
+    <%= checkbox_f f, :link_down, { :label => _('Disconnect') }, '1', '0' %>
 <% end %>

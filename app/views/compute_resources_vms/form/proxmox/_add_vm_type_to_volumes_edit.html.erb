@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% if compute_resource.class == ForemanFogProxmox::Proxmox %>
 <% type = f.object.type %>
-<% logger.debug("_add_vm_type_to_volumes_edit.html.erb: type=#{type}") %>
 <% node_id = f.object.node_id %>
 <% server = type == 'qemu' %>
 <% container = type == 'lxc' %>
@@ -36,7 +35,6 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 
 
-<% logger.debug("_add_vm_type_to_volumes_edit.html.erb: volumes=#{f.object.volumes}") %>
     <%= f.fields_for :volumes do |i| %>
             <% if i.object.rootfs? %>
             <div id="container_volumes_rootfs" style="<%= 'display: ' + (container ? 'block' : 'none') + ';' %>">

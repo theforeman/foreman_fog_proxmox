@@ -37,7 +37,6 @@ module ProxmoxVmConfigHelper
     config = vm.config.attributes.reject { |key, _value| main_a.include?(key) || Fog::Proxmox::DiskHelper.disk?(key) || Fog::Proxmox::NicHelper.nic?(key) }
     vm_h = vm_h.merge(main)
     vm_h = vm_h.merge('config_attributes': config)
-    logger.debug("object_to_config_hash: vm_h=#{vm_h}")
     vm_h
   end
 
@@ -118,7 +117,6 @@ module ProxmoxVmConfigHelper
   def parsed_typed_config(args, type)
     config = args['config_attributes']
     config ||= ForemanFogProxmox::HashCollection.new_hash_reject_keys(args, config_typed_keys(type)[:main])
-    logger.debug("parsed_typed_config(#{type}): config=#{config}")
     cpu = parse_typed_cpu(config.select { |key, _value| config_typed_keys(type)[:cpu].include? key }, type)
     memory = parse_typed_memory(config.select { |key, _value| config_typed_keys(type)[:memory].include? key }, type)
     parsed_config = config.reject { |key, value| config_a(type).include?(key) || ForemanFogProxmox::Value.empty?(value) }
@@ -137,18 +135,15 @@ module ProxmoxVmConfigHelper
 
   def parse_typed_cpu(args, type)
     cpu = {}
-    logger.debug("parse_typed_cpu(#{args}, #{type})")
     ForemanFogProxmox::HashCollection.remove_empty_values(args)
     if type == 'qemu'
       cpu_flattened = Fog::Proxmox::CpuHelper.flatten(args)
-      logger.debug("parse_typed_cpu cpu_flattened=#{cpu_flattened})")
       ForemanFogProxmox::HashCollection.remove_empty_values(args)
       ForemanFogProxmox::HashCollection.remove_keys(args, config_typed_keys('qemu')[:cpu])
       args.each_value(&:to_i)
       cpu = { cpu: cpu_flattened }
     end
     config_typed_keys('lxc')[:cpu].each { |key| ForemanFogProxmox::HashCollection.add_and_format_element(cpu, key.to_sym, args, key) } if type == 'lxc'
-    logger.debug("parse_typed_cpu return cpu=#{cpu})")
     cpu
   end
 end

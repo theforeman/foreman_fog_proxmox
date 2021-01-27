@@ -37,7 +37,6 @@ module ProxmoxVmVolumesHelper
     volumes_attributes = args['volumes_attributes']
     volumes_attributes ||= args['config_attributes']['volumes_attributes'] unless ForemanFogProxmox::Value.empty?(args['config_attributes'])
     volumes_attributes ||= args['vm_attrs']['volumes_attributes'] unless ForemanFogProxmox::Value.empty?(args['vm_attrs'])
-    logger.debug("parsed_typed_volumes(#{type}): volumes_attributes=#{volumes_attributes}")
     volumes = parse_typed_volumes(volumes_attributes, type)
     volumes.each { |volume| parsed_vm = parsed_vm.merge(volume) }
     parsed_vm
@@ -46,15 +45,12 @@ module ProxmoxVmVolumesHelper
   def parse_typed_volume(args, type)
     disk = {}
     id = compute_typed_id_disk(args, type)
-    logger.debug("parse_typed_volume(#{type}): id=#{id}")
-
     ForemanFogProxmox::HashCollection.remove_empty_values(args)
     disk[:id] = id
     disk[:volid] = args['volid'] if args.key?('volid')
     disk[:storage] = args['storage'].to_s if args.key?('storage')
     disk[:size] = args['size'].to_i if args.key?('size')
     add_disk_options(disk, args)
-    logger.debug("parse_typed_volume(#{type}): disk=#{disk}")
     Fog::Proxmox::DiskHelper.flatten(disk)
   end
 
@@ -71,14 +67,12 @@ module ProxmoxVmVolumesHelper
 
   def add_typed_volume(volumes, value, type)
     volume = parse_typed_volume(value, type)
-    logger.debug("add_typed_volume(#{type}): volume=#{volume}")
     volumes.push(volume) unless ForemanFogProxmox::Value.empty?(volume)
   end
 
   def parse_typed_volumes(args, type)
     volumes = []
     args&.each_value { |value| add_typed_volume(volumes, value, type) }
-    logger.debug("parse_typed_volumes(#{type}): volumes=#{volumes}")
     volumes
   end
 

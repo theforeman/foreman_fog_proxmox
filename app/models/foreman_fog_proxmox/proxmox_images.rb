@@ -40,7 +40,7 @@ module ForemanFogProxmox
         storage = storages(node.node).first
         volumes += storage.volumes.list_by_content_type('images')
       end
-      volumes.select(&:templated?)
+      volumes.select(&:template?)
     end
 
     def template(vmid)

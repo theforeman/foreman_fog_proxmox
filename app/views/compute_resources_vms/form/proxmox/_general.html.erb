@@ -15,7 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-<% untemplatable = new_vm || f.object.templated? %>
+<% untemplatable = new_vm || f.object.template? %>
 
 <%= field_set_tag _("General"), :id => "general" do %>
   <%= checkbox_f f, :templated, :label => _('Create image?'), :disabled => untemplatable, :class => ('hide' if untemplatable), :no_label => untemplatable %>

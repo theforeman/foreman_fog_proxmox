@@ -55,7 +55,7 @@ module FogExtensions
       delegate :description, to: :config
 
       def vm_description
-        "Name=#{name}, vmid=#{vmid}"
+        _("Type %{type}, node %{node}, %{cpus} CPUs and %{memory} MB memory") % { :type => type, :node => node_id, :cpus => config.cores || '0', :memory => config.memory / (1024 * 1024) || '0' }
       end
 
       def select_nic(fog_nics, nic)

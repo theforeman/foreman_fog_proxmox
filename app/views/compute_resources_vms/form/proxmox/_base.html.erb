@@ -31,9 +31,9 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <%= render :partial => "compute_resources_vms/form/proxmox/container/advanced", :locals => { :f => f, :compute_resource =>  compute_resource, :new_vm => new_vm } %>
 
 <!-- Config Options Settings-->
-<%= f.fields_for :config, compute_resource.new_typed_vm(object_to_config_hash(f.object), 'qemu').config, include_id: false do |server_config|%>
-  <%= render :partial => "compute_resources_vms/form/proxmox/server/config", :locals => { :f => server_config, :compute_resource =>  compute_resource, :host => @host, :new_vm => new_vm, :item_layout => 'removable', :type => f.object.type, :node_id => f.object.node_id } %>
+<%= f.fields_for :config, compute_resource.new_typed_vm(object_to_config_hash(f.object, 'qemu'), 'qemu').config, include_id: false do |server_config|%>
+  <%= render :partial => "compute_resources_vms/form/proxmox/server/config", :locals => { :f => server_config, :cloudinit => f.object.cloud_init?, :compute_resource =>  compute_resource, :host => @host, :new_vm => new_vm, :item_layout => 'removable', :type => f.object.type, :node_id => f.object.node_id } %>
 <% end %>
-<%= f.fields_for :config, compute_resource.new_typed_vm(object_to_config_hash(f.object), 'lxc').config, include_id: false do |container_config|%>
+<%= f.fields_for :config, compute_resource.new_typed_vm(object_to_config_hash(f.object, 'lxc'), 'lxc').config, include_id: false do |container_config|%>
   <%= render :partial => "compute_resources_vms/form/proxmox/container/config", :locals => { :f => container_config, :compute_resource =>  compute_resource, :host => @host, :new_vm => new_vm, :item_layout => 'removable', :type => f.object.type, :node_id => f.object.node_id } %>
 <% end %>

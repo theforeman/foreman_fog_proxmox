@@ -69,7 +69,7 @@ module FogExtensions
       end
 
       def volumes
-        config.disks.reject(&:cdrom?)
+        config.disks
       end
 
       def disks
@@ -78,6 +78,7 @@ module FogExtensions
 
       delegate :vga, to: :config
       delegate :pool, to: :config
+      delegate :cloud_init?, to: :config
 
       def interfaces_attributes=(attrs); end
 
@@ -87,6 +88,10 @@ module FogExtensions
 
       def templated?
         volumes.any?(&:template?)
+      end
+
+      def cdrom?
+        volumes.any?(&:cdrom?)
       end
     end
   end

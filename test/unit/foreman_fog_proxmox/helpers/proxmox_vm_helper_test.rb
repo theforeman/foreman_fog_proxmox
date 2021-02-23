@@ -146,27 +146,27 @@ module ForemanFogProxmox
       excluded_lxc_keys = ['templated', 'rootfs', 'mp0', 'net0', 'net1']
 
       it '#server qemu' do
-        config_hash = object_to_config_hash(server)
+        config_hash = object_to_config_hash(server, 'qemu')
         expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(server.config.attributes).reject { |key, _value| excluded_qemu_keys.include? key }
         assert_equal expected_config_hash, config_hash['config_attributes']
       end
 
       it '#server lxc' do
-        config_hash = object_to_config_hash(server)
+        config_hash = object_to_config_hash(server, 'lxc')
         assert config_hash.key?('config_attributes')
         expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(server.config.attributes).reject { |key, _value| excluded_qemu_keys.include? key }
         assert_equal expected_config_hash, config_hash['config_attributes']
       end
 
       it '#container qemu' do
-        config_hash = object_to_config_hash(container)
+        config_hash = object_to_config_hash(container, 'qemu')
         assert config_hash.key?('config_attributes')
         expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(container.config.attributes).reject { |key, _value| excluded_lxc_keys.include? key }
         assert_equal expected_config_hash, config_hash['config_attributes']
       end
 
       it '#container lxc' do
-        config_hash = object_to_config_hash(container)
+        config_hash = object_to_config_hash(container, 'lxc')
         assert config_hash.key?('config_attributes')
         expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(container.config.attributes).reject { |key, _value| excluded_lxc_keys.include? key }
         assert_equal expected_config_hash, config_hash['config_attributes']

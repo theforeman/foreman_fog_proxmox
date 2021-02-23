@@ -25,6 +25,7 @@ module Orchestration
       def setComputeUpdate
         logger.info "Update Proxmox Compute instance for #{name}"
         final_compute_attributes = compute_attributes.merge(compute_resource.host_compute_attrs(self))
+        logger.debug("setComputeUpdate: final_compute_attributes=#{final_compute_attributes}")
         compute_resource.save_vm uuid, final_compute_attributes
       rescue StandardError => e
         failure format(_('Failed to update a compute %<compute_resource>s instance %<name>s: %<e>s'), :compute_resource => compute_resource, :name => name, :e => e), e

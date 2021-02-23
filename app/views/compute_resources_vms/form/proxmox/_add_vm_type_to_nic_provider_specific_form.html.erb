@@ -16,10 +16,12 @@ You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% if @host.compute_resource.class == ForemanFogProxmox::Proxmox %>
 <% compute_attributes = f.object.compute_attributes %>
+<% logger.debug("_add_vm_type_to_nic_provider_specific_form.html compute_attributes=#{compute_attributes}") %>
 <% node_id = f.object.respond_to?('node_id') ? f.object.node_id : nil %>
 
 <%= f.fields_for 'compute_attributes', OpenStruct.new(f.object.compute_attributes) do |f| %>
     <% vm_type = compute_attributes.respond_to?('type') ? compute_attributes.type : 'qemu' %>
+    <% logger.debug("_add_vm_type_to_nic_provider_specific_form.html vm_type=#{vm_type}") %>
     <%= render provider_partial(@host.compute_resource, 'network'), :f => f, :vm_type => vm_type, :node_id => node_id, :disabled => f.object.persisted?, :compute_resource => @host.compute_resource, :new_host => new_vm, :new_vm => new_vm %>
 <% end %>
 <% else %>

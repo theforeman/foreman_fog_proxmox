@@ -36,5 +36,34 @@ module ForemanFogProxmox
     def self.new_hash_reject_keys(h, excluded_keys)
       h.reject { |key, _value| excluded_keys.include?(key) }
     end
+
+    def self.new_hash_reject_empty_values(h)
+      h.reject { |_key, value| ForemanFogProxmox::Value.empty?(value) }
+    end
+
+    def self.new_hash_transform_values(h, transformation)
+      h.transform_values { |value| value.send(transformation) }
+    end
+
+    def self.equals?(h1, h2)
+      new_h1 = new_hash_transform_values(h1, :to_s)
+      new_sorted_h1 = new_h1.sort_by { |key, _value| key }.to_h
+      new_h2 = new_hash_transform_values(h2, :to_s)
+      new_sorted_h2 = new_h2.sort_by { |key, _value| key }.to_h
+      new_sorted_h1.keys == new_sorted_h2.keys && new_sorted_h1.values == new_sorted_h2.values
+    end
+
+    def self.stringify_keys(old_h)
+      h = old_h.map do |k, v|
+        v_str = if v.instance_of? Hash
+                  v.stringify_keys
+                else
+                  v
+                end
+
+        [k.to_s, v_str]
+      end
+      Hash[h]
+    end
   end
 end

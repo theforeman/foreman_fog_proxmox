@@ -15,51 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-function cdromSelected(item) {
-  var selected = $(item).val();
-  var cdrom_image_form = $('#cdrom_image_form');
-
-  switch (selected) {
-    case 'none':
-      initCdromStorage();
-      initCdromOptions('iso');
-      cdrom_image_form.hide();
-      break;
-    case 'cdrom':
-      initCdromStorage();
-      initCdromOptions('iso');
-      cdrom_image_form.hide();
-      break;
-    case 'image':
-      initCdromStorage();
-      initCdromOptions('iso');
-      cdrom_image_form.show();
-      break;
-    default:
-      break;
-  }
-  return false;
-}
-
-function initCdromStorage() {
-  var select = '#host_compute_attributes_config_attributes_cdrom_storage';
-  $(select + ' option:selected').prop('selected', false);
-  $(select).val('');
-}
-
-function initCdromOptions(name) {
-  var select = '#host_compute_attributes_config_attributes_cdrom_' + name;
-  $(select).empty();
-  $(select).append($("<option></option>").val('').text(''));
-  $(select).val('');
-}
-
-function storageIsoSelected(item) {
-  var storage = $(item).val();
-  var node_id = $('#host_compute_attributes_node_id').val();
-  updateOptions('isos', 'compute_attributes_config_attributes', 'cdrom_iso', undefined, undefined, 'volid', node_id, storage);
-}
-
 function attributesPrefixSelector(profile, type) {
   return profile ?  '#compute_attribute_vm_attrs_' + type + '_attributes_': '#host_compute_attributes_' + type + '_attributes_';
 }
@@ -73,7 +28,6 @@ function getIndex(item) {
   var pattern = /(host_compute_attributes_volumes_attributes_||compute_attribute_vm_attrs_volumes_attributes_)(\d+)[_](.*)/i;
   pattern_a = pattern.exec(id);
   var index = pattern_a[2];
-  console.log("index=" + index);
   return index;
 }
 
@@ -86,7 +40,6 @@ function controllerSelected(item) {
   var index = getIndex(item);
   var max = computeControllerMaxDevice(controller);
   var profile = isProfile();
-  console.log("profile="+profile);
   var device_selector = volumesAttributesSelector(profile,index,'device');
   var id_selector = volumesAttributesSelector(profile,index,'id');
   $(device_selector).attr('data-soft-max', max);
@@ -100,7 +53,6 @@ function deviceSelected(item) {
   var device = $(item).limitedSpinner('value');
   var index = getIndex(item);
   var profile = isProfile();
-  console.log("profile="+profile);
   var controller_selector = volumesAttributesSelector(profile,index,'controller');
   var id_selector = volumesAttributesSelector(profile,index,'id');
   var controller = $(controller_selector).val();

@@ -26,7 +26,6 @@ module ProxmoxVmHelper
   include ProxmoxVmVolumesHelper
   include ProxmoxVmConfigHelper
   include ProxmoxVmOsTemplateHelper
-  include ProxmoxVmCdromHelper
 
   def vm_collection(type)
     collection = :servers
@@ -41,6 +40,7 @@ module ProxmoxVmHelper
     return {} if args.empty?
     return {} unless args['type'] == type
 
+    logger.debug("parse_typed_vm(#{type}): args=#{args}")
     parsed_vm = parsed_typed_config(args, type)
     parsed_vm = parsed_typed_interfaces(args, type, parsed_vm)
     parsed_vm = parsed_typed_volumes(args, type, parsed_vm)

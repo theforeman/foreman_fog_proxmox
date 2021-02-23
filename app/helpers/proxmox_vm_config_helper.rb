@@ -29,7 +29,7 @@ module ProxmoxVmConfigHelper
   MEGA = KILO * KILO
   GIGA = KILO * MEGA
 
-  def object_to_config_hash(vm)
+  def object_to_config_hash(vm, type)
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
     main_a = ['hostname', 'name', 'vmid']
     main = vm.attributes.select { |key, _value| main_a.include? key }
@@ -37,6 +37,7 @@ module ProxmoxVmConfigHelper
     config = vm.config.attributes.reject { |key, _value| main_a.include?(key) || Fog::Proxmox::DiskHelper.disk?(key) || Fog::Proxmox::NicHelper.nic?(key) }
     vm_h = vm_h.merge(main)
     vm_h = vm_h.merge('config_attributes': config)
+    logger.debug(format(_('object_to_config_hash(%<type>s): vm_h=%<vm_h>s'), type: type, vm_h: vm_h))
     vm_h
   end
 
@@ -57,15 +58,16 @@ module ProxmoxVmConfigHelper
     main_a = ['name', 'type', 'node_id', 'vmid', 'interfaces', 'mount_points', 'disks']
     case type
     when 'lxc'
-      cpu_a = ['arch', 'cpulimit', 'cpuunits', 'cores']
+      cpu_a = ['arch', 'cpulimit', 'cpuunits', 'cores', 'sockets']
       memory_a = ['memory', 'swap']
       ostemplate_a = ['ostemplate', 'ostemplate_storage', 'ostemplate_file']
       keys.store(:ostemplate, ostemplate_a)
     when 'qemu'
-      cpu_a = ['cpu_type', 'spectre', 'pcid']
+      cpu_a = ['cpu_type', 'cpu']
+      cpu_a += ForemanFogProxmox::HashCollection.stringify_keys(Fog::Proxmox::CpuHelper.flags).keys
       memory_a = ['memory', 'balloon', 'shares']
-      cdrom_a = ['cdrom', 'cdrom_storage', 'cdrom_iso']
-      keys.store(:cdrom, cdrom_a)
+      cloud_init_a = ['ciuser', 'cipassword', 'searchdomain', 'nameserver']
+      keys.store(:cloud_init, cloud_init_a)
     end
     keys.store(:main, main_a)
     keys.store(:cpu, cpu_a)
@@ -85,7 +87,7 @@ module ProxmoxVmConfigHelper
     config_a = []
     case type
     when 'qemu'
-      [:cpu, :cdrom, :memory, :general].each { |key| config_a += config_typed_keys(type)[key] }
+      [:cpu, :memory, :general, :cloud_init].each { |key| config_a += config_typed_keys(type)[key] }
     when 'lxc'
       [:main].each { |key| config_a += config_typed_keys(type)[key] }
     end
@@ -107,7 +109,7 @@ module ProxmoxVmConfigHelper
     options = {}
     case type
     when 'qemu'
-      options = parse_server_cdrom(config.select { |key, _value| config_typed_keys(type)[:cdrom].include? key })
+      options = config.select { |key, _value| config_typed_keys(type)[:cloud_init].include? key }
     when 'lxc'
       options = parse_ostemplate(args, config)
     end
@@ -117,12 +119,16 @@ module ProxmoxVmConfigHelper
   def parsed_typed_config(args, type)
     config = args['config_attributes']
     config ||= ForemanFogProxmox::HashCollection.new_hash_reject_keys(args, config_typed_keys(type)[:main])
-    cpu = parse_typed_cpu(config.select { |key, _value| config_typed_keys(type)[:cpu].include? key }, type)
+    logger.debug("parsed_typed_config(#{type}): config=#{config}")
+    config_cpu = config.select { |key, _value| config_typed_keys(type)[:cpu].include? key }
+    logger.debug("parsed_typed_config(#{type}): config_cpu=#{config_cpu}")
+    cpu = parse_typed_cpu(config_cpu, type)
     memory = parse_typed_memory(config.select { |key, _value| config_typed_keys(type)[:memory].include? key }, type)
     parsed_config = config.reject { |key, value| config_a(type).include?(key) || ForemanFogProxmox::Value.empty?(value) }
     parsed_vm = args.reject { |key, value| args_a(type).include?(key) || ForemanFogProxmox::Value.empty?(value) }
     parsed_vm = parsed_vm.merge(config_options(config, args, type))
     parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory)
+    logger.debug("parsed_typed_config(#{type}): parsed_vm=#{parsed_vm}")
     parsed_vm
   end
 
@@ -137,13 +143,17 @@ module ProxmoxVmConfigHelper
     cpu = {}
     ForemanFogProxmox::HashCollection.remove_empty_values(args)
     if type == 'qemu'
+      logger.debug("parse_typed_cpu(#{type}): args=#{args}")
       cpu_flattened = Fog::Proxmox::CpuHelper.flatten(args)
+      cpu_flattened = args[:cpu] if cpu_flattened.empty?
+      logger.debug("parse_typed_cpu(#{type}): cpu_flattened=#{cpu_flattened}")
       ForemanFogProxmox::HashCollection.remove_empty_values(args)
       ForemanFogProxmox::HashCollection.remove_keys(args, config_typed_keys('qemu')[:cpu])
       args.each_value(&:to_i)
       cpu = { cpu: cpu_flattened }
     end
     config_typed_keys('lxc')[:cpu].each { |key| ForemanFogProxmox::HashCollection.add_and_format_element(cpu, key.to_sym, args, key) } if type == 'lxc'
+    logger.debug("parse_typed_cpu(#{type}): cpu=#{cpu}")
     cpu
   end
 end

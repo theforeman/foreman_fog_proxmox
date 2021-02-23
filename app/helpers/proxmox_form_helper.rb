@@ -64,6 +64,15 @@ module ProxmoxFormHelper
   def add_child_link_typed(name, association, type, opts = {})
     opts[:class] = [opts[:class], 'add_nested_fields btn btn-primary'].compact.join(' ')
     opts[:"data-association"] = (type + '_' + association.to_s).to_sym
-    link_to_function(name.to_s, 'add_child_node(this);tfm.numFields.initAll();', opts)
+    hide = ''
+    hide += '$("[data-association=' + type + '_volumes]").hide();' unless type == 'hard_disk'
+    link_to_function(name.to_s, 'add_child_node(this);tfm.numFields.initAll();' + hide, opts)
+  end
+
+  def remove_child_link_typed(name, f, type, opts = {})
+    opts[:class] = [opts[:class], 'remove_nested_fields'].compact.join(' ')
+    hide = ''
+    hide += '$("[data-association=' + type + '_volumes]").show();' unless type == 'hard_disk'
+    f.hidden_field(opts[:method] || :_destroy) + link_to_function(name, 'remove_child_node(this);' + hide, opts)
   end
 end

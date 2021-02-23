@@ -41,15 +41,15 @@ module ForemanFogProxmox
             'balloon' => '268435456',
             'shares' => '5',
             'cpu_type' => 'kvm64',
-            'spectre' => '1',
+            'spectre' => '+1',
             'pcid' => '0',
             'cores' => '1',
-            'sockets' => '1',
-            'cdrom' => 'none'
+            'sockets' => '1'
           },
           'volumes_attributes' => {
-            '0' => { 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => 'none' },
-            '1' => { 'controller' => 'virtio', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => 'none' }
+            '0' => { 'id' => 'scsi0', 'storage_type' => 'hard_disk', 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => 'none' },
+            '1' => { 'id' => 'virtio0', 'storage_type' => 'hard_disk', 'controller' => 'virtio', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => 'none' },
+            '2' => { 'id' => 'ide2', 'storage_type' => 'cdrom', 'controller' => 'ide', 'device' => '2', 'storage' => 'local-lvm', 'cdrom' => 'none' }
           },
           'interfaces_attributes' => {
             '0' => { 'id' => 'net0', 'compute_attributes' => { 'model' => 'virtio', 'bridge' => 'vmbr0', 'firewall' => '0', 'link_down' => '0', 'rate' => nil } },
@@ -62,11 +62,10 @@ module ForemanFogProxmox
           'node_id' => 'proxmox',
           'name' => 'test',
           'type' => 'qemu',
-          'config_attributes' => {
-            'cdrom' => 'image',
-            'cdrom_iso' => 'local-lvm:iso/debian-netinst.iso'
+          'volumes_attributes' => {
+            '0' => { '_delete' => '1', 'storage_type' => 'hard_disk', 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824' },
+            '1' => { '_delete' => '', 'storage_type' => 'cdrom', 'controller' => 'ide', 'device' => '2', 'storage' => 'local-lvm', 'volid' => 'local-lvm:iso/debian-netinst.iso', 'cdrom' => 'image' }
           },
-          'volumes_attributes' => { '0' => { '_delete' => '1', 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824' } },
           'interfaces_attributes' => { '0' => { '_delete' => '1', 'id' => 'net0', 'compute_attributes' => { 'model' => 'virtio' } } } }
       end
 
@@ -83,15 +82,23 @@ module ForemanFogProxmox
       end
 
       test '#cdrom none' do
-        cdrom = parse_server_cdrom(host_form['config_attributes'])
-        assert cdrom.key?(:ide2)
-        assert_equal 'none,media=cdrom', cdrom[:ide2]
+        cdrom = parse_server_cdrom(host_form['volumes_attributes']['2'])
+        assert cdrom.key?(:id)
+        assert_equal 'ide2', cdrom[:id]
+        assert cdrom.key?(:volid)
+        assert_equal 'none', cdrom[:volid]
+        assert cdrom.key?(:media)
+        assert_equal 'cdrom', cdrom[:media]
       end
 
       test '#cdrom image' do
-        cdrom = parse_server_cdrom(host_delete['config_attributes'])
-        assert cdrom.key?(:ide2)
-        assert_equal 'local-lvm:iso/debian-netinst.iso,media=cdrom', cdrom[:ide2]
+        cdrom = parse_server_cdrom(host_delete['volumes_attributes']['1'])
+        assert cdrom.key?(:id)
+        assert_equal 'ide2', cdrom[:id]
+        assert cdrom.key?(:volid)
+        assert_equal 'local-lvm:iso/debian-netinst.iso', cdrom[:volid]
+        assert cdrom.key?(:media)
+        assert_equal 'cdrom', cdrom[:media]
       end
 
       test '#vm' do
@@ -111,19 +118,17 @@ module ForemanFogProxmox
       test '#volume with scsi 1Gb' do
         volumes = parse_typed_volumes(host_form['volumes_attributes'], type)
         assert_not volumes.empty?
-        assert volumes.size, 2
-        assert volume = volumes.first
-        assert volume.key?(:scsi0)
-        assert_equal 'local-lvm:1073741824,cache=none', volume[:scsi0]
+        assert volumes.size, 3
+        scsi0 = (volumes.select { |volume| volume.key?(:scsi0) }).first
+        assert_equal 'local-lvm:1073741824,cache=none', scsi0[:scsi0]
       end
 
       test '#volume with virtio 1Gb' do
         volumes = parse_typed_volumes(host_form['volumes_attributes'], type)
         assert_not volumes.empty?
-        assert volumes.size, 2
-        assert volume = volumes[1]
-        assert volume.key?(:virtio0)
-        assert_equal 'local-lvm:1073741824,cache=none', volume[:virtio0]
+        assert volumes.size, 3
+        virtio0 = (volumes.select { |volume| volume.key?(:virtio0) }).first
+        assert_equal 'local-lvm:1073741824,cache=none', virtio0[:virtio0]
       end
 
       test '#interface with model virtio and bridge' do

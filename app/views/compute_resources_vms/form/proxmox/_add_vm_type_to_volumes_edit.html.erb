@@ -14,45 +14,63 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
+
 <% if compute_resource.class == ForemanFogProxmox::Proxmox %>
-<% type = f.object.type %>
-<% node_id = f.object.node_id %>
-<% server = type == 'qemu' %>
-<% container = type == 'lxc' %>
+    <%= javascript_include_tag 'foreman_fog_proxmox/proxmox_volume', "data-turbolinks-track" => true %>
+    <% type = f.object.type %>
+    <% node_id = f.object.node_id %>
+    <% server = type == 'qemu' %>
+    <% container = type == 'lxc' %>
+    <% cdrom = f.object.cdrom? %>
+    <% logger.debug("_add_vm_type_to_volumes_edit.html cdrom=#{cdrom}") %>
+    <% cloud_init = f.object.cloud_init? %>
+    <% logger.debug("_add_vm_type_to_volumes_edit.html cloud_init=#{cloud_init}") %>
+    <% container = type == 'lxc' %>
 
-<%= new_child_fields_template_typed(f, :volumes, {
-              :type => 'server',
-              :object  => compute_resource.new_typed_volume({},'qemu'),
-              :partial => provider_partial(compute_resource, 'server/volume'),
-              :form_builder_attrs => { :type => type, :node_id => node_id, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume') },
-              :layout => "compute_resources_vms/form/#{item_layout}_layout" }) %>
-<%= new_child_fields_template_typed(f, :volumes, {
-              :type => 'container',
-              :object  => compute_resource.new_typed_volume({ id: 'mp0' }, 'lxc'),
-              :partial => provider_partial(compute_resource, 'container/volume_mp'),
-              :form_builder_attrs => { :type => type, :node_id => node_id, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume') },
-              :layout => "compute_resources_vms/form/#{item_layout}_layout" }) %>
-
-
+    <%= add_child_link_typed '+ ' + _("Add Hard Disk"), :volumes, 'hard_disk', { :class => "info #{'hide' unless server }", :title => _('add new hard disk') } %>
+    <%= add_child_link_typed '+ ' + _("Add CD-ROM"), :volumes, 'cdrom', { :class => "info #{'hide' if cdrom }", :title => _('add new cd-rom') } %>
+    <%= add_child_link_typed '+ ' + _("Add Cloud-init"), :volumes, 'cloud_init', { :class => "info #{'hide' if cloud_init }", :title => _('add new cloud-init') } %>
+    <%= add_child_link_typed '+ ' + _("Add Mount Point"), :volumes, 'mp', { :class => "info #{'hide' unless container}", :title => _('add new mount point') } %>
+    
+    <%= new_child_fields_template_typed(f, :volumes, {
+                :type => 'hard_disk',
+                :object  => compute_resource.new_typed_volume({},'qemu','hard_disk'),
+                :partial => provider_partial(compute_resource, 'server/volume_hard_disk'),
+                :form_builder_attrs => { :type => type, :node_id => node_id, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove Hard disk') },
+                :layout => "compute_resources_vms/form/#{item_layout}_layout" }) %>
+    <%= new_child_fields_template_typed(f, :volumes, {
+                :type => 'cdrom',
+                :object  => compute_resource.new_typed_volume({},'qemu','cdrom'),
+                :partial => provider_partial(compute_resource, 'server/volume_cdrom'),
+                :form_builder_attrs => { :type => type, :node_id => node_id, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove CDROM') },
+                :layout => "compute_resources_vms/form/#{item_layout}_layout" }) %>
+    <%= new_child_fields_template_typed(f, :volumes, {
+                :type => 'cloud_init',
+                :object  => compute_resource.new_typed_volume({},'qemu','cloud_init'),
+                :partial => provider_partial(compute_resource, 'server/volume_cloud_init'),
+                :form_builder_attrs => { :type => type, :node_id => node_id, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove Cloud-init') },
+                :layout => "compute_resources_vms/form/#{item_layout}_layout" }) %>
+    <%= new_child_fields_template_typed(f, :volumes, {
+                :type => 'mp',
+                :object  => compute_resource.new_typed_volume({ id: 'mp0' }, 'lxc','mp'),
+                :partial => provider_partial(compute_resource, 'container/volume_mp'),
+                :form_builder_attrs => { :type => type, :node_id => node_id, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove mount point') },
+                :layout => "compute_resources_vms/form/#{item_layout}_layout" }) %>
 
     <%= f.fields_for :volumes do |i| %>
             <% if i.object.rootfs? %>
-            <div id="container_volumes_rootfs" style="<%= 'display: ' + (container ? 'block' : 'none') + ';' %>">
                 <%= render :partial => provider_partial(compute_resource, 'container/volume_rootfs'), :locals => { :f => i, :type => type, :node_id => node_id, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume'), :disabled => !container }, :layout => "compute_resources_vms/form/#{item_layout}_layout" %>
-            </div>  
             <% elsif i.object.mount_point? %>
-            <div id="container_volumes_mp" style="<%= 'display: ' + (container ? 'block' : 'none') + ';' %>">
                 <%= render :partial => provider_partial(compute_resource, 'container/volume_mp'), :locals => { :f => i, :type => type, :node_id => node_id, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume'), :disabled => !container }, :layout => "compute_resources_vms/form/#{item_layout}_layout" %>
-            </div>
-            <% elsif i.object.controller? %>
-            <div id="server_volumes" style="<%= 'display: ' + (server ? 'block' : 'none') + ';' %>">
-                <%= render :partial => provider_partial(compute_resource, 'server/volume'), :locals => { :f => i, :type => type, :node_id => node_id, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume'), :disabled => !server }, :layout => "compute_resources_vms/form/#{item_layout}_layout" %>
-            </div>
+            <% elsif i.object.hard_disk? %>
+                <%= render :partial => provider_partial(compute_resource, 'server/volume_hard_disk'), :locals => { :f => i, :type => type, :node_id => node_id, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume'), :disabled => !server }, :layout => "compute_resources_vms/form/#{item_layout}_layout" %>
+            <% elsif i.object.cdrom? %>
+                <%= render :partial => provider_partial(compute_resource, 'server/volume_cdrom'), :locals => { :f => i, :type => type, :node_id => node_id, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume'), :disabled => !server }, :layout => "compute_resources_vms/form/#{item_layout}_layout" %>
+            <% elsif i.object.cloud_init? %>                
+                <%= render :partial => provider_partial(compute_resource, 'server/volume_cloud_init'), :locals => { :f => i, :type => type, :node_id => node_id, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :remove_title => _('remove storage volume'), :disabled => !server }, :layout => "compute_resources_vms/form/#{item_layout}_layout" %>
             <% end %> 
     <% end %>  
 
-    <%= add_child_link_typed '+ ' + _("Add Volume"), :volumes, 'server', { :class => "info #{'hide' unless server}", :title => _('add new storage volume') } %>
-    <%= add_child_link_typed '+ ' + _("Add Volume"), :volumes, 'container', { :class => "info #{'hide' unless container}", :title => _('add new storage volume') } %>
 <% else %>
 <%= new_child_fields_template(f, :volumes, {
               :object  => volume,
@@ -68,4 +86,3 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     <%= add_child_link '+ ' + _("Add Volume"), :volumes, { :class => "info", :title => _('add new storage volume') } %>
 <% end %>
 <% end %>
-

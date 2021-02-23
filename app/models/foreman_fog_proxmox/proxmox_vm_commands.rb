@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
+require 'foreman_fog_proxmox/hash_collection'
+
 module ForemanFogProxmox
   module ProxmoxVmCommands
     include ProxmoxVolumes
@@ -41,7 +43,7 @@ module ForemanFogProxmox
         clone_from_image(image_id, args, vmid)
       else
         convert_sizes(args)
-        remove_deletes(args)
+        remove_volume_keys(args)
         logger.warn(format(_('create vm: args=%<args>s'), args: args))
         vm = node.send(vm_collection(type)).create(parse_typed_vm(args, type))
         start_on_boot(vm, args)
@@ -69,13 +71,12 @@ module ForemanFogProxmox
       true
     end
 
-    def compute_config_cdrom_attributes(parsed_attr)
+    def compute_config_attributes(parsed_attr)
       excluded_keys = [:vmid, :templated, :ostemplate, :ostemplate_file, :ostemplate_storage, :volumes_attributes, :pool]
       config_attributes = parsed_attr.reject { |key, _value| excluded_keys.include? key.to_sym }
-      config_attributes = config_attributes.reject { |_key, value| ForemanFogProxmox::Value.empty?(value) }
-      cdrom_attributes = parsed_attr.select { |_key, value| Fog::Proxmox::DiskHelper.cdrom?(value.to_s) }
+      ForemanFogProxmox::HashCollection.remove_empty_values(config_attributes)
       config_attributes = config_attributes.reject { |key, _value| Fog::Proxmox::DiskHelper.disk?(key) }
-      { config_attributes: config_attributes, cdrom_attributes: cdrom_attributes }
+      { config_attributes: config_attributes }
     end
 
     def save_vm(uuid, new_attributes)
@@ -88,11 +89,12 @@ module ForemanFogProxmox
         vm.migrate(node_id)
       else
         convert_memory_sizes(new_attributes)
+        parsed_attr = parse_typed_vm(ForemanFogProxmox::HashCollection.new_hash_reject_keys(new_attributes, ['volumes_attributes']).merge(type: vm.type), vm.type)
+        config_attributes = compute_config_attributes(parsed_attr)
         volumes_attributes = new_attributes['volumes_attributes']
+        logger.debug(format(_('save_vm(%<vmid>s) volumes_attributes=%<volumes_attributes>s'), vmid: uuid, volumes_attributes: volumes_attributes))
         volumes_attributes&.each_value { |volume_attributes| save_volume(vm, volume_attributes) }
-        parsed_attr = parse_typed_vm(new_attributes.merge(type: vm.type), vm.type)
-        config_cdrom_attributes = compute_config_cdrom_attributes(parsed_attr)
-        vm.update(config_cdrom_attributes[:config_attributes].merge(config_cdrom_attributes[:cdrom_attributes]))
+        vm.update(config_attributes[:config_attributes])
         poolid = new_attributes['pool'] if new_attributes.key?('pool')
         update_pool(vm, poolid) if poolid
       end

@@ -24,16 +24,20 @@ require 'foreman_fog_proxmox/hash_collection'
 
 # Convert a foreman form server hash into a fog-proxmox server attributes hash
 module ProxmoxVmVolumesHelper
+  include ProxmoxVmCdromHelper
+  include ProxmoxVmCloudinitHelper
   KILO = 1024
   MEGA = KILO * KILO
   GIGA = KILO * MEGA
 
   def add_disk_options(disk, args)
-    options = ForemanFogProxmox::HashCollection.new_hash_reject_keys(args, ['id', 'volid', 'controller', 'device', 'storage', 'size', '_delete'])
+    options = ForemanFogProxmox::HashCollection.new_hash_reject_keys(args, ['id', 'volid', 'controller', 'device', 'storage', 'size', '_delete', 'storage_type'])
+    ForemanFogProxmox::HashCollection.remove_empty_values(options)
     disk[:options] = options
   end
 
   def parsed_typed_volumes(args, type, parsed_vm)
+    logger.debug(format(_('parsed_typed_volumes(%<type>s): args=%<args>s'), args: args, type: type))
     volumes_attributes = args['volumes_attributes']
     volumes_attributes ||= args['config_attributes']['volumes_attributes'] unless ForemanFogProxmox::Value.empty?(args['config_attributes'])
     volumes_attributes ||= args['vm_attrs']['volumes_attributes'] unless ForemanFogProxmox::Value.empty?(args['vm_attrs'])
@@ -42,27 +46,33 @@ module ProxmoxVmVolumesHelper
     parsed_vm
   end
 
-  def parse_typed_volume(args, type)
+  def parse_hard_disk_volume(args)
     disk = {}
-    id = compute_typed_id_disk(args, type)
-    ForemanFogProxmox::HashCollection.remove_empty_values(args)
-    disk[:id] = id
+    disk[:id] = args['id'] if args.key?('id')
     disk[:volid] = args['volid'] if args.key?('volid')
     disk[:storage] = args['storage'].to_s if args.key?('storage')
     disk[:size] = args['size'].to_i if args.key?('size')
     add_disk_options(disk, args)
-    Fog::Proxmox::DiskHelper.flatten(disk)
+    disk.key?(:storage) ? disk : {}
   end
 
-  def compute_typed_id_disk(args, type)
-    id = args['id']
-    case type
-    when 'qemu'
-      id = "#{args['controller']}#{args['device']}" if args.key?('controller') && args.key?('device') && ForemanFogProxmox::Value.empty?(id)
-    when 'lxc'
-      id = "mp#{args['device']}" if args.key?('device') && ForemanFogProxmox::Value.empty?(id)
+  def volume_type?(args, type)
+    if args.key?('storage_type')
+      args['storage_type'] == type
+    else
+      Fog::Proxmox::DiskHelper.cloud_init?(args['volid']) if type == 'cloud_init'
+      Fog::Proxmox::DiskHelper.cdrom?(args['volid']) if type == 'cdrom'
+      Fog::Proxmox::DiskHelper.disk?(args['id']) if ['hard_disk', 'rootfs', 'mp'].include?(type)
     end
-    id
+  end
+
+  def parse_typed_volume(args, type)
+    logger.debug(format(_('parse_typed_volume(%<type>s): args=%<args>s'), args: args, type: type))
+    disk = parse_hard_disk_volume(args) if volume_type?(args, 'hard_disk') || volume_type?(args, 'mp') || volume_type?(args, 'rootfs')
+    disk = parse_server_cloudinit(args) if volume_type?(args, 'cloud_init')
+    disk = parse_server_cdrom(args) if volume_type?(args, 'cdrom')
+    logger.debug(format(_('parse_typed_volume(%<type>s): disk=%<disk>s'), disk: disk, type: type))
+    Fog::Proxmox::DiskHelper.flatten(disk) unless disk.empty?
   end
 
   def add_typed_volume(volumes, value, type)
@@ -71,6 +81,7 @@ module ProxmoxVmVolumesHelper
   end
 
   def parse_typed_volumes(args, type)
+    logger.debug(format(_('parse_typed_volumes(%<type>s): args=%<args>s'), args: args, type: type))
     volumes = []
     args&.each_value { |value| add_typed_volume(volumes, value, type) }
     volumes
@@ -88,7 +99,7 @@ module ProxmoxVmVolumesHelper
     args['volumes_attributes'].each_value { |value| value['size'] = (value['size'].to_i / GIGA).to_s unless ForemanFogProxmox::Value.empty?(value['size']) }
   end
 
-  def remove_deletes(args)
-    args['volumes_attributes']&.delete_if { |_key, value| value.key? '_delete' }
+  def remove_volume_keys(args)
+    args['volumes_attributes'].each_value { |volume_attributes| ForemanFogProxmox::HashCollection.remove_keys(volume_attributes, ['_delete']) } if args.key?('volumes_attributes')
   end
 end

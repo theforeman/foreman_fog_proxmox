@@ -40,22 +40,6 @@ module ProxmoxComputeSelectorsHelper
      OpenStruct.new(id: 'unmanaged', name: 'Unmanaged')]
   end
 
-  def proxmox_controllers_map
-    [ForemanFogProxmox::OptionsSelect.new(id: 'ide', name: 'IDE', range: 3),
-     ForemanFogProxmox::OptionsSelect.new(id: 'sata', name: 'SATA', range: 5),
-     ForemanFogProxmox::OptionsSelect.new(id: 'scsi', name: 'SCSI', range: 13),
-     ForemanFogProxmox::OptionsSelect.new(name: 'VirtIO Block', id: 'virtio', range: 15)]
-  end
-
-  def proxmox_scsi_controllers_map
-    [OpenStruct.new(id: 'lsi', name: 'LSI 53C895A (Default)'),
-     OpenStruct.new(id: 'lsi53c810', name: 'LSI 53C810'),
-     OpenStruct.new(id: 'virtio-scsi-pci', name: 'VirtIO SCSI'),
-     OpenStruct.new(id: 'virtio-scsi-single', name: 'VirtIO SCSI Single'),
-     OpenStruct.new(id: 'megasas', name: 'MegaRAID SAS 8708EM2'),
-     OpenStruct.new(id: 'pvscsi', name: 'VMware PVSCSI')]
-  end
-
   def proxmox_operating_systems_map
     [OpenStruct.new(id: 'other', name: 'Unspecified OS'),
      OpenStruct.new(id: 'wxp', name: 'Microsoft Windows XP'),
@@ -159,6 +143,12 @@ module ProxmoxComputeSelectorsHelper
      OpenStruct.new(id: 'Opteron_G4', name: 'Opteron_G4'),
      OpenStruct.new(id: 'Opteron_G5', name: 'Opteron_G5'),
      OpenStruct.new(id: 'host', name: 'host')]
+  end
+
+  def proxmox_cpu_flags_map
+    [OpenStruct.new(id: '-1', name: 'Off'),
+     OpenStruct.new(id: '0', name: 'Default'),
+     OpenStruct.new(id: '+1', name: 'On')]
   end
 
   def proxmox_scsihw_map

@@ -20,19 +20,24 @@
 require 'fog/proxmox'
 require 'fog/proxmox/helpers/nic_helper'
 require 'fog/proxmox/helpers/disk_helper'
+require 'foreman_fog_proxmox/hash_collection'
 
 module ForemanFogProxmox
   module ProxmoxVmNew
     include ProxmoxVmHelper
 
     def cdrom_defaults
-      { cdrom: 'none' }
+      { storage_type: 'cdrom', id: 'ide2', volid: 'none', media: 'cdrom' }
     end
 
-    def volume_typed_defaults(type)
+    def cloudinit_defaults
+      { storage_type: 'cloud_init', id: 'ide0', storage: storages.first.identity.to_s, media: 'cdrom' }
+    end
+
+    def hard_disk_typed_defaults(vm_type)
       options = {}
       volume_attributes_h = { storage: storages.first.identity.to_s, size: (8 * GIGA) }
-      case type
+      case vm_type
       when 'qemu'
         controller = 'virtio'
         device = 0
@@ -41,22 +46,26 @@ module ForemanFogProxmox
         volume_attributes_h = volume_attributes_h.merge(controller: controller, device: device)
       when 'lxc'
         id = 'rootfs'
+        volume_attributes_h = volume_attributes_h.merge(storage_type: 'rootfs')
       end
       volume_attributes_h[:id] = id
       volume_attributes_h[:options] = options
       volume_attributes_h
     end
 
-    def new_typed_volume(attr, type)
-      opts = volume_typed_defaults(type).merge(attr.to_h).deep_symbolize_keys
-      opts[:size] = opts[:size].to_s
+    def new_typed_volume(attr, vm_type, volume_type)
+      volume_defaults = hard_disk_typed_defaults(vm_type) if ['hard_disk', 'rootfs', 'mp'].include?(volume_type)
+      volume_defaults = cdrom_defaults if volume_type == 'cdrom'
+      volume_defaults = cloudinit_defaults if volume_type == 'cloud_init'
+      opts = volume_defaults.merge(attr.to_h).deep_symbolize_keys
+      opts = ForemanFogProxmox::HashCollection.new_hash_transform_values(opts, :to_s)
       Fog::Proxmox::Compute::Disk.new(opts)
     end
 
     def new_volume(attr = {})
       type = attr['type']
       type ||= 'qemu'
-      new_typed_volume(attr, type)
+      new_typed_volume(attr, type, 'hard_disk')
     end
 
     def interface_defaults(id = 'net0')
@@ -93,20 +102,32 @@ module ForemanFogProxmox
       default_node.servers.next_id
     end
 
+    def add_default_typed_interface(type, new_attr)
+      interfaces_attributes = []
+      interfaces_attributes.push(interface_typed_defaults(type))
+      new_attr = new_attr.merge(interfaces_attributes: interfaces_attributes.map.with_index.to_h.invert)
+      logger.debug(format(_('add_default_typed_interface(%<type>s) to new_attr=%<new_attr>s'), type: type, new_attr: new_attr))
+      new_attr
+    end
+
+    def add_default_typed_volume(new_attr)
+      volumes_attributes = []
+      volumes_attributes.push(hard_disk_typed_defaults('qemu'))
+      volumes_attributes.push(hard_disk_typed_defaults('lxc'))
+      new_attr = new_attr.merge(volumes_attributes: volumes_attributes.map.with_index.to_h.invert)
+      logger.debug(format(_('add_default_typed_volume(%<type>s) to new_attr=%<new_attr>s'), type: type, new_attr: new_attr))
+      new_attr
+    end
+
     def vm_instance_defaults
-      super.merge(vmid: next_vmid, node_id: default_node_id, type: type)
+      super.merge(vmid: next_vmid, node_id: default_node_id, type: 'qemu')
     end
 
     def vm_typed_instance_defaults(type)
       defaults = vm_instance_defaults
-      volumes_attributes = []
-      volumes_attributes.push(volume_typed_defaults('qemu'))
-      volumes_attributes.push(volume_typed_defaults('lxc'))
-      interfaces_attributes = []
-      interfaces_attributes.push(interface_typed_defaults(type))
       defaults = defaults.merge(config_attributes: config_attributes(type))
-      defaults = defaults.merge(volumes_attributes: volumes_attributes.map.with_index.to_h.invert)
-      defaults = defaults.merge(interfaces_attributes: interfaces_attributes.map.with_index.to_h.invert)
+      defaults = add_default_typed_volume(defaults)
+      defaults = add_default_typed_interface(type, defaults)
       defaults
     end
 
@@ -121,11 +142,11 @@ module ForemanFogProxmox
           memory: 512 * MEGA,
           ostype: 'l26',
           keyboard: 'en-us',
-          cpu_type: 'kvm64',
+          cpu: 'cputype=kvm64',
           scsihw: 'virtio-scsi-pci',
           templated: 0
         }
-        config_attributes = config_attributes.merge(cdrom_defaults)
+        config_attributes = config_attributes
       when 'lxc'
         config_attributes = {
           memory: 512 * MEGA,
@@ -157,10 +178,15 @@ module ForemanFogProxmox
       node_id = new_attr['node_id']
       node = node_id ? client.nodes.get(node_id) : default_node
       new_attr_type = new_attr['type']
-      new_attr_type ||= new_attr[:config_attributes]['type'] if new_attr.respond_to?(:config_attributes)
-      options = new_attr_type == type ? new_attr : vm_typed_instance_defaults(type)
-      options = options.merge(type: type).merge(vmid: next_vmid) if ForemanFogProxmox::Value.empty?(new_attr['vmid'])
-      vm = node.send(vm_collection(type)).new(parse_typed_vm(options, type).deep_symbolize_keys)
+      new_attr_type ||= new_attr['config_attributes']['type'] if new_attr.key?('config_attributes')
+      new_attr_type ||= type
+      logger.debug(format(_('new_typed_vm(%<type>s): new_attr_type=%<new_attr_type>s'), type: type, new_attr_type: new_attr_type))
+      logger.debug(format(_('new_typed_vm(%<type>s): new_attr=%<new_attr>s'), type: type, new_attr: new_attr))
+      options = !new_attr.key?('vmid') || ForemanFogProxmox::Value.empty?(new_attr['vmid']) ? new_attr.merge(vm_typed_instance_defaults(type)).merge(type: type) : new_attr
+      logger.debug(format(_('new_typed_vm(%<type>s): options=%<options>s'), type: type, options: options))
+      vm_h = parse_typed_vm(options, type).deep_symbolize_keys
+      logger.debug(format(_('new_typed_vm(%<type>s): vm_h=%<vm_h>s'), type: type, vm_h: vm_h))
+      vm = node.send(vm_collection(type)).new(vm_h)
       vm
     end
   end

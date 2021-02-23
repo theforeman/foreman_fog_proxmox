@@ -27,6 +27,7 @@ module ForemanFogProxmox
       node = client.nodes.get node_id
       node ||= default_node
       storage = node.storages.get storage_id if storage_id
+      logger.debug(format(_('images_by_storage(): node_id %<node_id>s storage_id %<storage_id>s type %<type>s'), node_id: node_id, storage_id: storage_id, type: type))
       storage.volumes.list_by_content_type(type).sort_by(&:volid) if storage
     end
 

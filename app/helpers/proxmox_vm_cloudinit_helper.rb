@@ -23,13 +23,21 @@ require 'foreman_fog_proxmox/value'
 require 'foreman_fog_proxmox/hash_collection'
 
 # Convert a foreman form server hash into a fog-proxmox server attributes hash
-module ProxmoxVmCdromHelper
-  def parse_server_cdrom(args)
-    cdrom_media = args['cdrom'] if args.key?('cdrom')
-    cdrom_image = args['volid'] if args.key?('volid')
-    volid = cdrom_image.empty? ? cdrom_media : cdrom_image
-    return {} unless volid
-
-    { id: 'ide2', volid: volid, media: 'cdrom' }
+module ProxmoxVmCloudinitHelper
+  def parse_server_cloudinit(args)
+    cloudinit_h = {}
+    cloudinit = args['cloudinit']
+    unless ['none'].include? cloudinit
+      volid = args['volid']
+      storage = args['storage']
+      cloudinit_volid = volid if volid
+      cloudinit_volid ||= "#{storage}:cloudinit" if storage
+      controller = args['controller']
+      device = args['device']
+      id = "#{controller}#{device}" if controller && device
+      cloudinit_h.store(:id, id.to_sym) if id
+      cloudinit_h.store(:volid, cloudinit_volid) if cloudinit_volid
+    end
+    cloudinit_h
   end
 end

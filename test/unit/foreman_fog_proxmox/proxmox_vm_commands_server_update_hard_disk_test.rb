@@ -43,10 +43,13 @@ module ForemanFogProxmox
         disk.stubs(:size).returns(1_073_741_824)
         disk.stubs(:storage).returns('local-lvm')
         disk.stubs(:id).returns('scsi0')
+        disk.stubs(:attributes).returns(id: 'scsi0', storage: 'local-lvm', size: 1_073_741_824)
         disks.stubs(:get).returns
         config.stubs(:disks).returns(disks)
         config.stubs(:attributes).returns(:cores => '')
         vm = mock('vm')
+        vm.stubs(:identity).returns(uuid)
+        vm.stubs(:attributes).returns('' => '')
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
         vm.stubs(:type).returns('qemu')
@@ -65,6 +68,7 @@ module ForemanFogProxmox
               '_delete' => '',
               'device' => '0',
               'controller' => 'scsi',
+              'storage_type' => 'hard_disk',
               'storage' => 'local-lvm',
               'size' => '2147483648',
               'cache' => 'none'
@@ -91,6 +95,8 @@ module ForemanFogProxmox
         config.stubs(:disks).returns(disks)
         config.stubs(:attributes).returns(:cores => '')
         vm = mock('vm')
+        vm.stubs(:identity).returns(uuid)
+        vm.stubs(:attributes).returns('scsi0' => '')
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
         vm.stubs(:templated?).returns(false)
@@ -108,6 +114,7 @@ module ForemanFogProxmox
             '0' => {
               '_delete' => '1',
               'id' => 'scsi0',
+              'storage_type' => 'hard_disk',
               'volid' => 'local-lvm:vm-100-disk-0',
               'device' => '0',
               'controller' => 'scsi',
@@ -132,11 +139,15 @@ module ForemanFogProxmox
         disks = mock('disks')
         disk = mock('disk')
         disk.stubs(:size).returns(1_073_741_824)
-        disk.stubs(:storage).returns('local-lvm')
+        disk.stubs(:storage).returns('scsi0')
+        disk.stubs(:id).returns('local-lvm')
+        disk.stubs(:attributes).returns(id: 'scsi0', storage: 'local-lvm', size: 1_073_741_824)
         disks.stubs(:get).returns(disk)
         config.stubs(:disks).returns(disks)
         config.stubs(:attributes).returns(:cores => '')
         vm = mock('vm')
+        vm.stubs(:identity).returns(uuid)
+        vm.stubs(:attributes).returns('scsi0' => '')
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
         vm.stubs(:templated?).returns(false)
@@ -154,6 +165,7 @@ module ForemanFogProxmox
             '0' => {
               'id' => 'scsi0',
               '_delete' => '',
+              'storage_type' => 'hard_disk',
               'volid' => 'local-lvm:vm-100-disk-0',
               'device' => '0',
               'controller' => 'scsi',
@@ -176,12 +188,16 @@ module ForemanFogProxmox
         config = mock('config')
         disks = mock('disks')
         disk = mock('disk')
+        disk.stubs(:id).returns('scsi0')
         disk.stubs(:size).returns(1_073_741_824)
         disk.stubs(:storage).returns('local-lvm')
+        disk.stubs(:attributes).returns(id: 'scsi0', storage: 'local-lvm', size: 1_073_741_824)
         disks.stubs(:get).returns(disk)
         config.stubs(:disks).returns(disks)
         config.stubs(:attributes).returns(:cores => '')
         vm = mock('vm')
+        vm.stubs(:identity).returns(uuid)
+        vm.stubs(:attributes).returns('scsi0' => '')
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
         vm.stubs(:type).returns('qemu')
@@ -198,6 +214,7 @@ module ForemanFogProxmox
             '0' => {
               'id' => 'scsi0',
               '_delete' => '',
+              'storage_type' => 'hard_disk',
               'volid' => 'local-lvm:vm-100-disk-0',
               'device' => '0',
               'controller' => 'scsi',
@@ -219,12 +236,16 @@ module ForemanFogProxmox
         config = mock('config')
         disks = mock('disks')
         disk = mock('disk')
+        disk.stubs(:id).returns('scsi0')
         disk.stubs(:size).returns(1_073_741_824)
         disk.stubs(:storage).returns('local-lvm')
+        disk.stubs(:attributes).returns(id: 'scsi0', storage: 'local-lvm', size: 1_073_741_824)
         disks.stubs(:get).returns(disk)
         config.stubs(:disks).returns(disks)
         config.stubs(:attributes).returns(:cores => '')
         vm = mock('vm')
+        vm.stubs(:identity).returns(uuid)
+        vm.stubs(:attributes).returns('scsi0' => '')
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
         vm.stubs(:type).returns('qemu')
@@ -241,6 +262,7 @@ module ForemanFogProxmox
             '0' => {
               'id' => 'scsi0',
               '_delete' => '',
+              'storage_type' => 'hard_disk',
               'volid' => 'local-lvm:vm-100-disk-0',
               'device' => '0',
               'controller' => 'scsi',
@@ -267,10 +289,13 @@ module ForemanFogProxmox
         disk.stubs(:storage).returns('local-lvm')
         disk.stubs(:volid).returns('local-lvm:vm-100-disk-0')
         disk.stubs(:id).returns('scsi0')
+        disk.stubs(:attributes).returns(id: 'scsi0', storage: 'local-lvm', volid: 'local-lvm:vm-100-disk-0', size: 1_073_741_824)
         disks.stubs(:get).returns(disk)
         config.stubs(:disks).returns(disks)
         config.stubs(:attributes).returns(:cores => '')
         vm = mock('vm')
+        vm.stubs(:identity).returns(uuid)
+        vm.stubs(:attributes).returns('scsi0' => '')
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
         vm.stubs(:type).returns('qemu')
@@ -287,6 +312,7 @@ module ForemanFogProxmox
             '0' => {
               'id' => 'scsi0',
               '_delete' => '',
+              'storage_type' => 'hard_disk',
               'volid' => 'local-lvm:vm-100-disk-0',
               'device' => '0',
               'controller' => 'scsi',

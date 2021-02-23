@@ -24,38 +24,12 @@ module FogExtensions
     module ServerConfig
       extend ActiveSupport::Concern
       def cpu_type
-        Fog::Proxmox::CpuHelper.extract_type(cpu)
+        Fog::Proxmox::CpuHelper.extract_cputype(cpu)
       end
 
-      def spectre
-        Fog::Proxmox::CpuHelper.has_spectre?(cpu)
-      end
-
-      def pcid
-        Fog::Proxmox::CpuHelper.has_pcid?(cpu)
-      end
-
-      def cdrom
-        if disks.cdrom
-          ['none', 'cdrom'].include?(disks.cdrom.volid) ? disks.cdrom.volid : 'image'
-        else
-          'none'
-        end
-      end
-
-      def cdrom_storage
-        disks.cdrom ? disks.cdrom.storage : ''
-      end
-
-      def cdrom_iso
-        disks.cdrom ? disks.cdrom.volid : ''
-      end
-
-      def cdrom_image
-        if disks.cdrom
-          ['none', 'cdrom'].include?(disks.cdrom.volid) ? disks.cdrom.volid : 'image'
-        else
-          'none'
+      Fog::Proxmox::CpuHelper.flags.each do |flag_key, flag_value|
+        define_method(flag_key) do
+          Fog::Proxmox::CpuHelper.flag_value(cpu, flag_value)
         end
       end
 
@@ -65,6 +39,10 @@ module FogExtensions
 
       def rootfs_file
         disks.rootfs&.volid
+      end
+
+      def cloud_init?
+        disks.any?(&:cloud_init?)
       end
     end
   end

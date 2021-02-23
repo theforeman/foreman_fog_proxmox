@@ -1,0 +1,34 @@
+<%# Copyright 2018 Tristan Robert
+
+This file is part of ForemanFogProxmox.
+
+ForemanFogProxmox is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+ForemanFogProxmox is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
+
+<%= javascript_include_tag 'foreman_fog_proxmox/proxmox_volume_cdrom', "data-turbolinks-track" => true %>
+
+<% cdrom = f.object.cdrom? %>
+<% new_volume = f.object.volid.nil? %>
+
+<%= field_set_tag _("CD-ROM"), :id => "server_volume_cdrom_#{f.index}", :class => ('hide' unless cdrom), :disabled => !cdrom do %>
+  <%= field_set_tag _("Media"), :id => "cdrom_media_form_#{f.index}" do %>
+    <%= f.hidden_field :storage_type %>
+    <%= radio_button_f f, :cdrom, :value => 'none', :text => _('None'), :onclick => 'cdromSelected(this)' %>
+    <%= radio_button_f f, :cdrom, :value => 'cdrom' , :text => _('Physical'), :onclick => 'cdromSelected(this)' %>
+    <%= radio_button_f f, :cdrom, :value => 'image' , :text => _('Image'), :onclick => 'cdromSelected(this)' %>
+  <% end %>
+  <%= field_set_tag _("Image"), :id => "cdrom_image_form_#{f.index}", :class => ('hide' unless %[image].include? f.object.cdrom), :disabled => (%[cdrom none].include? f.object.cdrom)  do %>
+    <%= select_f f, :storage, compute_resource.storages(node_id,'iso'), :storage, :storage, { :include_blank => true }, :label => _('Storage'), :label_size => "col-md-2", :onchange => 'storageIsoSelected(this)' %>
+    <%= select_f f, :volid, compute_resource.images_by_storage(node_id, f.object.storage, 'iso'), :volid, :volid, { :include_blank => true }, :label => _('Image ISO'), :label_size => "col-md-2" %>
+  <% end %>
+<% end %>

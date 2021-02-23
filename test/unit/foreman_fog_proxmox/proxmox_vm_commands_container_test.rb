@@ -44,6 +44,7 @@ module ForemanFogProxmox
         vm.stubs(:container?).returns(true)
         vm.stubs(:type).returns('lxc')
         vm.stubs(:node_id).returns('proxmox')
+        vm.stubs(:attributes).returns(node_id: 'proxmox', type: 'lxc')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         attr = { 'templated' => '0', 'node_id' => 'proxmox', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
         @cr.stubs(:parse_container_vm).returns('vmid' => '100', 'node_id' => 'proxmox2', 'type' => 'lxc', 'cores' => '1', 'cpulimit' => '1')
@@ -61,6 +62,7 @@ module ForemanFogProxmox
         vm.stubs(:container?).returns(true)
         vm.stubs(:type).returns('lxc')
         vm.stubs(:node_id).returns('proxmox')
+        vm.stubs(:attributes).returns(node_id: 'proxmox', type: 'lxc')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         attr = { 'templated' => '0', 'node_id' => 'proxmox', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
         @cr.stubs(:parse_container_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'lxc', 'cores' => '1', 'cpulimit' => '1')
@@ -81,10 +83,12 @@ module ForemanFogProxmox
         config.stubs(:disks).returns(disks)
         config.stubs(:attributes).returns(:cores => '')
         vm = mock('vm')
+        vm.stubs(:identity).returns(uuid)
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(true)
         vm.stubs(:type).returns('lxc')
         vm.stubs(:node_id).returns('proxmox')
+        vm.stubs(:attributes).returns(node_id: 'proxmox', type: 'lxc')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         new_attributes = {
           'templated' => '0',
@@ -131,14 +135,17 @@ module ForemanFogProxmox
         disk.stubs(:size).returns(1_073_741_824)
         disk.stubs(:storage).returns('local-lvm')
         disk.stubs(:id).returns('rootfs')
+        disk.stubs(:attributes).returns(id: 'rootfs', storage: 'local-lvm', size: 1_073_741_824)
         disks.stubs(:get).returns(disk)
         config.stubs(:disks).returns(disks)
         config.stubs(:attributes).returns(:cores => '')
         vm = mock('vm')
+        vm.stubs(:identity).returns(uuid)
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(true)
         vm.stubs(:type).returns('lxc')
         vm.stubs(:node_id).returns('proxmox')
+        vm.stubs(:attributes).returns(node_id: 'proxmox', type: 'lxc', 'rootfs' => '')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         new_attributes =
           {
@@ -185,14 +192,17 @@ module ForemanFogProxmox
         disk.stubs(:id).returns('mp0')
         disk.stubs(:size).returns(1_073_741_824)
         disk.stubs(:storage).returns('local-lvm')
+        disk.stubs(:attributes).returns(id: 'mp0', storage: 'local-lvm', size: 1_073_741_824, volid: 'local-lvm:vm-100-disk-0')
         disks.stubs(:get).returns(disk)
         config.stubs(:disks).returns(disks)
         config.stubs(:attributes).returns(:cores => '')
         vm = mock('vm')
+        vm.stubs(:identity).returns(uuid)
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(true)
         vm.stubs(:type).returns('lxc')
         vm.stubs(:node_id).returns('proxmox')
+        vm.stubs(:attributes).returns(node_id: 'proxmox', type: 'lxc')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         new_attributes = {
           'templated' => '0',

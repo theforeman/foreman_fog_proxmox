@@ -1,0 +1,29 @@
+<%# Copyright 2018 Tristan Robert
+
+This file is part of ForemanFogProxmox.
+
+ForemanFogProxmox is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+ForemanFogProxmox is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
+
+<%= javascript_include_tag 'foreman_fog_proxmox/proxmox_volume_cloudinit', "data-turbolinks-track" => true %>
+
+<% cloud_init = f.object.cloud_init? %>
+<% new_volume = f.object.volid.nil? %>
+
+<%= field_set_tag _("Cloud-init"), :id => "server_volume_cloud_init_#{f.index}", :class => ('hide' unless cloud_init), :disabled => !cloud_init do %>
+  <%= f.hidden_field :volid if !new_volume %>
+  <%= f.hidden_field :storage_type %>
+  <%= select_f f, :storage, compute_resource.storages(node_id), :storage, :storage, { :include_blank => true }, :label => _('Storage'), :label_size => "col-md-2", :disabled => !new_volume %>
+  <%= select_f f, :controller, proxmox_controllers_cloudinit_map, :id, :name, { :include_blank => true }, :label => _('Controller'), :label_size => "col-md-2", :onchange => 'cloudinitControllerSelected(this)', :disabled => !new_volume %>
+  <%= text_f f, :device, :label => _('Device'), :label_size => "col-md-2", :'data-min' => 0, :'data-soft-max' => proxmox_max_device(f.object.controller), :disabled => !new_volume %>
+<% end %>

@@ -34,67 +34,139 @@ function vmTypeSelected() {
   fieldsets.push({id: 'config_cdrom', toggle: false, new_vm: new_vm, selected: selected});
   fieldsets.push({id: 'config_os', toggle: false, new_vm: new_vm, selected: selected});
   fieldsets.push({id: 'config_dns', toggle: false, new_vm: new_vm, selected: selected});
-  fieldsets.forEach(toggleFieldset);
+  fieldsets.forEach(toggleFieldsets);
   toggleVolumes(selected);
   return false;
 }
 
-function toggleVolumes(selected){
-  var div_container = $("div[id^='container_volumes']");
-  var div_server = $("div[id^='server_volumes']");
-  var a_container = $("a[data-association='container_volumes']");
-  var a_server = $("a[data-association='server_volumes']");
-  switch (selected) {
-    case 'qemu':
-      div_container.hide();
-      div_server.show();
-      a_container.hide();
-      a_server.show();
-      break;
-    case 'lxc':
-      div_container.show();
-      div_server.hide();
-      a_container.show();
-      a_server.hide();
-      break;
-    default:
-      console.log("unkown type="+selected);
-      break;
-  }
+function volumeButtonAddId(id){
+  return $("a[data-association='" + id + "_volumes']");
 }
 
-function toggleFieldset(fieldset, index, fieldsets){
-  var server_input_hidden = $("div[id^='server_volumes']" + " + input:hidden");
-  var container_input_hidden = $("div[id^='container_volumes']" + " + input:hidden");
-  var removable_input_hidden = $("div.removable-item[style='display: none;']" + " + input:hidden");
-  var server_fieldset = $("fieldset[id^='server_"+fieldset.id+"']");
-  var container_fieldset = $("fieldset[id^='container_"+fieldset.id+"']");
-  removable_input_hidden.attr('disabled','disabled');
-  switch (fieldset.selected) {
-    case 'qemu':
-      if (fieldset.toggle && fieldset.new_vm){
-        server_fieldset.show();
-        container_fieldset.hide();
-      }
-      server_fieldset.removeAttr('disabled');
-      container_fieldset.attr('disabled','disabled');
-      server_input_hidden.removeAttr('disabled');
-      container_input_hidden.attr('disabled','disabled');
-      break;
-    case 'lxc':
-      if (fieldset.toggle && fieldset.new_vm){
-        server_fieldset.hide();
-        container_fieldset.show();
-      }
-      server_fieldset.attr('disabled','disabled');
-      container_fieldset.removeAttr('disabled');
-      container_input_hidden.removeAttr('disabled');
-      server_input_hidden.attr('disabled','disabled');
-      break;
-    default:
-      console.log("unkown type="+fieldset.selected);
-      break;
+function volumeFieldsetId(id, type){
+  return $("fieldset[id^='" + type + "_volume_"+ id +"']").not("fieldset[id$='_new_" + id +"_volumes']");
+}
+
+function indexByIdAndType(id, storage_type, vm_type){
+  let regex = new RegExp(`${vm_type}_volume_${storage_type}_(\\d+)`);
+  return id.match(regex)[1];
+}
+
+function volidByIndexAndTag(index, tag){
+  return $(tag + "[id='host_compute_attributes_volumes_attributes_" + index + "_volid']").val();
+}
+
+function hasCloudinit(){
+  result = false;
+  let id = volumeFieldsetId('cloud_init', 'server').attr('id');
+  if (id !== undefined){
+    let index = indexByIdAndType(id, 'cloud_init', 'server');
+    let volid = volidByIndexAndTag(index, 'input');
+    result = volid.includes("cloudinit");
   }
+  return result;
+}
+
+function hasCdrom(){
+  result = false;
+  let id = volumeFieldsetId('cdrom', 'server').attr('id');
+  if (id !== undefined){
+    let index = indexByIdAndType(id, 'cdrom', 'server');
+    let checked = $("input[id^='host_compute_attributes_volumes_attributes_" + index + "_cdrom']:checked").val();
+    let isCdrom = checked === 'cdrom';
+    result = isCdrom;
+    let isImage = checked === 'image';
+    if (isImage) {
+      let volid = volidByIndexAndTag(index, 'select');
+      result = volid.includes("iso");
+    }
+  }
+  return result;
+}
+
+function cloudinit(id){
+  return id === 'cloud_init' && hasCloudinit();
+}
+
+function cdrom(id){
+  return id === 'cdrom' && hasCdrom();
+}
+
+function enableVolume(id, type){
+  volumeFieldsetId(id, type).show();
+  volumeButtonAddId(id).show();
+  if (cloudinit(id) || cdrom(id)){
+    volumeButtonAddId(id).hide();
+  }
+  volumeFieldsetId(id, type).removeAttr('disabled');
+}
+
+function disableVolume(id, type){
+  volumeFieldsetId(id, type).hide();
+  volumeButtonAddId(id).hide();
+  volumeFieldsetId(id, type).attr('disabled','disabled');
+}
+
+function volumes(type){
+  return type === 'qemu' ? ['hard_disk', 'cdrom', 'cloud_init'] : ['mp', 'rootfs'];
+}
+
+function volume(type){
+  return type === 'qemu' ? 'server' : 'container';
+}
+
+function toggleVolume(id, type1, type2){
+  type1 === type2 ? enableVolume(id, volume(type1)) : disableVolume(id, volume(type1));
+}
+
+function toggleVolumes(selected){
+   ['qemu', 'lxc'].forEach(function(type){
+    volumes(type).forEach(function(id){
+      toggleVolume(id, selected, type);
+    });
+  });
+}
+
+function enableFieldset(id, fieldset) {
+  if (fieldset.toggle && fieldset.new_vm){
+    fieldset_id(id, fieldset).show();
+  }
+  fieldset_id(id, fieldset).removeAttr('disabled');
+  input_hidden_id(id).removeAttr('disabled');
+}
+
+function disableFieldset(id, fieldset) {  
+  if (fieldset.toggle && fieldset.new_vm){
+    fieldset_id(id, fieldset).hide();
+  }
+  fieldset_id(id, fieldset).attr('disabled','disabled');
+  input_hidden_id(id).attr('disabled','disabled');
+}
+
+function toggleFieldset(id, fieldset, type1, type2) {  
+  type1 === type2 ? enableFieldset(id, fieldset) : disableFieldset(id, fieldset);
+}
+
+function input_hidden_id(id){
+  return $("div[id^='"+ id +"_volumes']" + " + input:hidden");
+}
+
+function fieldset_id(id, fieldset){
+  return $("fieldset[id^='" + id + "_"+fieldset.id+"']");
+}
+
+function fieldsets(type){
+  return type === 'qemu' ? ['server'] : ['container'];
+}
+
+function toggleFieldsets(fieldset){
+  var removable_input_hidden = $("div.removable-item[style='display: none;']" + " + input:hidden");
+  removable_input_hidden.attr('disabled','disabled');  
+  ['qemu', 'lxc'].forEach(function(type){
+    fieldsets(type).forEach(function(id){
+      toggleFieldset(id, fieldset, fieldset.selected, type);
+    });
+  });
 }
 
 function nodeSelected(item) {

@@ -63,6 +63,7 @@ module ProxmoxVmInterfacesHelper
   end
 
   def add_or_delete_typed_interface(interface_attributes, interfaces_to_delete, interfaces_to_add, type)
+    logger.debug("add_or_delete_typed_interface(#{type}): interface_attributes=#{interface_attributes}")
     ForemanFogProxmox::HashCollection.remove_empty_values(interface_attributes)
     ForemanFogProxmox::HashCollection.remove_empty_values(interface_attributes['compute_attributes']) if interface_attributes['compute_attributes']
     nic = {}

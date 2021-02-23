@@ -17,19 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-require 'fog/proxmox/helpers/disk_helper'
-require 'fog/proxmox/helpers/nic_helper'
-require 'foreman_fog_proxmox/value'
-require 'foreman_fog_proxmox/hash_collection'
-
-# Convert a foreman form server hash into a fog-proxmox server attributes hash
-module ProxmoxVmCdromHelper
-  def parse_server_cdrom(args)
-    cdrom_media = args['cdrom'] if args.key?('cdrom')
-    cdrom_image = args['volid'] if args.key?('volid')
-    volid = cdrom_image.empty? ? cdrom_media : cdrom_image
-    return {} unless volid
-
-    { id: 'ide2', volid: volid, media: 'cdrom' }
+module ProxmoxStoragesHelper
+  def proxmox_storages_types_map
+    [OpenStruct.new(id: 'hard_disk', name: 'Hard disk'),
+     OpenStruct.new(id: 'cdrom', name: 'CD-ROM'),
+     OpenStruct.new(id: 'cloud_init', name: 'Cloud-init')]
   end
 end

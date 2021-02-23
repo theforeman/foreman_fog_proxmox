@@ -5,9 +5,20 @@
 You create a proxmox compute resource and set:
 
 * the API REST URL, e.g: http://[host]:8006/api2/json
-* user with sufficient privilegies to create vm with his realm, e.g: root@pam. Don't forget the @!
+* username with sufficient privilegies to create vm within his realm, e.g: root@pam. Don't forget the @!
+
+Then you can choose between two authentication modes:
+
+Access ticket (Default):
+
 * user password
-* if ssl_verify_peer, copy and paste the two cluster certificates: root and pve
+
+Or user token:
+
+* user token id with sufficient privilegies to create vm within his realm
+* user token value
+
+You can add SSL certificates too: check `SSL verify peer` and copy and paste the two cluster certificates: root and pve
 
 Test if connection works, then save it.
 
@@ -33,11 +44,19 @@ You can see in welcome page this widget which shows node average load through ti
 
 To ease hosts management you can create a host group.
 
-You can create profiles:
+You can create profiles (server and container). Here is server sample:
 
 ![Compute profile](images/compute_profile_server.png)
 
-You can list profiles:
+Here is container sample:
+
+![Compute profile](images/compute_profile_container.png)
+
+You can show compute resource details:
+
+![Compute resources details](images/compute_resource_show.png)
+
+Then you can list profiles:
 
 ![Compute profile](images/list_profiles.png)
 

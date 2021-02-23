@@ -26,9 +26,21 @@ Memory options:
 
 ![Create host](images/create_host_advanced_memory.png)
 
-CDROM options:
+You can add/update/remove 3 types of storages:
 
-![Create host](images/create_host_advanced_cdrom.png)
+Hard disk (any),
+
+CDROM (only once):
+
+![Create host](images/create_host_volume_cdrom.png)
+
+Cloud-init (only once):
+
+![Create host](images/create_host_volume_cloud_init.png)
+
+And when a cloud-init drive has been saved (with the host) then you can update cloud-init options:
+
+![Create host](images/create_host_advanced_cloud_init.png)
 
 OS options:
 
@@ -38,20 +50,29 @@ OS tab with build from network (default):
 
 ![Build from network](images/create_host_os_network.png)
 
-Network interface tab:
+Network server interface tab:
 
 ![Interface](images/create_host_interface.png)
 
 Identifier is required. You must set `net[n]` with n an integer.
 If not, a default one is set for you.
 
-The container form slightly differs from the server one.
+The container form slightly differs from the server one:
+
+* OS template is required
+* advanced options are slightly different
 
 Container VM Proxmox config tab:
 
 ![Create host container](images/create_host_container.png)
 
+You can add (many) mount points:
 
+![Create host container](images/create_host_container_volume_mp.png)
+
+Network interface container tab:
+
+![Interface](images/create_host_container_interface.png)
 
 ## Update
 
@@ -60,11 +81,13 @@ Update config is available.
 ## Clone images
 
 You can also change a host (server or container) into an image, i.e. a [template](https://pve.proxmox.com/wiki/Qemu/KVM_Virtual_Machines#qm_templates) in Proxmox.
-You update a host. You check the box `Create image?` to true and save it:
+You update a host. You check the box `Create image?` to true and save it. Here is container template sample:
 
 ![Update host to template](images/update_host_to_template.png)
 
-The image is then available in the list of the create image form.
+The image is then available in the list of compute resource images tab:
+
+![Compute resources images](images/compute_resource_images.png)
 
 You create an image from your compute ressource:
 
@@ -94,11 +117,11 @@ And you can check it in Proxmox Web interface too:
 
 ## Show a host
 
-VM (server) tab when vm is a template. `Templated?` is true:
+VM (container) tab when vm is a template. `Templated?` is true:
 
 ![Show VM templated](images/show_host_templated.png)
 
-VM (container) tab when vm is not a template. `Templated?` is false:
+VM (server) tab when vm is not a template. `Templated?` is false:
 
 ![Show VM not templated](images/show_host.png)
 

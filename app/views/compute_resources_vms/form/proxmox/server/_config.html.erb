@@ -26,7 +26,6 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= checkbox_f f, :onboot, :label => _('Start at boot') %>
   <%= checkbox_f f, :agent, :label => _('Qemu Agent') %>
   <%= checkbox_f f, :kvm, :label => _('KVM'), :label_help => _('Enable/disable KVM hardware virtualization') %>
-  <%= select_f f, :keyboard, proxmox_keyboards_map, :id,  :name, { }, :label => _('Keyboard'), :label_size => "col-md-2" %>
   <%= select_f f, :vga, proxmox_vgas_map, :id, :name, { :include_blank => true }, :label => _('VGA'), :label_size => "col-md-2" %>
   <%= select_f f, :scsihw, proxmox_scsi_controllers_map, :id, :name, { }, :label => _('SCSI Controller'), :label_size => "col-md-2" %>
   <%= select_f f, :bios, proxmox_bios_map, :id, :name, { }, :label => _('BIOS'), :label_size => "col-md-2" %>

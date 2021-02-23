@@ -141,7 +141,6 @@ module ForemanFogProxmox
           vga: 'std',
           memory: 512 * MEGA,
           ostype: 'l26',
-          keyboard: 'en-us',
           cpu: 'cputype=kvm64',
           scsihw: 'virtio-scsi-pci',
           templated: 0

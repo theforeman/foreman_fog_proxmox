@@ -36,20 +36,32 @@ function sslVerifyPeerSelected() {
   }
 }
 
+function enableField(id) {
+  $(id).show();
+  $(id).removeAttr('disabled');
+}
+
+function disableField(id) {  
+  $(id).hide();
+  $(id).attr('disabled','disabled');
+}
+
+function toggleFieldset(method, selected){
+  return method === selected ? enableField(authMethodFieldsetId(method)) : disableField(authMethodFieldsetId(method));
+}
+
+function authMethods(){
+  return ['user_token', 'access_ticket'];
+}
+
+function authMethodFieldsetId(method){
+  return '#compute_ressource_' + method + '_field_set';
+}
+
 function authMethodSelected() {
   var selected = $("#compute_resource_auth_method").val();
   console.log("auth_method="+selected);
-  var compute_ressource_user_token_field_set = $('#compute_ressource_user_token_field_set');
-  var compute_ressource_access_ticket_field_set = $('#compute_ressource_access_ticket_field_set');
-  if (selected == 'user_token') {
-    compute_ressource_user_token_field_set.show();
-    compute_ressource_user_token_field_set.removeAttr('disabled');
-    compute_ressource_access_ticket_field_set.hide();
-    compute_ressource_access_ticket_field_set.attr('disabled','disabled');
-  } else {
-    compute_ressource_access_ticket_field_set.show();
-    compute_ressource_access_ticket_field_set.removeAttr('disabled');
-    compute_ressource_user_token_field_set.hide();
-    compute_ressource_user_token_field_set.attr('disabled','disabled');
-  }
+  authMethods().forEach(function(method){
+    toggleFieldset(method, selected);
+  });
 }

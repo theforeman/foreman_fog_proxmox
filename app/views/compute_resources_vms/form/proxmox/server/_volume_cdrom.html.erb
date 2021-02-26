@@ -27,7 +27,7 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     <%= radio_button_f f, :cdrom, :value => 'cdrom' , :text => _('Physical'), :onclick => 'cdromSelected(this)' %>
     <%= radio_button_f f, :cdrom, :value => 'image' , :text => _('Image'), :onclick => 'cdromSelected(this)' %>
   <% end %>
-  <%= field_set_tag _("Image"), :id => "cdrom_image_form_#{f.index}", :class => ('hide' unless %[image].include? f.object.cdrom), :disabled => (%[cdrom none].include? f.object.cdrom)  do %>
+  <%= field_set_tag(_("Image"), :id => "cdrom_image_form_#{f.index}", :class => ('hide' unless %[image].include? f.object.cdrom), :disabled => (%[cdrom none].include? f.object.cdrom)) do %>
     <%= select_f f, :storage, compute_resource.storages(node_id,'iso'), :storage, :storage, { :include_blank => true }, :label => _('Storage'), :label_size => "col-md-2", :onchange => 'storageIsoSelected(this)' %>
     <%= select_f f, :volid, compute_resource.images_by_storage(node_id, f.object.storage, 'iso'), :volid, :volid, { :include_blank => true }, :label => _('Image ISO'), :label_size => "col-md-2" %>
   <% end %>

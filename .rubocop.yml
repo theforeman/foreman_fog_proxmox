@@ -7,9 +7,6 @@ AllCops:
 Rails:
   Enabled: true
 
-Rails/ContentTag:
-  Enabled: false
-
 # Don't enforce documentation
 Style/Documentation:
   Enabled: false

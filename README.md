@@ -136,6 +136,7 @@ gem 'foreman_fog_proxmox', :path => '../../theforeman/foreman_fog_proxmox'
 gem 'fog-proxmox', :path => '../../fog/fog-proxmox' # optional if you need to modify fog-proxmox code too
 gem 'ruby-debug-ide' # dev
 gem 'debase' # dev
+gem 'solargraph' # dev
 gem 'simplecov' # test
 ```
 
@@ -143,8 +144,9 @@ gem 'simplecov' # test
 
 ```shell
 gem install bundler
-# prerequisites postgresql-client library on OS
+# prerequisites postgresql-XX-client library on OS (XX=major release installed in OS)
 bundle config set without 'libvirt ovirt mysql2'
+bundle config build.pg --with-pg-config=/usr/pgsql-XX/bin/pg_config
 bundle install
 ```
 
@@ -177,7 +179,7 @@ cp config/model.mappings.example config/model.mappings
 cp config/database.yml.example config/database.yml
 ```
 
-add these lines to config/database.yml:
+add these lines to each environment in config/database.yml:
 
 ```yaml
     username: foreman
@@ -188,6 +190,7 @@ add these lines to config/database.yml:
 cp config/ignored_environments.yml.sample config/ignored_environments.yml
 docker run --name foreman-db -e POSTGRES_DB=foreman -e POSTGRES_USER=foreman -e POSTGRES_PASSWORD=foreman -p 5432:5432 -d postgres
 bundle exec bin/rake db:migrate
+# reboot if settings.NAME error in schema
 bundle exec bin/rake db:seed assets:precompile locale:pack webpack:compile
 ```
 
@@ -206,7 +209,15 @@ docker exec -it foreman-db psql -U foreman
 foreman=# create database "foreman-test";
 ```
 
-all:
+then add test schema and seeds:
+
+```shell
+RAILS_ENV=test bundle exec bin/rake db:migrate
+# reboot if error: "ActiveRecord::RecordNotFound: Couldn't find Setting with [WHERE "settings"."name" = $1]"
+RAILS_ENV=test bundle exec bin/rake db:seed
+```
+
+Finally you can test all:
 
 ```shell
 export DISABLE_SPRING=true

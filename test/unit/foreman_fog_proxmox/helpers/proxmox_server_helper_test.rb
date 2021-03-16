@@ -33,10 +33,11 @@ module ForemanFogProxmox
 
       let(:host_form) do
         { 'vmid' => '100',
-          'name' => 'test',
+          'name' => 'toto-tata.pve',
           'node_id' => 'proxmox',
           'type' => 'qemu',
           'config_attributes' => {
+            'name' => 'toto-tata.pve',
             'memory' => '536870912',
             'balloon' => '268435456',
             'shares' => '5',
@@ -111,6 +112,7 @@ module ForemanFogProxmox
         assert_equal 5, vm[:shares]
         assert_equal 'local-lvm:1073741824,cache=none', vm[:scsi0]
         assert_equal 'model=virtio,bridge=vmbr0,firewall=0,link_down=0', vm[:net0]
+        assert_equal 'toto-tata.pve', vm[:name]
         assert_not vm.key?(:config)
         assert_not vm.key?(:node)
       end

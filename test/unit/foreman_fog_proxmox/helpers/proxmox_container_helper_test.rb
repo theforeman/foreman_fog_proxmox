@@ -33,7 +33,6 @@ module ForemanFogProxmox
 
       let(:host_form) do
         { 'vmid' => '100',
-          'name' => 'test',
           'type' => 'lxc',
           'node_id' => 'proxmox',
           'ostemplate_storage' => 'local',
@@ -49,7 +48,7 @@ module ForemanFogProxmox
             'cpuunits' => '',
             'arch' => 'amd64',
             'ostype' => 'debian',
-            'hostname' => '',
+            'hostname' => 'toto-tata.pve',
             'nameserver' => '',
             'searchdomain' => ''
 
@@ -88,7 +87,7 @@ module ForemanFogProxmox
       let(:container) do
         { 'vmid' => '100',
           :vmid => '100',
-          'name' => 'test',
+          'hostname' => 'toto-tata.pve',
           'type' => 'lxc',
           :type => 'lxc',
           'node_id' => 'proxmox',
@@ -148,6 +147,7 @@ module ForemanFogProxmox
         assert_equal 536_870_912, vm[:memory]
         assert_equal 'local-lvm:1073741824', vm[:rootfs]
         assert_equal 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876', vm[:net0]
+        assert_equal 'toto-tata.pve', vm[:hostname]
         assert_not vm.key?(:config)
         assert_not vm.key?(:node)
         assert_not vm.key?(:type)
@@ -165,6 +165,7 @@ module ForemanFogProxmox
           :cores => '1',
           :arch => 'amd64',
           :ostype => 'debian',
+          :hostname => 'toto-tata.pve',
           :net0 => 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876',
           :net1 => 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876',
           :rootfs => 'local-lvm:1073741824',

@@ -31,7 +31,7 @@ module ProxmoxVmConfigHelper
 
   def object_to_config_hash(vm, type)
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
-    main_a = ['hostname', 'name', 'vmid']
+    main_a = ['vmid']
     main = vm.attributes.select { |key, _value| main_a.include? key }
     main_a += ['templated']
     config = vm.config.attributes.reject { |key, _value| main_a.include?(key) || Fog::Proxmox::DiskHelper.disk?(key) || Fog::Proxmox::NicHelper.nic?(key) }
@@ -47,14 +47,15 @@ module ProxmoxVmConfigHelper
     config_hash.store(key, memory)
   end
 
-  def general_a
-    general_a = ['name', 'node_id', 'type', 'config_attributes', 'volumes_attributes', 'interfaces_attributes']
+  def general_a(type)
+    general_a = ['node_id', 'type', 'config_attributes', 'volumes_attributes', 'interfaces_attributes']
     general_a += ['firmware_type', 'provision_method', 'container_volumes', 'server_volumes', 'start_after_create']
+    general_a += ['name'] if type == 'lxc'
     general_a
   end
 
   def config_typed_keys(type)
-    keys = { general: general_a }
+    keys = { general: general_a(type) }
     main_a = ['name', 'type', 'node_id', 'vmid', 'interfaces', 'mount_points', 'disks']
     case type
     when 'lxc'

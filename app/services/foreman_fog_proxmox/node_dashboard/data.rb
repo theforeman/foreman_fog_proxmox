@@ -24,9 +24,13 @@ module ForemanFogProxmox
         @filter = filter
       end
 
+      def node
+        @compute_resource = ComputeResource.where(type: 'ForemanFogProxmox::Proxmox').first
+        @compute_resource.nodes.first
+      end
+
       def node_id
-        @compute_resource = ComputeResource.find_by(type: 'ForemanFogProxmox::Proxmox')
-        @compute_resource&.node_id
+        node&.identity
       end
 
       def statistics

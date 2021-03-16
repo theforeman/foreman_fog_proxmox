@@ -43,26 +43,40 @@ module Orchestration
         ip.blank? && ip6.blank? && (compute_provides?(:ip) || compute_provides?(:ip6))
       end
 
+      def ips_keys
+        [:ip, :ip6]
+      end
+
+      def computeIp(foreman_attr, fog_attr)
+        vm.send(fog_attr) || find_address(foreman_attr)
+      end
+
+      def computeValue(foreman_attr, fog_attr)
+        value = ''
+        value += compute_resource.id.to_s + '_' if foreman_attr == :uuid
+        value += vm.send(fog_attr)
+        value
+      end
+
       def setVmDetails
         attrs = compute_resource.provided_attributes
+        result = true
         attrs.each do |foreman_attr, fog_attr|
           if foreman_attr == :mac
-            return false unless match_macs_to_nics(fog_attr)
-          elsif [:ip, :ip6].include?(foreman_attr)
-            value = vm.send(fog_attr) || find_address(foreman_attr)
+            result = false unless match_macs_to_nics(fog_attr)
+          elsif ips_keys.include?(foreman_attr)
+            value = computeIp(foreman_attr, fog_attr)
             send("#{foreman_attr}=", value)
-            return false if send(foreman_attr).present? && !validate_foreman_attr(value, ::Nic::Base, foreman_attr)
+            result = false if send(foreman_attr).present? && !validate_foreman_attr(value, ::Nic::Base, foreman_attr)
           else
-            value = ''
-            value += compute_resource.id.to_s + '_' if [:uuid].include?(foreman_attr)
-            value += vm.send(fog_attr)
+            value = computeValue(foreman_attr, fog_attr)
             send("#{foreman_attr}=", value)
-            return false unless validate_required_foreman_attr(value, Host, foreman_attr)
+            result = false unless validate_required_foreman_attr(value, Host, foreman_attr)
           end
         end
         return failure(format(_('Failed to acquire IP addresses from compute resource for %<name>s'), name: name)) if empty_provided_ips?(ip, ip6)
 
-        true
+        result
       end
 
       def setComputeDetails

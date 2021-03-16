@@ -46,7 +46,13 @@ module ForemanFogProxmox
         widget 'foreman_fog_proxmox_widget', name: N_('Foreman Fog Proxmox widget'), sizex: 8, sizey: 1
         security_block :foreman_fog_proxmox do
           permission :view_compute_resource, { :compute_resources =>
-          [:ostemplates_by_id_and_node_and_storage, :isos_by_id_and_node_and_storage, :ostemplates_by_id_and_node, :isos_by_id_and_node, :storages_by_id_and_node, :iso_storages_by_id_and_node, :bridges_by_id_and_node] }
+            [:ostemplates_by_id_and_node_and_storage,
+             :isos_by_id_and_node_and_storage,
+             :ostemplates_by_id_and_node,
+             :isos_by_id_and_node,
+             :storages_by_id_and_node,
+             :iso_storages_by_id_and_node,
+             :bridges_by_id_and_node] }
         end
       end
     end

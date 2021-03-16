@@ -35,14 +35,14 @@ module ForemanFogProxmox
     describe 'find_vm_by_uuid' do
       it 'returns nil when the uuid does not match' do
         cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, empty_servers, empty_servers)
-        assert cr.find_vm_by_uuid('100').nil?
+        assert cr.find_vm_by_uuid('1_100').nil?
       end
 
       it 'raises RecordNotFound when the compute raises error' do
         exception = Fog::Errors::Error.new
         cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers_raising_exception(exception))
         assert_raises ActiveRecord::RecordNotFound do
-          cr.find_vm_by_uuid('100')
+          cr.find_vm_by_uuid('1_100')
         end
       end
 
@@ -61,7 +61,7 @@ module ForemanFogProxmox
           empty_servers, empty_servers, # node1
           servers, empty_servers        # node2
         )
-        assert_equal vm, cr.find_vm_by_uuid(args[:vmid])
+        assert_equal vm, cr.find_vm_by_uuid('1_' + args[:vmid])
       end
     end
   end

@@ -20,6 +20,7 @@
 module ForemanFogProxmox
   module ProxmoxVmQueries
     include ProxmoxPools
+    include ProxmoxVmUuidHelper
 
     def nodes
       nodes = client.nodes.all if client
@@ -51,25 +52,26 @@ module ForemanFogProxmox
     def find_vm_by_uuid(uuid)
       # look for the uuid on all known nodes
       vm = nil
+      vmid = extract_vmid(uuid)
       nodes.each do |node|
-        vm = find_vm_in_servers_by_uuid(node.servers, uuid)
-        vm ||= find_vm_in_servers_by_uuid(node.containers, uuid)
+        vm = find_vm_in_servers_by_vmid(node.servers, vmid)
+        vm ||= find_vm_in_servers_by_vmid(node.containers, vmid)
         unless vm.nil?
-          logger.debug("found vm #{uuid} on node #{node.node}")
+          logger.debug("found vm #{vmid} on node #{node.node}")
           break
         end
       end
       vm
     end
 
-    def find_vm_in_servers_by_uuid(servers, uuid)
-      vm = servers.get(uuid) unless ForemanFogProxmox::Value.empty?(uuid)
+    def find_vm_in_servers_by_vmid(servers, vmid)
+      vm = servers.get(vmid) unless ForemanFogProxmox::Value.empty?(vmid)
       pool_owner(vm) if vm
       vm
     rescue Fog::Errors::NotFound
       nil
     rescue StandardError => e
-      Foreman::Logging.exception(format(_('Failed retrieving proxmox server vm by vmid=%<vmid>s'), vmid: uuid), e)
+      Foreman::Logging.exception(format(_('Failed retrieving proxmox server vm by vmid=%<vmid>s'), vmid: vmid), e)
       raise(ActiveRecord::RecordNotFound, e)
     end
   end

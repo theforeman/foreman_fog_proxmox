@@ -228,7 +228,9 @@ function updateOptions(options_path, start_options_id, end_options_id, start_sec
   if ( start_second_options_id != undefined && end_second_options_id != undefined) {
     select_second_ids = selectIds(start_second_options_id, end_second_options_id);
   }
-  var url = '/foreman_fog_proxmox/' + options_path +  '/' + node_id;
+  var compute_resource_id = $("#host_compute_resource_id").val();
+  if (compute_resource_id == undefined) compute_resource_id = $("#compute_attribute_compute_resource_id").val(); // profil
+  var url = '/foreman_fog_proxmox/' + options_path +  '/' + compute_resource_id +  '/' + node_id;
   if (second_id != undefined) url += '/' + second_id;
   tfm.tools.showSpinner();
   $.getJSON({

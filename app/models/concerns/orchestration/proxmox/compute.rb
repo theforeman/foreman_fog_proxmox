@@ -38,6 +38,40 @@ module Orchestration
       rescue StandardError => e
         failure format(_('Failed to undo update compute %<compute_resource>s instance %<name>s: %<e>s'), :compute_resource => compute_resource, :name => name, :e => e), e
       end
+
+      def empty_provided_ips?(ip, ip6)
+        ip.blank? && ip6.blank? && (compute_provides?(:ip) || compute_provides?(:ip6))
+      end
+
+      def setVmDetails
+        attrs = compute_resource.provided_attributes
+        attrs.each do |foreman_attr, fog_attr|
+          if foreman_attr == :mac
+            return false unless match_macs_to_nics(fog_attr)
+          elsif [:ip, :ip6].include?(foreman_attr)
+            value = vm.send(fog_attr) || find_address(foreman_attr)
+            send("#{foreman_attr}=", value)
+            return false if send(foreman_attr).present? && !validate_foreman_attr(value, ::Nic::Base, foreman_attr)
+          else
+            value = ''
+            value += compute_resource.id.to_s + '_' if [:uuid].include?(foreman_attr)
+            value += vm.send(fog_attr)
+            send("#{foreman_attr}=", value)
+            return false unless validate_required_foreman_attr(value, Host, foreman_attr)
+          end
+        end
+        return failure(format(_('Failed to acquire IP addresses from compute resource for %<name>s'), name: name)) if empty_provided_ips?(ip, ip6)
+
+        true
+      end
+
+      def setComputeDetails
+        if vm
+          setVmDetails
+        else
+          failure format(_('failed to save %<name>s'), name: name)
+        end
+      end
     end
   end
 end

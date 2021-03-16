@@ -50,7 +50,7 @@ module ForemanFogProxmox
       end
     rescue StandardError => e
       logger.warn(format(_('failed to create vm: %<e>s'), e: e))
-      destroy_vm vm.id if vm
+      destroy_vm client.identity + '_' + vm.id if vm
       raise e
     end
 

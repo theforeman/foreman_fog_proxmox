@@ -48,7 +48,7 @@ function volumeFieldsetId(item, type){
 }
 
 function indexByIdAndType(item, storage_type, vm_type){
-  let regex = new RegExp(`${vm_type}_volume_${storage_type}_(\\d+)`);
+  var regex = new RegExp(vm_type +"_volume_" + storage_type +"_(\\d+)");
   return item.match(regex)[1];
 }
 
@@ -58,10 +58,10 @@ function volidByIndexAndTag(index, tag){
 
 function hasCloudinit(){
   result = false;
-  let volume_id = volumeFieldsetId('cloud_init', 'server').attr('id');
+  var volume_id = volumeFieldsetId('cloud_init', 'server').attr('id');
   if (volume_id !== undefined){
-    let index = indexByIdAndType(volume_id, 'cloud_init', 'server');
-    let volid = volidByIndexAndTag(index, 'input');
+    var index = indexByIdAndType(volume_id, 'cloud_init', 'server');
+    var volid = volidByIndexAndTag(index, 'input');
     result = volid.includes("cloudinit");
   }
   return result;
@@ -69,15 +69,15 @@ function hasCloudinit(){
 
 function hasCdrom(){
   result = false;
-  let volume_id = volumeFieldsetId('cdrom', 'server').attr('id');
+  var volume_id = volumeFieldsetId('cdrom', 'server').attr('id');
   if (volume_id !== undefined){
-    let index = indexByIdAndType(volume_id, 'cdrom', 'server');
-    let checked = $("input[id^='host_compute_attributes_volumes_attributes_" + index + "_cdrom']:checked").val();
-    let isCdrom = checked === 'cdrom';
+    var index = indexByIdAndType(volume_id, 'cdrom', 'server');
+    var checked = $("input[id^='host_compute_attributes_volumes_attributes_" + index + "_cdrom']:checked").val();
+    var isCdrom = checked === 'cdrom';
     result = isCdrom;
-    let isImage = checked === 'image';
+    var isImage = checked === 'image';
     if (isImage) {
-      let volid = volidByIndexAndTag(index, 'select');
+      var volid = volidByIndexAndTag(index, 'select');
       result = volid.includes("iso");
     }
   }

@@ -24,7 +24,7 @@ function getIndex(item) {
 }
 
 function volumeId(type,index){
-  let volume_id = '#volume_' + type + '_' + index;
+  var volume_id = '#volume_' + type + '_' + index;
   return volume_id;
 }
 

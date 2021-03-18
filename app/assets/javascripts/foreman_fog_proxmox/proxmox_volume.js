@@ -16,24 +16,24 @@
 // along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 function getIndex(item) {
-  var id = $(item).attr('id');
+  var index_id = $(item).attr('id');
   var pattern = /(host_compute_attributes_volumes_attributes_||compute_attribute_vm_attrs_volumes_attributes_)(\d+)[_](.*)/i;
-  pattern_a = pattern.exec(id);
+  pattern_a = pattern.exec(index_id);
   var index = pattern_a[2];
   return index;
 }
 
 function volumeId(type,index){
-  let id = '#volume_' + type + '_' + index;
-  return id;
+  let volume_id = '#volume_' + type + '_' + index;
+  return volume_id;
 }
 
-function enableField(id) {
-  $(id).show();
-  $(id).removeAttr('disabled');
+function enableField(item) {
+  $(item).show();
+  $(item).removeAttr('disabled');
 }
 
-function disableField(id) {  
-  $(id).hide();
-  $(id).attr('disabled','disabled');
+function disableField(item) {  
+  $(item).hide();
+  $(item).attr('disabled','disabled');
 }

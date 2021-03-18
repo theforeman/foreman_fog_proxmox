@@ -36,14 +36,14 @@ function sslVerifyPeerSelected() {
   }
 }
 
-function enableField(id) {
-  $(id).show();
-  $(id).removeAttr('disabled');
+function enableField(item) {
+  $(item).show();
+  $(item).removeAttr('disabled');
 }
 
-function disableField(id) {  
-  $(id).hide();
-  $(id).attr('disabled','disabled');
+function disableField(item) {  
+  $(item).hide();
+  $(item).attr('disabled','disabled');
 }
 
 function toggleFieldset(method, selected){

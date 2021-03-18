@@ -24,9 +24,9 @@ function volumesAttributesSelector(profile,index,selector) {
 }
 
 function getIndex(item) {
-  var id = $(item).attr('id');
+  var index_id = $(item).attr('id');
   var pattern = /(host_compute_attributes_volumes_attributes_||compute_attribute_vm_attrs_volumes_attributes_)(\d+)[_](.*)/i;
-  pattern_a = pattern.exec(id);
+  pattern_a = pattern.exec(index_id);
   var index = pattern_a[2];
   return index;
 }

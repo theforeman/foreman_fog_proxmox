@@ -39,17 +39,17 @@ function vmTypeSelected() {
   return false;
 }
 
-function volumeButtonAddId(id){
-  return $("a[data-association='" + id + "_volumes']");
+function volumeButtonAddId(item){
+  return $("a[data-association='" + item + "_volumes']");
 }
 
-function volumeFieldsetId(id, type){
-  return $("fieldset[id^='" + type + "_volume_"+ id +"']").not("fieldset[id$='_new_" + id +"_volumes']");
+function volumeFieldsetId(item, type){
+  return $("fieldset[id^='" + type + "_volume_"+ item +"']").not("fieldset[id$='_new_" + item +"_volumes']");
 }
 
-function indexByIdAndType(id, storage_type, vm_type){
+function indexByIdAndType(item, storage_type, vm_type){
   let regex = new RegExp(`${vm_type}_volume_${storage_type}_(\\d+)`);
-  return id.match(regex)[1];
+  return item.match(regex)[1];
 }
 
 function volidByIndexAndTag(index, tag){
@@ -58,9 +58,9 @@ function volidByIndexAndTag(index, tag){
 
 function hasCloudinit(){
   result = false;
-  let id = volumeFieldsetId('cloud_init', 'server').attr('id');
-  if (id !== undefined){
-    let index = indexByIdAndType(id, 'cloud_init', 'server');
+  let volume_id = volumeFieldsetId('cloud_init', 'server').attr('id');
+  if (volume_id !== undefined){
+    let index = indexByIdAndType(volume_id, 'cloud_init', 'server');
     let volid = volidByIndexAndTag(index, 'input');
     result = volid.includes("cloudinit");
   }
@@ -69,9 +69,9 @@ function hasCloudinit(){
 
 function hasCdrom(){
   result = false;
-  let id = volumeFieldsetId('cdrom', 'server').attr('id');
-  if (id !== undefined){
-    let index = indexByIdAndType(id, 'cdrom', 'server');
+  let volume_id = volumeFieldsetId('cdrom', 'server').attr('id');
+  if (volume_id !== undefined){
+    let index = indexByIdAndType(volume_id, 'cdrom', 'server');
     let checked = $("input[id^='host_compute_attributes_volumes_attributes_" + index + "_cdrom']:checked").val();
     let isCdrom = checked === 'cdrom';
     result = isCdrom;
@@ -84,27 +84,27 @@ function hasCdrom(){
   return result;
 }
 
-function cloudinit(id){
-  return id === 'cloud_init' && hasCloudinit();
+function cloudinit(item){
+  return item === 'cloud_init' && hasCloudinit();
 }
 
-function cdrom(id){
-  return id === 'cdrom' && hasCdrom();
+function cdrom(item){
+  return item === 'cdrom' && hasCdrom();
 }
 
-function enableVolume(id, type){
-  volumeFieldsetId(id, type).show();
-  volumeButtonAddId(id).show();
-  if (cloudinit(id) || cdrom(id)){
-    volumeButtonAddId(id).hide();
+function enableVolume(volume_id, type){
+  volumeFieldsetId(volume_id, type).show();
+  volumeButtonAddId(volume_id).show();
+  if (cloudinit(volume_id) || cdrom(volume_id)){
+    volumeButtonAddId(volume_id).hide();
   }
-  volumeFieldsetId(id, type).removeAttr('disabled');
+  volumeFieldsetId(volume_id, type).removeAttr('disabled');
 }
 
-function disableVolume(id, type){
-  volumeFieldsetId(id, type).hide();
-  volumeButtonAddId(id).hide();
-  volumeFieldsetId(id, type).attr('disabled','disabled');
+function disableVolume(volume_id, type){
+  volumeFieldsetId(volume_id, type).hide();
+  volumeButtonAddId(volume_id).hide();
+  volumeFieldsetId(volume_id, type).attr('disabled','disabled');
 }
 
 function volumes(type){
@@ -115,44 +115,44 @@ function volume(type){
   return type === 'qemu' ? 'server' : 'container';
 }
 
-function toggleVolume(id, type1, type2){
-  type1 === type2 ? enableVolume(id, volume(type1)) : disableVolume(id, volume(type1));
+function toggleVolume(volume_id, type1, type2){
+  type1 === type2 ? enableVolume(volume_id, volume(type1)) : disableVolume(volume_id, volume(type1));
 }
 
 function toggleVolumes(selected){
    ['qemu', 'lxc'].forEach(function(type){
-    volumes(type).forEach(function(id){
-      toggleVolume(id, selected, type);
+    volumes(type).forEach(function(volume_id){
+      toggleVolume(volume_id, selected, type);
     });
   });
 }
 
-function enableFieldset(id, fieldset) {
+function enableFieldset(fieldsetId, fieldset) {
   if (fieldset.toggle && fieldset.new_vm){
-    fieldset_id(id, fieldset).show();
+    fieldset_id(fieldsetId, fieldset).show();
   }
-  fieldset_id(id, fieldset).removeAttr('disabled');
-  input_hidden_id(id).removeAttr('disabled');
+  fieldset_id(fieldsetId, fieldset).removeAttr('disabled');
+  input_hidden_id(fieldsetId).removeAttr('disabled');
 }
 
-function disableFieldset(id, fieldset) {  
+function disableFieldset(fieldsetId, fieldset) {  
   if (fieldset.toggle && fieldset.new_vm){
-    fieldset_id(id, fieldset).hide();
+    fieldset_id(fieldsetId, fieldset).hide();
   }
-  fieldset_id(id, fieldset).attr('disabled','disabled');
-  input_hidden_id(id).attr('disabled','disabled');
+  fieldset_id(fieldsetId, fieldset).attr('disabled','disabled');
+  input_hidden_id(fieldsetId).attr('disabled','disabled');
 }
 
-function toggleFieldset(id, fieldset, type1, type2) {  
-  type1 === type2 ? enableFieldset(id, fieldset) : disableFieldset(id, fieldset);
+function toggleFieldset(fieldsetId, fieldset, type1, type2) {  
+  type1 === type2 ? enableFieldset(fieldsetId, fieldset) : disableFieldset(fieldsetId, fieldset);
 }
 
-function input_hidden_id(id){
-  return $("div[id^='"+ id +"_volumes']" + " + input:hidden");
+function input_hidden_id(volume_id){
+  return $("div[id^='"+ volume_id +"_volumes']" + " + input:hidden");
 }
 
-function fieldset_id(id, fieldset){
-  return $("fieldset[id^='" + id + "_"+fieldset.id+"']");
+function fieldset_id(fieldsetId, fieldset){
+  return $("fieldset[id^='" + fieldsetId + "_"+fieldset.id+"']");
 }
 
 function fieldsets(type){
@@ -163,8 +163,8 @@ function toggleFieldsets(fieldset){
   var removable_input_hidden = $("div.removable-item[style='display: none;']" + " + input:hidden");
   removable_input_hidden.attr('disabled','disabled');  
   ['qemu', 'lxc'].forEach(function(type){
-    fieldsets(type).forEach(function(id){
-      toggleFieldset(id, fieldset, fieldset.selected, type);
+    fieldsets(type).forEach(function(fieldsetId){
+      toggleFieldset(fieldsetId, fieldset, fieldset.selected, type);
     });
   });
 }
@@ -190,18 +190,18 @@ function nodeSelected(item) {
   }
 }
 
-function emptySelect(select){
-  $(select).empty();
-  $(select).append($("<option></option>").val('').text(''));
-  $(select).val('');
+function emptySelect(select_id){
+  $(select_id).empty();
+  $(select_id).append($("<option></option>").val('').text(''));
+  $(select_id).val('');
 }
 
 function initOptions(select_ids){
   console.log('initOptions(' + select_ids[0] + ')');
   select_ids.forEach(emptySelect);
-  select_ids.forEach(function(select){
-    $(select + ' option:selected').prop('selected',false);
-    $(select).val('');
+  select_ids.forEach(function(select_id){
+    $(select_id + ' option:selected').prop('selected',false);
+    $(select_id).val('');
   });
 }
 

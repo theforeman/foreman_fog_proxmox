@@ -189,7 +189,7 @@ add these lines to each environment in config/database.yml:
 
 ```shell
 cp config/ignored_environments.yml.sample config/ignored_environments.yml
-docker run --name foreman-db -e POSTGRES_DB=foreman -e POSTGRES_USER=foreman -e POSTGRES_PASSWORD=foreman -p 5432:5432 -d postgres
+docker run --name foreman-db -v foreman_data:/var/lib/postgresql/data -e POSTGRES_DB=foreman -e POSTGRES_USER=foreman -e POSTGRES_PASSWORD=foreman -p 5432:5432 -d postgres
 bundle exec bin/rake db:migrate
 # reboot if settings.NAME error in schema
 bundle exec bin/rake db:seed assets:precompile locale:pack webpack:compile

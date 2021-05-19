@@ -23,18 +23,26 @@ module Orchestration
       extend ActiveSupport::Concern
 
       def setComputeUpdate
-        logger.info "Update Proxmox Compute instance for #{name}"
-        final_compute_attributes = compute_attributes.merge(compute_resource.host_compute_attrs(self))
-        logger.debug("setComputeUpdate: final_compute_attributes=#{final_compute_attributes}")
-        compute_resource.save_vm uuid, final_compute_attributes
+        if compute_resource.class != ForemanFogProxmox::Proxmox
+          super
+        else
+          logger.info "Update Proxmox Compute instance for #{name}"
+          final_compute_attributes = compute_attributes.merge(compute_resource.host_compute_attrs(self))
+          logger.debug("setComputeUpdate: final_compute_attributes=#{final_compute_attributes}")
+          compute_resource.save_vm uuid, final_compute_attributes
+        end
       rescue StandardError => e
         failure format(_('Failed to update a compute %<compute_resource>s instance %<name>s: %<e>s'), :compute_resource => compute_resource, :name => name, :e => e), e
       end
 
       def delComputeUpdate
-        logger.info "Undo Update Proxmox Compute instance for #{name}"
-        final_compute_attributes = old.compute_attributes.merge(compute_resource.host_compute_attrs(old))
-        compute_resource.save_vm uuid, final_compute_attributes
+        if compute_resource.class != ForemanFogProxmox::Proxmox
+          super
+        else
+          logger.info "Undo Update Proxmox Compute instance for #{name}"
+          final_compute_attributes = old.compute_attributes.merge(compute_resource.host_compute_attrs(old))
+          compute_resource.save_vm uuid, final_compute_attributes
+        end
       rescue StandardError => e
         failure format(_('Failed to undo update compute %<compute_resource>s instance %<name>s: %<e>s'), :compute_resource => compute_resource, :name => name, :e => e), e
       end
@@ -80,7 +88,9 @@ module Orchestration
       end
 
       def setComputeDetails
-        if vm
+        if compute_resource.class != ForemanFogProxmox::Proxmox
+          super
+        elsif vm
           setVmDetails
         else
           failure format(_('failed to save %<name>s'), name: name)

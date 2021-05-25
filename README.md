@@ -47,10 +47,10 @@ See complete details in [plugin installation from gem](https://theforeman.org/pl
 
 Here is a Debian sample:
 
-* Install foreman [from OS packages](https://theforeman.org/manuals/1.19/index.html#3.3InstallFromPackages):
+* Install foreman [from OS packages](https://theforeman.org/manuals/latest/index.html#3.3InstallFromPackages):
 
 ```shell
-sudo apt install -y foreman foreman-compute foreman-sqlite3 foreman-assets
+sudo apt install -y foreman foreman-pgsql
 ```
 
 * Use only foreman user (**not root!**) `sudo -u foreman ...`
@@ -102,7 +102,21 @@ Then you can check plugin installation after login into your new foreman server 
 
 Please see the Foreman manual for complete instructions:
 
-* [Foreman: How to Install a Plugin](http://theforeman.org/manuals/latest/index.html#6.1InstallaPlugin)
+* [Foreman: How to Install a Plugin from package](https://theforeman.org/plugins/#2.Installation)
+
+[Install from package](https://theforeman.org/plugins/#2.2Packageinstallation) is the easiest way to install the plugin. Choose the latest release plugins repository. If you don't find it in the same foreman release repository, get it from the `nightly` repository.
+
+Then you can install it with the package manager, in Debian/Ubuntu:
+
+```shell
+sudo apt-get install ruby-foreman-fog-proxmox
+```
+
+and in Fedora/Redhat Linux:
+
+```shell
+sudo dnf install rubygem-foreman_fog_proxmox
+```
 
 Redhat, CentOS or Fedora users should also [setup Selinux](https://projects.theforeman.org/projects/foreman/wiki/SELinux) to allow foreman and all its plugins to work.
 
@@ -113,7 +127,7 @@ Redhat, CentOS or Fedora users should also [setup Selinux](https://projects.thef
 
 ## Development
 
-### Prerequisites
+### Dev prerequisites
 
 * You need a Proxmox VE 5.4+ server running.
 * You need ruby >= 2.5. You can install it with [asdf-vm](https://asdf-vm.com).

@@ -23,8 +23,8 @@ module FogExtensions
       extend ActiveSupport::Concern
       attr_accessor :image_id, :templated, :ostemplate_storage, :ostemplate_file, :password, :start_after_create
 
-      def unique_cluster_identity
-        compute_resource.name + '_' + identity
+      def unique_cluster_identity(compute_resource)
+        compute_resource.id.to_s + '_' + identity
       end
 
       def start

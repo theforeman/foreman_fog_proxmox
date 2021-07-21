@@ -26,6 +26,7 @@ module ForemanFogProxmox
     config.autoload_paths += Dir["#{config.root}/app/controllers/concerns"]
     config.autoload_paths += Dir["#{config.root}/app/helpers/concerns"]
     config.autoload_paths += Dir["#{config.root}/app/models/concerns"]
+    config.autoload_paths += Dir["#{config.root}/app/services/concerns"]
     config.autoload_paths += Dir["#{config.root}/app/overrides"]
     config.autoload_paths += Dir["#{config.root}/app/services"]
 
@@ -103,8 +104,12 @@ module ForemanFogProxmox
       Fog::Proxmox::Compute::Disk.include FogExtensions::Proxmox::Disk
       Fog::Proxmox::Compute::Node.include FogExtensions::Proxmox::Node
       ::ComputeResourcesController.include ForemanFogProxmox::Controller::Parameters::ComputeResource
+      ::ComputeResourcesVmsController.include ForemanFogProxmox::ComputeResourcesVmsController
       ::Host::Managed.include Orchestration::Proxmox::Compute
       ::Host::Managed.include HostExt::Proxmox::Interfaces
+      ::Host::Managed.include HostExt::Proxmox::Associator
+      ::Host::Base.include HostExt::Proxmox::ForVm
+      ::ComputeResourceHostAssociator.include ForemanFogProxmox::ComputeResourceHostAssociator
     end
   end
 end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright 2018 Tristan Robert
+# Copyright 2021 Tristan Robert
 
 # This file is part of ForemanFogProxmox.
 
@@ -18,20 +18,17 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 module ForemanFogProxmox
-  class Vms
-    attr_reader :items
-
-    def each
-      @items.each { |item| yield item }
+  module ComputeResourceHostAssociator
+    extend ActiveSupport::Concern
+    included do
+      prepend Overrides
     end
-
-    # TODO: Pagination with filters
-    def all(_filters = {})
-      items
-    end
-
-    def initialize(items = [])
-      @items = items
+    module Overrides
+      def associate_hosts
+        compute_resource.vms(:eager_loading => true).each do |vm|
+          associate_vm(vm) if Host.for_vm_uuid(compute_resource, vm).empty?
+        end
+      end
     end
   end
 end

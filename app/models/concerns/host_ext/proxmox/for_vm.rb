@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright 2018 Tristan Robert
+# Copyright 2021 Tristan Robert
 
 # This file is part of ForemanFogProxmox.
 
@@ -17,21 +17,17 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-module ForemanFogProxmox
-  class Vms
-    attr_reader :items
-
-    def each
-      @items.each { |item| yield item }
-    end
-
-    # TODO: Pagination with filters
-    def all(_filters = {})
-      items
-    end
-
-    def initialize(items = [])
-      @items = items
+module HostExt
+  module Proxmox
+    module ForVm
+      extend ActiveSupport::Concern
+      module ClassMethods
+        def for_vm_uuid(cr, vm)
+          uuid = vm&.identity
+          uuid = cr.id.to_s + '_' + vm&.identity if cr.class == ForemanFogProxmox::Proxmox
+          where(:compute_resource_id => cr.id, :uuid => uuid)
+        end
+      end
     end
   end
 end

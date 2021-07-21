@@ -10,6 +10,9 @@ Rails:
 Rails/ContentTag:
   Enabled: false
 
+Rails/HelperInstanceVariable: 
+  Enabled: false
+
 # Don't enforce documentation
 Style/Documentation:
   Enabled: false
@@ -37,7 +40,7 @@ Metrics/PerceivedComplexity:
   Max: 11
 
 Layout/LineLength:
-  Max: 200 # TODO: discuss and set this
+  Max: 300 # TODO: discuss and set this
 
 Naming/MethodName:
   Description: From foreman's rubocop-config. Neccessary for overloading methods in foreman.
@@ -67,3 +70,9 @@ Style/SymbolArray:
 
 Style/WordArray:
   EnforcedStyle: brackets
+
+Layout/MultilineMethodCallBraceLayout:
+  Enabled: false
+
+Style/StringLiterals:
+  Enabled: false

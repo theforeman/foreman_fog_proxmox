@@ -18,6 +18,7 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 require 'fog/proxmox/helpers/ip_helper'
+require 'net/validations'
 
 module ForemanFogProxmox
   module ProxmoxInterfaces
@@ -104,7 +105,7 @@ module ForemanFogProxmox
     def set_mac(nic_compute_attributes, mac, type)
       mac_attr_name = { 'qemu' => :macaddr, 'lxc' => :hwaddr }
       mac_key = mac_attr_name[type] || 'mac'
-      nic_compute_attributes[mac_key] = mac
+      nic_compute_attributes[mac_key] = Net::Validations.normalize_mac(mac)
     end
 
     def host_interfaces_attrs(host)

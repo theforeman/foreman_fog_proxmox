@@ -56,8 +56,10 @@ module ForemanFogProxmox
 
     def destroy_vm(uuid)
       vm = find_vm_by_uuid(uuid)
-      vm.stop if vm.ready?
-      vm.destroy
+      unless vm.nil?
+        vm.stop if vm.ready?
+        vm.destroy
+      end
     rescue ActiveRecord::RecordNotFound
       # if the VM does not exists, we don't really care.
       true

@@ -166,9 +166,7 @@ module ForemanFogProxmox
     def convert_config_attributes(new_attr)
       config_attributes = new_attr[:config_attributes]
       config_attributes[:volumes_attributes] = Hash[config_attributes[:disks].each_with_index.map { |disk, idx| [idx.to_s, disk.attributes] }] if config_attributes.key?(:disks)
-      if config_attributes.key?(:interfaces)
-        config_attributes[:interfaces_attributes] = Hash[config_attributes[:interfaces].each_with_index.map { |interface, idx| [idx.to_s, interface_compute_attributes(interface.attributes)] }]
-      end
+      config_attributes[:interfaces_attributes] = Hash[config_attributes[:interfaces].each_with_index.map { |interface, idx| [idx.to_s, interface_compute_attributes(interface.attributes)] }] if config_attributes.key?(:interfaces)
       config_attributes.delete_if { |key, _value| ['disks', 'interfaces'].include?(key) }
     end
 

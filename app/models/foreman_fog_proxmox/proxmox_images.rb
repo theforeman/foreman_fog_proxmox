@@ -31,8 +31,17 @@ module ForemanFogProxmox
       storage.volumes.list_by_content_type(type).sort_by(&:volid) if storage
     end
 
+    def template_name(template)
+      image = find_vm_by_uuid(template_uuid(template))
+      image&.name
+    end
+
+    def template_uuid(template)
+      id.to_s + '_' + template.vmid.to_s
+    end
+
     def available_images
-      templates.collect { |template| OpenStruct.new(id: template.vmid.to_s) }
+      templates.collect { |template| OpenStruct.new(id: template_uuid(template), name: template_name(template)) }
     end
 
     def templates
@@ -44,15 +53,15 @@ module ForemanFogProxmox
       volumes.select(&:template?)
     end
 
-    def template(vmid)
-      find_vm_by_uuid(vmid)
+    def template(uuid)
+      find_vm_by_uuid(uuid)
     end
 
     def clone_from_image(image_id, args, vmid)
       logger.debug(format(_('create_vm(): clone %<image_id>s in %<vmid>s'), image_id: image_id, vmid: vmid))
       image = find_vm_by_uuid(image_id)
       image.clone(vmid)
-      clone = find_vm_by_uuid(vmid)
+      clone = find_vm_by_uuid(id.to_s + '_' + vmid.to_s)
       options = {}
       options.store(:name, args[:name]) unless clone.container?
       options.store(:hostname, args[:name]) if clone.container?

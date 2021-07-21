@@ -43,9 +43,14 @@ module ForemanFogProxmox
     end
 
     # TODO: Pagination with filters
-    def vms(_opts = {})
+    def vms(opts = {})
       vms = []
       nodes.each { |node| vms += node.servers.all + node.containers.all }
+      if opts.key?(:eager_loading) && opts[:eager_loading]
+        vms_eager = []
+        vms.each { |vm| vms_eager << vm.collection.get(vm.identity) }
+        vms = vms_eager
+      end
       ForemanFogProxmox::Vms.new(vms)
     end
 

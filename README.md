@@ -38,9 +38,27 @@ You can support the plugin development via the following methods:
 
 ## Installation
 
-### Prerequisites
+### From OS packages
 
-You need [nodejs](https://nodejs.org/en/download/package-manager/) installed in order to use foreman-assets package.
+Please see the Foreman manual for complete instructions:
+
+* [Foreman: How to Install a Plugin from package](https://theforeman.org/plugins/#2.Installation)
+
+[Install from package](https://theforeman.org/plugins/#2.2Packageinstallation) is the easiest way to install the plugin. Choose the latest release plugins repository. If you don't find it in the same foreman release repository, get it from the `nightly` repository.
+
+Then you can install it with the package manager, in Debian/Ubuntu:
+
+```shell
+sudo apt-get install ruby-foreman-fog-proxmox
+```
+
+and in Fedora/Redhat Linux:
+
+```shell
+sudo dnf install rubygem-foreman_fog_proxmox
+```
+
+Redhat, CentOS or Fedora users should also [setup Selinux](https://projects.theforeman.org/projects/foreman/wiki/SELinux) to allow foreman and all its plugins to work.
 
 ### From gem
 
@@ -68,6 +86,8 @@ sudo -u foreman /usr/bin/foreman-ruby /usr/bin/bundle install
 ```
 
 * Precompile plugin assets:
+
+You need [nodejs](https://nodejs.org/en/download/package-manager/) installed in order to use foreman-assets package.
 
 ```shell
 /usr/bin/foreman-ruby /usr/bin/bundle exec bin/rake plugin:assets:precompile[foreman_fog_proxmox]
@@ -98,28 +118,6 @@ Then you can check plugin installation after login into your new foreman server 
 
 ![About resources](.github/images/about_resources.png)
 ![About greffon](.github/images/about_greffon.png)
-
-### From OS packages
-
-Please see the Foreman manual for complete instructions:
-
-* [Foreman: How to Install a Plugin from package](https://theforeman.org/plugins/#2.Installation)
-
-[Install from package](https://theforeman.org/plugins/#2.2Packageinstallation) is the easiest way to install the plugin. Choose the latest release plugins repository. If you don't find it in the same foreman release repository, get it from the `nightly` repository.
-
-Then you can install it with the package manager, in Debian/Ubuntu:
-
-```shell
-sudo apt-get install ruby-foreman-fog-proxmox
-```
-
-and in Fedora/Redhat Linux:
-
-```shell
-sudo dnf install rubygem-foreman_fog_proxmox
-```
-
-Redhat, CentOS or Fedora users should also [setup Selinux](https://projects.theforeman.org/projects/foreman/wiki/SELinux) to allow foreman and all its plugins to work.
 
 ## Usage
 

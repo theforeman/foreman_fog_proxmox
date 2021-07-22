@@ -17,8 +17,10 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <% if compute_resource.class == ForemanFogProxmox::Proxmox %>
 <%= render :partial => provider_partial(compute_resource, 'base'),
-            :locals => { :f => f, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm, :from_profile => false }.merge(args_for_compute_resource_partial(@host)) %>
+            locals: { f: f, host: host, compute_resource: compute_resource, new_host: host.new_record?, new_vm: new_vm,
+                     arch: host.architecture_id, os: host.operatingsystem_id, from_profile: false } %>
 <% else %>
 <%= render :partial => provider_partial(compute_resource, 'base'),
-            :locals => { :f => f, :compute_resource => compute_resource, :new_host => new_vm, :new_vm => new_vm }.merge(args_for_compute_resource_partial(@host)) %>
+            locals: { f: f, host: host, compute_resource: compute_resource, new_host: host.new_record?, new_vm: new_vm,
+                     arch: host.architecture_id, os: host.operatingsystem_id } %>
 <% end %>

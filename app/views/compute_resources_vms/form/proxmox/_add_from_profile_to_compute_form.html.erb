@@ -16,8 +16,8 @@ You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% if compute_resource.class == ForemanFogProxmox::Proxmox %>
 <%= render :partial => provider_partial(compute_resource, 'base'),
-        :locals => { :f => f, :compute_resource => compute_resource, :new_host => true, :new_vm => true, :hide_image => true, :from_profile => from_profile }.merge(args_for_compute_resource_partial(@host)) %>
+        :locals => { :f => f, :host => nil, :compute_resource => compute_resource, :new_host => true, :new_vm => true, :from_profile => from_profile } %>
 <% else %>
 <%= render :partial => provider_partial(compute_resource, 'base'),
-            :locals => { :f => f, :compute_resource => compute_resource, :new_host => true, :new_vm => true, :hide_image => true }.merge(args_for_compute_resource_partial(@host)) %>
+            :locals => { :f => f, :host => nil, :compute_resource => compute_resource, :new_host => true, :new_vm => true } %>
 <% end %>

@@ -18,8 +18,8 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% server = vm_type == 'qemu' %>
 <% index = f.index ? f.index.present? : 0 %>
 
-<%= field_set_tag _("Nic"), :id => "server_network_#{index}", :style => ('display: none;' unless server), :disabled => !server do %> 
-    <%= f.hidden_field :id if !new_vm %>
+<%= field_set_tag _("Nic"), :id => "server_network_#{index}", :style => ('display: none;' unless server), :disabled => !server do %>
+    <%= text_f f, :id, :label => _('Identifier'), :label_size => "col-md-2", :required => true, :label_help => _("net[n] with n integer >= 0, e.g. net0") %>
     <%= select_f f, :model, proxmox_networkcards_map, :id, :name, { }, :label => _('Card'), :label_size => "col-md-2" %>
     <%= select_f f, :bridge, compute_resource.bridges(node_id), :iface, :iface, { }, :label => _('Bridge'), :label_size => "col-md-2" %>
     <%= counter_f f, :tag, :class => "input-mini", :label => _('VLAN tag'), :label_size => "col-md-2" %>

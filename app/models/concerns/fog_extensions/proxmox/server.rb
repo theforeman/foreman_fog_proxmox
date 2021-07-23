@@ -63,7 +63,7 @@ module FogExtensions
       end
 
       def select_nic(fog_nics, nic)
-        fog_nics.find { |fog_nic| fog_nic.identity.to_s == nic.identifier }
+        fog_nics.find { |fog_nic| fog_nic.identity.to_s == nic.compute_attributes[:id] }
       end
 
       delegate :interfaces, to: :config

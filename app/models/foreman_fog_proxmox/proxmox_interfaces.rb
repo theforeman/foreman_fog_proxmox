@@ -27,8 +27,10 @@ module ForemanFogProxmox
     end
 
     def set_nic_identifier(nic, index)
-      nic.identifier = format('net%<index>s', index: index) if nic.identifier.empty?
-      raise ::Foreman::Exception, _(format('Invalid identifier interface[%<index>s]. Must be net[n] with n integer >= 0', index: index)) unless Fog::Proxmox::NicHelper.nic?(nic.identifier)
+      nic.compute_attributes[:id] = format('net%<index>s', index: index) if nic.compute_attributes[:id].empty?
+      raise ::Foreman::Exception, _(format('Invalid proxmox NIC id on interface[%<index>s]. Must be net[n] with n integer >= 0', index: index)) unless Fog::Proxmox::NicHelper.nic?(nic.compute_attributes[:id])
+
+      nic.identifier = nic.compute_attributes['id'] if nic.identifier.empty?
     end
 
     def vm_type(host)
@@ -112,17 +114,16 @@ module ForemanFogProxmox
       host.interfaces.select(&:physical?).each.with_index.reduce({}) do |hash, (nic, index)|
         set_nic_identifier(nic, index)
         set_container_interface_name(host, nic, index) if container?(host)
-        nic_compute_attributes = nic.compute_attributes.merge(id: nic.identifier)
-        ForemanFogProxmox::HashCollection.remove_empty_values(nic_compute_attributes)
+        ForemanFogProxmox::HashCollection.remove_empty_values(nic.compute_attributes)
         mac = nic.mac
         mac ||= nic.attributes['mac']
-        set_mac(nic_compute_attributes, mac, vm_type(host)) if mac.present?
-        interface_compute_attributes = host.compute_attributes['interfaces_attributes'] ? host.compute_attributes['interfaces_attributes'].select { |_k, v| v['id'] == nic.identifier } : {}
-        nic_compute_attributes.store(:_delete, interface_compute_attributes[interface_compute_attributes.keys[0]]['_delete']) unless interface_compute_attributes.empty?
-        set_ip(host, nic, nic_compute_attributes)
-        set_ip(host, nic, nic_compute_attributes, true)
-        ForemanFogProxmox::HashCollection.remove_keys(nic_compute_attributes, ['dhcp', 'dhcp6', 'cidr', 'cidr6'])
-        hash.merge(index.to_s => nic_compute_attributes)
+        set_mac(nic.compute_attributes, mac, vm_type(host)) if mac.present?
+        interface_compute_attributes = host.compute_attributes['interfaces_attributes'] ? host.compute_attributes['interfaces_attributes'].select { |_k, v| v['id'] == nic.compute_attributes[:id] } : {}
+        nic.compute_attributes.store(:_delete, interface_compute_attributes[interface_compute_attributes.keys[0]]['_delete']) unless interface_compute_attributes.empty?
+        set_ip(host, nic, nic.compute_attributes)
+        set_ip(host, nic, nic.compute_attributes, true)
+        ForemanFogProxmox::HashCollection.remove_keys(nic.compute_attributes, ['dhcp', 'dhcp6', 'cidr', 'cidr6'])
+        hash.merge(index.to_s => nic.compute_attributes)
       end
     end
   end

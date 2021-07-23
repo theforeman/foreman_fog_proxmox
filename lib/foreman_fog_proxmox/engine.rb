@@ -105,6 +105,7 @@ module ForemanFogProxmox
       Fog::Proxmox::Compute::Node.include FogExtensions::Proxmox::Node
       ::ComputeResourcesController.include ForemanFogProxmox::Controller::Parameters::ComputeResource
       ::ComputeResourcesVmsController.include ForemanFogProxmox::ComputeResourcesVmsController
+      ::HostsController.include ForemanFogProxmox::HostsController
       ::Host::Managed.include Orchestration::Proxmox::Compute
       ::Host::Managed.include HostExt::Proxmox::Interfaces
       ::Host::Managed.include HostExt::Proxmox::Associator

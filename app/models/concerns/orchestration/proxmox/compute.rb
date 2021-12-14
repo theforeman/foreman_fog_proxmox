@@ -62,7 +62,7 @@ module Orchestration
       def computeValue(foreman_attr, fog_attr)
         value = ''
         value += compute_resource.id.to_s + '_' if foreman_attr == :uuid
-        value += vm.send(fog_attr)
+        value += vm.send(fog_attr).to_s
         value
       end
 

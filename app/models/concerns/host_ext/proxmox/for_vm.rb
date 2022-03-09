@@ -24,7 +24,7 @@ module HostExt
       module ClassMethods
         def for_vm_uuid(cr, vm)
           uuid = vm&.identity
-          uuid = cr.id.to_s + '_' + vm&.identity if cr.class == ForemanFogProxmox::Proxmox
+          uuid = cr.id.to_s + '_' + vm&.identity.to_s if cr.class == ForemanFogProxmox::Proxmox
           where(:compute_resource_id => cr.id, :uuid => uuid)
         end
       end

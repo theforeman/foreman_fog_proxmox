@@ -26,6 +26,7 @@ module ForemanFogProxmox
     include ProxmoxVmHelper
     include ProxmoxConnection
     include ProxmoxVmNew
+    include ProxmoxVmNormalize
     include ProxmoxVmCommands
     include ProxmoxVmQueries
     include ProxmoxComputeAttributes

@@ -20,6 +20,7 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% logger.debug("_volume_hard_disk.html f.object.hard_disk?=#{f.object.hard_disk?}") %>
 <% logger.debug("_volume_hard_disk.html f.object.storage_type=#{f.object.storage_type}") %>
 <% new_volume = f.object.volid.nil? %>
+    <%= byte_size_f(f, :size, disabled: !hard_disk, label: _('Size')) %>
 
 <%= field_set_tag _('Hard disk'), :id => "server_volume_hard_disk_#{f.index}", :class => ('hide' unless hard_disk), :disabled => !hard_disk do %> 
     <%= f.hidden_field :volid if !new_volume %>    
@@ -28,5 +29,6 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     <%= select_f f, :controller, proxmox_controllers_map, :id, :name, { }, :label => _('Controller'), :label_size => "col-md-2", :disabled => !new_volume, :onchange => 'controllerSelected(this)' %>
     <%= text_f f, :device, :label => _('Device'), :label_size => "col-md-2", :disabled => !new_volume, :'data-min' => 0, :'data-soft-max' => proxmox_max_device(f.object.controller), :onchange => 'deviceSelected(this)' %>
     <%= select_f f, :cache, proxmox_caches_map, :id, :name, { include_blank: true }, :label => _('Cache'), :label_size => "col-md-2" %>
-    <%= byte_size_f f, :size, :class => "input-mini", :label => _("Size"), :label_size => "col-md-2" %>
+    <%= text_f f, :size, :class => "input-mini", :label => _("Size"), :label_size => "col-md-2", :disabled => !hard_disk %>
+    <%#= byte_size_f(f, :size, disabled: !hard_disk, label: _('Size')) %>
 <% end %>

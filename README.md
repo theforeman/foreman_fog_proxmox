@@ -158,9 +158,11 @@ gem 'simplecov' # test
 
 ```shell
 gem install bundler
-# prerequisites postgresql-XX-client library on OS (XX=major release installed in OS)
+# prerequisites postgresql-XX-client dev library on OS (XX=major release installed in OS)
+# sudo apt install libpq-dev in debian/ubuntu
+# sudo apt install libsystemd-dev in debian/ubuntu
 bundle config set without 'libvirt ovirt mysql2'
-bundle config build.pg --with-pg-config=/usr/pgsql-XX/bin/pg_config
+# bundle config build.pg --with-pg-config=/usr/pgsql-XX/bin/pg_config (optional)
 bundle install
 ```
 
@@ -203,15 +205,15 @@ add these lines to each environment in config/database.yml:
 ```shell
 cp config/ignored_environments.yml.sample config/ignored_environments.yml
 docker run --name foreman-db -v foreman_data:/var/lib/postgresql/data -e POSTGRES_DB=foreman -e POSTGRES_USER=foreman -e POSTGRES_PASSWORD=foreman -p 5432:5432 -d postgres
-bundle exec bin/rake db:migrate
+RAILS_ENV=production bundle exec bin/rake db:migrate
 # reboot if settings.NAME error in schema
-bundle exec bin/rake db:seed assets:precompile locale:pack webpack:compile
+RAILS_ENV=production bundle exec bin/rake db:seed assets:precompile locale:pack webpack:compile
 ```
 
 * You can reset admin password if needed:
 
 ```shell
-bundle exec bin/rake permissions:reset
+RAILS_ENV=production bundle exec bin/rake permissions:reset
 ```
 
 * You should write tests and you can execute those specific to this plugin:

@@ -163,7 +163,6 @@ gem install bundler
 # prerequisites libraries on Ubuntu OS:
 # sudo apt install postgresql-client-13 libpq-dev libsystemd-dev
 bundle config set without 'libvirt ovirt mysql2'
-bundle config build.pg --with-pg-config=/usr/pgsql-XX/bin/pg_config
 bundle install
 ```
 
@@ -207,14 +206,13 @@ add these lines to each environment in config/database.yml:
 cp config/ignored_environments.yml.sample config/ignored_environments.yml
 docker run --name foreman-db -v foreman_data:/var/lib/postgresql/data -e POSTGRES_DB=foreman -e POSTGRES_USER=foreman -e POSTGRES_PASSWORD=foreman -p 5432:5432 -d postgres:13
 RAILS_ENV=development bundle exec bin/rake db:migrate
-# reboot if settings.NAME error in schema
-bundle exec bin/rake db:seed assets:precompile locale:pack webpack:compile
+RAILS_ENV=development bundle exec bin/rake db:seed assets:precompile locale:pack webpack:compile
 ```
 
 * You can reset and change your admin password if needed:
 
 ```shell
-bundle exec bin/rake permissions:reset
+RAILS_ENV=development bundle exec bin/rake permissions:reset password=changeme
 ```
 
 * You should write tests and you can execute those specific to this plugin:
@@ -229,7 +227,6 @@ then add test schema and seeds:
 
 ```shell
 RAILS_ENV=test bundle exec bin/rake db:migrate
-# reboot if error: "ActiveRecord::RecordNotFound: Couldn't find Setting with [WHERE "settings"."name" = $1]"
 RAILS_ENV=test bundle exec bin/rake db:seed
 ```
 

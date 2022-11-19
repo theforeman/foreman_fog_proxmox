@@ -13,7 +13,7 @@ jobs:
 
     services:
       db:
-        image: postgres:12
+        image: postgres:13
         ports: ['5432:5432']
         env:
           POSTGRES_USER: foreman
@@ -26,22 +26,22 @@ jobs:
           --health-retries 5
     
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         repository: theforeman/foreman
         ref: develop
         path: foreman
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         repository: theforeman/foreman_fog_proxmox
         path: foreman_fog_proxmox
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         repository: fog/fog-proxmox
         path: fog-proxmox
-    - uses: actions/setup-ruby@v1
+    - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: '2.6'
+        ruby-version: '2.7'
     - name: Setup foreman
       env:
         PGHOST: 127.0.0.1
@@ -65,7 +65,7 @@ jobs:
         bundle exec bin/rake db:seed
     - uses: actions/setup-node@v1
       with:
-        node-version: '12'
+        node-version: '14'
     - name: Setup node assets
       working-directory: ./foreman
       env:
@@ -97,11 +97,11 @@ jobs:
       runs-on: ubuntu-latest
       if: contains(github.ref, '/tags/v')
       steps:
-        - uses: actions/checkout@v2
-        - name: Set up Ruby 2.6
-          uses: actions/setup-ruby@v1
+        - uses: actions/checkout@v3
+        - name: Set up Ruby 2.7
+          uses: ruby/setup-ruby@v1
           with:
-            version: 2.6.x
+            ruby-version: '2.7'
         - name: Publish to RubyGems
           env:
             GEM_HOST_API_KEY: ${{secrets.RUBYGEMS_AUTH_TOKEN}}

@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/theforeman/foreman_fog_proxmox'
   s.summary     = 'Foreman plugin that adds Proxmox VE compute resource using fog-proxmox'
   # also update locale/gemspec.rb
-  s.description = 'Foreman plugin adds Proxmox VE compute resource using fog-proxmox. It is compatible with Foreman 1.22+'
+  s.description = 'Foreman plugin adds Proxmox VE compute resource using fog-proxmox. It is compatible with Foreman 2.5+'
   s.metadata    = { "is_foreman_plugin" => "true" }
 
   s.files = Dir['{app,config,db,lib,locale}/**/*'] + ['LICENSE', 'Rakefile', 'README.md']

@@ -66,7 +66,7 @@ module ForemanFogProxmox
     end
 
     def associate_by(name, attributes)
-      Host.authorized(:view_hosts, Host).joins(:primary_interface).where(:nics => { :primary => true }).where("nics.#{name}" => attributes).readonly(false).first
+      Host.authorized(:view_hosts, Host).joins(:primary_interface).where(:nics => { :primary => true }).where("nics.#{name}".downcase => attributes.downcase).readonly(false).first
     end
 
     def ssl_certs

@@ -39,7 +39,7 @@ module ForemanFogProxmox
 
     initializer 'foreman_fog_proxmox.register_plugin', :before => :finisher_hook do |_app|
       Foreman::Plugin.register :foreman_fog_proxmox do
-        requires_foreman '>= 1.22.0'
+        requires_foreman '>= 2.5.0'
         # Register Proxmox VE compute resource in foreman
         compute_resource ForemanFogProxmox::Proxmox
         parameter_filter(ComputeResource, :uuid)
@@ -55,6 +55,7 @@ module ForemanFogProxmox
              :iso_storages_by_id_and_node,
              :bridges_by_id_and_node] }
         end
+        add_all_permissions_to_default_roles
       end
     end
 

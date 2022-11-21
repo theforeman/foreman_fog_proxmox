@@ -40,7 +40,7 @@ module ForemanFogProxmox
       case vm_type
       when 'qemu'
         controller = 'virtio'
-        device = 0
+        device = "0"
         id = "#{controller}#{device}"
         options = { cache: 'none' }
         volume_attributes_h = volume_attributes_h.merge(controller: controller, device: device)

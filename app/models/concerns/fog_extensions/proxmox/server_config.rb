@@ -18,6 +18,7 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 require 'fog/proxmox/helpers/cpu_helper'
+require 'fog/proxmox/helpers/disk_helper'
 
 module FogExtensions
   module Proxmox
@@ -43,6 +44,22 @@ module FogExtensions
 
       def cloud_init?
         disks.any?(&:cloud_init?)
+      end
+
+      def memory_gb
+        Fog::Proxmox::DiskHelper.to_int_gb(memory)
+      end
+
+      def balloon_gb
+        Fog::Proxmox::DiskHelper.to_int_gb(balloon)
+      end
+
+      def shares_gb
+        Fog::Proxmox::DiskHelper.to_int_gb(shares)
+      end
+
+      def swap_gb
+        Fog::Proxmox::DiskHelper.to_int_gb(swap)
       end
     end
   end

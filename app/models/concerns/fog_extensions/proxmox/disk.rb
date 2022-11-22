@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
+require 'fog/proxmox/helpers/disk_helper'
+
 module FogExtensions
   module Proxmox
     module Disk
@@ -38,6 +40,10 @@ module FogExtensions
 
       def cloudinit
         cloud_init? ? 'disk' : 'none'
+      end
+
+      def size_gb
+        Fog::Proxmox::DiskHelper.to_int_gb(size)
       end
     end
   end

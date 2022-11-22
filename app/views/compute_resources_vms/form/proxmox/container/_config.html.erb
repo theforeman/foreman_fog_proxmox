@@ -28,8 +28,8 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= counter_f f, :cpuunits, :class => "input-mini", :label => _('CPU units'), :label_size => "col-md-2" %>
 <% end %>
 <%= field_set_tag _("Memory"), :id => "container_config_memory", :class => 'hide', :disabled => !container do %>
-  <%= byte_size_f f, :memory, :class => "input-mini", :label => _('Memory'), :label_size => "col-md-2" %>
-  <%= byte_size_f f, :swap, :class => "input-mini", :label => _('Swap'), :label_size => "col-md-2" %>
+  <%= text_f f, :memory_gb, :class => "input-mini", :label => _('Memory (GB)'), :label_size => "col-md-2" %>
+  <%= text_f f, :swap_gb, :class => "input-mini", :label => _('Swap (GB)'), :label_size => "col-md-2" %>
 <% end %>
 <%= field_set_tag _("DNS"), :id => "container_config_dns", :class => 'hide', :disabled => !container do %>
   <%= text_f f, :hostname, :label => _('Hostname'), :label_size => "col-md-2", :disabled => true %>

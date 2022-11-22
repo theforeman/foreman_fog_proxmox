@@ -59,7 +59,7 @@ module FogExtensions
       delegate :description, to: :config
 
       def vm_description
-        format(_('Type %<type>s, node %<node>s, %<cpus>s CPUs and %<memory>s MB memory'), type: type, node: node_id, cpus: config.cores || '0', memory: config.memory / (1024 * 1024) || '0')
+        format(_('Type %<type>s, node %<node>s, %<cpus>s CPUs and %<memory>s GB memory'), type: type, node: node_id, cpus: config.cores || '0', memory: config.memory_gb)
       end
 
       def select_nic(fog_nics, nic)

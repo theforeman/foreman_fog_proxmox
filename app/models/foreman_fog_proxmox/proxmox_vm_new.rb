@@ -139,7 +139,7 @@ module ForemanFogProxmox
           sockets: 1,
           kvm: 0,
           vga: 'std',
-          memory: 512 * MEGA,
+          memory: 1 * GIGA,
           ostype: 'l26',
           cpu: 'cputype=kvm64',
           scsihw: 'virtio-scsi-pci',
@@ -148,7 +148,7 @@ module ForemanFogProxmox
         config_attributes = config_attributes
       when 'lxc'
         config_attributes = {
-          memory: 512 * MEGA,
+          memory: 1 * GIGA,
           templated: 0
         }
       end

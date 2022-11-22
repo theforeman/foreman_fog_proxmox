@@ -41,8 +41,8 @@ module ForemanFogProxmox
           'config_attributes' => {
             'onboot' => '0',
             'description' => '',
-            'memory' => '536870912',
-            'swap' => '536870912',
+            'memory_gb' => '1',
+            'swap_gb' => '1',
             'cores' => '1',
             'cpulimit' => '',
             'cpuunits' => '',
@@ -54,8 +54,8 @@ module ForemanFogProxmox
 
           },
           'volumes_attributes' => {
-            '0' => { 'id' => 'rootfs', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => '' },
-            '1' => { 'id' => 'mp0', 'storage' => 'local-lvm', 'size' => '1073741824', 'mp' => '/opt/path' }
+            '0' => { 'id' => 'rootfs', 'storage' => 'local-lvm', 'size_gb' => '1', 'cache' => '' },
+            '1' => { 'id' => 'mp0', 'storage' => 'local-lvm', 'size_gb' => '1', 'mp' => '/opt/path' }
           },
           'interfaces_attributes' => {
             '0' => {
@@ -92,10 +92,10 @@ module ForemanFogProxmox
           :type => 'lxc',
           'node_id' => 'proxmox',
           :node_id => 'proxmox',
-          :memory => 536_870_912,
+          :memory => GIGA,
           'templated' => 0,
           :onboot => 0,
-          :swap => 536_870_912,
+          :swap => GIGA,
           'cores' => '1',
           :arch => 'amd64',
           :ostype => 'debian',
@@ -114,16 +114,16 @@ module ForemanFogProxmox
           'name' => 'test',
           'type' => 'lxc',
           'node_id' => 'proxmox',
-          'volumes_attributes' => { '0' => { '_delete' => '1', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'mp' => '/opt/path' } },
+          'volumes_attributes' => { '0' => { '_delete' => '1', 'device' => '0', 'storage' => 'local-lvm', 'size_gb' => '1', 'mp' => '/opt/path' } },
           'interfaces_attributes' => { '0' => { '_delete' => '1', 'id' => 'net0', 'name' => 'eth0' } } }
       end
 
       test '#memory' do
         memory = parse_typed_memory(host_form['config_attributes'], type)
         assert memory.key?(:memory)
-        assert_equal 536_870_912, memory[:memory]
+        assert_equal GIGA, memory[:memory]
         assert memory.key?(:swap)
-        assert_equal 536_870_912, memory[:swap]
+        assert_equal GIGA, memory[:swap]
       end
 
       test '#cpu' do
@@ -144,7 +144,7 @@ module ForemanFogProxmox
 
       test '#vm host_form' do
         vm = parse_typed_vm(host_form, type)
-        assert_equal 536_870_912, vm[:memory]
+        assert_equal GIGA, vm[:memory]
         assert_equal 'local-lvm:1073741824', vm[:rootfs]
         assert_equal 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876', vm[:net0]
         assert_equal 'toto-tata.pve', vm[:hostname]
@@ -160,8 +160,8 @@ module ForemanFogProxmox
           :password => 'proxmox01',
           :ostemplate => 'local:vztmpl/alpine-3.7-default_20171211_amd64.tar.xz',
           :onboot => '0',
-          :memory => 536_870_912,
-          :swap => 536_870_912,
+          :memory => GIGA,
+          :swap => GIGA,
           :cores => '1',
           :arch => 'amd64',
           :ostype => 'debian',

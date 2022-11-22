@@ -18,6 +18,6 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <%= render :partial => "compute_form",
     :locals => { :f => f2, :compute_resource => @set.compute_resource, :selected_cluster => @set.vm_attrs['cluster'], :from_profile => true } %>
 <% else %> 
-<%= render :partial => "compute_form",
+    <%= render :partial => "compute_form",
                :locals => { :f => f2, :compute_resource => @set.compute_resource, :selected_cluster => @set.vm_attrs['cluster'] } %>
 <% end %>

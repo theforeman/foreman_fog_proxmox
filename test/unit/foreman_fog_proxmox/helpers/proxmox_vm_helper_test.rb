@@ -87,10 +87,10 @@ module ForemanFogProxmox
         'node_id' => 'proxmox',
         'type' => 'qemu',
         'config_attributes' => {
-          'memory' => '536870912',
+          'memory_gb' => '5',
           'min_memory' => nil,
-          'ballon' => '',
-          'shares' => '',
+          'ballon_gb' => '',
+          'shares_gb' => '',
           'cpu_type' => 'kvm64',
           'spectre' => '1',
           'pcid' => '0',
@@ -98,7 +98,7 @@ module ForemanFogProxmox
           'sockets' => '1'
         },
         'volumes_attributes' => {
-          '0' => { 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => 'none' }
+          '0' => { 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size_gb' => '10', 'cache' => 'none' }
         },
         'interfaces_attributes' => {
           '0' => { 'id' => 'net0', 'model' => 'virtio', 'bridge' => 'vmbr0', 'firewall' => '0', 'disconnect' => '0' },
@@ -117,7 +117,7 @@ module ForemanFogProxmox
         'config_attributes' => {
           'onboot' => '0',
           'description' => '',
-          'memory' => '536870912',
+          'memory_gb' => '5',
           'swap' => '',
           'cores' => '1',
           'cpulimit' => '',
@@ -130,8 +130,8 @@ module ForemanFogProxmox
 
         },
         'volumes_attributes' => {
-          '0' => { 'id' => 'rootfs', 'storage' => 'local-lvm', 'size' => '1073741824' },
-          '1' => { 'id' => 'mp0', 'storage' => 'local-lvm', 'size' => '1073741824' }
+          '0' => { 'id' => 'rootfs', 'storage' => 'local-lvm', 'size_gb' => '10' },
+          '1' => { 'id' => 'mp0', 'storage' => 'local-lvm', 'size_gb' => '10' }
         },
         'interfaces_attributes' => {
           '0' => { 'id' => 'net0', 'name' => 'eth0', 'bridge' => 'vmbr0', 'ip' => 'dhcp', 'ip6' => 'dhcp' },
@@ -179,14 +179,14 @@ module ForemanFogProxmox
 
       it '#server' do
         convert_sizes(host_server)
-        assert_equal '512', host_server['config_attributes']['memory']
-        assert_equal '1', host_server['volumes_attributes']['0']['size']
+        assert_equal '5', host_server['config_attributes']['memory_gb']
+        assert_equal '10', host_server['volumes_attributes']['0']['size_gb']
       end
 
       it '#container' do
         convert_sizes(host_container)
-        assert_equal '512', host_container['config_attributes']['memory']
-        assert_equal '1', host_container['volumes_attributes']['0']['size']
+        assert_equal '5', host_container['config_attributes']['memory_gb']
+        assert_equal '10', host_container['volumes_attributes']['0']['size_gb']
       end
     end
 
@@ -195,23 +195,23 @@ module ForemanFogProxmox
       teardown { Fog.unmock! }
 
       it '#server memory' do
-        convert_memory_size(host_server['config_attributes'], 'memory')
-        assert_equal '512', host_server['config_attributes']['memory']
+        convert_memory_size(host_server['config_attributes'], 'memory_gb')
+        assert_equal '5', host_server['config_attributes']['memory_gb']
       end
 
       it '#server min_memory nil' do
-        convert_memory_size(host_server['config_attributes'], 'min_memory')
-        assert_nil host_server['config_attributes']['min_memory']
+        convert_memory_size(host_server['config_attributes'], 'min_memory_gb')
+        assert_nil host_server['config_attributes']['min_memory_gb']
       end
 
       it '#container memory' do
-        convert_memory_size(host_container['config_attributes'], 'memory')
-        assert_equal '512', host_container['config_attributes']['memory']
+        convert_memory_size(host_container['config_attributes'], 'memory_gb')
+        assert_equal '512', host_container['config_attributes']['memory_gb']
       end
 
       it '#container swap empty' do
-        convert_memory_size(host_container['config_attributes'], 'swap')
-        assert_empty host_container['config_attributes']['swap']
+        convert_memory_size(host_container['config_attributes'], 'swap_gb')
+        assert_empty host_container['config_attributes']['swap_gb']
       end
     end
   end

@@ -31,7 +31,7 @@ module ProxmoxVmVolumesHelper
   GIGA = KILO * MEGA
 
   def add_disk_options(disk, args)
-    options = ForemanFogProxmox::HashCollection.new_hash_reject_keys(args, ['id', 'volid', 'controller', 'device', 'storage', 'size', '_delete', 'storage_type'])
+    options = ForemanFogProxmox::HashCollection.new_hash_reject_keys(args, ['id', 'volid', 'controller', 'device', 'storage', 'size_gb', '_delete', 'storage_type'])
     ForemanFogProxmox::HashCollection.remove_empty_values(options)
     disk[:options] = options
   end
@@ -51,7 +51,7 @@ module ProxmoxVmVolumesHelper
     disk[:id] = args['id'] if args.key?('id')
     disk[:volid] = args['volid'] if args.key?('volid')
     disk[:storage] = args['storage'].to_s if args.key?('storage')
-    disk[:size] = args['size'].to_i if args.key?('size')
+    disk[:size] = args['size_gb'].to_i * GIGA if args.key?('size_gb')
     add_disk_options(disk, args)
     disk.key?(:storage) ? disk : {}
   end
@@ -88,15 +88,15 @@ module ProxmoxVmVolumesHelper
   end
 
   def convert_volumes_size(args)
-    args['volumes_attributes'].each_value { |value| value['size'] = (value['size'].to_i / GIGA).to_s unless ForemanFogProxmox::Value.empty?(value['size']) }
+    args['volumes_attributes'].each_value { |value| value['size'] = (value['size_gb'].to_i * GIGA).to_s unless ForemanFogProxmox::Value.empty?(value['size_gb']) }
   end
 
   def convert_sizes(args)
-    convert_memory_size(args['config_attributes'], 'memory')
-    convert_memory_size(args['config_attributes'], 'balloon')
-    convert_memory_size(args['config_attributes'], 'shares')
-    convert_memory_size(args['config_attributes'], 'swap')
-    args['volumes_attributes'].each_value { |value| value['size'] = (value['size'].to_i / GIGA).to_s unless ForemanFogProxmox::Value.empty?(value['size']) }
+    convert_memory_size(args['config_attributes'], 'memory_gb')
+    convert_memory_size(args['config_attributes'], 'balloon_gb')
+    convert_memory_size(args['config_attributes'], 'shares_gb')
+    convert_memory_size(args['config_attributes'], 'swap_gb')
+    args['volumes_attributes'].each_value { |value| value['size'] = (value['size_gb'].to_i * GIGA).to_s unless ForemanFogProxmox::Value.empty?(value['size_gb']) }
   end
 
   def remove_volume_keys(args)

@@ -38,9 +38,9 @@ module ForemanFogProxmox
           'type' => 'qemu',
           'config_attributes' => {
             'name' => 'toto-tata.pve',
-            'memory' => '536870912',
-            'balloon' => '268435456',
-            'shares' => '5',
+            'memory_gb' => '5',
+            'balloon_gb' => '2',
+            'shares_gb' => '5',
             'cpu_type' => 'kvm64',
             'spectre' => '+1',
             'pcid' => '0',
@@ -48,8 +48,8 @@ module ForemanFogProxmox
             'sockets' => '1'
           },
           'volumes_attributes' => {
-            '0' => { 'id' => 'scsi0', 'storage_type' => 'hard_disk', 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => 'none' },
-            '1' => { 'id' => 'virtio0', 'storage_type' => 'hard_disk', 'controller' => 'virtio', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => 'none' },
+            '0' => { 'id' => 'scsi0', 'storage_type' => 'hard_disk', 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size_gb' => '10', 'cache' => 'none' },
+            '1' => { 'id' => 'virtio0', 'storage_type' => 'hard_disk', 'controller' => 'virtio', 'device' => '0', 'storage' => 'local-lvm', 'size_gb' => '10', 'cache' => 'none' },
             '2' => { 'id' => 'ide2', 'storage_type' => 'cdrom', 'controller' => 'ide', 'device' => '2', 'storage' => 'local-lvm', 'cdrom' => 'none' }
           },
           'interfaces_attributes' => {
@@ -64,7 +64,7 @@ module ForemanFogProxmox
           'name' => 'test',
           'type' => 'qemu',
           'volumes_attributes' => {
-            '0' => { '_delete' => '1', 'storage_type' => 'hard_disk', 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824' },
+            '0' => { '_delete' => '1', 'storage_type' => 'hard_disk', 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size_gb' => '10' },
             '1' => { '_delete' => '', 'storage_type' => 'cdrom', 'controller' => 'ide', 'device' => '2', 'storage' => 'local-lvm', 'volid' => 'local-lvm:iso/debian-netinst.iso', 'cdrom' => 'image' }
           },
           'interfaces_attributes' => { '0' => { '_delete' => '1', 'id' => 'net0', 'compute_attributes' => { 'model' => 'virtio' } } } }
@@ -73,7 +73,7 @@ module ForemanFogProxmox
       test '#memory' do
         memory = parse_typed_memory(host_form['config_attributes'], type)
         assert memory.key?(:memory)
-        assert_equal 536_870_912, memory[:memory]
+        assert_equal 5 * GIGA, memory[:memory]
       end
 
       test '#cpu' do
@@ -107,9 +107,9 @@ module ForemanFogProxmox
         assert_equal '1', vm['cores']
         assert_equal '1', vm['sockets']
         assert_equal 'cputype=kvm64,flags=+spec-ctrl', vm[:cpu]
-        assert_equal 536_870_912, vm[:memory]
-        assert_equal 268_435_456, vm[:balloon]
-        assert_equal 5, vm[:shares]
+        assert_equal 5 * GIGA, vm[:memory]
+        assert_equal 2 * GIGA, vm[:balloon]
+        assert_equal 5 * GIGA, vm[:shares]
         assert_equal 'local-lvm:1073741824,cache=none', vm[:scsi0]
         assert_equal 'model=virtio,bridge=vmbr0,firewall=0,link_down=0', vm[:net0]
         assert_equal 'toto-tata.pve', vm[:name]

@@ -82,7 +82,7 @@ module ForemanFogProxmox
       if volume_type?(volume_attributes, 'cdrom')
         update_cdrom(vm, disk, volume_attributes)
       elsif volume_type?(volume_attributes, 'hard_disk')
-        diff_size = volume_attributes['size'].to_i - disk.size if volume_attributes['size'] && disk.size
+        diff_size = volume_attributes['size_gb'].to_i * GIGA - disk.size if volume_attributes['size_gb'] && disk.size
         raise ::Foreman::Exception, format(_('Unable to shrink %<id>s size. Proxmox allows only increasing size.'), id: id) unless diff_size >= 0
 
         new_storage = volume_attributes['storage']
@@ -121,7 +121,7 @@ module ForemanFogProxmox
       if volume_type?(volume_attributes, 'hard_disk')
         options = volume_options(vm, id, volume_attributes)
         disk_attributes[:storage] = volume_attributes['storage']
-        disk_attributes[:size] = (volume_attributes['size'].to_i / GIGA).to_s
+        disk_attributes[:size] = (volume_attributes['size_gb'].to_i * GIGA).to_s
       elsif volume_type?(volume_attributes, 'cdrom')
         disk_attributes[:volid] = volume_attributes[:iso]
       elsif volume_type?(volume_attributes, 'cloud_init')

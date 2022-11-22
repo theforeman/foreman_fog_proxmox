@@ -43,7 +43,6 @@ module ForemanFogProxmox
         assert args.key?('volumes_attributes')
         assert args['volumes_attributes'].key?('0')
         assert_not args['volumes_attributes']['0'].key?('_delete')
-        # assert_not args['volumes_attributes']['0'].key?('storage_type')
       end
     end
   end

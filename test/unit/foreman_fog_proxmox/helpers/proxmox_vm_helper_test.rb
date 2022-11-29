@@ -42,13 +42,13 @@ module ForemanFogProxmox
         :node_id => 'proxmox',
         :service => service,
         'templated' => '0',
-        'memory' => '536870912',
+        'memory' => '512',
         'swap' => '',
         'cores' => '1',
         'arch' => 'amd64',
         'ostype' => 'debian',
-        'rootfs' => 'local-lvm:1073741824',
-        'mp0' => 'local-lvm:1073741824',
+        'rootfs' => 'local-lvm:10',
+        'mp0' => 'local-lvm:10',
         'net0' => 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp',
         'net1' => 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp'
       )
@@ -66,8 +66,7 @@ module ForemanFogProxmox
         :type => 'qemu',
         'templated' => '0',
         'ide2' => 'local-lvm:iso/debian-netinst.iso,media=cdrom',
-        'memory' => '536870912',
-        'min_memory' => '',
+        'memory' => '1024',
         'ballon' => '',
         'shares' => '',
         'cpu_type' => 'kvm64',
@@ -75,7 +74,7 @@ module ForemanFogProxmox
         'pcid' => '0',
         'cores' => '1',
         'sockets' => '1',
-        'scsi0' => 'local-lvm:1073741824,cache=none',
+        'scsi0' => 'local-lvm:10,cache=none',
         'net0' => 'model=virtio,bridge=vmbr0',
         'net1' => 'model=e1000,bridge=vmbr0'
       )
@@ -87,10 +86,9 @@ module ForemanFogProxmox
         'node_id' => 'proxmox',
         'type' => 'qemu',
         'config_attributes' => {
-          'memory_gb' => '5',
-          'min_memory' => nil,
-          'ballon_gb' => '',
-          'shares_gb' => '',
+          'memory' => '1024',
+          'balloon' => '512',
+          'shares' => '512',
           'cpu_type' => 'kvm64',
           'spectre' => '1',
           'pcid' => '0',
@@ -98,7 +96,7 @@ module ForemanFogProxmox
           'sockets' => '1'
         },
         'volumes_attributes' => {
-          '0' => { 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size_gb' => '10', 'cache' => 'none' }
+          '0' => { 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '10', 'cache' => 'none' }
         },
         'interfaces_attributes' => {
           '0' => { 'id' => 'net0', 'model' => 'virtio', 'bridge' => 'vmbr0', 'firewall' => '0', 'disconnect' => '0' },
@@ -117,8 +115,8 @@ module ForemanFogProxmox
         'config_attributes' => {
           'onboot' => '0',
           'description' => '',
-          'memory_gb' => '5',
-          'swap' => '',
+          'memory' => '1024',
+          'swap' => '512',
           'cores' => '1',
           'cpulimit' => '',
           'cpuunits' => '',
@@ -130,8 +128,8 @@ module ForemanFogProxmox
 
         },
         'volumes_attributes' => {
-          '0' => { 'id' => 'rootfs', 'storage' => 'local-lvm', 'size_gb' => '10' },
-          '1' => { 'id' => 'mp0', 'storage' => 'local-lvm', 'size_gb' => '10' }
+          '0' => { 'id' => 'rootfs', 'storage' => 'local-lvm', 'size' => '10' },
+          '1' => { 'id' => 'mp0', 'storage' => 'local-lvm', 'size' => '10' }
         },
         'interfaces_attributes' => {
           '0' => { 'id' => 'net0', 'name' => 'eth0', 'bridge' => 'vmbr0', 'ip' => 'dhcp', 'ip6' => 'dhcp' },
@@ -170,48 +168,6 @@ module ForemanFogProxmox
         assert config_hash.key?('config_attributes')
         expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(container.config.attributes).reject { |key, _value| excluded_lxc_keys.include? key }
         assert_equal expected_config_hash, config_hash['config_attributes']
-      end
-    end
-
-    describe 'convert_sizes' do
-      setup { Fog.mock! }
-      teardown { Fog.unmock! }
-
-      it '#server' do
-        convert_sizes(host_server)
-        assert_equal '5', host_server['config_attributes']['memory_gb']
-        assert_equal '10', host_server['volumes_attributes']['0']['size_gb']
-      end
-
-      it '#container' do
-        convert_sizes(host_container)
-        assert_equal '5', host_container['config_attributes']['memory_gb']
-        assert_equal '10', host_container['volumes_attributes']['0']['size_gb']
-      end
-    end
-
-    describe 'convert_memory_size' do
-      setup { Fog.mock! }
-      teardown { Fog.unmock! }
-
-      it '#server memory' do
-        convert_memory_size(host_server['config_attributes'], 'memory_gb')
-        assert_equal '5', host_server['config_attributes']['memory_gb']
-      end
-
-      it '#server min_memory nil' do
-        convert_memory_size(host_server['config_attributes'], 'min_memory_gb')
-        assert_nil host_server['config_attributes']['min_memory_gb']
-      end
-
-      it '#container memory' do
-        convert_memory_size(host_container['config_attributes'], 'memory_gb')
-        assert_equal '512', host_container['config_attributes']['memory_gb']
-      end
-
-      it '#container swap empty' do
-        convert_memory_size(host_container['config_attributes'], 'swap_gb')
-        assert_empty host_container['config_attributes']['swap_gb']
       end
     end
   end

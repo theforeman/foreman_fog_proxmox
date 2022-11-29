@@ -41,14 +41,6 @@ module ProxmoxVmConfigHelper
     vm_h
   end
 
-  def convert_memory_size(config_hash, key_gb)
-    # default unit memory size is Gb
-    memory = config_hash[key_gb].to_i * GIGA
-    key = key_gb.to_s.match(/(\w+)(_gb)/)[0]
-    config_hash.delete!(key_gb)
-    config_hash.store(key, memory)
-  end
-
   def general_a(type)
     general_a = ['node_id', 'type', 'config_attributes', 'volumes_attributes', 'interfaces_attributes']
     general_a += ['firmware_type', 'provision_method', 'container_volumes', 'server_volumes', 'start_after_create']
@@ -61,14 +53,14 @@ module ProxmoxVmConfigHelper
     main_a = ['name', 'type', 'node_id', 'vmid', 'interfaces', 'mount_points', 'disks']
     case type
     when 'lxc'
-      cpu_a = ['arch', 'cpulimit', 'cpuunits', 'cores', 'sockets']
-      memory_a = ['memory_gb', 'swap_gb']
+      cpu_a = ['arch', 'cpulimit', 'cpuunits']
+      memory_a = ['memory', 'swap']
       ostemplate_a = ['ostemplate', 'ostemplate_storage', 'ostemplate_file']
       keys.store(:ostemplate, ostemplate_a)
     when 'qemu'
       cpu_a = ['cpu_type', 'cpu']
       cpu_a += ForemanFogProxmox::HashCollection.stringify_keys(Fog::Proxmox::CpuHelper.flags).keys
-      memory_a = ['memory_gb', 'balloon_gb', 'shares_gb']
+      memory_a = ['memory', 'balloon', 'shares']
       cloud_init_a = ['ciuser', 'cipassword', 'searchdomain', 'nameserver']
       keys.store(:cloud_init, cloud_init_a)
     end
@@ -76,10 +68,6 @@ module ProxmoxVmConfigHelper
     keys.store(:cpu, cpu_a)
     keys.store(:memory, memory_a)
     keys
-  end
-
-  def convert_memory_sizes(args)
-    ['memory_gb', 'balloon_gb', 'shares_gb', 'swap_gb'].each { |key| convert_memory_size(args['config_attributes'], key) if args['config_attributes'] && args['config_attributes'].has_key?(key) }
   end
 
   def config_general_or_ostemplate_key?(key)
@@ -137,28 +125,25 @@ module ProxmoxVmConfigHelper
   end
 
   def parse_typed_memory(args, type)
-    config_memory = {}
     ForemanFogProxmox::HashCollection.remove_empty_values(args)
     logger.debug("parse_typed_memory(#{type}): args=#{args}")
-    [:memory_gb, :balloon_gb, :shares_gb, :swap_gb].each { |key| convert_memory_size(config_memory, key) if config_memory && config_memory.has_key?(key) }
-    logger.debug("parse_typed_memory(#{type}): config_memory=#{config_memory}")
-    config_memory
+    args
   end
 
   def parse_typed_cpu(args, type)
     cpu = {}
     ForemanFogProxmox::HashCollection.remove_empty_values(args)
-    if type == 'qemu'
+    case type
+    when 'qemu'
       logger.debug("parse_typed_cpu(#{type}): args=#{args}")
       cpu_flattened = Fog::Proxmox::CpuHelper.flatten(args)
       cpu_flattened = args[:cpu] if cpu_flattened.empty?
       logger.debug("parse_typed_cpu(#{type}): cpu_flattened=#{cpu_flattened}")
-      ForemanFogProxmox::HashCollection.remove_empty_values(args)
-      ForemanFogProxmox::HashCollection.remove_keys(args, config_typed_keys('qemu')[:cpu])
       args.each_value(&:to_i)
       cpu = { cpu: cpu_flattened }
+    when 'lxc'
+      config_typed_keys('lxc')[:cpu].each { |key| ForemanFogProxmox::HashCollection.add_and_format_element(cpu, key.to_sym, args, key) }
     end
-    config_typed_keys('lxc')[:cpu].each { |key| ForemanFogProxmox::HashCollection.add_and_format_element(cpu, key.to_sym, args, key) } if type == 'lxc'
     logger.debug("parse_typed_cpu(#{type}): cpu=#{cpu}")
     cpu
   end

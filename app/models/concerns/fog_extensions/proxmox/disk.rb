@@ -41,10 +41,6 @@ module FogExtensions
       def cloudinit
         cloud_init? ? 'disk' : 'none'
       end
-
-      def size_gb
-        Fog::Proxmox::DiskHelper.to_int_gb(size)
-      end
     end
   end
 end

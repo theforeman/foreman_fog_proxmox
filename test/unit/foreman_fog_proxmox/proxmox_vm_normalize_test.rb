@@ -78,7 +78,7 @@ module ForemanFogProxmox
                       },
                       "1" =>
                       {
-                        "storage" => "local-vm", "size" => 8_589_934_592, "storage_type" => "rootfs", "id" => "rootfs", "options" => {}
+                        "storage" => "local-vm", "size" => '8', "storage_type" => "rootfs", "id" => "rootfs", "options" => {}
                       }
                     },
                     "interfaces_attributes" => { "0" => { "id" => "net0", "compute_attributes" => { "model" => "virtio", "bridge" => "vmbr0" } } }, "start_after_create" => "0", "pool" => "" }.deep_symbolize_keys
@@ -119,7 +119,7 @@ module ForemanFogProxmox
                   {
                     "0" =>
                      {
-                       "_delete" => "", "storage" => "local-vm", "size" => 8_589_934_592,
+                       "_delete" => "", "storage" => "local-vm", "size" => '8',
                        "storage_type" => "rootfs", "id" => "rootfs", "options" => {}
                      },
                     "1" => { "id" => "virtio0" }
@@ -151,11 +151,11 @@ module ForemanFogProxmox
                     {
                       "0" =>
                       {
-                        "_delete" => "", "storage" => "local-vm", "size" => 8_589_934_592, "storage_type" => "rootfs", "id" => "rootfs", "options" => {}
+                        "_delete" => "", "storage" => "local-vm", "size" => '8', "storage_type" => "rootfs", "id" => "rootfs", "options" => {}
                       },
                       "1" =>
                       {
-                        "storage" => "local-vm", "size" => 8_589_934_592, "controller" => "virtio", "device" => "0", "id" => "virtio0", "options" => { "cache" => "none" }
+                        "storage" => "local-vm", "size" => '8', "controller" => "virtio", "device" => "0", "id" => "virtio0", "options" => { "cache" => "none" }
                       }
                     },
                     "interfaces_attributes" => { "0" => { "id" => "net0", "compute_attributes" => { "name" => "eth0", "bridge" => "vmbr0", "dhcp" => 1, "dhcp6" => 1 } } }, "start_after_create" => "0", "pool" => "" }

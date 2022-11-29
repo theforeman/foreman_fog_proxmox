@@ -301,7 +301,7 @@ RAILS_ENV=development bundle exec foreman start
 If you want to delete vm on host destroy, add this line in config/settings.yml:
 
 ```yml
-:destroy_vm_on_host_delete: false
+:destroy_vm_on_host_delete: true
 ```
 
 See details in [foreman plugin development](https://projects.theforeman.org/projects/foreman/wiki/How_to_Create_a_Plugin)

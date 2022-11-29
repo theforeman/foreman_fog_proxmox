@@ -45,22 +45,6 @@ module FogExtensions
       def cloud_init?
         disks.any?(&:cloud_init?)
       end
-
-      def memory_gb
-        Fog::Proxmox::DiskHelper.to_int_gb(memory)
-      end
-
-      def balloon_gb
-        Fog::Proxmox::DiskHelper.to_int_gb(balloon)
-      end
-
-      def shares_gb
-        Fog::Proxmox::DiskHelper.to_int_gb(shares)
-      end
-
-      def swap_gb
-        Fog::Proxmox::DiskHelper.to_int_gb(swap)
-      end
     end
   end
 end

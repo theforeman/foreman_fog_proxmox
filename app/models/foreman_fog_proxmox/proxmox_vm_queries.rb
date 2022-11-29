@@ -63,6 +63,7 @@ module ForemanFogProxmox
         vm ||= find_vm_in_servers_by_vmid(node.containers, vmid)
         unless vm.nil?
           logger.debug("found vm #{vmid} on node #{node.node}")
+          logger.debug("vm=#{vm.inspect}")
           break
         end
       end

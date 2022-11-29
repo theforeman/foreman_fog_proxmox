@@ -36,7 +36,7 @@ module ForemanFogProxmox
 
     def hard_disk_typed_defaults(vm_type)
       options = {}
-      volume_attributes_h = { storage: storages.first.identity.to_s, size: (8 * GIGA) }
+      volume_attributes_h = { storage: storages.first.identity.to_s, size: '8' }
       case vm_type
       when 'qemu'
         controller = 'virtio'
@@ -75,7 +75,7 @@ module ForemanFogProxmox
     def interface_typed_defaults(type)
       interface_attributes_h = { id: 'net0', compute_attributes: {} }
       interface_attributes_h[:compute_attributes] = { model: 'virtio', bridge: bridges.first.identity.to_s } if type == 'qemu'
-      interface_attributes_h[:compute_attributes] = { name: 'eth0', bridge: bridges.first.identity.to_s, dhcp: 1, dhcp6: 1 } if type == 'lxc'
+      interface_attributes_h[:compute_attributes] = { name: 'eth0', bridge: bridges.first.identity.to_s, dhcp: '1', dhcp6: '1' } if type == 'lxc'
       interface_attributes_h
     end
 
@@ -135,21 +135,21 @@ module ForemanFogProxmox
       case type
       when 'qemu'
         config_attributes = {
-          cores: 1,
-          sockets: 1,
-          kvm: 0,
+          cores: '1',
+          sockets: '1',
+          kvm: '0',
           vga: 'std',
-          memory: 1 * GIGA,
+          memory: '1024',
           ostype: 'l26',
           cpu: 'cputype=kvm64',
           scsihw: 'virtio-scsi-pci',
-          templated: 0
+          templated: '0'
         }
         config_attributes = config_attributes
       when 'lxc'
         config_attributes = {
-          memory: 1 * GIGA,
-          templated: 0
+          memory: '1024',
+          templated: '0'
         }
       end
       config_attributes
@@ -184,6 +184,7 @@ module ForemanFogProxmox
       vm_h = parse_typed_vm(options, type).deep_symbolize_keys
       logger.debug(format(_('new_typed_vm(%<type>s): vm_h=%<vm_h>s'), type: type, vm_h: vm_h))
       vm_h = vm_h.merge(vm_typed_instance_defaults(type)) if vm_h.empty?
+      logger.debug(format(_('new_typed_vm(%<type>s) with vm_typed_instance_defaults: vm_h=%<vm_h>s'), type: type, vm_h: vm_h))
       vm = node.send(vm_collection(type)).new(vm_h)
       vm
     end

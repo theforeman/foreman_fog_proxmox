@@ -41,8 +41,8 @@ module ForemanFogProxmox
           'config_attributes' => {
             'onboot' => '0',
             'description' => '',
-            'memory_gb' => '1',
-            'swap_gb' => '1',
+            'memory' => '1024',
+            'swap' => '512',
             'cores' => '1',
             'cpulimit' => '',
             'cpuunits' => '',
@@ -54,8 +54,8 @@ module ForemanFogProxmox
 
           },
           'volumes_attributes' => {
-            '0' => { 'id' => 'rootfs', 'storage' => 'local-lvm', 'size_gb' => '1', 'cache' => '' },
-            '1' => { 'id' => 'mp0', 'storage' => 'local-lvm', 'size_gb' => '1', 'mp' => '/opt/path' }
+            '0' => { 'id' => 'rootfs', 'storage' => 'local-lvm', 'size' => '1', 'cache' => '' },
+            '1' => { 'id' => 'mp0', 'storage' => 'local-lvm', 'size' => '1', 'mp' => '/opt/path' }
           },
           'interfaces_attributes' => {
             '0' => {
@@ -92,10 +92,10 @@ module ForemanFogProxmox
           :type => 'lxc',
           'node_id' => 'proxmox',
           :node_id => 'proxmox',
-          :memory => GIGA,
+          :memory => 1024,
           'templated' => 0,
           :onboot => 0,
-          :swap => GIGA,
+          :swap => 512,
           'cores' => '1',
           :arch => 'amd64',
           :ostype => 'debian',
@@ -103,8 +103,8 @@ module ForemanFogProxmox
           'ostemplate_storage' => 'local',
           'ostemplate_file' => 'local:vztmpl/alpine-3.7-default_20171211_amd64.tar.xz',
           'password' => 'proxmox01',
-          :rootfs => 'local-lvm:1073741824',
-          :mp0 => 'local-lvm:1073741824,mp=/opt/path',
+          :rootfs => 'local-lvm:1',
+          :mp0 => 'local-lvm:1,mp=/opt/path',
           'net0' => 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876',
           'net1' => 'model=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876' }
       end
@@ -114,22 +114,20 @@ module ForemanFogProxmox
           'name' => 'test',
           'type' => 'lxc',
           'node_id' => 'proxmox',
-          'volumes_attributes' => { '0' => { '_delete' => '1', 'device' => '0', 'storage' => 'local-lvm', 'size_gb' => '1', 'mp' => '/opt/path' } },
+          'volumes_attributes' => { '0' => { '_delete' => '1', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1', 'mp' => '/opt/path' } },
           'interfaces_attributes' => { '0' => { '_delete' => '1', 'id' => 'net0', 'name' => 'eth0' } } }
       end
 
       test '#memory' do
-        memory = parse_typed_memory(host_form['config_attributes'], type)
-        assert memory.key?(:memory)
-        assert_equal GIGA, memory[:memory]
-        assert memory.key?(:swap)
-        assert_equal GIGA, memory[:swap]
+        memory = parse_typed_memory(host_form['config_attributes'].select { |key, _value| config_typed_keys(type)[:memory].include? key }, type)
+        assert memory.key?('memory')
+        assert_equal '1024', memory['memory']
+        assert memory.key?('swap')
+        assert_equal '512', memory['swap']
       end
 
       test '#cpu' do
-        cpu = parse_typed_cpu(host_form['config_attributes'], type)
-        assert cpu.key?(:cores)
-        assert_equal '1', cpu[:cores]
+        cpu = parse_typed_cpu(host_form['config_attributes'].select { |key, _value| config_typed_keys(type)[:cpu].include? key }, type)
         assert cpu.key?(:arch)
         assert_equal 'amd64', cpu[:arch]
       end
@@ -142,17 +140,6 @@ module ForemanFogProxmox
         assert_equal expected_ostemplate, ostemplate
       end
 
-      test '#vm host_form' do
-        vm = parse_typed_vm(host_form, type)
-        assert_equal GIGA, vm[:memory]
-        assert_equal 'local-lvm:1073741824', vm[:rootfs]
-        assert_equal 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876', vm[:net0]
-        assert_equal 'toto-tata.pve', vm[:hostname]
-        assert_not vm.key?(:config)
-        assert_not vm.key?(:node)
-        assert_not vm.key?(:type)
-      end
-
       test '#vm container' do
         vm = parse_typed_vm(host_form, type)
         expected_vm = ActiveSupport::HashWithIndifferentAccess.new(
@@ -160,16 +147,16 @@ module ForemanFogProxmox
           :password => 'proxmox01',
           :ostemplate => 'local:vztmpl/alpine-3.7-default_20171211_amd64.tar.xz',
           :onboot => '0',
-          :memory => GIGA,
-          :swap => GIGA,
+          :memory => '1024',
+          :swap => '512',
           :cores => '1',
           :arch => 'amd64',
           :ostype => 'debian',
           :hostname => 'toto-tata.pve',
           :net0 => 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876',
           :net1 => 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876',
-          :rootfs => 'local-lvm:1073741824',
-          :mp0 => 'local-lvm:1073741824,mp=/opt/path'
+          :rootfs => 'local-lvm:1',
+          :mp0 => 'local-lvm:1,mp=/opt/path'
         )
         assert_equal expected_vm, vm
       end
@@ -180,10 +167,10 @@ module ForemanFogProxmox
         assert_equal 2, volumes.size
         assert rootfs = volumes.first
         assert rootfs.key?(:rootfs)
-        assert_equal 'local-lvm:1073741824', rootfs[:rootfs]
+        assert_equal 'local-lvm:1', rootfs[:rootfs]
         assert mp0 = volumes[1]
         assert mp0.key?(:mp0)
-        assert_equal 'local-lvm:1073741824,mp=/opt/path', mp0[:mp0]
+        assert_equal 'local-lvm:1,mp=/opt/path', mp0[:mp0]
       end
 
       test '#interface with name eth0 and bridge' do

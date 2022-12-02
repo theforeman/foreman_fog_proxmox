@@ -99,7 +99,7 @@ jobs:
         path: foreman_fog_proxmox/coverage/
       
   coverage:
-    needs: [ lint, test ]
+    needs: [ build ]
     name: publish coverage report
     runs-on: ubuntu-latest
     steps:

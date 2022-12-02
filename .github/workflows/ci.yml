@@ -58,7 +58,6 @@ jobs:
         echo -n -e "gem 'foreman_fog_proxmox', :path => '../foreman_fog_proxmox'\n gem 'fog-proxmox', :path => '../fog-proxmox'\n gem 'simplecov'" > bundler.d/Gemfile.local.rb
         cp config/settings.yaml.test config/settings.yaml
         echo -n -e "test:\n adapter: postgresql \n port: 5432 \n database: foreman \n username: foreman \n password: foreman \n encoding: utf8 \n pool: 10" > config/database.yml
-        cp config/model.mappings.example config/model.mappings
         cp config/ignored_environments.yml.sample config/ignored_environments.yml
         bundle config set without 'libvirt ovirt mysql2'
         bundle install --jobs 4 --retry 3

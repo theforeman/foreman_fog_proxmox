@@ -78,7 +78,7 @@ jobs:
       run: |
         npm install        
         bundle exec bin/rake assets:precompile locale:pack webpack:compile
-    - name: Run test suite
+    - name: Run test suite with coverage report
       working-directory: ./foreman 
       env:
         PGHOST: 127.0.0.1
@@ -87,28 +87,57 @@ jobs:
         PGUSER: foreman
         RAILS_ENV: test
         DISABLE_SPRING: true
+        CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
+        COVERAGE: true
       run: |
         bundle exec bin/rake foreman_fog_proxmox:rubocop
         bundle exec bin/rake test:foreman_fog_proxmox
+    - name: Upload simplecov results for coverage
+      uses: actions/upload-artifact@v1
+      with:
+        name: coverage
+        path: foreman_fog_proxmox/coverage/
+      
+  coverage:
+    needs: [ lint, test ]
+    name: publish coverage report
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download tests result from test
+      uses: actions/download-artifact@v1
+      with:
+        name: coverage
+    - name: Publish code coverage to codeclimate
+      uses: paambaati/codeclimate-action@v3.2.0
+      env:
+        CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
+        GIT_BRANCH: ${{ github.ref }}
+        GIT_COMMIT_SHA: ${{ github.sha }}
+      with:
+        workingDirectory: coverage
+        debug: true
+        coverageLocations: |
+          ${{github.workspace}}/coverage/coverage.json:simplecov
         
   publish:
-      needs: [ build ]
-      name: publish
-      runs-on: ubuntu-latest
-      if: contains(github.ref, '/tags/v')
-      steps:
-        - uses: actions/checkout@v2
-        - name: Set up Ruby 2.6
-          uses: actions/setup-ruby@v1
-          with:
-            version: 2.6.x
-        - name: Publish to RubyGems
-          env:
-            GEM_HOST_API_KEY: ${{secrets.RUBYGEMS_AUTH_TOKEN}}
-          run: |
-            mkdir -p $HOME/.gem
-            touch $HOME/.gem/credentials
-            chmod 0600 $HOME/.gem/credentials
-            printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
-            gem build *.gemspec
-            gem push *.gem
+    needs: [ build ]
+    name: publish gem
+    runs-on: ubuntu-latest
+    if: contains(github.ref, '/tags/v')
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Ruby 2.6
+        uses: actions/setup-ruby@v1
+        with:
+          version: 2.6.x
+      - name: Publish to RubyGems
+        env:
+          GEM_HOST_API_KEY: ${{secrets.RUBYGEMS_AUTH_TOKEN}}
+        run: |
+          mkdir -p $HOME/.gem
+          touch $HOME/.gem/credentials
+          chmod 0600 $HOME/.gem/credentials
+          printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
+          gem build *.gemspec
+          gem push *.gem

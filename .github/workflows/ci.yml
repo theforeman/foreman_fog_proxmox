@@ -96,7 +96,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: coverage
-        path: foreman_fog_proxmox/coverage/
+        path: coverage/
       
   coverage:
     needs: [ build ]

@@ -104,10 +104,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+      with:
+        repository: theforeman/foreman_fog_proxmox
+        path: foreman_fog_proxmox
     - name: Download tests result from test
       uses: actions/download-artifact@v1
       with:
         name: coverage
+        path: foreman_fog_proxmox/coverage
     - name: Publish code coverage to codeclimate
       uses: paambaati/codeclimate-action@v3.2.0
       env:
@@ -115,10 +119,10 @@ jobs:
         GIT_BRANCH: ${{ github.ref }}
         GIT_COMMIT_SHA: ${{ github.sha }}
       with:
-        workingDirectory: coverage
+        workingDirectory: foreman_fog_proxmox/coverage
         debug: true
         coverageLocations: |
-          ${{github.workspace}}/coverage/coverage.json:simplecov
+          ${{github.workspace}}/foreman_fog_proxmox/coverage/coverage.json:simplecov
         
   publish:
     needs: [ build ]

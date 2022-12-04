@@ -120,7 +120,6 @@ jobs:
         GIT_COMMIT_SHA: ${{ github.sha }}
       with:
         workingDirectory: foreman_fog_proxmox/coverage
-        prefix: ${{github.workspace}}/foreman_fog_proxmox
         debug: true
         coverageLocations: |
           ${{github.workspace}}/foreman_fog_proxmox/coverage/coverage.json:simplecov

@@ -42,7 +42,6 @@ module ForemanFogProxmox
       if image_id
         clone_from_image(image_id, args, vmid)
       else
-        convert_sizes(args)
         remove_volume_keys(args)
         logger.warn(format(_('create vm: args=%<args>s'), args: args))
         vm = node.send(vm_collection(type)).create(parse_typed_vm(args, type))
@@ -74,7 +73,8 @@ module ForemanFogProxmox
     end
 
     def compute_config_attributes(parsed_attr)
-      excluded_keys = [:vmid, :templated, :ostemplate, :ostemplate_file, :ostemplate_storage, :volumes_attributes, :pool]
+      excluded_keys = [:vmid, :templated, :ostemplate, :ostemplate_file, :ostemplate_storage, :volumes_attributes,
+                       :pool]
       config_attributes = parsed_attr.reject { |key, _value| excluded_keys.include? key.to_sym }
       ForemanFogProxmox::HashCollection.remove_empty_values(config_attributes)
       config_attributes = config_attributes.reject { |key, _value| Fog::Proxmox::DiskHelper.disk?(key) }
@@ -90,11 +90,14 @@ module ForemanFogProxmox
       elsif vm.node_id != node_id
         vm.migrate(node_id)
       else
-        convert_memory_sizes(new_attributes)
-        parsed_attr = parse_typed_vm(ForemanFogProxmox::HashCollection.new_hash_reject_keys(new_attributes, ['volumes_attributes']).merge(type: vm.type), vm.type)
+        parsed_attr = parse_typed_vm(
+          ForemanFogProxmox::HashCollection.new_hash_reject_keys(new_attributes,
+            ['volumes_attributes']).merge(type: vm.type), vm.type
+        )
         config_attributes = compute_config_attributes(parsed_attr)
         volumes_attributes = new_attributes['volumes_attributes']
-        logger.debug(format(_('save_vm(%<vmid>s) volumes_attributes=%<volumes_attributes>s'), vmid: uuid, volumes_attributes: volumes_attributes))
+        logger.debug(format(_('save_vm(%<vmid>s) volumes_attributes=%<volumes_attributes>s'), vmid: uuid,
+volumes_attributes: volumes_attributes))
         volumes_attributes&.each_value { |volume_attributes| save_volume(vm, volume_attributes) }
         vm.update(config_attributes[:config_attributes])
         poolid = new_attributes['pool'] if new_attributes.key?('pool')

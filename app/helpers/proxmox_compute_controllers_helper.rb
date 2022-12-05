@@ -19,7 +19,8 @@
 
 module ProxmoxComputeControllersHelper
   def proxmox_controllers_map
-    proxmox_controllers_cloudinit_map << ForemanFogProxmox::OptionsSelect.new(name: 'VirtIO Block', id: 'virtio', range: 15)
+    proxmox_controllers_cloudinit_map << ForemanFogProxmox::OptionsSelect.new(name: 'VirtIO Block', id: 'virtio',
+      range: 15)
   end
 
   def proxmox_controllers_cloudinit_map

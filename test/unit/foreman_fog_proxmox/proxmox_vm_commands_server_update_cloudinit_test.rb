@@ -24,7 +24,7 @@ require 'factories/foreman_fog_proxmox/proxmox_server_mock_factory'
 require 'active_support/core_ext/hash/indifferent_access'
 
 module ForemanFogProxmox
-  class ProxmoxVmCommandsServerUpdateTest < ActiveSupport::TestCase
+  class ProxmoxVmCommandsServerUpdateCloudinitTest < ActiveSupport::TestCase
     include ComputeResourceTestHelpers
     include ProxmoxNodeMockFactory
     include ProxmoxServerMockFactory
@@ -58,7 +58,7 @@ module ForemanFogProxmox
           'node_id' => 'proxmox',
           'config_attributes' => {
             'cores' => '1',
-            'cpulimit' => '1'
+            'cpulimit' => '1',
           },
           'volumes_attributes' => {
             '0' => {
@@ -68,11 +68,12 @@ module ForemanFogProxmox
               'controller' => 'ide',
               'storage_type' => 'cloud_init',
               'storage' => 'local-lvm',
-              'volid' => 'local-lvm:cloudinit'
-            }
-          }
+              'volid' => 'local-lvm:cloudinit',
+            },
+          },
         }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0')
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1',
+          'cpulimit' => '1', 'onboot' => '0')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = { id: 'ide0', storage: 'local:lvm', volid: 'local-lvm:cloudinit', media: 'cdrom' }
         vm.expects(:attach, expected_volume_attr)
@@ -80,19 +81,22 @@ module ForemanFogProxmox
         @cr.save_vm(uuid, new_attributes)
       end
 
-      it 'saves modified server config with removed cdrom' do
+      it 'saves modified server config with removed cloudinit' do
         uuid = '100'
         config = mock('config')
         disks = mock('disks')
         disk = mock('disk')
-        disk.stubs(:size).returns(1_073_741_824)
+        disk.stubs(:size).returns('1')
         disk.stubs(:storage).returns('local-lvm')
         disk.stubs(:volid).returns('local-lvm:vm-100-cloudinit')
         disk.stubs(:media).returns('cdrom')
         disk.stubs(:id).returns('ide0')
+        disk.stubs(:hard_disk?).returns(false)
+        disk.stubs(:cdrom?).returns(false)
+        disk.stubs(:cloud_init?).returns(true)
         disks.stubs(:get).returns(disk)
         config.stubs(:disks).returns(disks)
-        config.stubs(:attributes).returns(:cores => '')
+        config.stubs(:attributes).returns(:cores => '1')
         vm = mock('vm')
         vm.stubs(:identity).returns(uuid)
         vm.stubs(:attributes).returns('ide0' => '')
@@ -107,7 +111,7 @@ module ForemanFogProxmox
           'node_id' => 'proxmox',
           'config_attributes' => {
             'cores' => '1',
-            'cpulimit' => '1'
+            'cpulimit' => '1',
           },
           'volumes_attributes' => {
             '0' => {
@@ -115,11 +119,13 @@ module ForemanFogProxmox
               '_delete' => '1',
               'device' => '0',
               'controller' => 'ide',
-              'storage_type' => 'cloud_init'
-            }
-          }
+              'storage_type' => 'cloud_init',
+              'volid' => 'local-lvm:vm-100-cloudinit',
+            },
+          },
         }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'config_attributes' => { 'onboot' => '0' })
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1',
+          'cpulimit' => '1', 'config_attributes' => { 'onboot' => '0' })
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = 'ide0'
         vm.expects(:detach, expected_volume_attr)

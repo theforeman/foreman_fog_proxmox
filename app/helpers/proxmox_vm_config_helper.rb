@@ -34,17 +34,13 @@ module ProxmoxVmConfigHelper
     main_a = ['vmid']
     main = vm.attributes.select { |key, _value| main_a.include? key }
     main_a += ['templated']
-    config = vm.config.attributes.reject { |key, _value| main_a.include?(key) || Fog::Proxmox::DiskHelper.disk?(key) || Fog::Proxmox::NicHelper.nic?(key) }
+    config = vm.config.attributes.reject do |key, _value|
+      main_a.include?(key) || Fog::Proxmox::DiskHelper.disk?(key) || Fog::Proxmox::NicHelper.nic?(key)
+    end
     vm_h = vm_h.merge(main)
     vm_h = vm_h.merge('config_attributes': config)
     logger.debug(format(_('object_to_config_hash(%<type>s): vm_h=%<vm_h>s'), type: type, vm_h: vm_h))
     vm_h
-  end
-
-  def convert_memory_size(config_hash, key)
-    # default unit memory size is Mb
-    memory = (config_hash[key].to_i / MEGA).to_s == '0' ? config_hash[key] : (config_hash[key].to_i / MEGA).to_s
-    config_hash.store(key, memory)
   end
 
   def general_a(type)
@@ -59,7 +55,7 @@ module ProxmoxVmConfigHelper
     main_a = ['name', 'type', 'node_id', 'vmid', 'interfaces', 'mount_points', 'disks']
     case type
     when 'lxc'
-      cpu_a = ['arch', 'cpulimit', 'cpuunits', 'cores', 'sockets']
+      cpu_a = ['arch', 'cpulimit', 'cpuunits']
       memory_a = ['memory', 'swap']
       ostemplate_a = ['ostemplate', 'ostemplate_storage', 'ostemplate_file']
       keys.store(:ostemplate, ostemplate_a)
@@ -74,10 +70,6 @@ module ProxmoxVmConfigHelper
     keys.store(:cpu, cpu_a)
     keys.store(:memory, memory_a)
     keys
-  end
-
-  def convert_memory_sizes(args)
-    ['memory', 'balloon', 'shares', 'swap'].each { |key| convert_memory_size(args['config_attributes'], key) }
   end
 
   def config_general_or_ostemplate_key?(key)
@@ -125,7 +117,9 @@ module ProxmoxVmConfigHelper
     logger.debug("parsed_typed_config(#{type}): config_cpu=#{config_cpu}")
     cpu = parse_typed_cpu(config_cpu, type)
     memory = parse_typed_memory(config.select { |key, _value| config_typed_keys(type)[:memory].include? key }, type)
-    parsed_config = config.reject { |key, value| config_a(type).include?(key) || ForemanFogProxmox::Value.empty?(value) }
+    parsed_config = config.reject do |key, value|
+      config_a(type).include?(key) || ForemanFogProxmox::Value.empty?(value)
+    end
     parsed_vm = args.reject { |key, value| args_a(type).include?(key) || ForemanFogProxmox::Value.empty?(value) }
     parsed_vm = parsed_vm.merge(config_options(config, args, type))
     parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory)
@@ -134,26 +128,30 @@ module ProxmoxVmConfigHelper
   end
 
   def parse_typed_memory(args, type)
-    memory = {}
     ForemanFogProxmox::HashCollection.remove_empty_values(args)
-    config_typed_keys(type)[:memory].each { |key| ForemanFogProxmox::HashCollection.add_and_format_element(memory, key.to_sym, args, key, :to_i) }
-    memory
+    logger.debug("parse_typed_memory(#{type}): args=#{args}")
+    args
   end
 
   def parse_typed_cpu(args, type)
     cpu = {}
     ForemanFogProxmox::HashCollection.remove_empty_values(args)
-    if type == 'qemu'
+    case type
+    when 'qemu'
       logger.debug("parse_typed_cpu(#{type}): args=#{args}")
       cpu_flattened = Fog::Proxmox::CpuHelper.flatten(args)
       cpu_flattened = args[:cpu] if cpu_flattened.empty?
       logger.debug("parse_typed_cpu(#{type}): cpu_flattened=#{cpu_flattened}")
-      ForemanFogProxmox::HashCollection.remove_empty_values(args)
-      ForemanFogProxmox::HashCollection.remove_keys(args, config_typed_keys('qemu')[:cpu])
       args.each_value(&:to_i)
       cpu = { cpu: cpu_flattened }
+    when 'lxc'
+      config_typed_keys('lxc')[:cpu].each { |key| ForemanFogProxmox::HashCollection.add_and_format_element(cpu, key.to_sym, args, key) }
     end
-    config_typed_keys('lxc')[:cpu].each { |key| ForemanFogProxmox::HashCollection.add_and_format_element(cpu, key.to_sym, args, key) } if type == 'lxc'
+    if type == 'lxc'
+      config_typed_keys('lxc')[:cpu].each do |key|
+        ForemanFogProxmox::HashCollection.add_and_format_element(cpu, key.to_sym, args, key)
+      end
+    end
     logger.debug("parse_typed_cpu(#{type}): cpu=#{cpu}")
     cpu
   end

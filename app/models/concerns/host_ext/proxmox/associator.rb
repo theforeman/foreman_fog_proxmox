@@ -33,13 +33,14 @@ module HostExt
 
         def proxmox_vm_id(compute_resource, vm)
           id = vm.identity
-          id = vm.unique_cluster_identity(compute_resource) if compute_resource.class == ForemanFogProxmox::Proxmox
+          id = vm.unique_cluster_identity(compute_resource) if compute_resource.instance_of?(ForemanFogProxmox::Proxmox)
           id
         end
       end
 
       def for_vm_uuid(cr, vm)
-        where(:compute_resource_id => cr.id, :uuid => Array.wrap(vm).compact.map(cr.id.to_s + '_' + vm&.identity).map(&:to_s))
+        where(:compute_resource_id => cr.id,
+          :uuid => Array.wrap(vm).compact.map(cr.id.to_s + '_' + vm&.identity).map(&:to_s))
       end
     end
   end

@@ -1,17 +1,26 @@
 {
     "version": "0.2.0",
     "configurations": [
-{
-    "name": "Rails server",
-    "type": "Ruby",
-    "request": "launch",
-    "cwd": "${workspaceRoot}",
-    "program": "${workspaceRoot}/bin/rails",
-    "useBundler": true,
-    "showDebuggerOutput": true,
-    "args": [
-        "server"
+        {
+            "name": "Rails server",
+            "type": "Ruby",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "program": "${workspaceRoot}/bin/rails",
+            "useBundler": true,
+            "showDebuggerOutput": true,
+            "args": [
+                "server"
+            ]
+        },
+        {// prerequisites: bundle exec rdebug-ide --host 0.0.0.0 --port 1234 -- bin/rails s -p 3000 -b 0.0.0.0
+            "name": "Listen for rdebug-ide",
+            "type": "Ruby",
+            "cwd": "${workspaceRoot}",
+            "request": "attach",
+            "remoteHost": "127.0.0.1",
+            "remotePort": "1234",
+            "remoteWorkspaceRoot": "${workspaceRoot}"
+        },
     ]
-}
-]
 }

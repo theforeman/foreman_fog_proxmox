@@ -20,7 +20,7 @@
 module ProxmoxComputeResourcesVmsHelper
   def proxmox_vm_id(compute_resource, vm)
     id = vm.identity
-    id = vm.unique_cluster_identity(compute_resource) if compute_resource.class == ForemanFogProxmox::Proxmox
+    id = vm.unique_cluster_identity(compute_resource) if compute_resource.instance_of?(ForemanFogProxmox::Proxmox)
     id
   end
 
@@ -32,7 +32,9 @@ module ProxmoxComputeResourcesVmsHelper
   end
 
   def vm_power_action(vm, authorizer = nil)
-    opts = hash_for_power_compute_resource_vm_path(:compute_resource_id => @compute_resource, :id => proxmox_vm_id(@compute_resource, vm)).merge(:auth_object => @compute_resource, :permission => 'power_compute_resources_vms', :authorizer => authorizer)
+    opts = hash_for_power_compute_resource_vm_path(:compute_resource_id => @compute_resource, :id => proxmox_vm_id(@compute_resource, vm)).merge(
+      :auth_object => @compute_resource, :permission => 'power_compute_resources_vms', :authorizer => authorizer
+    )
     html = power_action_html(vm)
 
     display_link_if_authorized "Power #{action_string(vm)}", opts, html.merge(:method => :put)
@@ -46,7 +48,8 @@ module ProxmoxComputeResourcesVmsHelper
         :id => proxmox_vm_id(@compute_resource, vm)
       ).merge(
         :auth_object => @compute_resource,
-        :permission => 'edit_compute_resources'),
+        :permission => 'edit_compute_resources'
+      ),
       :title => _('Associate VM to a Foreman host'),
       :method => :put,
       :class => 'btn btn-default'
@@ -62,7 +65,8 @@ module ProxmoxComputeResourcesVmsHelper
       hash_for_import_compute_resource_vm_path(
         :compute_resource_id => @compute_resource,
         :id => proxmox_vm_id(@compute_resource, vm),
-        :type => 'managed'),
+        :type => 'managed'
+      ),
       html_options
     )
     import_unmanaged_link = display_link_if_authorized(
@@ -70,7 +74,8 @@ module ProxmoxComputeResourcesVmsHelper
       hash_for_import_compute_resource_vm_path(
         :compute_resource_id => @compute_resource,
         :id => proxmox_vm_id(@compute_resource, vm),
-        :type => 'unmanaged'),
+        :type => 'unmanaged'
+      ),
       html_options
     )
 
@@ -88,12 +93,16 @@ module ProxmoxComputeResourcesVmsHelper
       ),
       {
         :id => 'console-button',
-        :class => 'btn btn-info'
+        :class => 'btn btn-info',
       }
     )
   end
 
   def vm_delete_action(vm, authorizer = nil)
-    display_delete_if_authorized(hash_for_compute_resource_vm_path(:compute_resource_id => @compute_resource, :id => proxmox_vm_id(@compute_resource, vm)).merge(:auth_object => @compute_resource, :authorizer => authorizer), :class => 'btn btn-danger')
+    display_delete_if_authorized(
+      hash_for_compute_resource_vm_path(:compute_resource_id => @compute_resource, :id => proxmox_vm_id(@compute_resource, vm)).merge(
+        :auth_object => @compute_resource, :authorizer => authorizer
+      ), :class => 'btn btn-danger'
+    )
   end
 end

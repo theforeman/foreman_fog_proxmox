@@ -24,14 +24,17 @@ module HostExt
     module Interfaces
       extend ActiveSupport::Concern
       def update(attributes = {})
-        add_interfaces_to_compute_attributes(attributes) if provider == 'Proxmox' && !attributes.nil? && attributes.key?('compute_attributes')
+        if provider == 'Proxmox' && !attributes.nil? && attributes.key?('compute_attributes')
+          add_interfaces_to_compute_attributes(attributes)
+        end
         super(attributes)
       end
 
       def add_interfaces_to_compute_attributes(attributes)
         attributes['compute_attributes'].store('interfaces_attributes', {})
         attributes['interfaces_attributes'].each do |index, interface_attributes|
-          add_interface_to_compute_attributes(index, interface_attributes, attributes['compute_attributes']['interfaces_attributes'])
+          add_interface_to_compute_attributes(index, interface_attributes,
+            attributes['compute_attributes']['interfaces_attributes'])
         end
       end
 
@@ -40,7 +43,8 @@ module HostExt
         key_ip += '6' if v == 6
         key_cidr = 'cidr'
         key_cidr += '6' if v == 6
-        Fog::Proxmox::IpHelper.to_cidr(interface_attributes[key_ip], interface_attributes['compute_attributes'][key_cidr])
+        Fog::Proxmox::IpHelper.to_cidr(interface_attributes[key_ip],
+          interface_attributes['compute_attributes'][key_cidr])
       end
 
       def add_interface_to_compute_attributes(index, interface_attributes, compute_attributes)

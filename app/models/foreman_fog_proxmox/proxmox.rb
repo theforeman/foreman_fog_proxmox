@@ -36,11 +36,12 @@ module ForemanFogProxmox
     include ProxmoxVersion
     include ProxmoxConsole
     validates :url, :format => { :with => URI::DEFAULT_PARSER.make_regexp }, :presence => true
-    validates :auth_method, :presence => true, inclusion: { in: ['access_ticket', 'user_token'], message: ->(value) do format('%<value>s is not a valid authentication method', { value: value }) end }
-    validates :user, :format => { :with => /(\w+)[@]{1}(\w+)/ }, :presence => true
-    validates :password, :presence => true, if: :access_ticket?
-    validates :token_id, :presence => true, if: :user_token?
-    validates :token, :presence => true, if: :user_token?
+    validates :auth_method, :presence => true, :inclusion => { in: ['access_ticket', 'user_token'],
+      message: ->(value) do format('%<value>s is not a valid authentication method', { value: value }) end }
+    validates :user, :format => { :with => /(\w+)@{1}(\w+)/ }, :presence => true
+    validates :password, :presence => true, :if => :access_ticket?
+    validates :token_id, :presence => true, :if => :user_token?
+    validates :token, :presence => true, :if => :user_token?
 
     def provided_attributes
       super.merge(
@@ -65,7 +66,8 @@ module ForemanFogProxmox
     end
 
     def associate_by(name, attributes)
-      Host.authorized(:view_hosts, Host).joins(:primary_interface).where(:nics => { :primary => true }).where("nics.#{name}".downcase => attributes.downcase).readonly(false).first
+      Host.authorized(:view_hosts,
+        Host).joins(:primary_interface).where(:nics => { :primary => true }).where("nics.#{name}".downcase => attributes.downcase).readonly(false).first
     end
 
     def ssl_certs
@@ -128,7 +130,7 @@ module ForemanFogProxmox
       hash = {
         proxmox_url: url,
         proxmox_auth_method: auth_method || 'access_ticket',
-        connection_options: connection_options
+        connection_options: connection_options,
       }
       if access_ticket?
         hash[:proxmox_username] = user

@@ -38,7 +38,7 @@ You can support the plugin development via the following methods:
 
 ## Installation
 
-### From OS packages
+### From OS packages (required)
 
 Please see the Foreman manual for complete instructions:
 
@@ -128,15 +128,17 @@ Then you can check plugin installation after login into your new foreman server 
 
 ### Dev prerequisites
 
-* You need a Proxmox VE 5.4+ server running.
-* You need ruby >= 2.5. You can install it with [asdf-vm](https://asdf-vm.com).
-* You also need nodejs in your dev machine to run webpack-dev-server. You can install it with [asdf-vm](https://asdf-vm.com).
+> See [Foreman dev setup](https://github.com/theforeman/foreman/blob/develop/developer_docs/foreman_dev_setup.asciidoc)
+
+* You need a Proxmox VE 6.2+ server running.
+* You need ruby 2.7. You can install it with [asdf-vm](https://asdf-vm.com).
+* You also need nodejs 14 in your dev machine to run webpack-dev-server. You can install it with [asdf-vm](https://asdf-vm.com).
 
 ### Platform
 
 * Fork this github repo.
 * Clone it on your local machine
-* Install foreman v1.22+ on your machine:
+* Install foreman v2.5+ on your machine:
 
 ```shell
 git clone https://github.com/theforeman/foreman -b develop
@@ -158,9 +160,9 @@ gem 'simplecov' # test
 
 ```shell
 gem install bundler
-# prerequisites postgresql-XX-client library on OS (XX=major release installed in OS)
+# prerequisites libraries on Ubuntu OS:
+# sudo apt install postgresql-client-13 libpq-dev libsystemd-dev
 bundle config set without 'libvirt ovirt mysql2'
-bundle config build.pg --with-pg-config=/usr/pgsql-XX/bin/pg_config
 bundle install
 ```
 
@@ -178,6 +180,12 @@ add these lines to config/settings.yml:
 
 ```yaml
     :webpack_dev_server: true
+    :destroy_vm_on_host_delete: true
+    :logging:
+      :level: debug
+    :loggers:
+      :sql:
+       :enabled: false
 ```
 
 * SQLite is no more default rails dev or test database, instead add:
@@ -189,45 +197,42 @@ DATABASE_URL=nulldb://nohost
 * (Optional) test and dev with postgresql database:
 
 ```shell
-cp config/model.mappings.example config/model.mappings
 cp config/database.yml.example config/database.yml
 ```
 
 add these lines to each environment in config/database.yml:
 
 ```yaml
+    host: localhost
     username: foreman
     password: foreman
 ```
 
 ```shell
 cp config/ignored_environments.yml.sample config/ignored_environments.yml
-docker run --name foreman-db -v foreman_data:/var/lib/postgresql/data -e POSTGRES_DB=foreman -e POSTGRES_USER=foreman -e POSTGRES_PASSWORD=foreman -p 5432:5432 -d postgres
+docker run --name foreman-db -v foreman_data:/var/lib/postgresql/data -e POSTGRES_DB=foreman -e POSTGRES_USER=foreman -e POSTGRES_PASSWORD=foreman -p 5432:5432 -d postgres:13
 bundle exec bin/rake db:migrate
-# reboot if settings.NAME error in schema
-bundle exec bin/rake db:seed assets:precompile locale:pack webpack:compile
+RAILS_ENV=development bundle exec bin/rake db:seed assets:precompile locale:pack webpack:compile
 ```
 
-* You can reset admin password if needed:
+* You can reset and change your admin password if needed:
 
 ```shell
-bundle exec bin/rake permissions:reset
+RAILS_ENV=development bundle exec bin/rake permissions:reset password=changeme
 ```
 
 * You should write tests and you can execute those specific to this plugin:
 
-first, create database `foreman-test` with psql commands:
+first, create database `foreman-test`:
 
 ```shell
-docker exec -it foreman-db psql -U foreman
-foreman=# create database "foreman-test";
+RAILS_ENV=test bundle exec rake db:create
 ```
 
 then add test schema and seeds:
 
 ```shell
 RAILS_ENV=test bundle exec bin/rake db:migrate
-# reboot if error: "ActiveRecord::RecordNotFound: Couldn't find Setting with [WHERE "settings"."name" = $1]"
 RAILS_ENV=test bundle exec bin/rake db:seed
 ```
 
@@ -245,10 +250,22 @@ export DISABLE_SPRING=true
 bundle exec bin/rake test TEST=../foreman_fog_proxmox/test/functional/compute_resources_controller_test.rb DATABASE_URL=nulldb://nohost
 ```
 
-* Check code syntax with rubocop and foreman rules:
+* In foreman_fog_proxmox source directory, check code syntax with rubocop and foreman rules:
 
 ```shell
-bundle exec bin/rake foreman_fog_proxmox:rubocop
+bundle exec rubocop
+```
+
+safe autocorrect:
+
+```shell
+bundle exec rubocop -a
+```
+
+Temporary ignore offenses:
+
+```shell
+bundle exec rubocop --auto-gen-config
 ```
 
 * See deface overrides result:
@@ -265,14 +282,16 @@ bundle exec bin/rake plugin:assets:precompile[foreman_fog_proxmox]
 
 * In foreman directory, after you modify foreman_fog_proxmox translations (language, texts in new files, etc) you have to compile it:
 
+Prerequisites: [Transifex CLI](https://github.com/transifex/cli)
+
 ```shell
-bundle exec bin/rake plugin:gettext[foreman_fog_proxmox]
+bundle exec bin/rake plugin:gettext\[foreman_fog_proxmox\]
 ```
 
 * In foreman directory, run in a new terminal the webpack-dev-server:
 
 ```shell
-./node_modules/.bin/webpack-dev-server --config config/webpack.config.js
+./node_modules/.bin/webpack-dev-server-without-h2 --config config/webpack.config.js
 ```
 
 * Or without webpack-dev-server, add this line in config/settings.yml:
@@ -302,7 +321,7 @@ bundle exec foreman start
 If you want to delete vm on host destroy, add this line in config/settings.yml:
 
 ```yml
-:destroy_vm_on_host_delete: false
+:destroy_vm_on_host_delete: true
 ```
 
 See details in [foreman plugin development](https://projects.theforeman.org/projects/foreman/wiki/How_to_Create_a_Plugin)

@@ -59,7 +59,7 @@ module FogExtensions
       delegate :description, to: :config
 
       def vm_description
-        format(_('Type %<type>s, node %<node>s, %<cpus>s CPUs and %<memory>s MB memory'), type: type, node: node_id, cpus: config.cores || '0', memory: config.memory / (1024 * 1024) || '0')
+        format(_('Type %<type>s, node %<node>s, %<cpus>s CPUs and %<memory>s MB memory'), type: type, node: node_id, cpus: config.cores || '0', memory: config.memory)
       end
 
       def select_nic(fog_nics, nic)
@@ -84,11 +84,14 @@ module FogExtensions
       delegate :pool, to: :config
       delegate :cloud_init?, to: :config
 
-      def interfaces_attributes=(attrs); end
+      def interfaces_attributes=(attrs)
+      end
 
-      def volumes_attributes=(attrs); end
+      def volumes_attributes=(attrs)
+      end
 
-      def config_attributes=(attrs); end
+      def config_attributes=(attrs)
+      end
 
       def templated?
         volumes.any?(&:template?)

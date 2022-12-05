@@ -1,78 +1,9 @@
+inherit_from: .rubocop_todo.yml
+
+inherit_gem:
+  theforeman-rubocop:
+    - lenient.yml
+    - minitest.yml
+
 AllCops:
-  TargetRubyVersion: 2.4
-  TargetRailsVersion: 6.0
-  Exclude:
-    - 'node_modules/**/*'
-
-Rails:
-  Enabled: true
-  
-Rails/ContentTag:
-  Enabled: false
-
-Rails/HelperInstanceVariable: 
-  Enabled: false
-
-# Don't enforce documentation
-Style/Documentation:
-  Enabled: false
-
-# TODO: try to refactor concerned code
-Metrics/AbcSize:
-  Max: 60
-
-Metrics/BlockLength:
-  Max: 366
-
-Metrics/ClassLength:
-  Max: 322
-
-Metrics/CyclomaticComplexity:
-  Max: 11
-
-Metrics/MethodLength:
-  Max: 112
-
-Metrics/ModuleLength:
-  Max: 150
-
-Metrics/PerceivedComplexity:
-  Max: 11
-
-Layout/LineLength:
-  Max: 300 # TODO: discuss and set this
-
-Naming/MethodName:
-  Description: From foreman's rubocop-config. Neccessary for overloading methods in foreman.
-  Enabled: false
-  
-Naming/MethodParameterName:
-  MinNameLength: 1
-
-Style/FrozenStringLiteralComment:
-  Description: Apparently, Deface hates frozen string literals
-  Exclude:
-    - 'app/overrides/compute_resources_vms/form/*.rb'
-
-Style/Next:
-  Enabled: false
-
-# Support both ruby19 and hash_rockets
-Style/HashSyntax:
-  Enabled: false
-
-Style/NumericPredicate:
-  Enabled: false
-
-Style/SymbolArray:
-  Description: Using percent style obscures symbolic intent of array's contents.
-  EnforcedStyle: brackets
-
-Style/WordArray:
-  EnforcedStyle: brackets
-
-Layout/MultilineMethodCallBraceLayout:
-  Enabled: false
-
-Style/StringLiterals:
-  Enabled: false
+  NewCops: disable

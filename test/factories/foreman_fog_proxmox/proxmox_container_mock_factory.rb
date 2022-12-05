@@ -33,16 +33,15 @@ module ForemanFogProxmox
         link_down: nil,
         rate: nil,
         queues: nil,
-        tag: nil
+        tag: nil,
       }
-      interface_attributes = {
+      {
         id: 'net0',
         mac: '36:25:8C:53:0C:50',
         ip: nil,
         ip6: nil,
-        compute_attributes: compute_attributes
+        compute_attributes: compute_attributes,
       }
-      interface_attributes
     end
 
     def mock_container_vm
@@ -62,7 +61,7 @@ module ForemanFogProxmox
         shared: nil,
         snapshot: nil,
         backup: nil,
-        aio: nil
+        aio: nil,
       }
       volume = mock('volume')
       volume.stubs(:attributes).returns(volume_attributes)
@@ -96,7 +95,7 @@ module ForemanFogProxmox
         bwlimit: nil,
         unprivileged: nil,
         interfaces: interfaces,
-        disks: volumes
+        disks: volumes,
       }
       config.stubs(:attributes).returns(config_attributes)
       config.stubs(:attributes).returns(config_attributes)
@@ -139,7 +138,7 @@ module ForemanFogProxmox
         blockstat: 0,
         balloon: 0,
         ballooninfo: 0,
-        snapshots: []
+        snapshots: [],
       }
       vm.stubs(:attributes).returns(vm_attributes)
       vm.stubs(:container?).returns(true)

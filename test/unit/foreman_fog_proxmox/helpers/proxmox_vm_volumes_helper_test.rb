@@ -33,9 +33,9 @@ module ForemanFogProxmox
             'id' => 'scsi0',
             'volid' => 'local-lvm:vm-100-disk',
             'storage' => 'local-lvm',
-            'storage_type' => 'hard_disk'
-          }
-        }
+            'storage_type' => 'hard_disk',
+          },
+        },
       }
 
       it '# server volumes' do

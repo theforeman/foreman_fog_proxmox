@@ -23,5 +23,5 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     <%= select_f f, :storage, compute_resource.storages(node_id), :storage, :storage, { }, :label => _('Storage'), :label_size => "col-md-2" %>
     <%= text_f f, :mp, :label => _('Path'), :label_size => "col-md-2", :required => true, :help_inline => _("e.g. /path/to/") %>
     <%= text_f f, :device, :label => _('Device'), :label_size => "col-md-2", :class => ('hide' if f.object.rootfs?), :disabled => (!new_volume || f.object.rootfs?), :'data-soft-max' => 10 %>
-    <%= byte_size_f f, :size, :class => "input-mini", :label => _("Size"), :label_size => "col-md-2" %>
+    <%= text_f f, :size, :class => "input-mini", :label => _("Size (GB)"), :label_size => "col-md-2" %>
 <% end %>

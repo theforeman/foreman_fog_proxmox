@@ -29,9 +29,11 @@ module ProxmoxFormHelper
         options[:value] = value if value.present?
         addClass options, 'form-control'
         pass = f.password_field(attr, options) +
-               tag(:span, '', class: 'glyphicon glyphicon-warning-sign input-addon', title: 'Caps lock ON', style: 'display:none')
+               tag(:span, '', class: 'glyphicon glyphicon-warning-sign input-addon', title: 'Caps lock ON',
+style: 'display:none')
         if unset_button
-          button = link_to_function(icon_text('edit', '', :kind => 'pficon'), 'toggle_input_group(this)', :id => 'disable-pass-btn', :class => 'btn btn-default', :title => _('Change the password'))
+          button = link_to_function(icon_text('edit', '', :kind => 'pficon'), 'toggle_input_group(this)',
+            :id => 'disable-pass-btn', :class => 'btn btn-default', :title => _('Change the password'))
           input_group(pass, input_group_btn(button))
         else
           pass
@@ -53,10 +55,12 @@ module ProxmoxFormHelper
     options[:form_builder_local] ||= :f
     options[:form_builder_attrs] ||= {}
 
-    content_tag(:div, :class => "#{options[:type]}_#{association}_fields_template form_template", :style => 'display: none;') do
-      form_builder.fields_for(association, options[:object], :child_index => "new_#{options[:type]}_#{association}") do |f|
+    content_tag(:div, :class => "#{options[:type]}_#{association}_fields_template form_template",
+:style => 'display: none;') do
+      form_builder.fields_for(association, options[:object],
+        :child_index => "new_#{options[:type]}_#{association}") do |f|
         render(:partial => options[:partial], :layout => options[:layout],
-               :locals => { options[:form_builder_local] => f }.merge(options[:form_builder_attrs]))
+          :locals => { options[:form_builder_local] => f }.merge(options[:form_builder_attrs]))
       end
     end
   end

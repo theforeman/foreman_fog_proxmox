@@ -21,7 +21,8 @@ module ForemanFogProxmox
   class ComputeResourcesController < ::ApplicationController
     # GET foreman_fog_proxmox/isos/:compute_resource_id/:node_id/:storage
     def isos_by_id_and_node_and_storage
-      volumes = load_compute_resource(params[:compute_resource_id]).images_by_storage(params[:node_id], params[:storage], 'iso')
+      volumes = load_compute_resource(params[:compute_resource_id]).images_by_storage(params[:node_id],
+        params[:storage], 'iso')
       respond_to do |format|
         format.json { render :json => volumes }
       end
@@ -29,7 +30,8 @@ module ForemanFogProxmox
 
     # GET foreman_fog_proxmox/ostemplates/:compute_resource_id/:node_id/:storage
     def ostemplates_by_id_and_node_and_storage
-      volumes = load_compute_resource(params[:compute_resource_id]).images_by_storage(params[:node_id], params[:storage], 'vztmpl')
+      volumes = load_compute_resource(params[:compute_resource_id]).images_by_storage(params[:node_id],
+        params[:storage], 'vztmpl')
       respond_to do |format|
         format.json { render :json => volumes }
       end
@@ -37,7 +39,8 @@ module ForemanFogProxmox
 
     # GET foreman_fog_proxmox/isos/:compute_resource_id/:node_id
     def isos_by_id_and_node
-      volumes = load_compute_resource(params[:compute_resource_id]).images_by_storage(params[:node_id], params[:storage], 'iso')
+      volumes = load_compute_resource(params[:compute_resource_id]).images_by_storage(params[:node_id],
+        params[:storage], 'iso')
       respond_to do |format|
         format.json { render :json => volumes }
       end

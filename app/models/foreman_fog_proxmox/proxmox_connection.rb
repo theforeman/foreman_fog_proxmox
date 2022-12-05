@@ -38,8 +38,12 @@ module ForemanFogProxmox
 
     def credentials_valid?
       errors[:url].empty? && errors[:auth_method].empty?
-      errors[:user].empty? && errors[:user].include?('@') && errors[:password].empty? && errors[:node_id].empty? if access_ticket?
-      errors[:user].empty? && errors[:user].include?('@') && errors[:token_id].empty? && errors[:token].empty? && errors[:node_id].empty? if user_token?
+      if access_ticket?
+        errors[:user].empty? && errors[:user].include?('@') && errors[:password].empty? && errors[:node_id].empty?
+      end
+      if user_token?
+        errors[:user].empty? && errors[:user].include?('@') && errors[:token_id].empty? && errors[:token].empty? && errors[:node_id].empty?
+      end
     end
 
     def current_user_token_expire

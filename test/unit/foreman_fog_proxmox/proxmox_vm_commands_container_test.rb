@@ -46,8 +46,10 @@ module ForemanFogProxmox
         vm.stubs(:node_id).returns('proxmox')
         vm.stubs(:attributes).returns(node_id: 'proxmox', type: 'lxc')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
-        attr = { 'templated' => '0', 'node_id' => 'proxmox', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
-        @cr.stubs(:parse_container_vm).returns('vmid' => '100', 'node_id' => 'proxmox2', 'type' => 'lxc', 'cores' => '1', 'cpulimit' => '1')
+        attr = { 'templated' => '0', 'node_id' => 'proxmox',
+                 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
+        @cr.stubs(:parse_container_vm).returns('vmid' => '100', 'node_id' => 'proxmox2', 'type' => 'lxc',
+          'cores' => '1', 'cpulimit' => '1')
         expected_attr = { :cores => '1', :cpulimit => '1' }
         vm.expects(:update, expected_attr)
         @cr.save_vm(uuid, attr)
@@ -64,8 +66,10 @@ module ForemanFogProxmox
         vm.stubs(:node_id).returns('proxmox')
         vm.stubs(:attributes).returns(node_id: 'proxmox', type: 'lxc')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
-        attr = { 'templated' => '0', 'node_id' => 'proxmox', 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
-        @cr.stubs(:parse_container_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'lxc', 'cores' => '1', 'cpulimit' => '1')
+        attr = { 'templated' => '0', 'node_id' => 'proxmox',
+                 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
+        @cr.stubs(:parse_container_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'lxc',
+          'cores' => '1', 'cpulimit' => '1')
         expected_attr = { :cores => '1', :cpulimit => '1' }
         vm.expects(:update, expected_attr)
         @cr.save_vm(uuid, attr)
@@ -95,7 +99,7 @@ module ForemanFogProxmox
           'node_id' => 'proxmox',
           'config_attributes' => {
             'cores' => '1',
-            'cpulimit' => '1'
+            'cpulimit' => '1',
           },
           'volumes_attributes' => {
             '0' => {
@@ -105,22 +109,23 @@ module ForemanFogProxmox
               'storage' => 'local-lvm',
               'size' => '2147483648',
               'cache' => 'none',
-              'mp' => '/opt/path'
-            }
-          }
+              'mp' => '/opt/path',
+            },
+          },
         }.with_indifferent_access
-        @cr.stubs(:parse_container_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'lxc', 'cores' => '1', 'cpulimit' => '1')
+        @cr.stubs(:parse_container_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'lxc',
+          'cores' => '1', 'cpulimit' => '1')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr =
           [
             {
               id: 'mp0',
               storage: 'local:lvm',
-              size: (2_147_483_648 / GIGA).to_s
+              size: (2_147_483_648 / GIGA).to_s,
             },
             {
-              mp: '/opt/path'
-            }
+              mp: '/opt/path',
+            },
           ]
         vm.expects(:attach, expected_volume_attr)
         vm.expects(:update, expected_config_attr)
@@ -145,7 +150,7 @@ module ForemanFogProxmox
         vm.stubs(:container?).returns(true)
         vm.stubs(:type).returns('lxc')
         vm.stubs(:node_id).returns('proxmox')
-        vm.stubs(:attributes).returns(node_id: 'proxmox', type: 'lxc', 'rootfs' => '')
+        vm.stubs(:attributes).returns(:node_id => 'proxmox', :type => 'lxc', 'rootfs' => '')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         new_attributes =
           {
@@ -154,7 +159,7 @@ module ForemanFogProxmox
             'config_attributes' => {
               'cores' => '1',
               'cpulimit' => '1',
-              'onboot' => '0'
+              'onboot' => '0',
             },
             'volumes_attributes' => {
               '0' => {
@@ -164,9 +169,9 @@ module ForemanFogProxmox
                 'device' => '0',
                 'storage' => 'local-lvm',
                 'size' => '2147483648',
-                'cache' => 'none'
-              }
-            }
+                'cache' => 'none',
+              },
+            },
           }.with_indifferent_access
         @cr.stubs(:parse_container_vm).returns(
           'vmid' => '100',
@@ -192,7 +197,8 @@ module ForemanFogProxmox
         disk.stubs(:id).returns('mp0')
         disk.stubs(:size).returns(1_073_741_824)
         disk.stubs(:storage).returns('local-lvm')
-        disk.stubs(:attributes).returns(id: 'mp0', storage: 'local-lvm', size: 1_073_741_824, volid: 'local-lvm:vm-100-disk-0')
+        disk.stubs(:attributes).returns(id: 'mp0', storage: 'local-lvm', size: 1_073_741_824,
+          volid: 'local-lvm:vm-100-disk-0')
         disks.stubs(:get).returns(disk)
         config.stubs(:disks).returns(disks)
         config.stubs(:attributes).returns(:cores => '')
@@ -209,7 +215,7 @@ module ForemanFogProxmox
           'node_id' => 'proxmox',
           'config_attributes' => {
             'cores' => '1',
-            'cpulimit' => '1'
+            'cpulimit' => '1',
           },
           'volumes_attributes' => {
             '0' => {
@@ -220,13 +226,15 @@ module ForemanFogProxmox
               'controller' => 'mp',
               'storage' => 'local-lvm',
               'size' => '1073741824',
-              'mp' => '/opt/toto'
-            }
-          }
+              'mp' => '/opt/toto',
+            },
+          },
         }.with_indifferent_access
-        @cr.stubs(:parse_typed_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
+        @cr.stubs(:parse_typed_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1',
+          'cpulimit' => '1')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
-        expected_volume_attr = { :id => 'mp0', :volid => 'local-lvm:vm-100-disk-0', :size => 1_073_741_824 }, { :mp => '/opt/toto' }
+        expected_volume_attr = { :id => 'mp0', :volid => 'local-lvm:vm-100-disk-0', :size => 1_073_741_824 },
+                               { :mp => '/opt/toto' }
         vm.expects(:attach, expected_volume_attr)
         vm.expects(:update, expected_config_attr)
         @cr.save_vm(uuid, new_attributes)

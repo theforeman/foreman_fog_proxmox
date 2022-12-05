@@ -35,7 +35,7 @@ module ForemanFogProxmox
     describe 'find_vm_by_uuid' do
       it 'returns nil when the uuid does not match' do
         cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, empty_servers, empty_servers)
-        assert cr.find_vm_by_uuid('1_100').nil?
+        assert_nil cr.find_vm_by_uuid('1_100')
       end
 
       it 'raises RecordNotFound when the compute raises error' do

@@ -28,11 +28,16 @@ module ForemanFogProxmox
       # Clone the host
       def clone
         super
-        return true unless @host.compute_resource.class == ForemanFogProxmox::Proxmox
+        return true unless @host.compute_resource.instance_of?(ForemanFogProxmox::Proxmox)
 
         @host.compute_attributes[:vmid] = next_vmid
-        @host.compute_attributes[:interfaces_attributes].each { |index, interface_attributes| @host.compute_attributes[:interfaces_attributes][index] = interface_attributes.merge(macaddr: nil).merge(hwaddr: nil).merge(ip: nil).merge(ip6: nil) }
-        @host.compute_attributes[:volumes_attributes].each { |index, volume_attributes| @host.compute_attributes[:volumes_attributes][index] = volume_attributes.merge(volid: nil) }
+        @host.compute_attributes[:interfaces_attributes].each do |index, interface_attributes|
+          @host.compute_attributes[:interfaces_attributes][index] =
+            interface_attributes.merge(macaddr: nil).merge(hwaddr: nil).merge(ip: nil).merge(ip6: nil)
+        end
+        @host.compute_attributes[:volumes_attributes].each do |index, volume_attributes|
+          @host.compute_attributes[:volumes_attributes][index] = volume_attributes.merge(volid: nil)
+        end
       end
 
       private

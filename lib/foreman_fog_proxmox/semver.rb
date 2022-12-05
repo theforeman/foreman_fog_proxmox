@@ -21,10 +21,7 @@ module ForemanFogProxmox
   module Semver
     SEMVER_REGEX = /^(\d+)[.](\d+)([.](\d+))?(-([.\w]+))?$/.freeze
     class SemverClass
-      attr_accessor :major
-      attr_accessor :minor
-      attr_accessor :patch
-      attr_accessor :qualifier
+      attr_accessor :major, :minor, :patch, :qualifier
 
       def initialize(major, minor, patch, qualifier = '')
         @major = major.to_i

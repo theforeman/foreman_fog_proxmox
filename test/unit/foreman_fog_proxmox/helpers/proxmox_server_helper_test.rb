@@ -45,16 +45,23 @@ module ForemanFogProxmox
             'spectre' => '+1',
             'pcid' => '0',
             'cores' => '1',
-            'sockets' => '1'
+            'sockets' => '1',
           },
           'volumes_attributes' => {
-            '0' => { 'id' => 'scsi0', 'storage_type' => 'hard_disk', 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => 'none' },
-            '1' => { 'id' => 'virtio0', 'storage_type' => 'hard_disk', 'controller' => 'virtio', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => 'none' },
-            '2' => { 'id' => 'ide2', 'storage_type' => 'cdrom', 'controller' => 'ide', 'device' => '2', 'storage' => 'local-lvm', 'cdrom' => 'none' }
+            '0' => { 'id' => 'scsi0', 'storage_type' => 'hard_disk', 'controller' => 'scsi', 'device' => '0',
+                     'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => 'none' },
+            '1' => { 'id' => 'virtio0', 'storage_type' => 'hard_disk', 'controller' => 'virtio', 'device' => '0',
+                     'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => 'none' },
+            '2' => { 'id' => 'ide2', 'storage_type' => 'cdrom', 'controller' => 'ide', 'device' => '2',
+                     'storage' => 'local-lvm', 'cdrom' => 'none' },
           },
           'interfaces_attributes' => {
-            '0' => { 'id' => 'net0', 'compute_attributes' => { 'model' => 'virtio', 'bridge' => 'vmbr0', 'firewall' => '0', 'link_down' => '0', 'rate' => nil } },
-            '1' => { 'id' => 'net1', 'compute_attributes' => { 'model' => 'e1000', 'bridge' => 'vmbr0', 'firewall' => '0', 'link_down' => '0' } }
+            '0' => { 'id' => 'net0',
+                     'compute_attributes' => { 'model' => 'virtio', 'bridge' => 'vmbr0', 'firewall' => '0', 'link_down' => '0',
+                                               'rate' => nil } },
+            '1' => { 'id' => 'net1',
+                     'compute_attributes' => { 'model' => 'e1000', 'bridge' => 'vmbr0', 'firewall' => '0',
+                                               'link_down' => '0' } },
           } }
       end
 
@@ -64,10 +71,13 @@ module ForemanFogProxmox
           'name' => 'test',
           'type' => 'qemu',
           'volumes_attributes' => {
-            '0' => { '_delete' => '1', 'storage_type' => 'hard_disk', 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824' },
-            '1' => { '_delete' => '', 'storage_type' => 'cdrom', 'controller' => 'ide', 'device' => '2', 'storage' => 'local-lvm', 'volid' => 'local-lvm:iso/debian-netinst.iso', 'cdrom' => 'image' }
+            '0' => { '_delete' => '1', 'storage_type' => 'hard_disk', 'controller' => 'scsi', 'device' => '0',
+                     'storage' => 'local-lvm', 'size' => '1073741824' },
+            '1' => { '_delete' => '', 'storage_type' => 'cdrom', 'controller' => 'ide', 'device' => '2',
+                     'storage' => 'local-lvm', 'volid' => 'local-lvm:iso/debian-netinst.iso', 'cdrom' => 'image' },
           },
-          'interfaces_attributes' => { '0' => { '_delete' => '1', 'id' => 'net0', 'compute_attributes' => { 'model' => 'virtio' } } } }
+          'interfaces_attributes' => { '0' => { '_delete' => '1', 'id' => 'net0',
+                                                'compute_attributes' => { 'model' => 'virtio' } } } }
       end
 
       test '#memory' do
@@ -136,7 +146,8 @@ module ForemanFogProxmox
       test '#interface with model virtio and bridge' do
         interfaces_to_delete = []
         interfaces_to_add = []
-        add_or_delete_typed_interface(host_form['interfaces_attributes']['0'], interfaces_to_delete, interfaces_to_add, type)
+        add_or_delete_typed_interface(host_form['interfaces_attributes']['0'], interfaces_to_delete, interfaces_to_add,
+          type)
         assert_empty interfaces_to_delete
         assert_equal 1, interfaces_to_add.length
         assert interfaces_to_add[0].key?(:net0)
@@ -146,7 +157,8 @@ module ForemanFogProxmox
       test '#interface with model e1000 and bridge' do
         interfaces_to_delete = []
         interfaces_to_add = []
-        add_or_delete_typed_interface(host_form['interfaces_attributes']['1'], interfaces_to_delete, interfaces_to_add, type)
+        add_or_delete_typed_interface(host_form['interfaces_attributes']['1'], interfaces_to_delete, interfaces_to_add,
+          type)
         assert_empty interfaces_to_delete
         assert_equal 1, interfaces_to_add.length
         assert interfaces_to_add[0].key?(:net1)
@@ -156,7 +168,8 @@ module ForemanFogProxmox
       test '#interface delete net0' do
         interfaces_to_delete = []
         interfaces_to_add = []
-        add_or_delete_typed_interface(host_delete['interfaces_attributes']['0'], interfaces_to_delete, interfaces_to_add, type)
+        add_or_delete_typed_interface(host_delete['interfaces_attributes']['0'], interfaces_to_delete,
+          interfaces_to_add, type)
         assert_empty interfaces_to_add
         assert_equal 1, interfaces_to_delete.length
         assert_equal 'net0', interfaces_to_delete[0]

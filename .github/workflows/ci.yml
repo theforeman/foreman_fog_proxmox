@@ -6,8 +6,23 @@ on:
   pull_request:
 
 jobs:
+  rubocop:
+      runs-on: ubuntu-latest
+      env:
+        BUNDLE_WITHOUT: development:test
+      steps:
+        - uses: actions/checkout@v3
+        - name: Setup Ruby
+          uses: ruby/setup-ruby@v1
+          with:
+            ruby-version: 2.7
+            bundler-cache: true
+        - name: Run rubocop
+          run: bundle exec rubocop -P --format github
+
   build:
     runs-on: ubuntu-latest
+    needs: rubocop
 
     services:
       db:

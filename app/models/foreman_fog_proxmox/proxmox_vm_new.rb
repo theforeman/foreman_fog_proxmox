@@ -74,8 +74,14 @@ module ForemanFogProxmox
 
     def interface_typed_defaults(type)
       interface_attributes_h = { id: 'net0', compute_attributes: {} }
-      interface_attributes_h[:compute_attributes] = { model: 'virtio', bridge: bridges.first.identity.to_s } if type == 'qemu'
-      interface_attributes_h[:compute_attributes] = { name: 'eth0', bridge: bridges.first.identity.to_s, dhcp: 1, dhcp6: 1 } if type == 'lxc'
+      if type == 'qemu'
+        interface_attributes_h[:compute_attributes] =
+          { model: 'virtio', bridge: bridges.first.identity.to_s }
+      end
+      if type == 'lxc'
+        interface_attributes_h[:compute_attributes] =
+          { name: 'eth0', bridge: bridges.first.identity.to_s, dhcp: 1, dhcp6: 1 }
+      end
       interface_attributes_h
     end
 
@@ -106,7 +112,8 @@ module ForemanFogProxmox
       interfaces_attributes = []
       interfaces_attributes.push(interface_typed_defaults(type))
       new_attr = new_attr.merge(interfaces_attributes: interfaces_attributes.map.with_index.to_h.invert)
-      logger.debug(format(_('add_default_typed_interface(%<type>s) to new_attr=%<new_attr>s'), type: type, new_attr: new_attr))
+      logger.debug(format(_('add_default_typed_interface(%<type>s) to new_attr=%<new_attr>s'), type: type,
+new_attr: new_attr))
       new_attr
     end
 
@@ -115,7 +122,8 @@ module ForemanFogProxmox
       volumes_attributes.push(hard_disk_typed_defaults('qemu'))
       volumes_attributes.push(hard_disk_typed_defaults('lxc'))
       new_attr = new_attr.merge(volumes_attributes: volumes_attributes.map.with_index.to_h.invert)
-      logger.debug(format(_('add_default_typed_volume(%<type>s) to new_attr=%<new_attr>s'), type: type, new_attr: new_attr))
+      logger.debug(format(_('add_default_typed_volume(%<type>s) to new_attr=%<new_attr>s'), type: type,
+new_attr: new_attr))
       new_attr
     end
 
@@ -127,8 +135,7 @@ module ForemanFogProxmox
       defaults = vm_instance_defaults
       defaults = defaults.merge(config_attributes: config_attributes(type))
       defaults = add_default_typed_volume(defaults)
-      defaults = add_default_typed_interface(type, defaults)
-      defaults
+      add_default_typed_interface(type, defaults)
     end
 
     def config_attributes(type = 'qemu')
@@ -143,13 +150,13 @@ module ForemanFogProxmox
           ostype: 'l26',
           cpu: 'cputype=kvm64',
           scsihw: 'virtio-scsi-pci',
-          templated: 0
+          templated: 0,
         }
         config_attributes = config_attributes
       when 'lxc'
         config_attributes = {
           memory: 512 * MEGA,
-          templated: 0
+          templated: 0,
         }
       end
       config_attributes
@@ -159,14 +166,21 @@ module ForemanFogProxmox
       new_attr = ActiveSupport::HashWithIndifferentAccess.new(new_attr)
       type = new_attr['type']
       type ||= 'qemu'
-      vm = new_typed_vm(new_attr, type)
-      vm
+      new_typed_vm(new_attr, type)
     end
 
     def convert_config_attributes(new_attr)
       config_attributes = new_attr[:config_attributes]
-      config_attributes[:volumes_attributes] = Hash[config_attributes[:disks].each_with_index.map { |disk, idx| [idx.to_s, disk.attributes] }] if config_attributes.key?(:disks)
-      config_attributes[:interfaces_attributes] = Hash[config_attributes[:interfaces].each_with_index.map { |interface, idx| [idx.to_s, interface_compute_attributes(interface.attributes)] }] if config_attributes.key?(:interfaces)
+      if config_attributes.key?(:disks)
+        config_attributes[:volumes_attributes] = Hash[config_attributes[:disks].each_with_index.map do |disk, idx|
+                                                        [idx.to_s, disk.attributes]
+                                                      end ]
+      end
+      if config_attributes.key?(:interfaces)
+        config_attributes[:interfaces_attributes] = Hash[config_attributes[:interfaces].each_with_index.map do |interface, idx|
+                                                           [idx.to_s, interface_compute_attributes(interface.attributes)]
+                                                         end ]
+      end
       config_attributes.delete_if { |key, _value| ['disks', 'interfaces'].include?(key) }
     end
 
@@ -177,14 +191,14 @@ module ForemanFogProxmox
       new_attr_type = new_attr['type']
       new_attr_type ||= new_attr['config_attributes']['type'] if new_attr.key?('config_attributes')
       new_attr_type ||= type
-      logger.debug(format(_('new_typed_vm(%<type>s): new_attr_type=%<new_attr_type>s'), type: type, new_attr_type: new_attr_type))
+      logger.debug(format(_('new_typed_vm(%<type>s): new_attr_type=%<new_attr_type>s'), type: type,
+new_attr_type: new_attr_type))
       logger.debug(format(_('new_typed_vm(%<type>s): new_attr=%<new_attr>s'), type: type, new_attr: new_attr))
       options = !new_attr.key?('vmid') || ForemanFogProxmox::Value.empty?(new_attr['vmid']) ? vm_typed_instance_defaults(type).merge(new_attr).merge(type: type) : new_attr
       logger.debug(format(_('new_typed_vm(%<type>s): options=%<options>s'), type: type, options: options))
       vm_h = parse_typed_vm(options, type).deep_symbolize_keys
       logger.debug(format(_('new_typed_vm(%<type>s): vm_h=%<vm_h>s'), type: type, vm_h: vm_h))
-      vm = node.send(vm_collection(type)).new(vm_h)
-      vm
+      node.send(vm_collection(type)).new(vm_h)
     end
   end
 end

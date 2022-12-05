@@ -21,8 +21,8 @@ module ForemanFogProxmox
   class Vms
     attr_reader :items
 
-    def each
-      @items.each { |item| yield item }
+    def each(&block)
+      @items.each(&block)
     end
 
     # TODO: Pagination with filters

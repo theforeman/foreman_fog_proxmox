@@ -19,9 +19,7 @@
 
 module ForemanFogProxmox
   class OptionsSelect
-    attr_accessor :id
-    attr_accessor :name
-    attr_accessor :range
+    attr_accessor :id, :name, :range
 
     def to_s
       id

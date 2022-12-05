@@ -35,8 +35,12 @@ module ProxmoxVmInterfacesHelper
     interfaces_to_add = []
     interfaces_to_delete = []
     interfaces_attributes = args['interfaces_attributes']
-    interfaces_attributes ||= args['config_attributes']['interfaces_attributes'] unless ForemanFogProxmox::Value.empty?(args['config_attributes'])
-    interfaces_attributes&.each_value { |value| add_or_delete_typed_interface(value, interfaces_to_delete, interfaces_to_add, type) }
+    unless ForemanFogProxmox::Value.empty?(args['config_attributes'])
+      interfaces_attributes ||= args['config_attributes']['interfaces_attributes']
+    end
+    interfaces_attributes&.each_value do |value|
+      add_or_delete_typed_interface(value, interfaces_to_delete, interfaces_to_add, type)
+    end
     [interfaces_to_add, interfaces_to_delete]
   end
 
@@ -65,7 +69,9 @@ module ProxmoxVmInterfacesHelper
   def add_or_delete_typed_interface(interface_attributes, interfaces_to_delete, interfaces_to_add, type)
     logger.debug("add_or_delete_typed_interface(#{type}): interface_attributes=#{interface_attributes}")
     ForemanFogProxmox::HashCollection.remove_empty_values(interface_attributes)
-    ForemanFogProxmox::HashCollection.remove_empty_values(interface_attributes['compute_attributes']) if interface_attributes['compute_attributes']
+    if interface_attributes['compute_attributes']
+      ForemanFogProxmox::HashCollection.remove_empty_values(interface_attributes['compute_attributes'])
+    end
     nic = {}
     id = interface_attributes['id']
     delete = interface_attributes['_delete'].to_i == 1
@@ -73,10 +79,17 @@ module ProxmoxVmInterfacesHelper
       logger.debug("add_or_delete_typed_interface(#{type}): delete id=#{id}")
       interfaces_to_delete.push(id.to_s)
     else
-      interface_common_typed_keys(type).each { |key| ForemanFogProxmox::HashCollection.add_and_format_element(nic, key[:dest].to_sym, interface_attributes, key[:origin]) }
+      interface_common_typed_keys(type).each do |key|
+        ForemanFogProxmox::HashCollection.add_and_format_element(nic, key[:dest].to_sym, interface_attributes,
+          key[:origin])
+      end
       interface_attributes_h = interface_attributes['compute_attributes']
-      interface_attributes_h ||= interface_attributes if ForemanFogProxmox::Value.empty?(interface_attributes['compute_attributes'])
-      interface_compute_attributes_typed_keys(type).each { |key| ForemanFogProxmox::HashCollection.add_and_format_element(nic, key.to_sym, interface_attributes_h, key) }
+      if ForemanFogProxmox::Value.empty?(interface_attributes['compute_attributes'])
+        interface_attributes_h ||= interface_attributes
+      end
+      interface_compute_attributes_typed_keys(type).each do |key|
+        ForemanFogProxmox::HashCollection.add_and_format_element(nic, key.to_sym, interface_attributes_h, key)
+      end
       compute_dhcps(interface_attributes_h)
       logger.debug("add_or_delete_typed_interface(#{type}): add nic=#{nic}")
       interfaces_to_add.push(Fog::Proxmox::NicHelper.flatten(nic))

@@ -95,14 +95,15 @@ module ForemanFogProxmox
           'spectre' => '1',
           'pcid' => '0',
           'cores' => '1',
-          'sockets' => '1'
+          'sockets' => '1',
         },
         'volumes_attributes' => {
-          '0' => { 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => 'none' }
+          '0' => { 'controller' => 'scsi', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824',
+                   'cache' => 'none' },
         },
         'interfaces_attributes' => {
           '0' => { 'id' => 'net0', 'model' => 'virtio', 'bridge' => 'vmbr0', 'firewall' => '0', 'disconnect' => '0' },
-          '1' => { 'id' => 'net1', 'model' => 'e1000', 'bridge' => 'vmbr0', 'firewall' => '0', 'disconnect' => '0' }
+          '1' => { 'id' => 'net1', 'model' => 'e1000', 'bridge' => 'vmbr0', 'firewall' => '0', 'disconnect' => '0' },
         } }
     end
 
@@ -126,16 +127,16 @@ module ForemanFogProxmox
           'ostype' => 'debian',
           'hostname' => '',
           'nameserver' => '',
-          'searchdomain' => ''
+          'searchdomain' => '',
 
         },
         'volumes_attributes' => {
           '0' => { 'id' => 'rootfs', 'storage' => 'local-lvm', 'size' => '1073741824' },
-          '1' => { 'id' => 'mp0', 'storage' => 'local-lvm', 'size' => '1073741824' }
+          '1' => { 'id' => 'mp0', 'storage' => 'local-lvm', 'size' => '1073741824' },
         },
         'interfaces_attributes' => {
           '0' => { 'id' => 'net0', 'name' => 'eth0', 'bridge' => 'vmbr0', 'ip' => 'dhcp', 'ip6' => 'dhcp' },
-          '1' => { 'id' => 'net1', 'name' => 'eth1', 'bridge' => 'vmbr0', 'ip' => 'dhcp', 'ip6' => 'dhcp' }
+          '1' => { 'id' => 'net1', 'name' => 'eth1', 'bridge' => 'vmbr0', 'ip' => 'dhcp', 'ip6' => 'dhcp' },
         } }
     end
 
@@ -147,28 +148,36 @@ module ForemanFogProxmox
 
       it '#server qemu' do
         config_hash = object_to_config_hash(server, 'qemu')
-        expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(server.config.attributes).reject { |key, _value| excluded_qemu_keys.include? key }
+        expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(server.config.attributes).reject do |key, _value|
+          excluded_qemu_keys.include? key
+        end
         assert_equal expected_config_hash, config_hash['config_attributes']
       end
 
       it '#server lxc' do
         config_hash = object_to_config_hash(server, 'lxc')
         assert config_hash.key?('config_attributes')
-        expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(server.config.attributes).reject { |key, _value| excluded_qemu_keys.include? key }
+        expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(server.config.attributes).reject do |key, _value|
+          excluded_qemu_keys.include? key
+        end
         assert_equal expected_config_hash, config_hash['config_attributes']
       end
 
       it '#container qemu' do
         config_hash = object_to_config_hash(container, 'qemu')
         assert config_hash.key?('config_attributes')
-        expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(container.config.attributes).reject { |key, _value| excluded_lxc_keys.include? key }
+        expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(container.config.attributes).reject do |key, _value|
+          excluded_lxc_keys.include? key
+        end
         assert_equal expected_config_hash, config_hash['config_attributes']
       end
 
       it '#container lxc' do
         config_hash = object_to_config_hash(container, 'lxc')
         assert config_hash.key?('config_attributes')
-        expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(container.config.attributes).reject { |key, _value| excluded_lxc_keys.include? key }
+        expected_config_hash = ActiveSupport::HashWithIndifferentAccess.new(container.config.attributes).reject do |key, _value|
+          excluded_lxc_keys.include? key
+        end
         assert_equal expected_config_hash, config_hash['config_attributes']
       end
     end

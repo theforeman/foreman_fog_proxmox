@@ -1,6 +1,5 @@
 include ProxmoxVmUuidHelper
 class UpdateProxmoxUuidHost < ActiveRecord::Migration[6.0]
-
   def up
     execute(sql(:concat))
   end
@@ -9,7 +8,7 @@ class UpdateProxmoxUuidHost < ActiveRecord::Migration[6.0]
     execute(sql(:substring))
   end
 
-  private 
+  private
 
   def concat
     "concat(h.compute_resource_id, '_', h.uuid) "

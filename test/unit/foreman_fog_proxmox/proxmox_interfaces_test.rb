@@ -39,7 +39,8 @@ module ForemanFogProxmox
 
       it 'raises Foreman::Exception when server proxmox NIC id does not match net[k] with k integer' do
         compute_attributes = ActiveSupport::HashWithIndifferentAccess.new({ 'id' => 'dsfqsfqzef' })
-        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'eth0', :compute_attributes => compute_attributes)
+        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'eth0',
+:compute_attributes => compute_attributes)
         host = FactoryBot.build(
           :host_empty,
           :interfaces => [physical_nic],
@@ -56,7 +57,8 @@ module ForemanFogProxmox
         mac_address = '36:25:8c:53:0c:50'
         ip6 = Array.new(4) { format('%<x>s', x: rand(16**4)) }.join(':') + '::1'
         compute_attributes = ActiveSupport::HashWithIndifferentAccess.new({ 'id' => 'net0' })
-        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6, :mac => mac_address, :compute_attributes => compute_attributes)
+        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6,
+:mac => mac_address, :compute_attributes => compute_attributes)
         host = FactoryBot.build(
           :host_empty,
           :interfaces => [physical_nic],
@@ -72,7 +74,8 @@ module ForemanFogProxmox
 
       it 'raises Foreman::Exception when container proxmox NIC id does not match net[k] with k integer' do
         compute_attributes = ActiveSupport::HashWithIndifferentAccess.new({ 'id' => 'dsfqsfqzef' })
-        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'eth0', :compute_attributes => compute_attributes)
+        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'eth0',
+:compute_attributes => compute_attributes)
         host = FactoryBot.build(
           :host_empty,
           :interfaces => [physical_nic],
@@ -88,8 +91,10 @@ module ForemanFogProxmox
         ip = '192.168.56.100'
         cidr = '31'
         ip6 = Array.new(4) { format('%<x>s', x: rand(16**4)) }.join(':') + '::1'
-        compute_attributes = ActiveSupport::HashWithIndifferentAccess.new({ 'id' => 'net0', 'cidr' => cidr, 'gw' => ip, 'ip' => ip, 'dhcp6' => '1' })
-        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6, :compute_attributes => compute_attributes)
+        compute_attributes = ActiveSupport::HashWithIndifferentAccess.new({ 'id' => 'net0', 'cidr' => cidr, 'gw' => ip,
+'ip' => ip, 'dhcp6' => '1' })
+        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6,
+:compute_attributes => compute_attributes)
         host = FactoryBot.build(
           :host_empty,
           :interfaces => [physical_nic],
@@ -107,8 +112,10 @@ module ForemanFogProxmox
         ip = '192.168.56.100'
         cidr6 = '100'
         ip6 = '2001:0:1234::c1c0:abcd:876'
-        compute_attributes = ActiveSupport::HashWithIndifferentAccess.new({ 'id' => 'net0', 'cidr6' => cidr6, 'dhcp' => '1', 'gw6' => ip6 })
-        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6, :compute_attributes => compute_attributes)
+        compute_attributes = ActiveSupport::HashWithIndifferentAccess.new({ 'id' => 'net0', 'cidr6' => cidr6,
+'dhcp' => '1', 'gw6' => ip6 })
+        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6,
+:compute_attributes => compute_attributes)
         host = FactoryBot.build(
           :host_empty,
           :interfaces => [physical_nic],
@@ -127,8 +134,10 @@ module ForemanFogProxmox
         mac_address = '36:25:8c:53:0c:50'
         ip6 = '2001:0:1234::c1c0:abcd:876'
         firewall = '1'
-        compute_attributes = ActiveSupport::HashWithIndifferentAccess.new({ 'id' => 'net0', 'dhcp' => '1', 'ip6' => ip6, 'firewall' => firewall })
-        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6, :mac => mac_address, :compute_attributes => compute_attributes)
+        compute_attributes = ActiveSupport::HashWithIndifferentAccess.new({ 'id' => 'net0', 'dhcp' => '1',
+'ip6' => ip6, 'firewall' => firewall })
+        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6,
+:mac => mac_address, :compute_attributes => compute_attributes)
         host = FactoryBot.build(
           :host_empty,
           :interfaces => [physical_nic],

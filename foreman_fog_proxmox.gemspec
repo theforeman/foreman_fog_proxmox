@@ -38,4 +38,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rdoc'
   s.add_development_dependency 'rubocop'
   s.add_development_dependency 'simplecov'
+  s.add_development_dependency 'theforeman-rubocop', '~> 0.1'
 end

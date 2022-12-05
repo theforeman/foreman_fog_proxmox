@@ -1,11 +1,9 @@
 name: CI
+
 on:
   push:
     branches: [ master ]
   pull_request:
-    branches: [ master ]
-  release:
-    types: [created]
 
 jobs:
   build:
@@ -13,7 +11,7 @@ jobs:
 
     services:
       db:
-        image: postgres:12
+        image: postgres:13
         ports: ['5432:5432']
         env:
           POSTGRES_USER: foreman
@@ -26,16 +24,16 @@ jobs:
           --health-retries 5
     
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         repository: theforeman/foreman
         ref: develop
         path: foreman
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         repository: theforeman/foreman_fog_proxmox
         path: foreman_fog_proxmox
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         repository: fog/fog-proxmox
         path: fog-proxmox
@@ -65,7 +63,7 @@ jobs:
         bundle exec bin/rake db:seed
     - uses: actions/setup-node@v1
       with:
-        node-version: '12'
+        node-version: '14'
     - name: Setup node assets
       working-directory: ./foreman
       env:
@@ -123,26 +121,3 @@ jobs:
         debug: true
         coverageLocations: |
           ${{github.workspace}}/foreman_fog_proxmox/coverage/coverage.json:simplecov
-        
-  publish:
-    needs: [ build ]
-    name: publish gem
-    runs-on: ubuntu-latest
-    if: contains(github.ref, '/tags/v')
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Ruby 2.7
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '2.7'
-          bundler-cache: true
-      - name: Publish to RubyGems
-        env:
-          GEM_HOST_API_KEY: ${{secrets.RUBYGEMS_AUTH_TOKEN}}
-        run: |
-          mkdir -p $HOME/.gem
-          touch $HOME/.gem/credentials
-          chmod 0600 $HOME/.gem/credentials
-          printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
-          gem build *.gemspec
-          gem push *.gem

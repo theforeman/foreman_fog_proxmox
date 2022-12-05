@@ -1,0 +1,38 @@
+name: release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        id: release
+        with:
+          release-type: ruby
+          package-name: foreman_fog_proxmox
+          bump-minor-pre-major: true
+          version-file: "lib/foreman_fog_proxmox/version.rb"
+      - uses: actions/checkout@v3
+        if: ${{ steps.release.outputs.release_created }}
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
+          bundler-cache: true
+        if: ${{ steps.release.outputs.release_created }}
+      - run: bundle install
+        if: ${{ steps.release.outputs.release_created }}
+      - name: publish gem
+        run: |
+          mkdir -p $HOME/.gem
+          touch $HOME/.gem/credentials
+          chmod 0600 $HOME/.gem/credentials
+          printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
+          gem build *.gemspec
+          gem push *.gem
+        env:
+          GEM_HOST_API_KEY: "${{secrets.RUBYGEMS_AUTH_TOKEN}}"
+        if: ${{ steps.release.outputs.release_created }}

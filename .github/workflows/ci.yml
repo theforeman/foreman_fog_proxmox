@@ -104,7 +104,6 @@ jobs:
         CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
         COVERAGE: true
       run: |
-        bundle exec bin/rake foreman_fog_proxmox:rubocop
         bundle exec bin/rake test:foreman_fog_proxmox
     - name: Upload simplecov results for coverage
       uses: actions/upload-artifact@v1

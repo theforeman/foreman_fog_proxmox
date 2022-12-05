@@ -38,9 +38,7 @@ module ProxmoxVmOsTemplateHelper
   end
 
   def parse_container_ostemplate(args)
-    ostemplate = args['ostemplate']
-    ostemplate_file = args['ostemplate_file']
-    ostemplate ||= ostemplate_file
+    ostemplate = args['ostemplate'] || args['ostemplate_file']
     { ostemplate: ostemplate }
   end
 end

@@ -10,6 +10,9 @@ jobs:
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v3
+        - name: Setup prerequisites theforeman-rubocop
+          run: |
+            sudo apt-get update && sudo apt-get -y install libayml-dev
         - name: Setup Ruby
           uses: ruby/setup-ruby@v1
           with:

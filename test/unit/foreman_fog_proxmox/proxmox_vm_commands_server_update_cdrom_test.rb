@@ -58,7 +58,7 @@ module ForemanFogProxmox
           'node_id' => 'proxmox',
           'config_attributes' => {
             'cores' => '1',
-            'cpulimit' => '1'
+            'cpulimit' => '1',
           },
           'volumes_attributes' => {
             '0' => {
@@ -69,13 +69,15 @@ module ForemanFogProxmox
               'storage_type' => 'cdrom',
               'storage' => 'local-lvm',
               'cdrom' => 'image',
-              'volid' => 'local-lvm:iso/ubuntu-20_4.iso'
-            }
-          }
+              'volid' => 'local-lvm:iso/ubuntu-20_4.iso',
+            },
+          },
         }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0')
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1',
+          'cpulimit' => '1', 'onboot' => '0')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
-        expected_volume_attr = { id: 'ide2', storage: 'local:lvm', volid: 'local-lvm:iso/ubuntu-20_4.iso', media: 'cdrom' }
+        expected_volume_attr = { id: 'ide2', storage: 'local:lvm', volid: 'local-lvm:iso/ubuntu-20_4.iso',
+                                 media: 'cdrom' }
         vm.expects(:attach, expected_volume_attr)
         vm.expects(:update, expected_config_attr)
         @cr.save_vm(uuid, new_attributes)
@@ -108,7 +110,7 @@ module ForemanFogProxmox
           'node_id' => 'proxmox',
           'config_attributes' => {
             'cores' => '1',
-            'cpulimit' => '1'
+            'cpulimit' => '1',
           },
           'volumes_attributes' => {
             '0' => {
@@ -117,11 +119,12 @@ module ForemanFogProxmox
               'device' => '2',
               'controller' => 'ide',
               'storage_type' => 'cdrom',
-              'cdrom' => 'none'
-            }
-          }
+              'cdrom' => 'none',
+            },
+          },
         }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'config_attributes' => { 'onboot' => '0' })
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1',
+          'cpulimit' => '1', 'config_attributes' => { 'onboot' => '0' })
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = 'ide2'
         vm.expects(:detach, expected_volume_attr)
@@ -139,7 +142,8 @@ module ForemanFogProxmox
         disk.stubs(:volid).returns('local-lvm:iso/ubuntu-20_4.iso')
         disk.stubs(:media).returns('cdrom')
         disk.stubs(:id).returns('ide2')
-        disk.stubs(:attributes).returns(id: 'ide2', storage: 'local-lvm', volid: 'local-lvm:vm-100-disk-0', size: 1_073_741_824)
+        disk.stubs(:attributes).returns(id: 'ide2', storage: 'local-lvm', volid: 'local-lvm:vm-100-disk-0',
+          size: 1_073_741_824)
         disks.stubs(:get).returns(disk)
         config.stubs(:disks).returns(disks)
         config.stubs(:attributes).returns(:cores => '')
@@ -156,7 +160,7 @@ module ForemanFogProxmox
           'node_id' => 'proxmox',
           'config_attributes' => {
             'cores' => '1',
-            'cpulimit' => '1'
+            'cpulimit' => '1',
           },
           'volumes_attributes' => {
             '0' => {
@@ -165,11 +169,12 @@ module ForemanFogProxmox
               'device' => '2',
               'controller' => 'ide',
               'storage_type' => 'cdrom',
-              'cdrom' => 'cdrom'
-            }
-          }
+              'cdrom' => 'cdrom',
+            },
+          },
         }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1',
+          'cpulimit' => '1')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = { :id => 'ide2', :cdrom => 'cdrom' }
         vm.expects(:attach, expected_volume_attr)

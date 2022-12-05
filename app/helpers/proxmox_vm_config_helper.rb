@@ -34,7 +34,9 @@ module ProxmoxVmConfigHelper
     main_a = ['vmid']
     main = vm.attributes.select { |key, _value| main_a.include? key }
     main_a += ['templated']
-    config = vm.config.attributes.reject { |key, _value| main_a.include?(key) || Fog::Proxmox::DiskHelper.disk?(key) || Fog::Proxmox::NicHelper.nic?(key) }
+    config = vm.config.attributes.reject do |key, _value|
+      main_a.include?(key) || Fog::Proxmox::DiskHelper.disk?(key) || Fog::Proxmox::NicHelper.nic?(key)
+    end
     vm_h = vm_h.merge(main)
     vm_h = vm_h.merge('config_attributes': config)
     logger.debug(format(_('object_to_config_hash(%<type>s): vm_h=%<vm_h>s'), type: type, vm_h: vm_h))
@@ -125,7 +127,9 @@ module ProxmoxVmConfigHelper
     logger.debug("parsed_typed_config(#{type}): config_cpu=#{config_cpu}")
     cpu = parse_typed_cpu(config_cpu, type)
     memory = parse_typed_memory(config.select { |key, _value| config_typed_keys(type)[:memory].include? key }, type)
-    parsed_config = config.reject { |key, value| config_a(type).include?(key) || ForemanFogProxmox::Value.empty?(value) }
+    parsed_config = config.reject do |key, value|
+      config_a(type).include?(key) || ForemanFogProxmox::Value.empty?(value)
+    end
     parsed_vm = args.reject { |key, value| args_a(type).include?(key) || ForemanFogProxmox::Value.empty?(value) }
     parsed_vm = parsed_vm.merge(config_options(config, args, type))
     parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory)
@@ -136,7 +140,9 @@ module ProxmoxVmConfigHelper
   def parse_typed_memory(args, type)
     memory = {}
     ForemanFogProxmox::HashCollection.remove_empty_values(args)
-    config_typed_keys(type)[:memory].each { |key| ForemanFogProxmox::HashCollection.add_and_format_element(memory, key.to_sym, args, key, :to_i) }
+    config_typed_keys(type)[:memory].each do |key|
+      ForemanFogProxmox::HashCollection.add_and_format_element(memory, key.to_sym, args, key, :to_i)
+    end
     memory
   end
 
@@ -153,7 +159,11 @@ module ProxmoxVmConfigHelper
       args.each_value(&:to_i)
       cpu = { cpu: cpu_flattened }
     end
-    config_typed_keys('lxc')[:cpu].each { |key| ForemanFogProxmox::HashCollection.add_and_format_element(cpu, key.to_sym, args, key) } if type == 'lxc'
+    if type == 'lxc'
+      config_typed_keys('lxc')[:cpu].each do |key|
+        ForemanFogProxmox::HashCollection.add_and_format_element(cpu, key.to_sym, args, key)
+      end
+    end
     logger.debug("parse_typed_cpu(#{type}): cpu=#{cpu}")
     cpu
   end

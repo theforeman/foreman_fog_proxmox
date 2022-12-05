@@ -22,7 +22,7 @@ module FogExtensions
     module Node
       extend ActiveSupport::Concern
 
-      def each(collection_filters = {})
+      def each(collection_filters = {}, &block)
         if block_given?
           Kernel.loop do
             break unless collection_filters[:marker]
@@ -31,7 +31,7 @@ module FogExtensions
             # We need to explicitly use the base 'each' method here on the page,
             #  otherwise we get infinite recursion
             base_each = Fog::Collection.instance_method(:each)
-            base_each.bind(page).call { |item| yield item }
+            base_each.bind(page).call(&block)
           end
         end
         self

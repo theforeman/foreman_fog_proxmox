@@ -58,7 +58,7 @@ module ForemanFogProxmox
           'node_id' => 'proxmox',
           'config_attributes' => {
             'cores' => '1',
-            'cpulimit' => '1'
+            'cpulimit' => '1',
           },
           'volumes_attributes' => {
             '0' => {
@@ -68,11 +68,12 @@ module ForemanFogProxmox
               'controller' => 'ide',
               'storage_type' => 'cloud_init',
               'storage' => 'local-lvm',
-              'volid' => 'local-lvm:cloudinit'
-            }
-          }
+              'volid' => 'local-lvm:cloudinit',
+            },
+          },
         }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0')
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1',
+          'cpulimit' => '1', 'onboot' => '0')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = { id: 'ide0', storage: 'local:lvm', volid: 'local-lvm:cloudinit', media: 'cdrom' }
         vm.expects(:attach, expected_volume_attr)
@@ -107,7 +108,7 @@ module ForemanFogProxmox
           'node_id' => 'proxmox',
           'config_attributes' => {
             'cores' => '1',
-            'cpulimit' => '1'
+            'cpulimit' => '1',
           },
           'volumes_attributes' => {
             '0' => {
@@ -115,11 +116,12 @@ module ForemanFogProxmox
               '_delete' => '1',
               'device' => '0',
               'controller' => 'ide',
-              'storage_type' => 'cloud_init'
-            }
-          }
+              'storage_type' => 'cloud_init',
+            },
+          },
         }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'config_attributes' => { 'onboot' => '0' })
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1',
+          'cpulimit' => '1', 'config_attributes' => { 'onboot' => '0' })
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = 'ide0'
         vm.expects(:detach, expected_volume_attr)

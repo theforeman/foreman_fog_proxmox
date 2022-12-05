@@ -77,7 +77,8 @@ module ForemanFogProxmox
         assert ForemanFogProxmox::Semver.to_semver('1.0.10') <= ForemanFogProxmox::Semver.to_semver('1.0.20')
       end
       it '#1.2.3-beta == 1.2.3-beta returns true' do
-        assert_equal ForemanFogProxmox::Semver.to_semver('1.2.3-beta'), ForemanFogProxmox::Semver.to_semver('1.2.3-beta')
+        assert_equal ForemanFogProxmox::Semver.to_semver('1.2.3-beta'),
+          ForemanFogProxmox::Semver.to_semver('1.2.3-beta')
       end
       it '#1.2.3-beta >= 1.-beta raises ArgumentError' do
         assert_raises ArgumentError do

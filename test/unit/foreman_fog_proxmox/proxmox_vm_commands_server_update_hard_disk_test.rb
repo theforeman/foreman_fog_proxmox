@@ -60,7 +60,7 @@ module ForemanFogProxmox
           'node_id' => 'proxmox',
           'config_attributes' => {
             'cores' => '1',
-            'cpulimit' => '1'
+            'cpulimit' => '1',
           },
           'volumes_attributes' => {
             '0' => {
@@ -71,11 +71,12 @@ module ForemanFogProxmox
               'storage_type' => 'hard_disk',
               'storage' => 'local-lvm',
               'size' => '2147483648',
-              'cache' => 'none'
-            }
-          }
+              'cache' => 'none',
+            },
+          },
         }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0')
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1',
+          'cpulimit' => '1', 'onboot' => '0')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = { id: 'scsi0', storage: 'local:lvm', size: (2_147_483_648 / GIGA).to_s }
         vm.expects(:attach, expected_volume_attr)
@@ -108,7 +109,7 @@ module ForemanFogProxmox
           'node_id' => 'proxmox',
           'config_attributes' => {
             'cores' => '1',
-            'cpulimit' => '1'
+            'cpulimit' => '1',
           },
           'volumes_attributes' => {
             '0' => {
@@ -120,11 +121,12 @@ module ForemanFogProxmox
               'controller' => 'scsi',
               'storage' => 'local-lvm',
               'size' => '2147483648',
-              'cache' => 'none'
-            }
-          }
+              'cache' => 'none',
+            },
+          },
         }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1', 'config_attributes' => { 'onboot' => '0' })
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1',
+          'cpulimit' => '1', 'config_attributes' => { 'onboot' => '0' })
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = 'scsi0'
         vm.expects(:detach, expected_volume_attr)
@@ -159,7 +161,7 @@ module ForemanFogProxmox
           'node_id' => 'proxmox',
           'config_attributes' => {
             'cores' => '1',
-            'cpulimit' => '1'
+            'cpulimit' => '1',
           },
           'volumes_attributes' => {
             '0' => {
@@ -171,11 +173,12 @@ module ForemanFogProxmox
               'controller' => 'scsi',
               'storage' => 'local-lvm',
               'size' => '2147483648',
-              'cache' => 'none'
-            }
-          }
+              'cache' => 'none',
+            },
+          },
         }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1',
+          'cpulimit' => '1')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = ['scsi0', '+1G']
         vm.expects(:extend, expected_volume_attr)
@@ -208,7 +211,7 @@ module ForemanFogProxmox
           'node_id' => 'proxmox',
           'config_attributes' => {
             'cores' => '1',
-            'cpulimit' => '1'
+            'cpulimit' => '1',
           },
           'volumes_attributes' => {
             '0' => {
@@ -220,11 +223,12 @@ module ForemanFogProxmox
               'controller' => 'scsi',
               'storage' => 'local-lvm',
               'size' => '2',
-              'cache' => 'none'
-            }
-          }
+              'cache' => 'none',
+            },
+          },
         }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1',
+          'cpulimit' => '1')
         err = assert_raises Foreman::Exception do
           @cr.save_vm(uuid, new_attributes)
         end
@@ -256,7 +260,7 @@ module ForemanFogProxmox
           'node_id' => 'proxmox',
           'config_attributes' => {
             'cores' => '1',
-            'cpulimit' => '1'
+            'cpulimit' => '1',
           },
           'volumes_attributes' => {
             '0' => {
@@ -268,11 +272,12 @@ module ForemanFogProxmox
               'controller' => 'scsi',
               'storage' => 'local-lvm2',
               'size' => '1073741824',
-              'cache' => 'none'
-            }
-          }
+              'cache' => 'none',
+            },
+          },
         }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1',
+          'cpulimit' => '1')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
         expected_volume_attr = ['scsi0', 'local-lvm2']
         vm.expects(:move, expected_volume_attr)
@@ -289,7 +294,8 @@ module ForemanFogProxmox
         disk.stubs(:storage).returns('local-lvm')
         disk.stubs(:volid).returns('local-lvm:vm-100-disk-0')
         disk.stubs(:id).returns('scsi0')
-        disk.stubs(:attributes).returns(id: 'scsi0', storage: 'local-lvm', volid: 'local-lvm:vm-100-disk-0', size: 1_073_741_824)
+        disk.stubs(:attributes).returns(id: 'scsi0', storage: 'local-lvm', volid: 'local-lvm:vm-100-disk-0',
+          size: 1_073_741_824)
         disks.stubs(:get).returns(disk)
         config.stubs(:disks).returns(disks)
         config.stubs(:attributes).returns(:cores => '')
@@ -306,7 +312,7 @@ module ForemanFogProxmox
           'node_id' => 'proxmox',
           'config_attributes' => {
             'cores' => '1',
-            'cpulimit' => '1'
+            'cpulimit' => '1',
           },
           'volumes_attributes' => {
             '0' => {
@@ -318,13 +324,15 @@ module ForemanFogProxmox
               'controller' => 'scsi',
               'storage' => 'local-lvm',
               'size' => '1073741824',
-              'cache' => 'directsync'
-            }
-          }
+              'cache' => 'directsync',
+            },
+          },
         }.with_indifferent_access
-        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1', 'cpulimit' => '1')
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1',
+          'cpulimit' => '1')
         expected_config_attr = { :cores => '1', :cpulimit => '1' }
-        expected_volume_attr = { :id => 'scsi0', :volid => 'local-lvm:vm-100-disk-0', :size => 1_073_741_824 }, { :cache => 'directsync' }
+        expected_volume_attr = { :id => 'scsi0', :volid => 'local-lvm:vm-100-disk-0', :size => 1_073_741_824 },
+                               { :cache => 'directsync' }
         vm.expects(:attach, expected_volume_attr)
         vm.expects(:update, expected_config_attr)
         @cr.save_vm(uuid, new_attributes)

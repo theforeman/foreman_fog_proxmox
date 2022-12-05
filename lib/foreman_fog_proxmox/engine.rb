@@ -63,7 +63,8 @@ module ForemanFogProxmox
     # content twice.
     assets_to_precompile =
       Dir.chdir(root) do
-        Dir['app/assets/javascripts/foreman_fog_proxmox/**/*', 'app/assets/stylesheets/foreman_fog_proxmox/**/*'].map do |f|
+        Dir['app/assets/javascripts/foreman_fog_proxmox/**/*',
+          'app/assets/stylesheets/foreman_fog_proxmox/**/*'].map do |f|
           f.split(File::SEPARATOR, 4).last
         end
       end
@@ -73,8 +74,8 @@ module ForemanFogProxmox
     initializer 'foreman_fog_proxmox.configure_assets', group: :assets do
       SETTINGS[:foreman_fog_proxmox] = {
         assets: {
-          precompile: assets_to_precompile
-        }
+          precompile: assets_to_precompile,
+        },
       }
     end
 

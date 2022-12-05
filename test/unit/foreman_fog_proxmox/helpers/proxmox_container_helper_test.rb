@@ -50,12 +50,12 @@ module ForemanFogProxmox
             'ostype' => 'debian',
             'hostname' => 'toto-tata.pve',
             'nameserver' => '',
-            'searchdomain' => ''
+            'searchdomain' => '',
 
           },
           'volumes_attributes' => {
             '0' => { 'id' => 'rootfs', 'storage' => 'local-lvm', 'size' => '1073741824', 'cache' => '' },
-            '1' => { 'id' => 'mp0', 'storage' => 'local-lvm', 'size' => '1073741824', 'mp' => '/opt/path' }
+            '1' => { 'id' => 'mp0', 'storage' => 'local-lvm', 'size' => '1073741824', 'mp' => '/opt/path' },
           },
           'interfaces_attributes' => {
             '0' => {
@@ -67,8 +67,8 @@ module ForemanFogProxmox
                 'ip6' => 'dhcp',
                 'rate' => '',
                 'gw' => '192.168.56.100',
-                'gw6' => '2001:0:1234::c1c0:abcd:876'
-              }
+                'gw6' => '2001:0:1234::c1c0:abcd:876',
+              },
             },
             '1' => {
               'id' => 'net1',
@@ -78,9 +78,9 @@ module ForemanFogProxmox
                 'ip' => 'dhcp',
                 'ip6' => 'dhcp',
                 'gw' => '192.168.56.100',
-                'gw6' => '2001:0:1234::c1c0:abcd:876'
-              }
-            }
+                'gw6' => '2001:0:1234::c1c0:abcd:876',
+              },
+            },
           } }
       end
 
@@ -114,7 +114,8 @@ module ForemanFogProxmox
           'name' => 'test',
           'type' => 'lxc',
           'node_id' => 'proxmox',
-          'volumes_attributes' => { '0' => { '_delete' => '1', 'device' => '0', 'storage' => 'local-lvm', 'size' => '1073741824', 'mp' => '/opt/path' } },
+          'volumes_attributes' => { '0' => { '_delete' => '1', 'device' => '0', 'storage' => 'local-lvm',
+                                             'size' => '1073741824', 'mp' => '/opt/path' } },
           'interfaces_attributes' => { '0' => { '_delete' => '1', 'id' => 'net0', 'name' => 'eth0' } } }
       end
 
@@ -137,7 +138,7 @@ module ForemanFogProxmox
       test '#ostemplate' do
         ostemplate = parse_container_ostemplate(host_form)
         expected_ostemplate = {
-          :ostemplate => 'local:vztmpl/alpine-3.7-default_20171211_amd64.tar.xz'
+          :ostemplate => 'local:vztmpl/alpine-3.7-default_20171211_amd64.tar.xz',
         }
         assert_equal expected_ostemplate, ostemplate
       end
@@ -146,7 +147,8 @@ module ForemanFogProxmox
         vm = parse_typed_vm(host_form, type)
         assert_equal 536_870_912, vm[:memory]
         assert_equal 'local-lvm:1073741824', vm[:rootfs]
-        assert_equal 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876', vm[:net0]
+        assert_equal 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876',
+          vm[:net0]
         assert_equal 'toto-tata.pve', vm[:hostname]
         assert_not vm.key?(:config)
         assert_not vm.key?(:node)
@@ -192,7 +194,8 @@ module ForemanFogProxmox
         add_or_delete_typed_interface(host_form['interfaces_attributes']['0'], deletes, nics, type)
         assert 1, nics.length
         assert nics[0].key?(:net0)
-        assert_equal 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876', nics[0][:net0]
+        assert_equal 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876',
+          nics[0][:net0]
       end
 
       test '#interface with name eth1 and bridge' do
@@ -201,7 +204,8 @@ module ForemanFogProxmox
         add_or_delete_typed_interface(host_form['interfaces_attributes']['1'], deletes, nics, type)
         assert 1, nics.length
         assert nics[0].key?(:net1)
-        assert_equal 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876', nics[0][:net1]
+        assert_equal 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876',
+          nics[0][:net1]
       end
 
       test '#interface delete net0' do
@@ -217,8 +221,10 @@ module ForemanFogProxmox
         interfaces_to_add, interfaces_to_delete = parse_typed_interfaces(host_form, type)
         assert_empty interfaces_to_delete
         assert_equal 2, interfaces_to_add.length
-        assert_includes interfaces_to_add, { net0: 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876' }
-        assert_includes interfaces_to_add, { net1: 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876' }
+        assert_includes interfaces_to_add,
+          { net0: 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876' }
+        assert_includes interfaces_to_add,
+          { net1: 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876' }
       end
     end
   end

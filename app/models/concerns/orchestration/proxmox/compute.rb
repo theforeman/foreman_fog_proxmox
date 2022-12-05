@@ -32,7 +32,8 @@ module Orchestration
           compute_resource.save_vm uuid, final_compute_attributes
         end
       rescue StandardError => e
-        failure format(_('Failed to update a compute %<compute_resource>s instance %<name>s: %<e>s'), :compute_resource => compute_resource, :name => name, :e => e), e
+        failure format(_('Failed to update a compute %<compute_resource>s instance %<name>s: %<e>s'), :compute_resource => compute_resource, :name => name, :e => e),
+          e
       end
 
       def delComputeUpdate
@@ -44,7 +45,8 @@ module Orchestration
           compute_resource.save_vm uuid, final_compute_attributes
         end
       rescue StandardError => e
-        failure format(_('Failed to undo update compute %<compute_resource>s instance %<name>s: %<e>s'), :compute_resource => compute_resource, :name => name, :e => e), e
+        failure format(_('Failed to undo update compute %<compute_resource>s instance %<name>s: %<e>s'), :compute_resource => compute_resource, :name => name, :e => e),
+          e
       end
 
       def empty_provided_ips?(ip, ip6)
@@ -82,7 +84,12 @@ module Orchestration
             result = false unless validate_required_foreman_attr(value, Host, foreman_attr)
           end
         end
-        return failure(format(_('Failed to acquire IP addresses from compute resource for %<name>s'), name: name)) if empty_provided_ips?(ip, ip6)
+        if empty_provided_ips?(
+          ip, ip6
+        )
+          return failure(format(_('Failed to acquire IP addresses from compute resource for %<name>s'),
+            name: name))
+        end
 
         result
       end

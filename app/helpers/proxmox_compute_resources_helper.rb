@@ -21,7 +21,7 @@ module ProxmoxComputeResourcesHelper
   def user_token_expiration_date(compute_resource)
     expire = compute_resource.current_user_token_expire
   rescue ::Foreman::Exception => e
-    return 'Has already expired. Please edit the compute resource to set a new valid one.' if e.message == 'User token expired'
+    'Has already expired. Please edit the compute resource to set a new valid one.' if e.message == 'User token expired'
   rescue StandardError => e
     logger.warn(format(_('failed to get identity client version: %<e>s'), e: e))
     raise e

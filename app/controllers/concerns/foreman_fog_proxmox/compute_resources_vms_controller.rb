@@ -26,15 +26,20 @@ module ForemanFogProxmox
     module Overrides
       def associate
         if Host.for_vm_uuid(@compute_resource, @vm).any?
-          process_error(:error_msg => _("VM already associated with a host"), :redirect => compute_resource_vm_path(:compute_resource_id => params[:compute_resource_id], :id => proxmox_vm_id(@compute_resource, @vm)))
+          process_error(:error_msg => _("VM already associated with a host"),
+            :redirect => compute_resource_vm_path(:compute_resource_id => params[:compute_resource_id],
+              :id => proxmox_vm_id(@compute_resource, @vm)))
           return
         end
         host = @compute_resource.associated_host(@vm) if @compute_resource.respond_to?(:associated_host)
         if host.present?
           host.associate!(@compute_resource, @vm)
-          process_success(:success_msg => _("VM associated to host %s") % host.name, :success_redirect => host_path(host))
+          process_success(:success_msg => _("VM associated to host %s") % host.name,
+            :success_redirect => host_path(host))
         else
-          process_error(:error_msg => _("No host found to associate this VM with"), :redirect => compute_resource_vm_path(:compute_resource_id => params[:compute_resource_id], :id => proxmox_vm_id(@compute_resource, @vm)))
+          process_error(:error_msg => _("No host found to associate this VM with"),
+            :redirect => compute_resource_vm_path(:compute_resource_id => params[:compute_resource_id],
+              :id => proxmox_vm_id(@compute_resource, @vm)))
         end
       end
 
@@ -51,14 +56,15 @@ module ForemanFogProxmox
                  'hosts/console/log'
                end
       rescue StandardError => e
-        process_error :redirect => compute_resource_vm_path(@compute_resource, proxmox_vm_id(@compute_resource, @vm)), :error_msg => (_("Failed to set console: %s") % e), :object => @vm
+        process_error :redirect => compute_resource_vm_path(@compute_resource, proxmox_vm_id(@compute_resource, @vm)),
+          :error_msg => (_("Failed to set console: %s") % e), :object => @vm
       end
 
       private
 
       def proxmox_vm_id(compute_resource, vm)
         id = vm.identity
-        id = vm.unique_cluster_identity(compute_resource) if compute_resource.class == ForemanFogProxmox::Proxmox
+        id = vm.unique_cluster_identity(compute_resource) if compute_resource.instance_of?(ForemanFogProxmox::Proxmox)
         id
       end
 
@@ -69,11 +75,15 @@ module ForemanFogProxmox
         else
           error format(_("failed to %<action>s %<vm>s"), { :action => _(action), :vm => @vm })
         end
-        redirect_back(:fallback_location => compute_resource_vm_path(:compute_resource_id => params[:compute_resource_id], :id => proxmox_vm_id(@compute_resource, @vm)))
+        redirect_back(:fallback_location => compute_resource_vm_path(
+          :compute_resource_id => params[:compute_resource_id], :id => proxmox_vm_id(@compute_resource, @vm)
+        ))
       # This should only rescue Fog::Errors, but Fog returns all kinds of errors...
       rescue StandardError => e
         error format(_("Error - %<message>s"), { :message => _(e.message) })
-        redirect_back(:fallback_location => compute_resource_vm_path(:compute_resource_id => params[:compute_resource_id], :id => proxmox_vm_id(@compute_resource, @vm)))
+        redirect_back(:fallback_location => compute_resource_vm_path(
+          :compute_resource_id => params[:compute_resource_id], :id => proxmox_vm_id(@compute_resource, @vm)
+        ))
       end
     end
   end

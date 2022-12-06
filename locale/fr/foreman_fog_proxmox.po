@@ -20,6 +20,24 @@ msgstr ""
 msgid "%<s>s console is not supported at this time"
 msgstr ""
 
+msgid "%<vm>s is now %<vm_state>s"
+msgstr ""
+
+msgid "Access ticket fields"
+msgstr ""
+
+msgid "Add CD-ROM"
+msgstr ""
+
+msgid "Add Cloud-init"
+msgstr ""
+
+msgid "Add Hard Disk"
+msgstr ""
+
+msgid "Add Mount Point"
+msgstr ""
+
 msgid "Add Volume"
 msgstr "Ajouter un volume"
 
@@ -29,8 +47,20 @@ msgstr "Avancé"
 msgid "Architecture"
 msgstr ""
 
+msgid "Associate VM"
+msgstr ""
+
+msgid "Associate VM to a Foreman host"
+msgstr ""
+
+msgid "Authentication method"
+msgstr ""
+
 msgid "Average load (x100)"
 msgstr "Charge moyenne du serveur (x100)"
+
+msgid "BIOS"
+msgstr ""
 
 msgid "Boot device order"
 msgstr ""
@@ -41,16 +71,16 @@ msgstr "Pont"
 msgid "CD-ROM"
 msgstr ""
 
-msgid "CDROM"
+msgid "CIDR IPv4"
 msgstr ""
 
-msgid "CIDR IPv4 prefix"
-msgstr ""
-
-msgid "CIDR IPv6 prefix"
+msgid "CIDR IPv6"
 msgstr ""
 
 msgid "CPU"
+msgstr ""
+
+msgid "CPU Flags"
 msgstr ""
 
 msgid "CPU limit"
@@ -71,8 +101,23 @@ msgstr "Carte"
 msgid "Change the password"
 msgstr "Changer le mot de passe"
 
+msgid "Click Test connection button before changing it"
+msgstr ""
+
+msgid "Click Test connection button to check token"
+msgstr ""
+
+msgid "Cloud-init"
+msgstr ""
+
 msgid "Cluster nodes"
 msgstr "Noeuds de la ferme"
+
+msgid "Common fields"
+msgstr ""
+
+msgid "Console"
+msgstr ""
 
 msgid "Controller"
 msgstr "Contrôleur"
@@ -92,7 +137,13 @@ msgstr ""
 msgid "DNS"
 msgstr ""
 
+msgid "DNS domain"
+msgstr ""
+
 msgid "DNS server"
+msgstr ""
+
+msgid "DNS servers"
 msgstr ""
 
 msgid "Description"
@@ -104,9 +155,6 @@ msgstr "Périphérque"
 msgid "Disconnect"
 msgstr "Se déconnecter"
 
-msgid "Disk"
-msgstr "Disque"
-
 msgid "Does this image support user data input (e.g. via cloud-init)?"
 msgstr "Cette immage gère-t-elle les données utilisateurs (par exemple via cloud-init)?"
 
@@ -116,19 +164,19 @@ msgstr "Activer NUMA"
 msgid "Enable/disable KVM hardware virtualization"
 msgstr "Activer/désactiver la virtualisation matérielle de KVM"
 
+msgid "Error - %<message>s"
+msgstr ""
+
 msgid "Extended"
 msgstr "Etendu"
 
-msgid "Failed retrieving proxmox compute client caused by %<e>s"
-msgstr ""
-
-msgid "Failed retrieving proxmox identity client caused by %<e>s"
-msgstr ""
-
-msgid "Failed retrieving proxmox network client caused by %<e>s"
-msgstr ""
-
 msgid "Failed retrieving proxmox server vm by vmid=%<vmid>s"
+msgstr ""
+
+msgid "Failed to acquire IP addresses from compute resource for %<name>s"
+msgstr ""
+
+msgid "Failed to set console: %s"
 msgstr ""
 
 msgid "Failed to undo update compute %<compute_resource>s instance %<name>s: %<e>s"
@@ -139,9 +187,6 @@ msgstr ""
 
 msgid "Firewall"
 msgstr "Pare-feu"
-
-msgid "Floppy disk (a), hard disk (c), cdrom (d), network (n). Default cdn"
-msgstr ""
 
 msgid "Foreman Fog Proxmox widget"
 msgstr ""
@@ -158,8 +203,17 @@ msgstr ""
 msgid "General"
 msgstr "Général"
 
+msgid "Hard disk"
+msgstr ""
+
+msgid "Host"
+msgstr ""
+
 msgid "Hostname"
 msgstr "Nom d'hôte"
+
+msgid "Identifier"
+msgstr ""
 
 msgid "Image"
 msgstr ""
@@ -170,22 +224,31 @@ msgstr ""
 msgid "Image VMID"
 msgstr ""
 
-msgid "KVM"
+msgid "Import as managed Host"
 msgstr ""
 
-msgid "Keyboard"
-msgstr "Clavier"
+msgid "Import as unmanaged Host"
+msgstr ""
+
+msgid "KVM"
+msgstr ""
 
 msgid "Main option"
 msgid_plural "Main options"
 msgstr[0] "Option principale"
 msgstr[1] "Options principales"
 
+msgid "Media"
+msgstr ""
+
 msgid "Memory"
 msgstr "Mémoire"
 
-msgid "Minimum memory"
-msgstr "Mémoire minimale"
+msgid "Memory (MB)"
+msgstr ""
+
+msgid "Minimum memory (MB)"
+msgstr ""
 
 msgid "Mount point"
 msgstr "Point de montage"
@@ -197,6 +260,9 @@ msgid "Name"
 msgstr "Nom"
 
 msgid "Nic"
+msgstr ""
+
+msgid "No host found to associate this VM with"
 msgstr ""
 
 msgid "Node"
@@ -223,7 +289,10 @@ msgstr ""
 msgid "Optionally provide a CA, or a correctly ordered CA chain. If left blank, disable ssl_verify_peer."
 msgstr "Vous pouvez éventuellement fournir un certificat ou une chaîne de certificats. Si non renseigné, alors désactivez ssl_verify_peer."
 
-msgid "PCID"
+msgid "Order your devices, e.g. order=net0;ide2;scsi0. Default empty (any)"
+msgstr ""
+
+msgid "Password"
 msgstr ""
 
 msgid "Password to authenticate with - used for SSH finish step."
@@ -256,9 +325,6 @@ msgstr "Agent Qemu"
 msgid "Rate limit"
 msgstr "Taux limite"
 
-msgid "Renew expired token ?"
-msgstr "Renouveler jeton expiré?"
-
 msgid "Root password"
 msgstr "Mot de passe root"
 
@@ -268,22 +334,25 @@ msgstr ""
 msgid "SCSI Controller"
 msgstr ""
 
+msgid "SSH public key"
+msgstr ""
+
+msgid "SSL fields"
+msgstr ""
+
 msgid "SSL verify peer"
 msgstr ""
 
 msgid "Search domain"
 msgstr "Domaine de recherche"
 
-msgid "Shares"
-msgstr "Partages"
-
-msgid "Size"
-msgstr "Taille"
-
-msgid "Sockets"
+msgid "Shares (MB)"
 msgstr ""
 
-msgid "Spectre-CTRL"
+msgid "Size (GB)"
+msgstr ""
+
+msgid "Sockets"
 msgstr ""
 
 msgid "Start after creation?"
@@ -295,14 +364,11 @@ msgstr "Démarrer au boot"
 msgid "Storage"
 msgstr "Stockage"
 
-msgid "Swap"
+msgid "Swap (MB)"
 msgstr ""
 
 msgid "Template storage"
 msgstr "Modèle de stockage"
-
-msgid "Test failed"
-msgstr "Le test a échoué"
 
 msgid "The user that is used to ssh into the instance, normally cloud-user, ubuntu, root etc"
 msgstr "Le compte utilisé pour SSH, en général compte cloud, ubuntu ou root, etc"
@@ -310,13 +376,10 @@ msgstr "Le compte utilisé pour SSH, en général compte cloud, ubuntu ou root, 
 msgid "Time"
 msgstr "Temps"
 
-msgid "Token expires on"
-msgstr "Jeton expire le "
-
-msgid "Token has expired?"
-msgstr "Jeton expiré?"
-
 msgid "Type"
+msgstr ""
+
+msgid "Type %<type>s, node %<node>s, %<cpus>s CPUs and %<memory>s MB memory"
 msgstr ""
 
 msgid "URL"
@@ -331,6 +394,21 @@ msgstr "Impossible d'enregistrer les certificats X509"
 msgid "Uptime"
 msgstr "En marche depuis (s)"
 
+msgid "User"
+msgstr ""
+
+msgid "User token expires"
+msgstr ""
+
+msgid "User token fields"
+msgstr ""
+
+msgid "User token id"
+msgstr ""
+
+msgid "User token value"
+msgstr ""
+
 msgid "VCPUs"
 msgstr ""
 
@@ -343,16 +421,46 @@ msgstr "Etiquette VLAN"
 msgid "VM ID"
 msgstr ""
 
+msgid "VM already associated with a host"
+msgstr ""
+
+msgid "VM associated to host %s"
+msgstr ""
+
 msgid "Version"
 msgstr ""
 
 msgid "X509 Certification Authorities"
 msgstr "Autorités de certification X509"
 
+msgid "add new cd-rom"
+msgstr ""
+
+msgid "add new cloud-init"
+msgstr ""
+
+msgid "add new hard disk"
+msgstr ""
+
+msgid "add new mount point"
+msgstr ""
+
 msgid "add new storage volume"
 msgstr "ajouter un nouveau volume de stockage"
 
+msgid "add_default_typed_interface(%<type>s) to new_attr=%<new_attr>s"
+msgstr ""
+
+msgid "add_default_typed_volume(%<type>s) to new_attr=%<new_attr>s"
+msgstr ""
+
 msgid "add_vm_to_pool(%<poolid>s, %<vmid>s)"
+msgstr ""
+
+msgid "add_volume(%<vmid>s) disk_attributes=%<disk_attributes>s"
+msgstr ""
+
+msgid "create vm: args=%<args>s"
 msgstr ""
 
 msgid "create_vm(): clone %<image_id>s in %<vmid>s"
@@ -367,25 +475,97 @@ msgstr "par exemple https://127.0.0.1:8006/api2/json"
 msgid "e.g. root@pam"
 msgstr "par exemple root@pam"
 
+msgid "eth[n] with n integer >= 0, e.g. eth0"
+msgstr ""
+
+msgid "failed to %<action>s %<vm>s"
+msgstr ""
+
+msgid "failed to create compute client: %<e>s"
+msgstr ""
+
+msgid "failed to create identity client: %<e>s"
+msgstr ""
+
+msgid "failed to create network client: %<e>s"
+msgstr ""
+
 msgid "failed to create vm: %<e>s"
 msgstr "échec à la création de la VM: %<e>s"
 
+msgid "failed to get cluster nodes: %<e>s"
+msgstr ""
+
+msgid "failed to get identity client version: %<e>s"
+msgstr ""
+
+msgid "failed to save %<name>s"
+msgstr ""
+
 msgid "found vm: %<vmid>s member of pool: %<poolid>s"
+msgstr ""
+
+msgid "images_by_storage(): node_id %<node_id>s storage_id %<storage_id>s type %<type>s"
+msgstr ""
+
+msgid "integer within [0..128]"
+msgstr ""
+
+msgid "integer within [0..32]"
 msgstr ""
 
 msgid "invalid vmid=%<vmid>s"
 msgstr "vmid=%<vmid>s incorrect"
 
-msgid "new_container_vm() vm.config=%<config>s"
+msgid "net[n] with n integer >= 0, e.g. net0"
 msgstr ""
 
-msgid "new_server_vm() vm.config=%<config>s"
+msgid "new_typed_vm(%<type>s) with vm_typed_instance_defaults: vm_h=%<vm_h>s"
 msgstr ""
 
-msgid "new_vm() vm.config=%<config>s"
+msgid "new_typed_vm(%<type>s): new_attr=%<new_attr>s"
+msgstr ""
+
+msgid "new_typed_vm(%<type>s): new_attr_type=%<new_attr_type>s"
+msgstr ""
+
+msgid "new_typed_vm(%<type>s): options=%<options>s"
+msgstr ""
+
+msgid "new_typed_vm(%<type>s): vm_h=%<vm_h>s"
+msgstr ""
+
+msgid "object_to_config_hash(%<type>s): vm_h=%<vm_h>s"
+msgstr ""
+
+msgid "parse_hard_disk_volume(): args=%<args>s"
+msgstr ""
+
+msgid "parse_typed_volume(%<type>s): args=%<args>s"
+msgstr ""
+
+msgid "parse_typed_volume(%<type>s): disk=%<disk>s"
+msgstr ""
+
+msgid "parse_typed_volumes(%<type>s): args=%<args>s"
+msgstr ""
+
+msgid "parsed_typed_volumes(%<type>s): args=%<args>s"
 msgstr ""
 
 msgid "pool_owner(%<vmid>s)"
+msgstr ""
+
+msgid "remove CDROM"
+msgstr ""
+
+msgid "remove Cloud-init"
+msgstr ""
+
+msgid "remove Hard disk"
+msgstr ""
+
+msgid "remove mount point"
 msgstr ""
 
 msgid "remove network interface"
@@ -395,6 +575,30 @@ msgid "remove storage volume"
 msgstr "retirer le stockage de volume"
 
 msgid "remove_vm_from_pool(%<poolid>s, %<vmid>s)"
+msgstr ""
+
+msgid "save_vm(%<vmid>s) volumes_attributes=%<volumes_attributes>s"
+msgstr ""
+
+msgid "save_volume(%<vmid>s) volume_attributes=%<volume_attributes>s"
+msgstr ""
+
+msgid "storages(): node_id %<node_id>s type %<type>s"
+msgstr ""
+
+msgid "vm %<vmid>s add volume %<volume_id>s"
+msgstr ""
+
+msgid "vm %<vmid>s delete volume %<volume_id>s"
+msgstr ""
+
+msgid "vm %<vmid>s extend volume %<volume_id>s to %<extension>s"
+msgstr ""
+
+msgid "vm %<vmid>s move volume %<volume_id>s into %<new_storage>s"
+msgstr ""
+
+msgid "vm %<vmid>s update volume %<volume_id>s to %<options>s"
 msgstr ""
 
 msgid "vmid of template vm."

@@ -36,7 +36,7 @@ module ForemanFogProxmox
 
     def hard_disk_typed_defaults(vm_type)
       options = {}
-      volume_attributes_h = { storage: storages.first.identity.to_s, size: (8 * GIGA) }
+      volume_attributes_h = { storage: storages.first.identity.to_s, size: '8' }
       case vm_type
       when 'qemu'
         controller = 'virtio'
@@ -142,21 +142,21 @@ new_attr: new_attr))
       case type
       when 'qemu'
         config_attributes = {
-          cores: 1,
-          sockets: 1,
-          kvm: 0,
+          cores: '1',
+          sockets: '1',
+          kvm: '0',
           vga: 'std',
-          memory: 512 * MEGA,
+          memory: '1024',
           ostype: 'l26',
           cpu: 'cputype=kvm64',
           scsihw: 'virtio-scsi-pci',
-          templated: 0,
+          templated: '0',
         }
         config_attributes = config_attributes
       when 'lxc'
         config_attributes = {
-          memory: 512 * MEGA,
-          templated: 0,
+          memory: '1024',
+          templated: '0',
         }
       end
       config_attributes
@@ -198,6 +198,8 @@ new_attr_type: new_attr_type))
       logger.debug(format(_('new_typed_vm(%<type>s): options=%<options>s'), type: type, options: options))
       vm_h = parse_typed_vm(options, type).deep_symbolize_keys
       logger.debug(format(_('new_typed_vm(%<type>s): vm_h=%<vm_h>s'), type: type, vm_h: vm_h))
+      vm_h = vm_h.merge(vm_typed_instance_defaults(type)) if vm_h.empty?
+      logger.debug(format(_('new_typed_vm(%<type>s) with vm_typed_instance_defaults: vm_h=%<vm_h>s'), type: type, vm_h: vm_h))
       node.send(vm_collection(type)).new(vm_h)
     end
   end

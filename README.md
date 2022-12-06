@@ -162,7 +162,7 @@ gem 'simplecov' # test
 gem install bundler
 # prerequisites libraries on Ubuntu OS:
 # sudo apt install postgresql-client-13 libpq-dev libsystemd-dev
-bundle config set without 'libvirt ovirt mysql2'
+bundle config set without 'libvirt ovirt'
 bundle install
 ```
 

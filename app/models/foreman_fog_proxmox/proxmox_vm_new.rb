@@ -198,6 +198,7 @@ new_attr_type: new_attr_type))
       logger.debug(format(_('new_typed_vm(%<type>s): options=%<options>s'), type: type, options: options))
       vm_h = parse_typed_vm(options, type).deep_symbolize_keys
       logger.debug(format(_('new_typed_vm(%<type>s): vm_h=%<vm_h>s'), type: type, vm_h: vm_h))
+
       vm_h = vm_h.merge(vm_typed_instance_defaults(type)) if vm_h.empty?
       logger.debug(format(_('new_typed_vm(%<type>s) with vm_typed_instance_defaults: vm_h=%<vm_h>s'), type: type, vm_h: vm_h))
       node.send(vm_collection(type)).new(vm_h)

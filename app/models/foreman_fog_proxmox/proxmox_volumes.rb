@@ -36,7 +36,7 @@ module ForemanFogProxmox
     def volume_options(vm, id, volume_attributes)
       options = {}
       options.store(:mp, volume_attributes['mp']) if vm.container? && id != 'rootfs'
-      options.store(:cache, volume_attributes['cache']) unless vm.container?
+      options.store(:cache, volume_attributes['cache']) unless vm.container? || volume_attributes['cache'].empty?
       options
     end
 
@@ -59,9 +59,9 @@ module ForemanFogProxmox
     end
 
     def extend_volume(vm, id, diff_size)
-      extension = '+' + (diff_size / GIGA).to_s + 'G'
-      logger.info(format(_('vm %<vmid>s extend volume %<volume_id>s to %<extension>s'), vmid: vm.identity,
-volume_id: id, extension: extension))
+      extension = '+' + diff_size.to_s + 'G'
+      logger.info(format(_('vm %<vmid>s extend volume %<volume_id>s to %<extension>s'),
+        vmid: vm.identity, volume_id: id, extension: extension))
       vm.extend(id, extension)
     end
 
@@ -85,11 +85,13 @@ volume_id: disk.id, options: options))
       if volume_type?(volume_attributes, 'cdrom')
         update_cdrom(vm, disk, volume_attributes)
       elsif volume_type?(volume_attributes, 'hard_disk')
-        diff_size = volume_attributes['size'].to_i - disk.size if volume_attributes['size'] && disk.size
+        diff_size = volume_attributes['size'].to_i - disk.size.to_i if volume_attributes['size'] && disk.size
         unless diff_size >= 0
           raise ::Foreman::Exception,
             format(_('Unable to shrink %<id>s size. Proxmox allows only increasing size.'), id: id)
         end
+        diff_size = volume_attributes['size'].to_i - disk.size.to_i if volume_attributes['size'] && disk.size
+        raise ::Foreman::Exception, format(_('Unable to shrink %<id>s size. Proxmox allows only increasing size.'), id: id) unless diff_size >= 0
 
         new_storage = volume_attributes['storage']
 
@@ -104,7 +106,13 @@ volume_id: disk.id, options: options))
     end
 
     def volume_exists?(vm, volume_attributes)
-      vm.attributes.key?(volume_attributes['id'])
+      disk = vm.config.disks.get(volume_attributes['id'])
+      exists = false
+      return exists unless disk
+
+      exists = !volume_attributes['volid'].empty? if disk.hard_disk? || disk.cloud_init?
+      exists = !volume_attributes['cdrom'].empty? if disk.cdrom?
+      exists
     end
 
     def volume_to_delete?(volume_attributes)
@@ -127,7 +135,7 @@ volume_id: disk.id, options: options))
       if volume_type?(volume_attributes, 'hard_disk')
         options = volume_options(vm, id, volume_attributes)
         disk_attributes[:storage] = volume_attributes['storage']
-        disk_attributes[:size] = (volume_attributes['size'].to_i / GIGA).to_s
+        disk_attributes[:size] = volume_attributes['size']
       elsif volume_type?(volume_attributes, 'cdrom')
         disk_attributes[:volid] = volume_attributes[:iso]
       elsif volume_type?(volume_attributes, 'cloud_init')

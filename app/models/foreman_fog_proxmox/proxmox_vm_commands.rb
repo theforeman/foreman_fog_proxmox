@@ -44,12 +44,12 @@ module ForemanFogProxmox
       else
         convert_sizes(args)
         remove_volume_keys(args)
-        logger.warn(format(_('create vm: args=%<args>s'), args: args))
+        logger.warn("create vm: args=#{args}")
         vm = node.send(vm_collection(type)).create(parse_typed_vm(args, type))
         start_on_boot(vm, args)
       end
     rescue StandardError => e
-      logger.warn(format(_('failed to create vm: %<e>s'), e: e))
+      logger.warn("failed to create vm: #{e}")
       destroy_vm client.identity + '_' + vm.id if vm
       raise e
     end
@@ -98,8 +98,7 @@ module ForemanFogProxmox
         )
         config_attributes = compute_config_attributes(parsed_attr)
         volumes_attributes = new_attributes['volumes_attributes']
-        logger.debug(format(_('save_vm(%<vmid>s) volumes_attributes=%<volumes_attributes>s'), vmid: uuid,
-volumes_attributes: volumes_attributes))
+        logger.debug("save_vm(#{uuid}) volumes_attributes=#{volumes_attributes}")
         volumes_attributes&.each_value { |volume_attributes| save_volume(vm, volume_attributes) }
         vm.update(config_attributes[:config_attributes])
         poolid = new_attributes['pool'] if new_attributes.key?('pool')

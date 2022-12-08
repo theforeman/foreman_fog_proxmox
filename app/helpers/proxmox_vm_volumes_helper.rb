@@ -38,7 +38,7 @@ module ProxmoxVmVolumesHelper
   end
 
   def parsed_typed_volumes(args, type, parsed_vm)
-    logger.debug(format(_('parsed_typed_volumes(%<type>s): args=%<args>s'), args: args, type: type))
+    logger.debug("parsed_typed_volumes(#{type}): args=#{args}")
     volumes_attributes = args['volumes_attributes']
     unless ForemanFogProxmox::Value.empty?(args['config_attributes'])
       volumes_attributes ||= args['config_attributes']['volumes_attributes']
@@ -72,12 +72,12 @@ module ProxmoxVmVolumesHelper
   end
 
   def parse_typed_volume(args, type)
-    logger.debug(format(_('parse_typed_volume(%<type>s): args=%<args>s'), args: args, type: type))
+    logger.debug("parse_typed_volume(#{type}): args=#{args}")
     disk = parse_hard_disk_volume(args) if volume_type?(args,
       'hard_disk') || volume_type?(args, 'mp') || volume_type?(args, 'rootfs')
     disk = parse_server_cloudinit(args) if volume_type?(args, 'cloud_init')
     disk = parse_server_cdrom(args) if volume_type?(args, 'cdrom')
-    logger.debug(format(_('parse_typed_volume(%<type>s): disk=%<disk>s'), disk: disk, type: type))
+    logger.debug("parse_typed_volume(#{type}): disk=#{disk}")
     Fog::Proxmox::DiskHelper.flatten(disk) unless disk.empty?
   end
 
@@ -87,7 +87,7 @@ module ProxmoxVmVolumesHelper
   end
 
   def parse_typed_volumes(args, type)
-    logger.debug(format(_('parse_typed_volumes(%<type>s): args=%<args>s'), args: args, type: type))
+    logger.debug("parse_typed_volumes(#{type}): args=#{args}")
     volumes = []
     args&.each_value { |value| add_typed_volume(volumes, value, type) }
     volumes

@@ -112,8 +112,7 @@ module ForemanFogProxmox
       interfaces_attributes = []
       interfaces_attributes.push(interface_typed_defaults(type))
       new_attr = new_attr.merge(interfaces_attributes: interfaces_attributes.map.with_index.to_h.invert)
-      logger.debug(format(_('add_default_typed_interface(%<type>s) to new_attr=%<new_attr>s'), type: type,
-new_attr: new_attr))
+      logger.debug("add_default_typed_interface(#{type}) to new_attr=#{new_attr}")
       new_attr
     end
 
@@ -122,8 +121,7 @@ new_attr: new_attr))
       volumes_attributes.push(hard_disk_typed_defaults('qemu'))
       volumes_attributes.push(hard_disk_typed_defaults('lxc'))
       new_attr = new_attr.merge(volumes_attributes: volumes_attributes.map.with_index.to_h.invert)
-      logger.debug(format(_('add_default_typed_volume(%<type>s) to new_attr=%<new_attr>s'), type: type,
-new_attr: new_attr))
+      logger.debug("add_default_typed_volume(#{type}) to new_attr=#{new_attr}")
       new_attr
     end
 
@@ -191,13 +189,12 @@ new_attr: new_attr))
       new_attr_type = new_attr['type']
       new_attr_type ||= new_attr['config_attributes']['type'] if new_attr.key?('config_attributes')
       new_attr_type ||= type
-      logger.debug(format(_('new_typed_vm(%<type>s): new_attr_type=%<new_attr_type>s'), type: type,
-new_attr_type: new_attr_type))
-      logger.debug(format(_('new_typed_vm(%<type>s): new_attr=%<new_attr>s'), type: type, new_attr: new_attr))
+      logger.debug("new_typed_vm(#{type}): new_attr_type=#{new_attr_type}")
+      logger.debug("new_typed_vm(#{type}): new_attr=#{new_attr}'")
       options = !new_attr.key?('vmid') || ForemanFogProxmox::Value.empty?(new_attr['vmid']) ? vm_typed_instance_defaults(type).merge(new_attr).merge(type: type) : new_attr
-      logger.debug(format(_('new_typed_vm(%<type>s): options=%<options>s'), type: type, options: options))
+      logger.debug("new_typed_vm(#{type}): options=#{options}")
       vm_h = parse_typed_vm(options, type).deep_symbolize_keys
-      logger.debug(format(_('new_typed_vm(%<type>s): vm_h=%<vm_h>s'), type: type, vm_h: vm_h))
+      logger.debug("new_typed_vm(#{type}): vm_h=#{vm_h}")
       node.send(vm_collection(type)).new(vm_h)
     end
   end

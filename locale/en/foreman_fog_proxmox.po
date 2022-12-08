@@ -20,6 +20,24 @@ msgstr ""
 msgid "%<s>s console is not supported at this time"
 msgstr ""
 
+msgid "%<vm>s is now %<vm_state>s"
+msgstr ""
+
+msgid "Access ticket fields"
+msgstr ""
+
+msgid "Add CD-ROM"
+msgstr ""
+
+msgid "Add Cloud-init"
+msgstr ""
+
+msgid "Add Hard Disk"
+msgstr ""
+
+msgid "Add Mount Point"
+msgstr ""
+
 msgid "Add Volume"
 msgstr ""
 
@@ -29,7 +47,19 @@ msgstr ""
 msgid "Architecture"
 msgstr ""
 
+msgid "Associate VM"
+msgstr ""
+
+msgid "Associate VM to a Foreman host"
+msgstr ""
+
+msgid "Authentication method"
+msgstr ""
+
 msgid "Average load (x100)"
+msgstr ""
+
+msgid "BIOS"
 msgstr ""
 
 msgid "Boot device order"
@@ -41,16 +71,16 @@ msgstr ""
 msgid "CD-ROM"
 msgstr ""
 
-msgid "CDROM"
+msgid "CIDR IPv4"
 msgstr ""
 
-msgid "CIDR IPv4 prefix"
-msgstr ""
-
-msgid "CIDR IPv6 prefix"
+msgid "CIDR IPv6"
 msgstr ""
 
 msgid "CPU"
+msgstr ""
+
+msgid "CPU Flags"
 msgstr ""
 
 msgid "CPU limit"
@@ -71,7 +101,22 @@ msgstr ""
 msgid "Change the password"
 msgstr ""
 
+msgid "Click Test connection button before changing it"
+msgstr ""
+
+msgid "Click Test connection button to check token"
+msgstr ""
+
+msgid "Cloud-init"
+msgstr ""
+
 msgid "Cluster nodes"
+msgstr ""
+
+msgid "Common fields"
+msgstr ""
+
+msgid "Console"
 msgstr ""
 
 msgid "Controller"
@@ -92,7 +137,13 @@ msgstr ""
 msgid "DNS"
 msgstr ""
 
+msgid "DNS domain"
+msgstr ""
+
 msgid "DNS server"
+msgstr ""
+
+msgid "DNS servers"
 msgstr ""
 
 msgid "Description"
@@ -104,9 +155,6 @@ msgstr ""
 msgid "Disconnect"
 msgstr ""
 
-msgid "Disk"
-msgstr ""
-
 msgid "Does this image support user data input (e.g. via cloud-init)?"
 msgstr ""
 
@@ -116,19 +164,19 @@ msgstr ""
 msgid "Enable/disable KVM hardware virtualization"
 msgstr ""
 
+msgid "Error - %<message>s"
+msgstr ""
+
 msgid "Extended"
 msgstr ""
 
-msgid "Failed retrieving proxmox compute client caused by %<e>s"
-msgstr ""
-
-msgid "Failed retrieving proxmox identity client caused by %<e>s"
-msgstr ""
-
-msgid "Failed retrieving proxmox network client caused by %<e>s"
-msgstr ""
-
 msgid "Failed retrieving proxmox server vm by vmid=%<vmid>s"
+msgstr ""
+
+msgid "Failed to acquire IP addresses from compute resource for %<name>s"
+msgstr ""
+
+msgid "Failed to set console: %s"
 msgstr ""
 
 msgid "Failed to undo update compute %<compute_resource>s instance %<name>s: %<e>s"
@@ -138,9 +186,6 @@ msgid "Failed to update a compute %<compute_resource>s instance %<name>s: %<e>s"
 msgstr ""
 
 msgid "Firewall"
-msgstr ""
-
-msgid "Floppy disk (a), hard disk (c), cdrom (d), network (n). Default cdn"
 msgstr ""
 
 msgid "Foreman Fog Proxmox widget"
@@ -158,7 +203,16 @@ msgstr ""
 msgid "General"
 msgstr ""
 
+msgid "Hard disk"
+msgstr ""
+
+msgid "Host"
+msgstr ""
+
 msgid "Hostname"
+msgstr ""
+
+msgid "Identifier"
 msgstr ""
 
 msgid "Image"
@@ -170,16 +224,22 @@ msgstr ""
 msgid "Image VMID"
 msgstr ""
 
-msgid "KVM"
+msgid "Import as managed Host"
 msgstr ""
 
-msgid "Keyboard"
+msgid "Import as unmanaged Host"
+msgstr ""
+
+msgid "KVM"
 msgstr ""
 
 msgid "Main option"
 msgid_plural "Main options"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "Media"
+msgstr ""
 
 msgid "Memory"
 msgstr ""
@@ -197,6 +257,9 @@ msgid "Name"
 msgstr ""
 
 msgid "Nic"
+msgstr ""
+
+msgid "No host found to associate this VM with"
 msgstr ""
 
 msgid "Node"
@@ -223,7 +286,10 @@ msgstr ""
 msgid "Optionally provide a CA, or a correctly ordered CA chain. If left blank, disable ssl_verify_peer."
 msgstr ""
 
-msgid "PCID"
+msgid "Order your devices, e.g. order=net0;ide2;scsi0. Default empty (any)"
+msgstr ""
+
+msgid "Password"
 msgstr ""
 
 msgid "Password to authenticate with - used for SSH finish step."
@@ -244,9 +310,6 @@ msgstr ""
 msgid "Proxmox Node Statistics: %s"
 msgstr ""
 
-msgid "Proxmox compute resource version is %<version>s"
-msgstr ""
-
 msgid "Proxmox version %<version>s is not semver suitable"
 msgstr ""
 
@@ -256,9 +319,6 @@ msgstr ""
 msgid "Rate limit"
 msgstr ""
 
-msgid "Renew expired token ?"
-msgstr ""
-
 msgid "Root password"
 msgstr ""
 
@@ -266,6 +326,12 @@ msgid "Rootfs"
 msgstr ""
 
 msgid "SCSI Controller"
+msgstr ""
+
+msgid "SSH public key"
+msgstr ""
+
+msgid "SSL fields"
 msgstr ""
 
 msgid "SSL verify peer"
@@ -283,9 +349,6 @@ msgstr ""
 msgid "Sockets"
 msgstr ""
 
-msgid "Spectre-CTRL"
-msgstr ""
-
 msgid "Start after creation?"
 msgstr ""
 
@@ -301,22 +364,16 @@ msgstr ""
 msgid "Template storage"
 msgstr ""
 
-msgid "Test failed"
-msgstr ""
-
 msgid "The user that is used to ssh into the instance, normally cloud-user, ubuntu, root etc"
 msgstr ""
 
 msgid "Time"
 msgstr ""
 
-msgid "Token expires on"
-msgstr ""
-
-msgid "Token has expired?"
-msgstr ""
-
 msgid "Type"
+msgstr ""
+
+msgid "Type %<type>s, node %<node>s, %<cpus>s CPUs and %<memory>s MB memory"
 msgstr ""
 
 msgid "URL"
@@ -331,6 +388,21 @@ msgstr ""
 msgid "Uptime"
 msgstr ""
 
+msgid "User"
+msgstr ""
+
+msgid "User token expires"
+msgstr ""
+
+msgid "User token fields"
+msgstr ""
+
+msgid "User token id"
+msgstr ""
+
+msgid "User token value"
+msgstr ""
+
 msgid "VCPUs"
 msgstr ""
 
@@ -343,19 +415,31 @@ msgstr ""
 msgid "VM ID"
 msgstr ""
 
+msgid "VM already associated with a host"
+msgstr ""
+
+msgid "VM associated to host %s"
+msgstr ""
+
 msgid "Version"
 msgstr ""
 
 msgid "X509 Certification Authorities"
 msgstr ""
 
+msgid "add new cd-rom"
+msgstr ""
+
+msgid "add new cloud-init"
+msgstr ""
+
+msgid "add new hard disk"
+msgstr ""
+
+msgid "add new mount point"
+msgstr ""
+
 msgid "add new storage volume"
-msgstr ""
-
-msgid "add_vm_to_pool(%<poolid>s, %<vmid>s)"
-msgstr ""
-
-msgid "create_vm(): clone %<image_id>s in %<vmid>s"
 msgstr ""
 
 msgid "e.g. /path/to/"
@@ -367,34 +451,43 @@ msgstr ""
 msgid "e.g. root@pam"
 msgstr ""
 
-msgid "failed to create vm: %<e>s"
+msgid "eth[n] with n integer >= 0, e.g. eth0"
 msgstr ""
 
-msgid "found vm: %<vmid>s member of pool: %<poolid>s"
+msgid "failed to %<action>s %<vm>s"
+msgstr ""
+
+msgid "failed to save %<name>s"
+msgstr ""
+
+msgid "integer within [0..128]"
+msgstr ""
+
+msgid "integer within [0..32]"
 msgstr ""
 
 msgid "invalid vmid=%<vmid>s"
 msgstr ""
 
-msgid "new_container_vm() vm.config=%<config>s"
+msgid "net[n] with n integer >= 0, e.g. net0"
 msgstr ""
 
-msgid "new_server_vm() vm.config=%<config>s"
+msgid "remove CDROM"
 msgstr ""
 
-msgid "new_vm() vm.config=%<config>s"
+msgid "remove Cloud-init"
 msgstr ""
 
-msgid "pool_owner(%<vmid>s)"
+msgid "remove Hard disk"
+msgstr ""
+
+msgid "remove mount point"
 msgstr ""
 
 msgid "remove network interface"
 msgstr ""
 
 msgid "remove storage volume"
-msgstr ""
-
-msgid "remove_vm_from_pool(%<poolid>s, %<vmid>s)"
 msgstr ""
 
 msgid "vmid of template vm."

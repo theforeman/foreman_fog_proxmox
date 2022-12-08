@@ -266,7 +266,7 @@ bundle exec bin/rake plugin:assets:precompile[foreman_fog_proxmox]
 * In foreman directory, after you modify foreman_fog_proxmox translations (language, texts in new files, etc) you have to compile it:
 
 ```shell
-bundle exec bin/rake plugin:gettext[foreman_fog_proxmox]
+bundle exec bin/rake plugin:gettext\[foreman_fog_proxmox\]
 ```
 
 * In foreman directory, run in a new terminal the webpack-dev-server:

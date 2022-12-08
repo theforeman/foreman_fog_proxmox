@@ -153,7 +153,7 @@ module ForemanFogProxmox
     rescue Excon::Errors::Unauthorized => e
       raise ::Foreman::Exception, 'User token expired' if token_expired?(e)
     rescue StandardError => e
-      logger.warn(format(_('failed to create compute client: %<e>s'), e: e))
+      logger.warn("failed to create compute client: #{e}")
       raise e
     end
 
@@ -162,7 +162,7 @@ module ForemanFogProxmox
     rescue Excon::Errors::Unauthorized => e
       raise ::Foreman::Exception, 'User token expired' if token_expired?(e)
     rescue StandardError => e
-      logger.warn(format(_('failed to create identity client: %<e>s'), e: e))
+      logger.warn("failed to create identity client: #{e}")
       raise e
     end
 
@@ -171,7 +171,7 @@ module ForemanFogProxmox
     rescue Excon::Errors::Unauthorized => e
       raise ::Foreman::Exception, 'User token expired' if token_expired?(e)
     rescue StandardError => e
-      logger.warn(format(_('failed to create network client: %<e>s'), e: e))
+      logger.warn("failed to create network client: #{e}")
       raise e
     end
 

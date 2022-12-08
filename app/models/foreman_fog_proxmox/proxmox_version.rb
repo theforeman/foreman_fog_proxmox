@@ -22,7 +22,7 @@ require 'foreman_fog_proxmox/semver'
 module ForemanFogProxmox
   module ProxmoxVersion
     def version_suitable?
-      logger.debug(format(_('Proxmox compute resource version is %<version>s'), version: version))
+      logger.debug(format(('Proxmox compute resource version is %<version>s'), version: version))
       unless ForemanFogProxmox::Semver.semver?(version)
         raise ::Foreman::Exception,
           format(_('Proxmox version %<version>s is not semver suitable'),
@@ -38,7 +38,7 @@ module ForemanFogProxmox
     rescue ::Foreman::Exception => e
       return 'Unkown' if e.message == 'User token expired'
     rescue StandardError => e
-      logger.warn(format(_('failed to get identity client version: %<e>s'), e: e))
+      logger.warn(format(('failed to get identity client version: %<e>s'), e: e))
       raise e
     end
   end

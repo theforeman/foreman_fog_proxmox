@@ -27,7 +27,7 @@ module ForemanFogProxmox
       node = client.nodes.get node_id
       node ||= default_node
       storage = node.storages.get storage_id if storage_id
-      logger.debug(format(_('images_by_storage(): node_id %<node_id>s storage_id %<storage_id>s type %<type>s'),
+      logger.debug(format(('images_by_storage(): node_id %<node_id>s storage_id %<storage_id>s type %<type>s'),
         node_id: node_id, storage_id: storage_id, type: type))
       storage.volumes.list_by_content_type(type).sort_by(&:volid) if storage
     end
@@ -59,7 +59,7 @@ module ForemanFogProxmox
     end
 
     def clone_from_image(image_id, args, vmid)
-      logger.debug(format(_('create_vm(): clone %<image_id>s in %<vmid>s'), image_id: image_id, vmid: vmid))
+      logger.debug(format(('create_vm(): clone %<image_id>s in %<vmid>s'), image_id: image_id, vmid: vmid))
       image = find_vm_by_uuid(image_id)
       image.clone(vmid)
       clone = find_vm_by_uuid(id.to_s + '_' + vmid.to_s)

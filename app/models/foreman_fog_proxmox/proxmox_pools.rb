@@ -25,21 +25,21 @@ module ForemanFogProxmox
     end
 
     def pool_owner(vm)
-      logger.debug(format('pool_owner(%<vmid>s)', vmid: vm&.vmid))
+      logger.debug("pool_owner(#{vmid})")
       pools_owners = pools.select { |pool| pool.has_server?(vm&.vmid) }
       pool = pools_owners.first
-      logger.debug(format('found vm: %<vmid>s member of pool: %<poolid>s', vmid: vm&.vmid, poolid: pool&.poolid))
+      logger.debug("found vm: #{vmid} member of pool: #{poolid}")
       vm&.config&.pool = pool&.poolid
     end
 
     def add_vm_to_pool(poolid, vmid)
-      logger.debug(format('add_vm_to_pool(%<poolid>s, %<vmid>s)', poolid: poolid, vmid: vmid))
+      logger.debug("add_vm_to_pool(#{poolid}, #{vmid})")
       pool = identity_client.pools.get poolid
       pool&.add_server vmid
     end
 
     def remove_vm_from_pool(poolid, vmid)
-      logger.debug(format('remove_vm_from_pool(%<poolid>s, %<vmid>s)', poolid: poolid, vmid: vmid))
+      logger.debug("remove_vm_from_pool(#{poolid}, #{vmid})")
       pool = identity_client.pools.get poolid
       pool&.remove_server vmid
     end

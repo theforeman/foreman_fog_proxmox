@@ -25,7 +25,7 @@ module ForemanFogProxmox
     include ProxmoxVmHelper
 
     def delete_volume(vm, id, volume_attributes)
-      logger.info(format('vm %<vmid>s delete volume %<volume_id>s', vmid: vm.identity, volume_id: id))
+      logger.info("vm #{vmid} delete volume #{volume_id}")
       vm.detach(id)
       return unless volume_type?(volume_attributes, 'hard_disk')
 
@@ -60,21 +60,18 @@ module ForemanFogProxmox
 
     def extend_volume(vm, id, diff_size)
       extension = '+' + (diff_size / GIGA).to_s + 'G'
-      logger.info(format('vm %<vmid>s extend volume %<volume_id>s to %<extension>s', vmid: vm.identity,
-volume_id: id, extension: extension))
+      logger.info("vm #{vmid} extend volume #{volume_id} to #{extension}")
       vm.extend(id, extension)
     end
 
     def move_volume(id, vm, new_storage)
-      logger.info(format('vm %<vmid>s move volume %<volume_id>s into %<new_storage>s', vmid: vm.identity,
-volume_id: id, new_storage: new_storage))
+      logger.info("vm #{vmid} move volume #{volume_id} into #{new_storage}")
       vm.move(id, new_storage)
     end
 
     def update_options(disk, vm, volume_attributes)
       options = volume_options(vm, disk.id, volume_attributes) if volume_type?(volume_attributes, 'hard_disk')
-      logger.info(format('vm %<vmid>s update volume %<volume_id>s to %<options>s', vmid: vm.identity,
-volume_id: disk.id, options: options))
+      logger.info("vm #{vmid} update volume #{volume_id} to #{options}")
       new_disk = { id: disk.id }
       new_disk[:volid] = disk.volid
       vm.attach(new_disk, options)
@@ -134,15 +131,13 @@ volume_id: disk.id, options: options))
         disk_attributes[:storage] = volume_attributes['storage']
         disk_attributes[:volid] = "#{volume_attributes['storage']}:cloudinit"
       end
-      logger.info(format('vm %<vmid>s add volume %<volume_id>s', vmid: vm.identity, volume_id: id))
-      logger.debug(format('add_volume(%<vmid>s) disk_attributes=%<disk_attributes>s', vmid: vm.identity,
-disk_attributes: disk_attributes))
+      logger.info("vm #{vmid} add volume #{volume_id}")
+      logger.debug("add_volume(#{vmid}) disk_attributes=#{disk_attributes}")
       vm.attach(disk_attributes, options)
     end
 
     def save_volume(vm, volume_attributes)
-      logger.debug(format('save_volume(%<vmid>s) volume_attributes=%<volume_attributes>s', vmid: vm.identity,
-volume_attributes: volume_attributes))
+      logger.debug("save_volume(#{vmid}) volume_attributes=#{volume_attributes}")
       id = extract_id(vm, volume_attributes)
       if volume_exists?(vm, volume_attributes)
         if volume_to_delete?(volume_attributes)

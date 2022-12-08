@@ -39,7 +39,7 @@ module ProxmoxVmConfigHelper
     end
     vm_h = vm_h.merge(main)
     vm_h = vm_h.merge('config_attributes': config)
-    logger.debug(format('object_to_config_hash(%<type>s): vm_h=%<vm_h>s', type: type, vm_h: vm_h))
+    logger.debug("object_to_config_hash(#{type}): vm_h=#{vm_h}")
     vm_h
   end
 

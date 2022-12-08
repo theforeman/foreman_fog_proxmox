@@ -31,7 +31,7 @@ module ForemanFogProxmox
       node = client.nodes.get node_id
       node ||= default_node
       storages = node.storages.list_by_content_type type
-      logger.debug(format(('storages(): node_id %<node_id>s type %<type>s'), node_id: node_id, type: type))
+      logger.debug(format('storages(): node_id %<node_id>s type %<type>s', node_id: node_id, type: type))
       storages.sort_by(&:storage)
     end
 

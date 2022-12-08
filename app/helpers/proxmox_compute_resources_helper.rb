@@ -23,7 +23,7 @@ module ProxmoxComputeResourcesHelper
   rescue ::Foreman::Exception => e
     'Has already expired. Please edit the compute resource to set a new valid one.' if e.message == 'User token expired'
   rescue StandardError => e
-    logger.warn(format(('failed to get identity client version: %<e>s'), e: e))
+    logger.warn(format('failed to get identity client version: %<e>s', e: e))
     raise e
   else
     return 'Never' if expire == 0
@@ -36,7 +36,7 @@ module ProxmoxComputeResourcesHelper
   rescue ::Foreman::Exception => e
     return [] if e.message == 'User token expired'
   rescue StandardError => e
-    logger.warn(format(('failed to get cluster nodes: %<e>s'), e: e))
+    logger.warn(format('failed to get cluster nodes: %<e>s', e: e))
     raise e
   else
     nodes

@@ -98,7 +98,7 @@ module ForemanFogProxmox
         )
         config_attributes = compute_config_attributes(parsed_attr)
         volumes_attributes = new_attributes['volumes_attributes']
-        logger.debug("save_vm(#{vmid}) volumes_attributes=#{volumes_attributes}")
+        logger.debug("save_vm(#{uuid}) volumes_attributes=#{volumes_attributes}")
         volumes_attributes&.each_value { |volume_attributes| save_volume(vm, volume_attributes) }
         vm.update(config_attributes[:config_attributes])
         poolid = new_attributes['pool'] if new_attributes.key?('pool')

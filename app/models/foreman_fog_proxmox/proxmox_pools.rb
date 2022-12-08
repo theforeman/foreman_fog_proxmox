@@ -25,10 +25,10 @@ module ForemanFogProxmox
     end
 
     def pool_owner(vm)
-      logger.debug("pool_owner(#{vmid})")
+      logger.debug("pool_owner(#{vm&.vmid})")
       pools_owners = pools.select { |pool| pool.has_server?(vm&.vmid) }
       pool = pools_owners.first
-      logger.debug("found vm: #{vmid} member of pool: #{poolid}")
+      logger.debug("found vm: #{vm&.vmid} member of pool: #{pool&.poolid}")
       vm&.config&.pool = pool&.poolid
     end
 

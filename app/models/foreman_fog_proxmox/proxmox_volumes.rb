@@ -25,7 +25,7 @@ module ForemanFogProxmox
     include ProxmoxVmHelper
 
     def delete_volume(vm, id, volume_attributes)
-      logger.info("vm #{vmid} delete volume #{volume_id}")
+      logger.info("vm #{vm.identity} delete volume #{id}")
       vm.detach(id)
       return unless volume_type?(volume_attributes, 'hard_disk')
 
@@ -60,18 +60,18 @@ module ForemanFogProxmox
 
     def extend_volume(vm, id, diff_size)
       extension = '+' + (diff_size / GIGA).to_s + 'G'
-      logger.info("vm #{vmid} extend volume #{volume_id} to #{extension}")
+      logger.info("vm #{vm.identity} extend volume #{id} to #{extension}")
       vm.extend(id, extension)
     end
 
     def move_volume(id, vm, new_storage)
-      logger.info("vm #{vmid} move volume #{volume_id} into #{new_storage}")
+      logger.info("vm #{vm.identity} move volume #{id} into #{new_storage}")
       vm.move(id, new_storage)
     end
 
     def update_options(disk, vm, volume_attributes)
       options = volume_options(vm, disk.id, volume_attributes) if volume_type?(volume_attributes, 'hard_disk')
-      logger.info("vm #{vmid} update volume #{volume_id} to #{options}")
+      logger.info("vm #{vm.identity} update volume #{disk.id} to #{options}")
       new_disk = { id: disk.id }
       new_disk[:volid] = disk.volid
       vm.attach(new_disk, options)
@@ -131,13 +131,13 @@ module ForemanFogProxmox
         disk_attributes[:storage] = volume_attributes['storage']
         disk_attributes[:volid] = "#{volume_attributes['storage']}:cloudinit"
       end
-      logger.info("vm #{vmid} add volume #{volume_id}")
-      logger.debug("add_volume(#{vmid}) disk_attributes=#{disk_attributes}")
+      logger.info("vm #{vm.identity} add volume #{id}")
+      logger.debug("add_volume(#{vm.identity}) disk_attributes=#{disk_attributes}")
       vm.attach(disk_attributes, options)
     end
 
     def save_volume(vm, volume_attributes)
-      logger.debug("save_volume(#{vmid}) volume_attributes=#{volume_attributes}")
+      logger.debug("save_volume(#{vm.identity}) volume_attributes=#{volume_attributes}")
       id = extract_id(vm, volume_attributes)
       if volume_exists?(vm, volume_attributes)
         if volume_to_delete?(volume_attributes)

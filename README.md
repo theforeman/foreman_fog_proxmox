@@ -2,7 +2,7 @@
 
 ![CI](https://github.com/theforeman/foreman_fog_proxmox/workflows/CI/badge.svg)
 [![Maintainability](https://api.codeclimate.com/v1/badges/922162c278e0fa9207ba/maintainability)](https://codeclimate.com/github/theforeman/foreman_fog_proxmox/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/922162c278e0fa9207ba/test_coverage)](https://codeclimate.com/github/theforeman/foreman_fog_proxmox/test_coverage)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/a6446cf7b1cf09b83de6/test_coverage)](https://codeclimate.com/github/theforeman/foreman_fog_proxmox/test_coverage)
 [![Gem Version](https://badge.fury.io/rb/foreman_fog_proxmox.svg)](https://badge.fury.io/rb/foreman_fog_proxmox)
 
 # ForemanFogProxmox

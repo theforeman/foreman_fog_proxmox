@@ -26,9 +26,6 @@ require 'foreman_fog_proxmox/hash_collection'
 module ProxmoxVmVolumesHelper
   include ProxmoxVmCdromHelper
   include ProxmoxVmCloudinitHelper
-  KILO = 1024
-  MEGA = KILO * KILO
-  GIGA = KILO * MEGA
 
   def add_disk_options(disk, args)
     options = ForemanFogProxmox::HashCollection.new_hash_reject_keys(args,
@@ -52,12 +49,14 @@ module ProxmoxVmVolumesHelper
   end
 
   def parse_hard_disk_volume(args)
+    logger.debug(format(_('parse_hard_disk_volume(): args=%<args>s'), args: args))
     disk = {}
     disk[:id] = args['id'] if args.key?('id')
     disk[:volid] = args['volid'] if args.key?('volid')
     disk[:storage] = args['storage'].to_s if args.key?('storage')
     disk[:size] = args['size'].to_i if args.key?('size')
-    add_disk_options(disk, args)
+    add_disk_options(disk, args) unless args.key?('options')
+    disk[:options] = args['options'] if args.key?('options')
     disk.key?(:storage) ? disk : {}
   end
 
@@ -91,22 +90,6 @@ module ProxmoxVmVolumesHelper
     volumes = []
     args&.each_value { |value| add_typed_volume(volumes, value, type) }
     volumes
-  end
-
-  def convert_volumes_size(args)
-    args['volumes_attributes'].each_value do |value|
-      value['size'] = (value['size'].to_i / GIGA).to_s unless ForemanFogProxmox::Value.empty?(value['size'])
-    end
-  end
-
-  def convert_sizes(args)
-    convert_memory_size(args['config_attributes'], 'memory')
-    convert_memory_size(args['config_attributes'], 'balloon')
-    convert_memory_size(args['config_attributes'], 'shares')
-    convert_memory_size(args['config_attributes'], 'swap')
-    args['volumes_attributes'].each_value do |value|
-      value['size'] = (value['size'].to_i / GIGA).to_s unless ForemanFogProxmox::Value.empty?(value['size'])
-    end
   end
 
   def remove_volume_keys(args)

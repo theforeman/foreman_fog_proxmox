@@ -25,10 +25,6 @@ require 'foreman_fog_proxmox/hash_collection'
 
 # Convert a foreman form server hash into a fog-proxmox server attributes hash
 module ProxmoxVmConfigHelper
-  KILO = 1024
-  MEGA = KILO * KILO
-  GIGA = KILO * MEGA
-
   def object_to_config_hash(vm, type)
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
     main_a = ['vmid']
@@ -43,12 +39,6 @@ module ProxmoxVmConfigHelper
     vm_h
   end
 
-  def convert_memory_size(config_hash, key)
-    # default unit memory size is Mb
-    memory = (config_hash[key].to_i / MEGA).to_s == '0' ? config_hash[key] : (config_hash[key].to_i / MEGA).to_s
-    config_hash.store(key, memory)
-  end
-
   def general_a(type)
     general_a = ['node_id', 'type', 'config_attributes', 'volumes_attributes', 'interfaces_attributes']
     general_a += ['firmware_type', 'provision_method', 'container_volumes', 'server_volumes', 'start_after_create']
@@ -61,7 +51,7 @@ module ProxmoxVmConfigHelper
     main_a = ['name', 'type', 'node_id', 'vmid', 'interfaces', 'mount_points', 'disks']
     case type
     when 'lxc'
-      cpu_a = ['arch', 'cpulimit', 'cpuunits', 'cores', 'sockets']
+      cpu_a = ['arch', 'cpulimit', 'cpuunits']
       memory_a = ['memory', 'swap']
       ostemplate_a = ['ostemplate', 'ostemplate_storage', 'ostemplate_file']
       keys.store(:ostemplate, ostemplate_a)
@@ -76,10 +66,6 @@ module ProxmoxVmConfigHelper
     keys.store(:cpu, cpu_a)
     keys.store(:memory, memory_a)
     keys
-  end
-
-  def convert_memory_sizes(args)
-    ['memory', 'balloon', 'shares', 'swap'].each { |key| convert_memory_size(args['config_attributes'], key) }
   end
 
   def config_general_or_ostemplate_key?(key)
@@ -138,28 +124,23 @@ module ProxmoxVmConfigHelper
   end
 
   def parse_typed_memory(args, type)
-    memory = {}
     ForemanFogProxmox::HashCollection.remove_empty_values(args)
-    config_typed_keys(type)[:memory].each do |key|
-      ForemanFogProxmox::HashCollection.add_and_format_element(memory, key.to_sym, args, key, :to_i)
-    end
-    memory
+    logger.debug("parse_typed_memory(#{type}): args=#{args}")
+    args
   end
 
   def parse_typed_cpu(args, type)
     cpu = {}
     ForemanFogProxmox::HashCollection.remove_empty_values(args)
-    if type == 'qemu'
+    case type
+    when 'qemu'
       logger.debug("parse_typed_cpu(#{type}): args=#{args}")
       cpu_flattened = Fog::Proxmox::CpuHelper.flatten(args)
       cpu_flattened = args[:cpu] if cpu_flattened.empty?
       logger.debug("parse_typed_cpu(#{type}): cpu_flattened=#{cpu_flattened}")
-      ForemanFogProxmox::HashCollection.remove_empty_values(args)
-      ForemanFogProxmox::HashCollection.remove_keys(args, config_typed_keys('qemu')[:cpu])
       args.each_value(&:to_i)
       cpu = { cpu: cpu_flattened }
-    end
-    if type == 'lxc'
+    when 'lxc'
       config_typed_keys('lxc')[:cpu].each do |key|
         ForemanFogProxmox::HashCollection.add_and_format_element(cpu, key.to_sym, args, key)
       end

@@ -42,7 +42,6 @@ module ForemanFogProxmox
       if image_id
         clone_from_image(image_id, args, vmid)
       else
-        convert_sizes(args)
         remove_volume_keys(args)
         logger.warn("create vm: args=#{args}")
         vm = node.send(vm_collection(type)).create(parse_typed_vm(args, type))
@@ -91,7 +90,6 @@ module ForemanFogProxmox
       elsif vm.node_id != node_id
         vm.migrate(node_id)
       else
-        convert_memory_sizes(new_attributes)
         parsed_attr = parse_typed_vm(
           ForemanFogProxmox::HashCollection.new_hash_reject_keys(new_attributes,
             ['volumes_attributes']).merge(type: vm.type), vm.type

@@ -24,7 +24,7 @@ require 'factories/foreman_fog_proxmox/proxmox_server_mock_factory'
 require 'active_support/core_ext/hash/indifferent_access'
 
 module ForemanFogProxmox
-  class ProxmoxVmCommandsServerUpdateTest < ActiveSupport::TestCase
+  class ProxmoxVmCommandsServerUpdateCdromTest < ActiveSupport::TestCase
     include ComputeResourceTestHelpers
     include ProxmoxNodeMockFactory
     include ProxmoxServerMockFactory
@@ -42,6 +42,8 @@ module ForemanFogProxmox
         disk = mock('disk')
         disk.stubs(:storage).returns('local-lvm')
         disk.stubs(:id).returns('ide2')
+        disk.stubs(:hard_disk?).returns(false)
+        disk.stubs(:cdrom?).returns(true)
         disks.stubs(:get).returns
         config.stubs(:disks).returns(disks)
         config.stubs(:attributes).returns(:cores => '')
@@ -88,17 +90,19 @@ module ForemanFogProxmox
         config = mock('config')
         disks = mock('disks')
         disk = mock('disk')
-        disk.stubs(:size).returns(1_073_741_824)
+        disk.stubs(:size).returns('1')
+        disk.stubs(:hard_disk?).returns(false)
+        disk.stubs(:cdrom?).returns(true)
+        disk.stubs(:cloud_init?).returns(false)
         disk.stubs(:storage).returns('local-lvm')
         disk.stubs(:volid).returns('local-lvm:iso/ubuntu-20_4.iso')
         disk.stubs(:media).returns('cdrom')
         disk.stubs(:id).returns('ide2')
         disks.stubs(:get).returns(disk)
         config.stubs(:disks).returns(disks)
-        config.stubs(:attributes).returns(:cores => '')
+        config.stubs(:attributes).returns(:cores => '1', :cpulimit => '1')
         vm = mock('vm')
         vm.stubs(:identity).returns(uuid)
-        vm.stubs(:attributes).returns('ide2' => '')
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
         vm.stubs(:templated?).returns(false)
@@ -120,6 +124,7 @@ module ForemanFogProxmox
               'controller' => 'ide',
               'storage_type' => 'cdrom',
               'cdrom' => 'none',
+              'volid' => '',
             },
           },
         }.with_indifferent_access
@@ -137,13 +142,15 @@ module ForemanFogProxmox
         config = mock('config')
         disks = mock('disks')
         disk = mock('disk')
-        disk.stubs(:size).returns(1_073_741_824)
+        disk.stubs(:size).returns('1')
+        disk.stubs(:hard_disk?).returns(false)
+        disk.stubs(:cdrom?).returns(true)
+        disk.stubs(:cloud_init?).returns(false)
         disk.stubs(:storage).returns('local-lvm')
         disk.stubs(:volid).returns('local-lvm:iso/ubuntu-20_4.iso')
         disk.stubs(:media).returns('cdrom')
         disk.stubs(:id).returns('ide2')
-        disk.stubs(:attributes).returns(id: 'ide2', storage: 'local-lvm', volid: 'local-lvm:vm-100-disk-0',
-          size: 1_073_741_824)
+        disk.stubs(:attributes).returns(id: 'ide2', storage: 'local-lvm', volid: 'local-lvm:vm-100-disk-0', size: '1')
         disks.stubs(:get).returns(disk)
         config.stubs(:disks).returns(disks)
         config.stubs(:attributes).returns(:cores => '')

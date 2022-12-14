@@ -45,9 +45,9 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <% end %>
 <% end %>
 <%= field_set_tag _("Memory"), :id => "server_config_memory", :class => 'hide', :disabled => !server do %>
-  <%= byte_size_f f, :memory, :class => "input-mini", :label => _('Memory'), :label_size => "col-md-2" %>
-  <%= byte_size_f f, :balloon, :class => "input-mini", :label => _('Minimum memory'), :label_size => "col-md-2" %>
-  <%= counter_f f, :shares, :class => "input-mini", :label => _('Shares'), :label_size => "col-md-2" %>
+  <%= text_f f, :memory, :class => "input-mini", :label => _('Memory (MB)'), :label_size => "col-md-2" %>
+  <%= text_f f, :balloon, :class => "input-mini", :label => _('Minimum memory (MB)'), :label_size => "col-md-2" %>
+  <%= text_f f, :shares, :class => "input-mini", :label => _('Shares (MB)'), :label_size => "col-md-2" %>
 <% end %>
 <%= field_set_tag _("Operating System"), :id => "server_config_os", :class => 'hide', :disabled => !server do %>
   <%= select_f f, :ostype, proxmox_operating_systems_map, :id, :name, { :include_blank => true }, :label => _('OS type'), :label_size => "col-md-2" %>

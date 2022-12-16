@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: foreman_fog_proxmox 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-07 18:29+0100\n"
-"PO-Revision-Date: 2022-12-07 18:29+0100\n"
+"POT-Creation-Date: 2022-12-16 17:29+0100\n"
+"PO-Revision-Date: 2022-12-16 17:29+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -89,6 +89,10 @@ msgstr ""
 msgid "Change the password"
 msgstr ""
 
+#: ../app/helpers/proxmox_vm_volumes_helper.rb:52
+msgid "parse_hard_disk_volume(): args=%<args>s"
+msgstr ""
+
 #: ../app/models/concerns/fog_extensions/proxmox/server.rb:62
 msgid "Type %<type>s, node %<node>s, %<cpus>s CPUs and %<memory>s MB memory"
 msgstr ""
@@ -129,10 +133,15 @@ msgstr ""
 msgid "invalid vmid=%<vmid>s"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox_vm_queries.rb:79
+#: ../app/models/foreman_fog_proxmox/proxmox_vm_new.rb:199
+msgid "new_typed_vm(%<type>s) with vm_typed_instance_defaults: vm_h=%<vm_h>s"
+msgstr ""
+
+#: ../app/models/foreman_fog_proxmox/proxmox_vm_queries.rb:78
 msgid "Failed retrieving proxmox server vm by vmid=%<vmid>s"
 msgstr ""
 
+#: ../app/models/foreman_fog_proxmox/proxmox_volumes.rb:88
 #: ../app/models/foreman_fog_proxmox/proxmox_volumes.rb:91
 msgid "Unable to shrink %<id>s size. Proxmox allows only increasing size."
 msgstr ""
@@ -365,10 +374,8 @@ msgstr ""
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_advanced.html.erb:10
 #: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:15
-#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:16
 #: ../app/views/compute_resources_vms/form/proxmox/server/_advanced.html.erb:10
 #: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:32
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:33
 #: ../app/views/compute_resources_vms/index/_proxmox.html.erb:10
 msgid "Memory"
 msgstr ""
@@ -419,8 +426,14 @@ msgid "CPU units"
 msgstr ""
 
 #:
+#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:16
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:33
+msgid "Memory (MB)"
+msgstr ""
+
+#:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:17
-msgid "Swap"
+msgid "Swap (MB)"
 msgstr ""
 
 #:
@@ -598,7 +611,7 @@ msgstr ""
 #: ../app/views/compute_resources_vms/form/proxmox/container/_volume_mp.html.erb:11
 #: ../app/views/compute_resources_vms/form/proxmox/container/_volume_rootfs.html.erb:8
 #: ../app/views/compute_resources_vms/form/proxmox/server/_volume_hard_disk.html.erb:16
-msgid "Size"
+msgid "Size (GB)"
 msgstr ""
 
 #:
@@ -660,11 +673,11 @@ msgid "CPU Flags"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:34
-msgid "Minimum memory"
+msgid "Minimum memory (MB)"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:35
-msgid "Shares"
+msgid "Shares (MB)"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:40

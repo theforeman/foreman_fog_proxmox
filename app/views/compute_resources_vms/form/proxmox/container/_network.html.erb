@@ -27,8 +27,8 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     <%= checkbox_f f, :dhcp6, :label => _('DHCP IPv6') %>
     <%= text_f f, :cidr6, :label => _('CIDR IPv6'), :label_size => "col-md-2", :label_help => _("integer within [0..128]")%>
     <%= text_f f, :gw6, :label => _('Gateway IPv6'), :label_size => "col-md-2" %>
-    <%= counter_f f, :tag, :class => "input-mini", :label => _('VLAN tag'), :label_size => "col-md-2" %>
-    <%= counter_f f, :rate, :class => "input-mini", :label => _('Rate limit'), :label_size => "col-md-2" %>
+    <%= text_f f, :tag, :class => "input-mini", :label => _('VLAN tag'), :label_size => "col-md-2" %>
+    <%= text_f f, :rate, :class => "input-mini", :label => _('Rate limit'), :label_size => "col-md-2" %>
     <%= checkbox_f f, :firewall, :label => _('Firewall') %>
     <%= select_f f, :bridge, compute_resource.bridges(node_id), :iface, :iface, { }, :label => _('Bridge'), :label_size => "col-md-2" %>
 <% end %>

@@ -244,8 +244,11 @@ msgstr ""
 msgid "Memory"
 msgstr "Mémoire"
 
-msgid "Minimum memory"
-msgstr "Mémoire minimale"
+msgid "Memory (MB)"
+msgstr ""
+
+msgid "Minimum memory (MB)"
+msgstr ""
 
 msgid "Mount point"
 msgstr "Point de montage"
@@ -340,11 +343,11 @@ msgstr ""
 msgid "Search domain"
 msgstr "Domaine de recherche"
 
-msgid "Shares"
-msgstr "Partages"
+msgid "Shares (MB)"
+msgstr ""
 
-msgid "Size"
-msgstr "Taille"
+msgid "Size (GB)"
+msgstr ""
 
 msgid "Sockets"
 msgstr ""
@@ -358,7 +361,7 @@ msgstr "Démarrer au boot"
 msgid "Storage"
 msgstr "Stockage"
 
-msgid "Swap"
+msgid "Swap (MB)"
 msgstr ""
 
 msgid "Template storage"
@@ -470,6 +473,12 @@ msgid "invalid vmid=%<vmid>s"
 msgstr "vmid=%<vmid>s incorrect"
 
 msgid "net[n] with n integer >= 0, e.g. net0"
+msgstr ""
+
+msgid "new_typed_vm(%<type>s) with vm_typed_instance_defaults: vm_h=%<vm_h>s"
+msgstr ""
+
+msgid "parse_hard_disk_volume(): args=%<args>s"
 msgstr ""
 
 msgid "remove CDROM"

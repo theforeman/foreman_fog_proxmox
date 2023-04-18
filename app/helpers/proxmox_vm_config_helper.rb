@@ -126,6 +126,11 @@ module ProxmoxVmConfigHelper
   def parse_typed_memory(args, type)
     ForemanFogProxmox::HashCollection.remove_empty_values(args)
     logger.debug("parse_typed_memory(#{type}): args=#{args}")
+    # Convert balloon value from bytes to expected MiB if its not already
+    if args.key?('balloon')
+      mb = (args['balloon'].to_i / 1024**2).to_s
+      args['balloon'] = (mb == '0') ? args['balloon'] : mb
+    end
     args
   end
 

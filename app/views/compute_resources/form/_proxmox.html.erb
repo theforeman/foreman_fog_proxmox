@@ -38,5 +38,5 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     :placeholder => _("Optionally provide a CA, or a correctly ordered CA chain. If left blank, disable ssl_verify_peer.") %>
 <% end %>
 <div class="col-md-offset-2">
-  <%= test_connection_button_f(f, (f.object.nodes rescue false)) %>
+  <%= test_connection_button_f(f, (f.object.nodes rescue true)) %>
 </div>

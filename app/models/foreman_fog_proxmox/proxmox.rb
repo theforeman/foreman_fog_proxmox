@@ -154,7 +154,7 @@ module ForemanFogProxmox
       raise ::Foreman::Exception, 'User token expired' if token_expired?(e)
     rescue StandardError => e
       logger.warn("failed to create compute client: #{e}")
-      raise e
+      raise ::Foreman::Exception, error_message(e)
     end
 
     def identity_client
@@ -163,7 +163,7 @@ module ForemanFogProxmox
       raise ::Foreman::Exception, 'User token expired' if token_expired?(e)
     rescue StandardError => e
       logger.warn("failed to create identity client: #{e}")
-      raise e
+      raise ::Foreman::Exception, error_message(e)
     end
 
     def network_client
@@ -172,7 +172,13 @@ module ForemanFogProxmox
       raise ::Foreman::Exception, 'User token expired' if token_expired?(e)
     rescue StandardError => e
       logger.warn("failed to create network client: #{e}")
-      raise e
+      raise ::Foreman::Exception, error_message(e)
+    end
+
+    def error_message(e)
+      "Failed to create Proxmox compute resource: #{e.message}.
+       Either provided credentials or FQDN is wrong or
+       your server cannot connect to Proxmox due to network issues."
     end
 
     def host

@@ -37,6 +37,7 @@ module ProxmoxVmCloudinitHelper
       id = "#{controller}#{device}" if controller && device
       cloudinit_h.store(:id, id.to_sym) if id
       cloudinit_h.store(:volid, cloudinit_volid) if cloudinit_volid
+      cloudinit_h.store(:media, 'cdrom')
     end
     cloudinit_h
   end

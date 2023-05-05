@@ -44,6 +44,7 @@ module ForemanFogProxmox
         disk.stubs(:id).returns('ide2')
         disk.stubs(:hard_disk?).returns(false)
         disk.stubs(:cdrom?).returns(true)
+        disk.stubs(:rootfs?).returns(false)
         disks.stubs(:get).returns
         config.stubs(:disks).returns(disks)
         config.stubs(:attributes).returns(:cores => '')
@@ -93,6 +94,7 @@ module ForemanFogProxmox
         disk.stubs(:size).returns('1')
         disk.stubs(:hard_disk?).returns(false)
         disk.stubs(:cdrom?).returns(true)
+        disk.stubs(:rootfs?).returns(false)
         disk.stubs(:cloud_init?).returns(false)
         disk.stubs(:storage).returns('local-lvm')
         disk.stubs(:volid).returns('local-lvm:iso/ubuntu-20_4.iso')
@@ -145,6 +147,7 @@ module ForemanFogProxmox
         disk.stubs(:size).returns('1')
         disk.stubs(:hard_disk?).returns(false)
         disk.stubs(:cdrom?).returns(true)
+        disk.stubs(:rootfs?).returns(false)
         disk.stubs(:cloud_init?).returns(false)
         disk.stubs(:storage).returns('local-lvm')
         disk.stubs(:volid).returns('local-lvm:iso/ubuntu-20_4.iso')

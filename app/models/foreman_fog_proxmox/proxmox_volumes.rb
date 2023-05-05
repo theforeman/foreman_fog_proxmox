@@ -104,12 +104,14 @@ module ForemanFogProxmox
 
     def volume_exists?(vm, volume_attributes)
       disk = vm.config.disks.get(volume_attributes['id'])
-      exists = false
-      return exists unless disk
+      return false unless disk
 
-      exists = !volume_attributes['volid'].empty? if disk.hard_disk? || disk.cloud_init?
-      exists = !volume_attributes['cdrom'].empty? if disk.cdrom?
-      exists
+      # Return boolean if disk of type hard_disk, cloud_init, cdrom or rootfs(LXC container) exists
+      if disk.hard_disk? || disk.cloud_init? || disk.rootfs?
+        volume_attributes['volid'].present?
+      elsif disk.cdrom?
+        volume_attributes['cdrom'].present?
+      end
     end
 
     def volume_to_delete?(volume_attributes)

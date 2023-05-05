@@ -24,12 +24,13 @@ require 'factories/foreman_fog_proxmox/proxmox_server_mock_factory'
 require 'active_support/core_ext/hash/indifferent_access'
 
 module ForemanFogProxmox
-  class ProxmoxVmCommandsServerUpdateHardDiskTest < ActiveSupport::TestCase
+  class ProxmoxVmCommandsServerUpdateHardDiskTest < ActiveSupport::TestCase # rubocop:disable Metrics/ClassLength
     include ComputeResourceTestHelpers
     include ProxmoxNodeMockFactory
     include ProxmoxServerMockFactory
     include ProxmoxVmHelper
 
+    # rubocop:disable Metrics/BlockLength
     describe 'save_vm' do
       before do
         @cr = FactoryBot.build_stubbed(:proxmox_cr)
@@ -43,6 +44,7 @@ module ForemanFogProxmox
         disk.stubs(:size).returns('1')
         disk.stubs(:hard_disk?).returns(true)
         disk.stubs(:cdrom?).returns(false)
+        disk.stubs(:rootfs?).returns(false)
         disk.stubs(:storage).returns('local-lvm')
         disk.stubs(:id).returns('scsi0')
         disk.stubs(:attributes).returns(id: 'scsi0', storage: 'local-lvm', size: '1')
@@ -94,6 +96,7 @@ module ForemanFogProxmox
         disk.stubs(:size).returns('1')
         disk.stubs(:hard_disk?).returns(true)
         disk.stubs(:cdrom?).returns(false)
+        disk.stubs(:rootfs?).returns(false)
         disk.stubs(:storage).returns('local-lvm')
         disk.stubs(:id).returns('virtio0')
         disks.stubs(:get).returns(disk)
@@ -147,6 +150,7 @@ module ForemanFogProxmox
         disk.stubs(:size).returns('1')
         disk.stubs(:hard_disk?).returns(true)
         disk.stubs(:cdrom?).returns(false)
+        disk.stubs(:rootfs?).returns(false)
         disk.stubs(:storage).returns('scsi0')
         disk.stubs(:volid).returns('local-lvm:vm-100-disk-0')
         disk.stubs(:id).returns('local-lvm')
@@ -202,6 +206,7 @@ module ForemanFogProxmox
         disk.stubs(:size).returns('2')
         disk.stubs(:hard_disk?).returns(true)
         disk.stubs(:cdrom?).returns(false)
+        disk.stubs(:rootfs?).returns(false)
         disk.stubs(:storage).returns('local-lvm')
         disk.stubs(:volid).returns('local-lvm:vm-100-disk-0')
         disk.stubs(:attributes).returns(id: 'scsi0', storage: 'local-lvm', size: '2')
@@ -254,8 +259,7 @@ module ForemanFogProxmox
         disk.stubs(:size).returns('1')
         disk.stubs(:hard_disk?).returns(true)
         disk.stubs(:cdrom?).returns(false)
-        disk.stubs(:hard_disk?).returns(true)
-        disk.stubs(:cdrom?).returns(false)
+        disk.stubs(:rootfs?).returns(false)
         disk.stubs(:storage).returns('local-lvm')
         disk.stubs(:attributes).returns(id: 'scsi0', storage: 'local-lvm', size: '1', volid: 'local-lvm:vm-100-disk-0')
         disks.stubs(:get).returns(disk)
@@ -307,6 +311,7 @@ module ForemanFogProxmox
         disk.stubs(:size).returns('1')
         disk.stubs(:hard_disk?).returns(true)
         disk.stubs(:cdrom?).returns(false)
+        disk.stubs(:rootfs?).returns(false)
         disk.stubs(:storage).returns('local-lvm')
         disk.stubs(:volid).returns('local-lvm:vm-100-disk-0')
         disk.stubs(:id).returns('scsi0')
@@ -352,5 +357,6 @@ module ForemanFogProxmox
         @cr.save_vm(uuid, new_attributes)
       end
     end
+    # rubocop:enable Metrics/BlockLength
   end
 end

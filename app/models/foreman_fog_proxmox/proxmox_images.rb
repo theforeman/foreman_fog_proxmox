@@ -47,8 +47,9 @@ module ForemanFogProxmox
     def templates
       volumes = []
       nodes.each do |node|
-        storage = storages(node.node).first
-        volumes += storage.volumes.list_by_content_type('images')
+        storages(node.node).each do |storage|
+          volumes += storage.volumes.list_by_content_type('images')
+        end
       end
       volumes.select(&:template?)
     end

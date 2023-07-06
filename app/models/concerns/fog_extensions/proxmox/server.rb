@@ -53,7 +53,7 @@ module FogExtensions
       end
 
       def state
-        qmpstatus
+        status
       end
 
       delegate :description, to: :config

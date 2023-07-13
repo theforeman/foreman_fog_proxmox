@@ -39,14 +39,19 @@ module ForemanFogProxmox
       raise ::Foreman::Exception, format(N_('invalid vmid=%<vmid>s'), vmid: vmid) unless node.servers.id_valid?(vmid)
 
       image_id = args[:image_id]
+      name = args[:name]
+      remove_volume_keys(args)
+      parsed_args = parse_typed_vm(args, type)
       if image_id
-        clone_from_image(image_id, args, vmid)
+        vm = clone_from_image(image_id, vmid)
+        options = {}
+        options[vm.container? ? :hostname : :name] = name
+        vm.update(parsed_args.merge(options))
       else
-        remove_volume_keys(args)
         logger.warn("create vm: args=#{args}")
-        vm = node.send(vm_collection(type)).create(parse_typed_vm(args, type))
-        start_on_boot(vm, args)
+        vm = node.send(vm_collection(type)).create(parsed_args)
       end
+      start_on_boot(vm, args)
     rescue StandardError => e
       logger.warn("failed to create vm: #{e}")
       destroy_vm client.identity + '_' + vm.id if vm

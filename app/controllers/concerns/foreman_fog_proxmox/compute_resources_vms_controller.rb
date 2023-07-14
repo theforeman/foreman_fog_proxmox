@@ -71,7 +71,7 @@ module ForemanFogProxmox
       def run_vm_action(action)
         if @vm.send(action)
           @vm.reload
-          success format(_("%<vm>s is now %<vm_state>s"), { :vm => @vm, :vm_state => @vm.state.capitalize })
+          success format(_("%<vm>s is now %<vm_state>s"), { :vm => @vm.name, :vm_state => @vm.state.capitalize })
         else
           error format(_("failed to %<action>s %<vm>s"), { :action => _(action), :vm => @vm })
         end

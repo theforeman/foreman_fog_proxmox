@@ -40,6 +40,17 @@ module ProxmoxComputeResourcesVmsHelper
     display_link_if_authorized "Power #{action_string(vm)}", opts, html.merge(:method => :put)
   end
 
+  def power_action_html(vm)
+    if vm.ready?
+      {
+        :data => { :confirm => format(_("Are you sure you want to power %<act>s %<vm>s?"), { :act => action_string(vm).downcase.strip, :vm => vm.name }) },
+        :class => "btn btn-danger",
+      }
+    else
+      { :class => "btn btn-info" }
+    end
+  end
+
   def vm_associate_action(vm)
     display_link_if_authorized(
       _('Associate VM'),

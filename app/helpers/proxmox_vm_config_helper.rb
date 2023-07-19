@@ -27,11 +27,11 @@ require 'foreman_fog_proxmox/hash_collection'
 module ProxmoxVmConfigHelper
   def object_to_config_hash(vm, type)
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
-    main_a = ['vmid']
-    main = vm.attributes.select { |key, _value| main_a.include? key }
+    main_a = ['vmid', 'type']
+    main = vm.attributes.select { |key, _value| main_a.include? key.to_s }
     main_a += ['templated']
     config = vm.config.attributes.reject do |key, _value|
-      main_a.include?(key) || Fog::Proxmox::DiskHelper.disk?(key) || Fog::Proxmox::NicHelper.nic?(key)
+      main_a.include?(key.to_s) || Fog::Proxmox::DiskHelper.disk?(key) || Fog::Proxmox::NicHelper.nic?(key)
     end
     vm_h = vm_h.merge(main)
     vm_h = vm_h.merge('config_attributes': config)

@@ -56,7 +56,7 @@ module ProxmoxVmInterfacesHelper
   end
 
   def interface_common_typed_keys(type)
-    [{ origin: 'id', dest: 'id' }, { origin: 'mac', dest: type == 'qemu' ? 'macaddr' : 'hwaddr' }]
+    ['id', type == 'qemu' ? 'macaddr' : 'hwaddr']
   end
 
   def compute_dhcps(interface_attributes_h)
@@ -80,8 +80,8 @@ module ProxmoxVmInterfacesHelper
       interfaces_to_delete.push(id.to_s)
     else
       interface_common_typed_keys(type).each do |key|
-        ForemanFogProxmox::HashCollection.add_and_format_element(nic, key[:dest].to_sym, interface_attributes,
-          key[:origin])
+        ForemanFogProxmox::HashCollection.add_and_format_element(nic, key.to_sym, interface_attributes,
+          key)
       end
       interface_attributes_h = interface_attributes['compute_attributes']
       if ForemanFogProxmox::Value.empty?(interface_attributes['compute_attributes'])

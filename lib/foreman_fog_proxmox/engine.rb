@@ -40,13 +40,15 @@ module ForemanFogProxmox
     initializer 'foreman_fog_proxmox.register_plugin', :before => :finisher_hook do |_app|
       Foreman::Plugin.register :foreman_fog_proxmox do
         requires_foreman '>= 1.22.0'
+        # Add Global files for extending foreman-core components and routes
+        register_global_js_file 'global'
         # Register Proxmox VE compute resource in foreman
         compute_resource ForemanFogProxmox::Proxmox
         parameter_filter(ComputeResource, :uuid)
         # add dashboard widget
         widget 'foreman_fog_proxmox_widget', name: N_('Foreman Fog Proxmox widget'), sizex: 8, sizey: 1
         security_block :foreman_fog_proxmox do
-          permission :view_compute_resource, { :compute_resources =>
+          permission :view_compute_resources, { :'foreman_fog_proxmox/compute_resources' =>
             [:ostemplates_by_id_and_node_and_storage,
              :isos_by_id_and_node_and_storage,
              :ostemplates_by_id_and_node,

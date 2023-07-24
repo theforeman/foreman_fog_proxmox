@@ -105,6 +105,7 @@ jobs:
         COVERAGE: true
       run: |
         bundle exec bin/rake test:foreman_fog_proxmox
+        bundle exec bin/rake test TEST="test/unit/foreman/access_permissions_test.rb"
     - name: Upload simplecov results for coverage
       uses: actions/upload-artifact@v1
       with:

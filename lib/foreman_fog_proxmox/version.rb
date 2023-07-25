@@ -18,5 +18,5 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 module ForemanFogProxmox
-  VERSION = '0.14.2'
+  VERSION = '0.14.3'
 end

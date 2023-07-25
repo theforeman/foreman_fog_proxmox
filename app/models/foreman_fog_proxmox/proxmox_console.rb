@@ -31,7 +31,9 @@ module ForemanFogProxmox
       options.store(:websocket, 1) if type_console == 'vnc'
       begin
         vnc_console = vm.start_console(options)
-        WsProxy.start(:host => host, :host_port => vnc_console['port'], :password => vnc_console['ticket']).merge(
+        vmid = extract_vmid(uuid).to_i
+        vnc_host_port = vnc_console['port'].to_i + vmid
+        WsProxy.start(:host => host, :host_port => vnc_host_port, :password => vnc_console['ticket']).merge(
           :name => vm.name, :type => type_console
         )
       rescue StandardError => e

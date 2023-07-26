@@ -298,7 +298,7 @@ module ForemanFogProxmox
         vm.expects(:container?).returns(true)
         expected_args = { :vmid => "100", :type => "lxc" }
         cr.stubs(:parse_typed_vm).with(args, 'lxc').returns(expected_args)
-        vm.expects(:update).with(expected_args.merge({ :hostname => "name" }))
+        vm.expects(:update).with(expected_args)
         cr.create_vm(args)
       end
     end

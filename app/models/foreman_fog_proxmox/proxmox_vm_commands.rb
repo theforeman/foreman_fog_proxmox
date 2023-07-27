@@ -39,23 +39,29 @@ module ForemanFogProxmox
       raise ::Foreman::Exception, format(N_('invalid vmid=%<vmid>s'), vmid: vmid) unless node.servers.id_valid?(vmid)
 
       image_id = args[:image_id]
-      name = args[:name]
       remove_volume_keys(args)
-      parsed_args = parse_typed_vm(args, type)
       if image_id
         vm = clone_from_image(image_id, vmid)
-        options = {}
-        options[vm.container? ? :hostname : :name] = name
-        vm.update(parsed_args.merge(options))
+        vm.update(compute_clone_attributes(args, vm.container?, type))
+        update_pool(vm, args[:pool]) if args[:pool]
       else
         logger.warn("create vm: args=#{args}")
-        vm = node.send(vm_collection(type)).create(parsed_args)
+        vm = node.send(vm_collection(type)).create(parse_typed_vm(args, type))
       end
       start_on_boot(vm, args)
     rescue StandardError => e
       logger.warn("failed to create vm: #{e}")
-      destroy_vm client.identity + '_' + vm.id if vm
+      destroy_vm id.to_s + '_' + vm.id.to_s if vm
       raise e
+    end
+
+    def compute_clone_attributes(args, container, type)
+      parsed_args = parse_typed_vm(args, type)
+      if container
+        options = { :hostname => args[:name] }
+        parsed_args.merge(options)
+      end
+      parsed_args.reject { |k| k == 'pool' }
     end
 
     def destroy_vm(uuid)

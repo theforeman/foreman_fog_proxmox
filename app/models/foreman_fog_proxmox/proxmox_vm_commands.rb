@@ -51,7 +51,7 @@ module ForemanFogProxmox
       start_on_boot(vm, args)
     rescue StandardError => e
       logger.warn("failed to create vm: #{e}")
-      destroy_vm id.to_s + '_' + vm.id.to_s if vm
+      destroy_vm id.to_s + '_' + vm.vmid.to_s if vm
       raise e
     end
 

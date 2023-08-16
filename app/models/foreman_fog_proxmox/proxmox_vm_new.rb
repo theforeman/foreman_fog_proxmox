@@ -142,7 +142,7 @@ module ForemanFogProxmox
         config_attributes = {
           cores: '1',
           sockets: '1',
-          kvm: '0',
+          kvm: '1',
           vga: 'std',
           memory: '1024',
           ostype: 'l26',

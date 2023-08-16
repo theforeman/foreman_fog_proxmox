@@ -15,6 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
+//= require jquery-ui/widgets/accordion
+
 $(document).ready(vmTypeSelected);
 
 function vmTypeSelected() {
@@ -27,13 +29,8 @@ function vmTypeSelected() {
   fieldsets.push({id: 'config_ext', toggle: true, new_vm: new_vm, selected: selected});
   fieldsets.push({id: 'volume', toggle: true, new_vm: new_vm, selected: selected});
   fieldsets.push({id: 'network', toggle: true, new_vm: true, selected: selected});
-  fieldsets.push({id: 'config_options', toggle: false, new_vm: new_vm, selected: selected});
-  fieldsets.push({id: 'config_cpu', toggle: false, new_vm: new_vm, selected: selected});
-  fieldsets.push({id: 'config_memory', toggle: false, new_vm: new_vm, selected: selected});
-  fieldsets.push({id: 'config_cdrom', toggle: false, new_vm: new_vm, selected: selected});
-  fieldsets.push({id: 'config_os', toggle: false, new_vm: new_vm, selected: selected});
-  fieldsets.push({id: 'config_dns', toggle: false, new_vm: new_vm, selected: selected});
   fieldsets.forEach(toggleFieldsets);
+  toggleAccordion(selected);
   toggleVolumes(selected);
   return false;
 }
@@ -140,6 +137,35 @@ function disableFieldset(fieldsetId, fieldset) {
   }
   fieldset_id(fieldsetId, fieldset).attr('disabled','disabled');
   input_hidden_id(fieldsetId).attr('disabled','disabled');
+}
+
+function enableConfigOptions(fieldsetId) {
+  var field = $("#" + fieldsetId + "_advanced_options");
+  field.accordion({collapsible : true, heightStyle: "content"});
+  field.removeClass('disabled').find("*").prop("disabled", false);
+  field.removeClass('hide');
+}
+
+function disableConfigOptions(fieldsetId) {
+  var field = $("#" + fieldsetId + "_advanced_options");
+  field.addClass('disabled').find("*").prop("disabled", true);
+  field.addClass('hide');
+}
+
+function toggleConfigOptions(fieldsetId, type1, type2) {
+  if (type1 === type2) {
+    enableConfigOptions(fieldsetId);
+  } else {
+    disableConfigOptions(fieldsetId);
+  }
+}
+
+function toggleAccordion(selected){
+  ['qemu', 'lxc'].forEach(function(type){
+    fieldsets(type).forEach(function(fieldsetId){
+      toggleConfigOptions(fieldsetId, selected, type);
+    });
+  });
 }
 
 function toggleFieldset(fieldsetId, fieldset, type1, type2) {  

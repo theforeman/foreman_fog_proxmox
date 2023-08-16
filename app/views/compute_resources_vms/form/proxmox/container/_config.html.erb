@@ -17,25 +17,32 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <%= javascript_include_tag 'foreman_fog_proxmox/proxmox_vm_container', "data-turbolinks-track" => true %>
 <% container = type == 'lxc' %>
-<%= field_set_tag n_("Main option", "Main options", 2), :id => "container_config_options", :class => 'hide', :disabled => !container do %>
-  <%= textarea_f f, :description, :label => _('Description'), :label_size => "col-md-2" %>
-  <%= checkbox_f f, :onboot, :label => _('Start at boot') %>
-<% end %>
-<%= field_set_tag _("CPU"), :id => "container_config_cpu", :class => 'hide', :disabled => !container do %>
+<%= content_tag :div, :id => "container_advanced_options" do %>
+  <%= content_tag :h3, "Main Options"%>
+  <div>
+    <%= textarea_f f, :description, :label => _('Description'), :label_size => "col-md-2" %>
+    <%= checkbox_f f, :onboot, :label => _('Start at boot') %>
+  </div>
+  <%= content_tag :h3, "CPUs"%>
+  <div>
   <%= select_f f, :arch, proxmox_archs_map, :id, :name, { }, :label => _('Architecture'), :label_size => "col-md-2" %>
   <%= counter_f f, :cores, :class => "input-mini", :label => _('Cores'), :label_size => "col-md-2" %>
   <%= counter_f f, :cpulimit, :class => "input-mini", :label => _('CPU limit'), :label_size => "col-md-2" %>
   <%= counter_f f, :cpuunits, :class => "input-mini", :label => _('CPU units'), :label_size => "col-md-2" %>
-<% end %>
-<%= field_set_tag _("Memory"), :id => "container_config_memory", :class => 'hide', :disabled => !container do %>
+  </div>
+  <%= content_tag :h3, "Memory"%>
+  <div>
   <%= text_f f, :memory, :class => "input-mini", :label => _('Memory (MB)'), :label_size => "col-md-2" %>
   <%= text_f f, :swap, :class => "input-mini", :label => _('Swap (MB)'), :label_size => "col-md-2" %>
-<% end %>
-<%= field_set_tag _("DNS"), :id => "container_config_dns", :class => 'hide', :disabled => !container do %>
+  </div>
+  <%= content_tag :h3, "DNS"%>
+  <div>
   <%= text_f f, :hostname, :label => _('Hostname'), :label_size => "col-md-2", :disabled => true %>
   <%= text_f f, :nameserver, :label => _('DNS server'), :label_size => "col-md-2" %>
   <%= text_f f, :searchdomain, :label => _('Search domain'), :label_size => "col-md-2" %>
-<% end %>
-<%= field_set_tag _("Operating System"), :id => "container_config_os", :class => 'hide', :disabled => !container do %>
+  </div>
+  <%= content_tag :h3, "Operating System"%>
+  <div>
   <%= select_f f, :ostype, proxmox_ostypes_map, :id, :name, { }, :label => _('OS type'), :label_size => "col-md-2" %>
+  </div>
 <% end %>

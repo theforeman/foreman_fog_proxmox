@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.3](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.14.2...v0.14.3) (2023-08-25)
+
+
+### Bug Fixes
+
+* enable kvm option by default ([#286](https://github.com/theforeman/foreman_fog_proxmox/issues/286)) ([0e015ae](https://github.com/theforeman/foreman_fog_proxmox/commit/0e015ae2843d5e41a202d2bf200a6780eab5e5ad)), closes [#289](https://github.com/theforeman/foreman_fog_proxmox/issues/289)
+
 ## [0.14.2](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.14.1...v0.14.2) (2022-12-16)
 
 

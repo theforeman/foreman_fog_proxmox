@@ -18,14 +18,4 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% container = f.object.type == 'lxc' %>  
 
 <%= field_set_tag _("Advanced"), :id => "container_config_advanced_options", :class => ('hide' unless container) do %>
-  <%= label_tag 'show_container_config_options', n_("Main option", "Main options", 2) %>
-  <%= check_box_tag 'show_container_config_options', '1', false, :onclick => "$('#container_config_options').toggle()" %>
-  <%= label_tag 'show_container_config_cpu', _("CPU") %>
-  <%= check_box_tag 'show_container_config_cpu', '1', false, :onclick => "$('#container_config_cpu').toggle()" %>
-  <%= label_tag 'show_container_config_memory', _("Memory") %>
-  <%= check_box_tag 'show_container_config_memory', '1', false, :onclick => "$('#container_config_memory').toggle()" %>
-  <%= label_tag 'show_container_config_dns', _("DNS") %>
-  <%= check_box_tag 'show_container_config_dns', '1', false, :onclick => "$('#container_config_dns').toggle()" %>
-  <%= label_tag 'show_container_config_os', _("OS") %>
-  <%= check_box_tag 'show_container_config_os', '1', false, :onclick => "$('#container_config_os').toggle()" %>
 <% end %>

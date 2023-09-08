@@ -18,12 +18,4 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% server = f.object.type == 'qemu' %>
 
 <%= field_set_tag _("Advanced"), :id => "server_config_advanced_options", :class => ('hide' unless server) do %>
-  <%= label_tag 'show_server_config_options', n_("Main option", "Main options", 2) %>
-  <%= check_box_tag 'show_server_config_options', '1', false, :onclick => "$('#server_config_options').toggle()" %>
-  <%= label_tag 'show_server_config_cpu', _("CPU") %>
-  <%= check_box_tag 'show_server_config_cpu', '1', false, :onclick => "$('#server_config_cpu').toggle()" %>
-  <%= label_tag 'show_server_config_memory', _("Memory") %>
-  <%= check_box_tag 'show_server_config_memory', '1', false, :onclick => "$('#server_config_memory').toggle()" %>
-  <%= label_tag 'show_server_config_os', _("OS") %>
-  <%= check_box_tag 'show_server_config_os', '1', false, :onclick => "$('#server_config_os').toggle()" %>
 <% end %>

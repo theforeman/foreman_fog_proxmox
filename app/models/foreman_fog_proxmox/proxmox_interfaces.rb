@@ -33,8 +33,6 @@ module ForemanFogProxmox
           _(format('Invalid proxmox NIC id on interface[%<index>s]. Must be net[n] with n integer >= 0',
             index: index))
       end
-
-      nic.identifier = nic.compute_attributes['id'] if nic.identifier.empty?
     end
 
     def vm_type(host)

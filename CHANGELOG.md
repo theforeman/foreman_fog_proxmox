@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.14.4](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.14.3...v0.14.4) (2023-10-02)
+
+
+### Bug Fixes
+
+* Fixes DNS issue for host deployment with nic identifier ([#293](https://github.com/theforeman/foreman_fog_proxmox/issues/293)) ([abd790a](https://github.com/theforeman/foreman_fog_proxmox/commit/abd790a7f286e4fffc4d80a4415af2a44c9baa0c)), closes [#292](https://github.com/theforeman/foreman_fog_proxmox/issues/292)
+* Increase visibility of Main Options ([#287](https://github.com/theforeman/foreman_fog_proxmox/issues/287)) ([1b5fd16](https://github.com/theforeman/foreman_fog_proxmox/commit/1b5fd16f73a18adb521d661db555bcae5b20ff0c)), closes [#288](https://github.com/theforeman/foreman_fog_proxmox/issues/288)
+
 ## [0.14.3](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.14.2...v0.14.3) (2023-08-25)
 
 

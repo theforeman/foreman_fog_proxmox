@@ -56,6 +56,7 @@ module ForemanFogProxmox
     end
 
     def compute_clone_attributes(args, container, type)
+      args = parse_cloudinit_config(args) if args[:user_data]
       parsed_args = parse_typed_vm(args, type)
       if container
         options = { :hostname => args[:name] }

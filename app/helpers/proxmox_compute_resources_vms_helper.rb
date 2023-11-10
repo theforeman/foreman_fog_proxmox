@@ -41,6 +41,11 @@ module ProxmoxComputeResourcesVmsHelper
   end
 
   def vm_associate_action(vm)
+    vm_associate_link(vm, link_class: "btn btn-default")
+  end
+
+  def vm_associate_link(vm, link_class: "")
+    return unless @compute_resource.supports_host_association?
     display_link_if_authorized(
       _('Associate VM'),
       hash_for_associate_compute_resource_vm_path(
@@ -52,7 +57,7 @@ module ProxmoxComputeResourcesVmsHelper
       ),
       :title => _('Associate VM to a Foreman host'),
       :method => :put,
-      :class => 'btn btn-default'
+      :class => link_class
     )
   end
 

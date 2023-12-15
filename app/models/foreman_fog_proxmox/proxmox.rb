@@ -181,7 +181,7 @@ module ForemanFogProxmox
        your server cannot connect to Proxmox due to network issues."
     end
 
-    def host
+    def proxmox_host
       URI.parse(url).host
     end
   end

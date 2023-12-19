@@ -32,7 +32,7 @@ function getIndex(item) {
 }
 
 function isProfile() {
-  return $(volumesAttributesSelector(true,0,'id')) !== undefined;
+  return $(volumesAttributesSelector(true,0,'id')).val() !== undefined;
 }
 
 function controllerSelected(item) {

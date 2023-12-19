@@ -43,41 +43,20 @@ function controllerSelected(item) {
   var device_selector = volumesAttributesSelector(profile,index,'device');
   var id_selector = volumesAttributesSelector(profile,index,'id');
   $(device_selector).attr('data-soft-max', max);
-  var device = $(device_selector).val();
+  var device = $(device_selector).limitedSpinner('value');
   var id = controller + device;
-  validateDeviceLimit(device_selector, max);
   $(id_selector).val(id);
 }
 
 function deviceSelected(item) {
-  var device = $(item).val();
+  var device = $(item).limitedSpinner('value');
   var index = getIndex(item);
   var profile = isProfile();
   var controller_selector = volumesAttributesSelector(profile,index,'controller');
   var id_selector = volumesAttributesSelector(profile,index,'id');
   var controller = $(controller_selector).val();
   var id = controller + device;
-  var max = computeControllerMaxDevice(controller);
-  validateDeviceLimit(device_selector, max);
   $(id_selector).val(id);
-}
-
-function validateDeviceLimit(item, maxLimit) {
-  var warningContainer = $(item).closest('form').find('.warning-container');
-  var deviceNumber = $(item).val();
-  var submitButton = $(item).closest('form').find('[data-disable-with]');
-  if (!isNaN(maxLimit) && !isNaN(deviceNumber) && deviceNumber > maxLimit) {
-    if (warningContainer.length === 0) {
-      warningContainer = $('<div class="warning-container" style="color: red;"><span style="color: red;">&#9888;</span> Warning: Value exceeds the maximum limit of ' + maxLimit + '.</div>');
-      $(item).closest('.col-md-4').append(warningContainer);
-    }
-    warningContainer.show();
-    submitButton.prop('disabled', true);
-  } else {
-    warningContainer.hide();
-    warningContainer.remove();
-    submitButton.prop('disabled', false);
-  }
 }
 
 function computeControllerMaxDevice(controller) {

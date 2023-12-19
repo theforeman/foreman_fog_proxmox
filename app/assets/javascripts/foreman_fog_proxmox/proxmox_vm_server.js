@@ -42,7 +42,6 @@ function controllerSelected(item) {
   var profile = isProfile();
   var device_selector = volumesAttributesSelector(profile,index,'device');
   var id_selector = volumesAttributesSelector(profile,index,'id');
-  $(device_selector).attr('data-soft-max', max);
   var device = $(device_selector).val();
   var id = controller + device;
   validateDeviceLimit(device_selector, max);
@@ -58,7 +57,7 @@ function deviceSelected(item) {
   var controller = $(controller_selector).val();
   var id = controller + device;
   var max = computeControllerMaxDevice(controller);
-  validateDeviceLimit(device_selector, max);
+  validateDeviceLimit(item, max);
   $(id_selector).val(id);
 }
 

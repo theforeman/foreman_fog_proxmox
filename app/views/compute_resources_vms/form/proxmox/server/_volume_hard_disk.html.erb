@@ -20,7 +20,6 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% logger.debug("_volume_hard_disk.html f.object.hard_disk?=#{f.object.hard_disk?}") %>
 <% logger.debug("_volume_hard_disk.html f.object.storage_type=#{f.object.storage_type}") %>
 <% new_volume = f.object.volid.nil? %>
-
 <%= field_set_tag _('Hard disk'), :id => "server_volume_hard_disk_#{f.index}", :class => ('hide' unless hard_disk), :disabled => !hard_disk do %> 
     <%= f.hidden_field :volid if !new_volume %>    
     <%= f.hidden_field :storage_type %>

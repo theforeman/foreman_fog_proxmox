@@ -16,3 +16,4 @@ public/
 TAGS
 *.lock
 coverage/
+node_modules/

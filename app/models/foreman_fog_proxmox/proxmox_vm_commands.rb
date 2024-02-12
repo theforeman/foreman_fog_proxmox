@@ -32,10 +32,9 @@ module ForemanFogProxmox
     end
 
     def create_vm(args = {})
-      vmid = args[:vmid].to_i
       type = args[:type]
       node = client.nodes.get(args[:node_id])
-      vmid = node.servers.next_id.to_i if vmid < 1
+      vmid = args[:vmid] = assign_vmid(args[:vmid].to_i, node)
       raise ::Foreman::Exception, format(N_('invalid vmid=%<vmid>s'), vmid: vmid) unless node.servers.id_valid?(vmid)
 
       image_id = args[:image_id]
@@ -53,6 +52,10 @@ module ForemanFogProxmox
       logger.warn("failed to create vm: #{e}")
       destroy_vm id.to_s + '_' + vm.vmid.to_s if vm
       raise e
+    end
+
+    def assign_vmid(vmid, node)
+      vmid < 1 ? node.servers.next_id : vmid
     end
 
     def compute_clone_attributes(args, container, type)

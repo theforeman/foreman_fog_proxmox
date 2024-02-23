@@ -48,7 +48,7 @@ module ProxmoxVmCloudinitHelper
     wd = create_temp_directory(ssh)
 
     configs.each do |config|
-      config_file = ssh.run(%(echo "#{config[1]}" >> "#{wd}/#{config[0]}"))
+      config_file = ssh.run(%(echo '#{config[1]}' >> "#{wd}/#{config[0]}"))
       unless config_file.first.status.zero?
         delete_temp_dir(ssh, wd)
         raise ::Foreman::Exception, "Failed to create file #{config[0]}: #{config_file.first.stdout}"

@@ -18,7 +18,7 @@ const HardDisk = ({ key, onRemove }) => {
     <div style={{ position: 'relative' }} >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 	<button
-          style={{ position: 'absolute', top: '5px', right: '5px', cursor: 'pointer', backgroundColor: 'red', border: 'none' }}
+          style={{ position: 'absolute', top: '5px', right: '5px', cursor: 'pointer' }}
           onClick={onRemove}
         >
           X

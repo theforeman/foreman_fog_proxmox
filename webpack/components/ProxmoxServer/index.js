@@ -15,7 +15,7 @@ import NetworkInterface from './components/NetworkInterface';
 import CloudInit from './components/CloudInit';
 import HardDisk from './components/HardDisk';
 import './customStyles.css';
-
+import {Tabs, Tab, TabTitleText, Tooltip} from '@patternfly/react-core';
 const cacheOptions = { key: 'Cached', value: 'No Cached' };
 
 const ProxmoxServer = () => {
@@ -40,13 +40,22 @@ const ProxmoxServer = () => {
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-
+  const [memExpanded, setMemExpanded] = useState(false);
+  const [osExpanded, setOsExpanded] = useState(false);
   const onExpand = () => {
     setIsExpanded(!isExpanded);
   };
 
   const onsExpand = () => {
     setIsOpen(!isOpen);
+  };
+
+  const memExpand = () => {
+    setMemExpanded(!memExpanded);
+  };
+
+  const osExpand = () => {
+    setOsExpanded(!osExpanded);
   };
   const [interfaces, setInterfaces] = useState([<NetworkInterface key={0} onRemove={() => removeInterface(0)} />]); // State to track A components
 
@@ -95,10 +104,6 @@ const ProxmoxServer = () => {
 
   return (
     <div>
-      <PageSection padding={{ default: 'noPadding' }}>
-        <Title headingLevel="h3">Advanced</Title>
-        <Divider component="li" style={{ marginBottom: '2rem' }} />
-        <div>
           <ExpandableSection
             toggleText="Main Options"
             onToggle={onExpand}
@@ -208,8 +213,8 @@ const ProxmoxServer = () => {
           </ExpandableSection>
           <ExpandableSection
             toggleText="Memory"
-            onToggle={onsExpand}
-            isExpanded={isOpen}
+            onToggle={memExpand}
+            isExpanded={memExpanded}
 	    className="customExpandableSection"
           >
             <InputField
@@ -233,8 +238,8 @@ const ProxmoxServer = () => {
           </ExpandableSection>
           <ExpandableSection
             toggleText="Operating System"
-            onToggle={onsExpand}
-            isExpanded={isOpen}
+            onToggle={osExpand}
+            isExpanded={osExpanded}
 	    className="customExpandableSection"
           >
             <InputField
@@ -245,17 +250,8 @@ const ProxmoxServer = () => {
               onChange={e => setHdStorage(e.target.value)}
             />
           </ExpandableSection>
-        </div>
-      </PageSection>
-      <PageSection padding={{ default: 'noPadding' }}>
-        <Title headingLevel="h3">Network Interfaces</Title>
-        <Divider component="li" style={{ marginBottom: '2rem' }} />
 	  <Button onClick={addInterface} variant="primary">Add Interface</Button>
 	  {interfaces}
-      </PageSection>
-      <PageSection padding={{ default: 'noPadding' }}>
-        <Title headingLevel="h3">Storage</Title>
-        <Divider component="li" style={{ marginBottom: '2rem' }} />
       {cloudInit && (
         <Button onClick={addCloudInit} variant="primary" size="sm"> Add Cloud-init </Button>
       )}
@@ -272,7 +268,6 @@ const ProxmoxServer = () => {
       {'  '}
       <Button onClick={addHardDisk} variant="primary">Add Hard Disk </Button>
           {hardDisks}	
-      </PageSection>
     </div>
   );
 };

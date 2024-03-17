@@ -11,68 +11,89 @@ import {
   ExpandableSectionToggle,
 } from '@patternfly/react-core';
 import ProxmoxComputeSelectors from './ProxmoxComputeSelectors';
-import ProxmoxServer from './ProxmoxServer';
-import Select from 'foremanReact/components/common/forms/Select';
+import {Tabs, Tab, TabTitleText, Tooltip} from '@patternfly/react-core';
+import ProxmoxServerStorage from './ProxmoxServer/ProxmoxServerStorage';
+import ProxmoxServerOptions from './ProxmoxServer/ProxmoxServerOptions';
+import ProxmoxServerNetwork from './ProxmoxServer/ProxmoxServerNetwork';
+import ProxmoxContainerNetwork from './ProxmoxContainer';
+import ProxmoxContainerOptions from './ProxmoxContainer';
+import ProxmoxContainerStorage from './ProxmoxContainer';
 import InputField from './common/FormInputs';
-import TextInput from 'foremanReact/components/common/forms/TextInput';
+import { connect } from 'react-redux';
+import {
+  setVmId,
+  setNode,
+  setImage,
+  setPool,
+  setVmType,
+} from './ProxmoxVmTypeActions';
 
-const ProxmoxVmType = ({ computeResource, types_map, new_vm }) => {
-  const [selectedValue, setSelectedValue] = useState('qemu');
-  const [vmId, setVmId] = useState('');
-  const [image, setImage] = useState('');
-  const [pool, setPool] = useState('');
-  const [node, setNode] = useState('');
+import {
+  selectVmId,
+  selectNode,
+  selectImage,
+  selectPool,
+  selectVmType,
+} from './ProxmoxVmTypeSelectors';
 
-  const handleVmType = e => {
-    setSelectedValue(e.target.value);
+const ProxmoxVmType = ({ 
+  vm_attributes,
+  paramsScope,
+  vmType,
+  setVmType,
+  vmId,
+  node,
+  image,
+  pool,
+  nodes,
+  images,
+  pools,
+  setVmId,
+  setNode,
+  setImage,
+  setPool,
+ from_profile, new_vm }) => {
+  const nodesMap = nodes.map(node => ({value: node.node, label: node.node}));
+  const imagesMap = images.map(image => ({value: image, label: image}));
+  const poolsMap = pools.map(pool => ({value: pool.poolid, label: pool.poolid}));
+  const [activeTabKey, setActiveTabKey] = React.useState(0);
+  const handleTabClick = (event, tabIndex) => {
+    setActiveTabKey(tabIndex);
   };
-
-  const handleChange = ({}) => {
-    console.log('**********************8, e.target');
-  };
-
+/*
   const renderSelectedForm = () => {
-    console.log(
-      '***********selected type',
-      ProxmoxComputeSelectors.proxmoxCpuFlagsMap.map(option => (
-        <option value={option.value}>{option.label}</option>
-      ))
-    );
-    console.log('****************8 slected cavlue', selectedValue);
-    switch (selectedValue) {
+    console.log("*********************8 vmType is ", vmType);
+    switch (vmType) {
       case 'qemu':
         return <ProxmoxServer />;
       case 'lxc':
-        return null;
+        return <ProxmoxContainer />;
       default:
         return null;
     }
-  };
-
-  const typesOptions = { qemu: 'KVM/Qemu server', lxc: 'LXC container' };
-
+  }; */
+  console.log("*****************8 paramsScope  ", paramsScope, "vm_attras", vm_attributes);
   const proxmoxTypesMap = [
     { value: 'qemu', label: 'KVM/Qemu server' },
     { value: 'lxc', label: 'LXC container' },
   ];
-
   return (
     <div>
       <InputField
         label="Type"
         required
-        onChange={e => setSelectedValue(e.target.value)}
-        value={selectedValue}
+        onChange={e => setVmType(e.target.value)}
+        value={vmType}
         options={ProxmoxComputeSelectors.proxmoxTypesMap}
         type="select"
       />
+      <Tabs activeKey={activeTabKey} onSelect={handleTabClick} aria-label="Tabs in the default example" role="region">
+      <Tab eventKey={0} title={<TabTitleText>General</TabTitleText>} aria-label="Default content - general">
       <PageSection padding={{ default: 'noPadding' }}>
-        <Title headingLevel="h3">General</Title>
         <Divider component="li" style={{ marginBottom: '2rem' }} />
         <InputField
           label="VM ID"
           required
-          type="number"
           value={vmId}
           onChange={e => setVmId(e.target.value)}
         />
@@ -81,27 +102,63 @@ const ProxmoxVmType = ({ computeResource, types_map, new_vm }) => {
           required
           type="select"
           value={node}
-          options={proxmoxTypesMap}
+          options={nodesMap}
           onChange={e => setNode(e.target.value)}
         />
         <InputField
           label="Image"
           type="select"
           value={image}
-          options={proxmoxTypesMap}
+          options={imagesMap}
           onChange={e => setImage(e.target.value)}
         />
         <InputField
           label="Pool"
           type="select"
           value={pool}
-          options={proxmoxTypesMap}
+          options={poolsMap}
           onChange={e => setPool(e.target.value)}
         />
       </PageSection>
-      {renderSelectedForm()}
+      </Tab>
+      <Tab eventKey={1} title={<TabTitleText>Advanced Options</TabTitleText>} aria-label="advanced options">
+	  {(vmType === 'qemu') ? (<ProxmoxServerOptions />) : null}
+	  {(vmType === 'lxc') ? (<ProxmoxContainerOptions />) : null }
+      </Tab>
+      <Tab eventKey={2} title={<TabTitleText>Network Interfaces</TabTitleText>} aria-label="Network interface">
+	  {(vmType === 'qemu') ? (<ProxmoxServerNetwork />) : (<ProxmoxContainerNetwork />)}
+      </Tab>
+      <Tab eventKey={3} title={<TabTitleText>Storage</TabTitleText>} aria-label="storage">
+	  {(vmType === 'qemu') ? (<ProxmoxServerStorage />) : (<ProxmoxContainerStorage />)}
+      </Tab>
+      </Tabs>
+      <div className="compute-attribute-body">
+          <input
+            value={vmType}
+            id="controller_hidden"
+            name={paramsScope}
+            type="hidden"
+          />
+      </div>
     </div>
   );
 };
 
-export default ProxmoxVmType;
+const mapStateToProps = (state) => ({
+  vmType: selectVmType(state),
+  vmId: selectVmId(state),
+  node: selectNode(state),
+  image: selectImage(state),
+  pool: selectPool(state),
+  state: state // Pass the entire state as a prop
+});
+
+const mapDispatchToProps = {
+  setVmType,
+  setVmId,
+  setNode,
+  setImage,
+  setPool,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProxmoxVmType);

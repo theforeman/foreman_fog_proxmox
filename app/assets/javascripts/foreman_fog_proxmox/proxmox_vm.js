@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-//= require jquery-ui/widgets/accordion
-
 $(document).ready(vmTypeSelected);
 
 function vmTypeSelected() {
@@ -25,13 +23,21 @@ function vmTypeSelected() {
   var host_uuid = $("input[id='host_uuid']").val();
   var new_vm =  host_uuid == undefined;
   var fieldsets = [];
+  var fieldconfig = [];
   fieldsets.push({id: 'config_advanced_options', toggle: true, new_vm: new_vm, selected: selected});
   fieldsets.push({id: 'config_ext', toggle: true, new_vm: new_vm, selected: selected});
   fieldsets.push({id: 'volume', toggle: true, new_vm: new_vm, selected: selected});
   fieldsets.push({id: 'network', toggle: true, new_vm: true, selected: selected});
+  fieldconfig.push({id: 'config_options', new_vm: new_vm, selected: selected});
+  fieldconfig.push({id: 'config_cpu', new_vm: new_vm, selected: selected});
+  fieldconfig.push({id: 'config_memory', new_vm: new_vm, selected: selected});
+  fieldconfig.push({id: 'config_cdrom', new_vm: new_vm, selected: selected});
+  fieldconfig.push({id: 'config_os', new_vm: new_vm, selected: selected});
+  fieldconfig.push({id: 'config_dns', new_vm: new_vm, selected: selected});
   fieldsets.forEach(toggleFieldsets);
-  toggleAccordion(selected);
   toggleVolumes(selected);
+  fieldconfig.forEach(toggleConfigs);
+  toggleAccordions();
   return false;
 }
 
@@ -131,7 +137,7 @@ function enableFieldset(fieldsetId, fieldset) {
   input_hidden_id(fieldsetId).removeAttr('disabled');
 }
 
-function disableFieldset(fieldsetId, fieldset) {  
+function disableFieldset(fieldsetId, fieldset) {
   if (fieldset.toggle && fieldset.new_vm){
     fieldset_id(fieldsetId, fieldset).hide();
   }
@@ -139,36 +145,7 @@ function disableFieldset(fieldsetId, fieldset) {
   input_hidden_id(fieldsetId).attr('disabled','disabled');
 }
 
-function enableConfigOptions(fieldsetId) {
-  var field = $("#" + fieldsetId + "_advanced_options");
-  field.accordion({collapsible : true, heightStyle: "content"});
-  field.removeClass('disabled').find("*").prop("disabled", false);
-  field.removeClass('hide');
-}
-
-function disableConfigOptions(fieldsetId) {
-  var field = $("#" + fieldsetId + "_advanced_options");
-  field.addClass('disabled').find("*").prop("disabled", true);
-  field.addClass('hide');
-}
-
-function toggleConfigOptions(fieldsetId, type1, type2) {
-  if (type1 === type2) {
-    enableConfigOptions(fieldsetId);
-  } else {
-    disableConfigOptions(fieldsetId);
-  }
-}
-
-function toggleAccordion(selected){
-  ['qemu', 'lxc'].forEach(function(type){
-    fieldsets(type).forEach(function(fieldsetId){
-      toggleConfigOptions(fieldsetId, selected, type);
-    });
-  });
-}
-
-function toggleFieldset(fieldsetId, fieldset, type1, type2) {  
+function toggleFieldset(fieldsetId, fieldset, type1, type2) {
   type1 === type2 ? enableFieldset(fieldsetId, fieldset) : disableFieldset(fieldsetId, fieldset);
 }
 
@@ -186,10 +163,54 @@ function fieldsets(type){
 
 function toggleFieldsets(fieldset){
   var removable_input_hidden = $("div.removable-item[style='display: none;']" + " + input:hidden");
-  removable_input_hidden.attr('disabled','disabled');  
+  removable_input_hidden.attr('disabled','disabled');
   ['qemu', 'lxc'].forEach(function(type){
     fieldsets(type).forEach(function(fieldsetId){
       toggleFieldset(fieldsetId, fieldset, fieldset.selected, type);
+    });
+  });
+}
+
+function toggleAccordions() {
+  $('.accordion-content').hide();
+  $('.accordion-section').off('click').on('click', function(event) {
+    var $content = $(this).find('.accordion-content');
+    $content.slideToggle();
+    $(this).toggleClass('active');
+    $('.accordion-content').not($content).slideUp();
+    $('.accordion-section').not($(this)).removeClass('active');
+    event.stopPropagation();
+  });
+  $('.accordion-content').on('click', function(event) {
+    event.stopPropagation();
+  });
+}
+
+function enableConfig(fieldsetId, fieldset) {
+  fieldset_id(fieldsetId, fieldset).removeClass('hide');
+  fieldset_id(fieldsetId, fieldset).removeAttr('disabled');
+  input_hidden_id(fieldsetId).removeAttr('disabled');
+
+}
+
+function disableConfig(fieldsetId, fieldset) {
+  fieldset_id(fieldsetId, fieldset).addClass('hide');
+  fieldset_id(fieldsetId, fieldset).attr('disabled','disabled');
+  input_hidden_id(fieldsetId).attr('disabled','disabled');
+}
+
+function toggleConfig(fieldsetId, fieldset, type1, type2) {
+  if (type1 === type2) {
+    enableConfig(fieldsetId, fieldset);
+  } else {
+    disableConfig(fieldsetId, fieldset);
+  }
+}
+
+function toggleConfigs(fieldset){
+  ['qemu', 'lxc'].forEach(function(type){
+    fieldsets(type).forEach(function(fieldsetId){
+      toggleConfig(fieldsetId, fieldset, fieldset.selected, type);
     });
   });
 }

@@ -1,0 +1,21 @@
+.accordion-section {
+   cursor: pointer;
+}
+
+.accordion-section > legend::before {
+    content: "\f054";
+    font-family: "Font Awesome 5 Free";
+    position: relative;
+    left: -1em;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.accordion-section.active > legend::before {
+    content: "\f078";
+    font-family: "Font Awesome 5 Free";
+    position: relative;
+    left: -1em;
+    top: 50%;
+    transform: translateY(-50%);
+}

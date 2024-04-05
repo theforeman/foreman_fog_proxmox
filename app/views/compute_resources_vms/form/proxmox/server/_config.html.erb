@@ -16,25 +16,23 @@ You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <%= javascript_include_tag 'foreman_fog_proxmox/proxmox_vm_server', "data-turbolinks-track" => true %>
-
+<%= stylesheet_link_tag 'foreman_fog_proxmox/accordion' %>
 <% server = type == 'qemu' %>
 <% logger.debug("_config.html.erb server_config=#{f.object.inspect}") %>
-
-<%= content_tag :div, :id => "server_advanced_options" do %>
-  <%= content_tag :h3, "Main Options" %>
-  <div>
-    <%= textarea_f f, :description, :label => _('Description'), :label_size => "col-md-2" %>
-    <%= text_f f, :boot, :label => _('Boot device order'), :label_size => "col-md-2", :label_help => _('Order your devices, e.g. order=net0;ide2;scsi0. Default empty (any)')  %>
-    <%= checkbox_f f, :onboot, :label => _('Start at boot') %>
-    <%= checkbox_f f, :agent, :label => _('Qemu Agent') %>
-    <%= checkbox_f f, :kvm, :label => _('KVM'), :label_help => _('Enable/disable KVM hardware virtualization') %>
-    <%= select_f f, :vga, proxmox_vgas_map, :id, :name, { :include_blank => true }, :label => _('VGA'), :label_size => "col-md-2" %>
-    <%= select_f f, :scsihw, proxmox_scsi_controllers_map, :id, :name, { }, :label => _('SCSI Controller'), :label_size => "col-md-2" %>
-    <%= select_f f, :bios, proxmox_bios_map, :id, :name, { }, :label => _('BIOS'), :label_size => "col-md-2" %>
+<%= field_set_tag n_("Main option", "Main options", 2), :id => "server_config_options", :class => 'accordion-section', :disabled => !server do %>
+  <div class="accordion-content">
+  <%= textarea_f f, :description, :label => _('Description'), :label_size => "col-md-2" %>
+  <%= text_f f, :boot, :label => _('Boot device order'), :label_size => "col-md-2", :label_help => _('Order your devices, e.g. order=net0;ide2;scsi0. Default empty (any)')  %>
+  <%= checkbox_f f, :onboot, :label => _('Start at boot') %>
+  <%= checkbox_f f, :agent, :label => _('Qemu Agent') %>
+  <%= checkbox_f f, :kvm, :label => _('KVM'), :label_help => _('Enable/disable KVM hardware virtualization') %>
+  <%= select_f f, :vga, proxmox_vgas_map, :id, :name, { :include_blank => true }, :label => _('VGA'), :label_size => "col-md-2" %>
+  <%= select_f f, :scsihw, proxmox_scsi_controllers_map, :id, :name, { }, :label => _('SCSI Controller'), :label_size => "col-md-2" %>
+  <%= select_f f, :bios, proxmox_bios_map, :id, :name, { }, :label => _('BIOS'), :label_size => "col-md-2" %>
   </div>
-
-  <%= content_tag :h3, "CPUs" %>
-  <div>
+<% end %>
+<%= field_set_tag _("CPUs"), :id => "server_config_cpu", :class => 'accordion-section', :disabled => !server do %>
+  <div class="accordion-content">
   <%= select_f f, :cpu_type, proxmox_cpus_map, :id, :name, { }, :label => _('Type'), :label_size => "col-md-2" %>
   <%= counter_f f, :sockets, :class => "input-mini", :label => _('Sockets'), :label_size => "col-md-2" %>
   <%= counter_f f, :cores, :class => "input-mini", :label => _('Cores'), :label_size => "col-md-2" %>
@@ -48,14 +46,16 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     <% end %>
   <% end %>
   </div>
-  <%= content_tag :h3, "Memory" %>
-  <div>
+<% end %>
+<%= field_set_tag _("Memory"), :id => "server_config_memory", :class => 'accordion-section', :disabled => !server do %>
+  <div class="accordion-content">
   <%= text_f f, :memory, :class => "input-mini", :label => _('Memory (MB)'), :label_size => "col-md-2" %>
   <%= text_f f, :balloon, :class => "input-mini", :label => _('Minimum memory (MB)'), :label_size => "col-md-2" %>
   <%= text_f f, :shares, :class => "input-mini", :label => _('Shares (MB)'), :label_size => "col-md-2" %>
   </div>
-  <%= content_tag :h3, "Operating System" %>
-  <div>
+<% end %>
+<%= field_set_tag _("Operating System"), :id => "server_config_os", :class => 'accordion-section', :disabled => !server do %>
+  <div class="accordion-content">
   <%= select_f f, :ostype, proxmox_operating_systems_map, :id, :name, { :include_blank => true }, :label => _('OS type'), :label_size => "col-md-2" %>
   </div>
 <% end %>

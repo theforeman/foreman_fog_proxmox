@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.15.1](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.15.0...v0.15.1) (2024-04-05)
+
+
+### Bug Fixes
+
+* Advanced options are not set in host creation ([#317](https://github.com/theforeman/foreman_fog_proxmox/issues/317)) ([5bcd877](https://github.com/theforeman/foreman_fog_proxmox/commit/5bcd87796a8f26725a79397904911252b5991f6f)), closes [#310](https://github.com/theforeman/foreman_fog_proxmox/issues/310)
+* auto set vmid when creating host from Foreman API ([#312](https://github.com/theforeman/foreman_fog_proxmox/issues/312)) ([edc4a0c](https://github.com/theforeman/foreman_fog_proxmox/commit/edc4a0c93a5a1d5c0ed336174147a62cbc241e86)), closes [#254](https://github.com/theforeman/foreman_fog_proxmox/issues/254)
+* Disk controller setup does not add hard disk other than virtio0 ([#304](https://github.com/theforeman/foreman_fog_proxmox/issues/304)) ([2fcf04c](https://github.com/theforeman/foreman_fog_proxmox/commit/2fcf04c84d2071c9ab3b15f1d4004da4e0567903))
+
 ## [0.15.0](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.14.3...v0.15.0) (2023-11-15)
 
 

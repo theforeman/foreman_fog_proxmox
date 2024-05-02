@@ -15,6 +15,7 @@ import {Tabs, Tab, TabTitleText, Tooltip} from '@patternfly/react-core';
 import ProxmoxServerStorage from './ProxmoxServer/ProxmoxServerStorage';
 import ProxmoxServerOptions from './ProxmoxServer/ProxmoxServerOptions';
 import ProxmoxServerNetwork from './ProxmoxServer/ProxmoxServerNetwork';
+import ProxmoxServerHardware from './ProxmoxServer/ProxmoxServerHardware';
 import ProxmoxContainerNetwork from './ProxmoxContainer';
 import ProxmoxContainerOptions from './ProxmoxContainer';
 import ProxmoxContainerStorage from './ProxmoxContainer';
@@ -26,6 +27,7 @@ import {
   setImage,
   setPool,
   setVmType,
+  setDescription,
 } from './ProxmoxVmTypeActions';
 
 import {
@@ -34,6 +36,7 @@ import {
   selectImage,
   selectPool,
   selectVmType,
+  selectDescription,
 } from './ProxmoxVmTypeSelectors';
 
 const ProxmoxVmType = ({ 
@@ -45,6 +48,7 @@ const ProxmoxVmType = ({
   node,
   image,
   pool,
+  description,
   nodes,
   images,
   pools,
@@ -52,6 +56,7 @@ const ProxmoxVmType = ({
   setNode,
   setImage,
   setPool,
+  setDescription,
  from_profile, new_vm }) => {
   const nodesMap = nodes.map(node => ({value: node.node, label: node.node}));
   const imagesMap = images.map(image => ({value: image, label: image}));
@@ -60,23 +65,8 @@ const ProxmoxVmType = ({
   const handleTabClick = (event, tabIndex) => {
     setActiveTabKey(tabIndex);
   };
-/*
-  const renderSelectedForm = () => {
-    console.log("*********************8 vmType is ", vmType);
-    switch (vmType) {
-      case 'qemu':
-        return <ProxmoxServer />;
-      case 'lxc':
-        return <ProxmoxContainer />;
-      default:
-        return null;
-    }
-  }; */
-  console.log("*****************8 paramsScope  ", paramsScope, "vm_attras", vm_attributes);
-  const proxmoxTypesMap = [
-    { value: 'qemu', label: 'KVM/Qemu server' },
-    { value: 'lxc', label: 'LXC container' },
-  ];
+
+
   return (
     <div>
       <InputField
@@ -119,22 +109,46 @@ const ProxmoxVmType = ({
           options={poolsMap}
           onChange={e => setPool(e.target.value)}
         />
+	<InputField
+              label="Description"
+              type="textarea"
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+            />
+	
       </PageSection>
       </Tab>
       <Tab eventKey={1} title={<TabTitleText>Advanced Options</TabTitleText>} aria-label="advanced options">
+        <PageSection padding={{ default: 'noPadding' }}>
+        <Divider component="li" style={{ marginBottom: '2rem' }} />
 	  {(vmType === 'qemu') ? (<ProxmoxServerOptions />) : null}
 	  {(vmType === 'lxc') ? (<ProxmoxContainerOptions />) : null }
+	</PageSection>
       </Tab>
-      <Tab eventKey={2} title={<TabTitleText>Network Interfaces</TabTitleText>} aria-label="Network interface">
-	  {(vmType === 'qemu') ? (<ProxmoxServerNetwork />) : (<ProxmoxContainerNetwork />)}
+      <Tab eventKey={2} title={<TabTitleText>Hardware</TabTitleText>} aria-label="hardware">
+        <PageSection padding={{ default: 'noPadding' }}>
+        <Divider component="li" style={{ marginBottom: '2rem' }} />
+          {(vmType === 'qemu') ? (<ProxmoxServerHardware />) : null}
+        </PageSection>
       </Tab>
-      <Tab eventKey={3} title={<TabTitleText>Storage</TabTitleText>} aria-label="storage">
-	  {(vmType === 'qemu') ? (<ProxmoxServerStorage />) : (<ProxmoxContainerStorage />)}
+      <Tab eventKey={3} title={<TabTitleText>Network Interfaces</TabTitleText>} aria-label="Network interface">
+        <PageSection padding={{ default: 'noPadding' }}>
+        <Divider component="li" style={{ marginBottom: '2rem' }} />
+	  {(vmType === 'qemu') ? (<ProxmoxServerNetwork />) : null }
+	  {(vmType === 'lxc') ? (<ProxmoxContainerNetwork />) : null }
+        </PageSection>
+      </Tab>
+      <Tab eventKey={4} title={<TabTitleText>Storage</TabTitleText>} aria-label="storage">
+        <PageSection padding={{ default: 'noPadding' }}>
+        <Divider component="li" style={{ marginBottom: '2rem' }} />
+	  {(vmType === 'qemu') ? (<ProxmoxServerStorage />) : null }
+	  {(vmType === 'lxc') ? (<ProxmoxContainerStorage />) : null }
+        </PageSection>
       </Tab>
       </Tabs>
       <div className="compute-attribute-body">
-          <input
-            value={vmType}
+	  <input
+	  value={{'type': vmType}}
             id="controller_hidden"
             name={paramsScope}
             type="hidden"
@@ -150,6 +164,7 @@ const mapStateToProps = (state) => ({
   node: selectNode(state),
   image: selectImage(state),
   pool: selectPool(state),
+  description: selectDescription(state),
   state: state // Pass the entire state as a prop
 });
 
@@ -159,6 +174,7 @@ const mapDispatchToProps = {
   setNode,
   setImage,
   setPool,
+  setDescription,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProxmoxVmType);

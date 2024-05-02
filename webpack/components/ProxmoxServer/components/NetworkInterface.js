@@ -8,7 +8,7 @@ import {
 import InputField from '../../common/FormInputs';
 import ProxmoxComputeSelectors from '../../ProxmoxComputeSelectors';
 
-const NetworkInterface = ({ key, onRemove }) => {
+const NetworkInterface = ({ id }) => {
   const [hdStorage, setHdStorage] = useState('');
   const handleHdStorage = (hdStorage, event) => {
     setHdStorage(hdStorage);
@@ -16,15 +16,6 @@ const NetworkInterface = ({ key, onRemove }) => {
 
   return (
     <div style={{ position: 'relative' }} >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-	<button
-          style={{ position: 'absolute', top: '5px', right: '5px', cursor: 'pointer' }}
-          onClick={onRemove}
-        >
-          X
-        </button>
-        <Title headingLevel="h4">Nic  </Title>
-      </div>
         <Divider component="li" style={{ marginBottom: '2rem' }} />
         <InputField
           label="Indentifier"

@@ -8,23 +8,16 @@ import {
 import InputField from '../../common/FormInputs';
 import ProxmoxComputeSelectors from '../../ProxmoxComputeSelectors';
 
-const HardDisk = ({ key, onRemove }) => {
+const HardDisk = ({ id }) => {
   const [hdStorage, setHdStorage] = useState('');
   const handleHdStorage = (hdStorage, event) => {
     setHdStorage(hdStorage);
   };
+ 
+  console.log("hdd key", {id});
 
   return (
-    <div style={{ position: 'relative' }} >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-	<button
-          style={{ position: 'absolute', top: '5px', right: '5px', cursor: 'pointer' }}
-          onClick={onRemove}
-        >
-          X
-        </button>
-        <Title headingLevel="h4"> Hard Disk </Title>
-      </div>
+    <div >
         <Divider component="li" style={{ marginBottom: '2rem' }} />
         <InputField
           label="Storage"

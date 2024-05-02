@@ -20,7 +20,7 @@ const CloudInit = ({ onRemove }) => {
     <div style={{ position: 'relative' }} >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Title headingLevel="h4">Cloud-init  </Title>
-        <button onClick={onRemove} >x</button>
+        <button onClick={onRemove} ><TimesIcon/></button>
       </div>
         <Divider component="li" style={{ marginBottom: '2rem' }} />
         <InputField

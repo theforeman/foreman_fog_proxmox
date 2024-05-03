@@ -5,4 +5,4 @@ export const selectVmId = (state) => selectProxmoxVm(state).vmId;
 export const selectNode = (state) => selectProxmoxVm(state).node;
 export const selectImage = (state) => selectProxmoxVm(state).image;
 export const selectPool = (state) => selectProxmoxVm(state).pool;
-
+export const selectDescription = (state) => selectProxmoxVm(state).description;

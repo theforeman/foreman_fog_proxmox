@@ -25,16 +25,6 @@ require 'foreman_fog_proxmox/hash_collection'
 
 # Convert a foreman form server hash into a fog-proxmox server attributes hash
 module ProxmoxVmConfigHelper
-  def object_to_attributes_hash(vm)
-    vm_h = ActiveSupport::HashWithIndifferentAccess.new
-    keys = [ :vmid, :node_id, :type]
-    main = vm.attributes.select { |key, _value| keys.include? key }
-    config = vm.config.all_attributes
-    logger.debug("************88 object to attributes hash #{vm.config.all_attributes} #{main} \n vm is   \n _____*************8 ")
-    vm_h = vm_h.merge(main)
-    vm_h.merge('config_attributes': config)
-  end
-
   def object_to_config_hash(vm, type)
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
     main_a = ['vmid', 'type']

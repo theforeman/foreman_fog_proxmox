@@ -5,6 +5,7 @@ export const SET_VM_ID = 'SET_VM_ID';
 export const SET_NODE = 'SET_NODE';
 export const SET_IMAGE = 'SET_IMAGE';
 export const SET_POOL = 'SET_POOL';
+export const SET_DESCRIPTION = 'SET_DESCRIPTION';
 
 export const setVmType = (value) => ({
   type: SET_VM_TYPE,
@@ -31,4 +32,7 @@ export const setPool = (value) => ({
   pool: value,
 });
 
-
+export const setDescription = (value) => ({
+  type: SET_DESCRIPTION,
+  description: value,
+});

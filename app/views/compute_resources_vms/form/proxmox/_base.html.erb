@@ -24,24 +24,6 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     -%>
 <% end %>
 <%= javascript_include_tag 'foreman_fog_proxmox/proxmox_vm', "data-turbolinks-track" => true %>
-<%= f.object_name %>
+<%= f.object %>
 <% logger.debug("************** the base obj is #{f.object.config} #{object_to_attributes_hash(f.object)}") %>
-<%= react_component('ProxmoxVmType',  { vm_attributes: object_to_attributes_hash(f.object), nodes: nodes, images: images, pools: compute_resource.pools, from_profile: from_profile, new_vm: new_vm, vmType: f.object.type, paramsScope: "#{f.object_name}"}) %>
-
-<!-- VM General Settings -->
-<%= render :partial => "compute_resources_vms/form/proxmox/general", :locals => { :f => f, :compute_resource =>  compute_resource, :new_vm => new_vm, :from_profile => from_profile } %>
-
-<!-- VM Extended Settings -->
-<%= render :partial => "compute_resources_vms/form/proxmox/container/extended", :locals => { :f => f, :compute_resource =>  compute_resource, :new_vm => new_vm } %>
-
-<!-- VM Advanced Settings -->
-<%= render :partial => "compute_resources_vms/form/proxmox/server/advanced", :locals => { :f => f, :compute_resource =>  compute_resource, :new_vm => new_vm } %>
-<%= render :partial => "compute_resources_vms/form/proxmox/container/advanced", :locals => { :f => f, :compute_resource =>  compute_resource, :new_vm => new_vm } %>
-
-<!-- Config Options Settings-->
-<%= f.fields_for :config, compute_resource.new_typed_vm(object_to_config_hash(f.object, 'qemu'), 'qemu').config, include_id: false do |server_config|%>
-  <%= render :partial => "compute_resources_vms/form/proxmox/server/config", :locals => { :f => server_config, :cloudinit => f.object.cloud_init?, :compute_resource =>  compute_resource, :host => @host, :new_vm => new_vm, :item_layout => 'removable', :type => f.object.type, :node_id => f.object.node_id } %>
-<% end %>
-<%= f.fields_for :config, compute_resource.new_typed_vm(object_to_config_hash(f.object, 'lxc'), 'lxc').config, include_id: false do |container_config|%>
-  <%= render :partial => "compute_resources_vms/form/proxmox/container/config", :locals => { :f => container_config, :compute_resource =>  compute_resource, :host => @host, :new_vm => new_vm, :item_layout => 'removable', :type => f.object.type, :node_id => f.object.node_id } %>
-<% end %>
+<%= react_component('ProxmoxVmType',  { vm_attributes: object_to_attributes_hash(f.object), nodes: nodes, images: images, pools: compute_resource.pools, from_profile: true, new_vm: new_vm, vmType: f.object.type, paramsScope: "#{f.object_name}"}) %>

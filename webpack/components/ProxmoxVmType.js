@@ -66,7 +66,7 @@ const ProxmoxVmType = ({
     setActiveTabKey(tabIndex);
   };
 
-
+  console.log("*******************8 url",`${window.location.origin.toString()}`);
   return (
     <div>
       <InputField

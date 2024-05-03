@@ -4,6 +4,7 @@ import {
   SET_NODE,
   SET_IMAGE,
   SET_POOL,
+  SET_DESCRIPTION,
 } from './ProxmoxVmTypeActions.js';
 
 const initialState = {
@@ -12,6 +13,7 @@ const initialState = {
   node: '',
   image: '',
   pool: '',
+  description: '',
 };
 
 const proxmoxVmType = (state = initialState, action) => {
@@ -41,6 +43,11 @@ const proxmoxVmType = (state = initialState, action) => {
       return {
         ...state,
         pool: action.pool,
+      };
+    case SET_DESCRIPTION:
+      return {
+        ...state,
+	description: action.description,
       };
     default:
       return state;

@@ -26,4 +26,4 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <%= javascript_include_tag 'foreman_fog_proxmox/proxmox_vm', "data-turbolinks-track" => true %>
 <%= f.object %>
 <% logger.debug("************** the base obj is #{f.object.config} #{object_to_attributes_hash(f.object)}") %>
-<%= react_component('ProxmoxVmType',  { vm_attributes: object_to_attributes_hash(f.object), nodes: nodes, images: images, pools: compute_resource.pools, from_profile: true, new_vm: new_vm, vmType: f.object.type, paramsScope: "#{f.object_name}"}) %>
+<%= react_component('ProxmoxVmType',  { vm_attributes: object_to_attributes_hash(f.object), nodes: nodes, images: images, pools: compute_resource.pools, from_profile: true, new_vm: new_vm, paramsScope: "#{f.object_name}"}) %>

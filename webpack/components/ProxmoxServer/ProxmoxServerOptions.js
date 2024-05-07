@@ -16,10 +16,10 @@ import './customStyles.css';
 import {Tabs, Tab, TabTitleText, Tooltip} from '@patternfly/react-core';
 const cacheOptions = { key: 'Cached', value: 'No Cached' };
 
-const ProxmoxServerOptions = () => {
-  const [hdStorage, setHdStorage] = useState('');
-  const handleHdStorage = (hdStorage, event) => {
-    setHdStorage(hdStorage);
+const ProxmoxServerOptions = ({options, onOptionsChange}) => {
+  console.log('Props in ChildComponent:', {options, onOptionsChange});
+  const handleChange = (e) => {
+    onOptionsChange({...options, [e.target.name]:e.target.value});
   };
 
 
@@ -46,55 +46,63 @@ const ProxmoxServerOptions = () => {
   return (
     <div>
             <InputField
+	      name='boot'
               label="Boot device order"
-              value={hdStorage}
-              onChange={e => setHdStorage(e.target.value)}
+              value={options.boot}
+              onChange={handleChange}
             />
             <InputField
+	      name='onboot'
               label="Start at boot"
               type="checkbox"
-              value={hdStorage}
-              onChange={e => setHdStorage(e.target.value)}
+              value={options.onboot}
+              onChange={handleChange}
             />
             <InputField
+	      name='agent'
               label="Qemu Agent"
               type="checkbox"
-              value={hdStorage}
-              onChange={e => setHdStorage(e.target.value)}
+              value={options.agent}
+              onChange={handleChange}
             />
             <InputField
+	      name='kvm'
               label="KVM"
               type="checkbox"
-              value={hdStorage}
-              onChange={e => setHdStorage(e.target.value)}
+              value={options.kvm}
+              onChange={handleChange}
             />
             <InputField
+	      name='vga'
               label="VGA"
               type="select"
-              value={hdStorage}
+              value={options.vga}
               options={ProxmoxComputeSelectors.proxmoxVgasMap}
-              onChange={e => setHdStorage(e.target.value)}
+              onChange={handleChange}
             />
             <InputField
+	      name='scsihw'
               label="SCSI Controller"
               type="select"
-              value={hdStorage}
+              value={options.scsihw}
               options={ProxmoxComputeSelectors.proxmoxScsiControllersMap}
-              onChange={e => setHdStorage(e.target.value)}
+              onChange={handleChange}
             />
             <InputField
+	      name='bios'
               label="BIOS"
               type="select"
               options={ProxmoxComputeSelectors.proxmoxBiosMap}
-              value={hdStorage}
-              onChange={e => setHdStorage(e.target.value)}
+              value={options.bios}
+              onChange={handleChange}
             />
             <InputField
+	      name='ostype'
               label="OS Type"
               type="select"
               options={ProxmoxComputeSelectors.proxmoxOperatingSystemsMap}
-              value={hdStorage}
-              onChange={e => setHdStorage(e.target.value)}
+              value={options.ostype}
+              onChange={handleChange}
             />
     </div>
   );

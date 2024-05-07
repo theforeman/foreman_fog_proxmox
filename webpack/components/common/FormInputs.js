@@ -14,6 +14,7 @@ import PropTypes from 'prop-types';
 import CommonForm from 'foremanReact/components/common/forms/CommonForm';
 
 const InputField = ({
+  name,
   label,
   value,
   onChange,
@@ -29,6 +30,7 @@ const InputField = ({
     <CommonForm label={label} required={required} className="common-textInput">
       {type === 'textarea' ? (
         <textarea
+	  name={name}
           className="form-control"
           rows="3"
           cols="50"
@@ -38,6 +40,7 @@ const InputField = ({
       ) : type === 'select' ? (
         <select
           disabled={disabled}
+	  name={name}
           className="form-control"
           value={value}
           onChange={onChange}
@@ -46,6 +49,7 @@ const InputField = ({
         </select>
       ) : (
         <input
+	  name={name}
           type={type}
           className={type === 'checkbox' ? '' : 'form-control'}
           value={value}
@@ -58,12 +62,13 @@ const InputField = ({
 };
 
 InputField.propTypes = {
+  name: PropTypes.string,
   label: PropTypes.string,
   value: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.number,
     PropTypes.bool,
-  ]).isRequired,
+  ]),
   onChange: PropTypes.func.isRequired,
   required: PropTypes.bool,
   type: PropTypes.oneOf(['text', 'number', 'textarea', 'select', 'checkbox']),
@@ -84,6 +89,7 @@ InputField.defaultProps = {
   type: 'text',
   disabled: false,
   options: [],
+  name: '',
 };
 
 export default InputField;

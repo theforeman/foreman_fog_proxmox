@@ -9,99 +9,85 @@ import {
   Title,
   Divider,
   SelectOption,
-  ExpandableSection,
-  ExpandableSectionToggle,
 } from '@patternfly/react-core';
-import './customStyles.css';
-import {Tabs, Tab, TabTitleText, Tooltip} from '@patternfly/react-core';
-const cacheOptions = { key: 'Cached', value: 'No Cached' };
 
-const ProxmoxServerOptions = ({options, onOptionsChange}) => {
-  console.log('Props in ChildComponent:', {options, onOptionsChange});
+const ProxmoxServerOptions = ({options}) => {
+  const [opts, setOpts] = useState(options);
+
   const handleChange = (e) => {
-    onOptionsChange({...options, [e.target.name]:e.target.value});
+    console.log("****************** opts", opts.onboot.value, (opts.onboot.value === 1));
+    const { name, type, checked } = e.target;
+    const value = type === "checkbox" ? (checked ? "1" : "0") : e.target.value;
+    const updatedKey = Object.keys(opts).find(key => opts[key].name === name);
+    setOpts(prevOpts => ({
+      ...prevOpts,
+      [updatedKey]: { ...prevOpts[updatedKey], value: value },
+    }));
   };
-
-
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const [memExpanded, setMemExpanded] = useState(false);
-  const [osExpanded, setOsExpanded] = useState(false);
-  const onExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
-
-  const onsExpand = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const memExpand = () => {
-    setMemExpanded(!memExpanded);
-  };
-
-  const osExpand = () => {
-    setOsExpanded(!osExpanded);
-  };
-
+  
+  console.log("****************** opts.onboot", opts.onboot.value, (opts.onboot.value === "1"));
   return (
     <div>
             <InputField
-	      name='boot'
+	      name={opts.boot.name}
               label="Boot device order"
-              value={options.boot}
+              value={opts.boot.value}
               onChange={handleChange}
             />
             <InputField
-	      name='onboot'
+	      name={opts.onboot.name}
               label="Start at boot"
               type="checkbox"
-              value={options.onboot}
+              value={opts.onboot.value}
+	      checked={opts.onboot.value === "1"}
               onChange={handleChange}
             />
             <InputField
-	      name='agent'
+	      name={opts.agent.name}
               label="Qemu Agent"
               type="checkbox"
-              value={options.agent}
+              value={opts.agent.value}
+	      checked={opts.agent.value === "1"}
               onChange={handleChange}
             />
             <InputField
-	      name='kvm'
+	      name={opts.kvm.name}
               label="KVM"
               type="checkbox"
-              value={options.kvm}
+              value={opts.kvm.value}
+	      checked={opts.kvm.value === "1"}
               onChange={handleChange}
             />
             <InputField
-	      name='vga'
+	      name={opts.vga.name}
               label="VGA"
               type="select"
-              value={options.vga}
+              value={opts.vga.value}
               options={ProxmoxComputeSelectors.proxmoxVgasMap}
               onChange={handleChange}
             />
             <InputField
-	      name='scsihw'
+	      name={opts.scsihw.name}
               label="SCSI Controller"
               type="select"
-              value={options.scsihw}
+              value={opts.scsihw.value}
               options={ProxmoxComputeSelectors.proxmoxScsiControllersMap}
               onChange={handleChange}
             />
             <InputField
-	      name='bios'
+	      name={opts.bios.name}
               label="BIOS"
               type="select"
               options={ProxmoxComputeSelectors.proxmoxBiosMap}
-              value={options.bios}
+              value={opts.bios.value}
               onChange={handleChange}
             />
             <InputField
-	      name='ostype'
+	      name={opts.ostype.name}
               label="OS Type"
               type="select"
               options={ProxmoxComputeSelectors.proxmoxOperatingSystemsMap}
-              value={options.ostype}
+              value={opts.ostype.value}
               onChange={handleChange}
             />
     </div>

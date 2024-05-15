@@ -14,9 +14,6 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
-<%= webpacked_plugins_js_for :foreman_fog_proxmox %>
-<%= webpacked_plugins_css_for :foreman_fog_proxmox %>
-
 
 <% if compute_resource.class == ForemanFogProxmox::Proxmox %>
     <%= javascript_include_tag 'foreman_fog_proxmox/proxmox_volume', "data-turbolinks-track" => true %>

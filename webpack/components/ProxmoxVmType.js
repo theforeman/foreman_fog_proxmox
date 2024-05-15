@@ -16,19 +16,20 @@ import ProxmoxServerStorage from './ProxmoxServer/ProxmoxServerStorage';
 import ProxmoxServerOptions from './ProxmoxServer/ProxmoxServerOptions';
 import ProxmoxServerNetwork from './ProxmoxServer/ProxmoxServerNetwork';
 import ProxmoxServerHardware from './ProxmoxServer/ProxmoxServerHardware';
-import ProxmoxContainerNetwork from './ProxmoxContainer';
-import ProxmoxContainerOptions from './ProxmoxContainer';
-import ProxmoxContainerStorage from './ProxmoxContainer';
+import ProxmoxContainerNetwork from './ProxmoxContainer/ProxmoxContainerNetwork';
+import ProxmoxContainerOptions from './ProxmoxContainer/ProxmoxContainerOptions';
+import ProxmoxContainerStorage from './ProxmoxContainer/ProxmoxContainerStorage';
+import ProxmoxContainerHardware from './ProxmoxContainer/ProxmoxContainerHardware';
 import InputField from './common/FormInputs';
 import { connect } from 'react-redux';
 
 const ProxmoxVmType = ({ 
   vm_attributes,
-  paramsScope,
   nodes,
   images,
   pools,
- from_profile, new_vm }) => {
+ from_profile, new_vm, storages }) => {
+  console.log("*************** vm_attributes", storages);
   const nodesMap = nodes.map(node => ({value: node.node, label: node.node}));
   const imagesMap = images.map(image => ({value: image, label: image}));
   const poolsMap = pools.map(pool => ({value: pool.poolid, label: pool.poolid}));
@@ -37,47 +38,49 @@ const ProxmoxVmType = ({
     setActiveTabKey(tabIndex);
   };
   const [vmAttributes, setVmAttributes] = useState(vm_attributes);
-  const [general, setGeneral] = useState(vm_attributes.general);
+  const [general, setGeneral] = useState(vm_attributes);
   const image = '';
 
-  const handleOptionsChange = (newOptionsValues) => {
-    console.log("****************8 vm attrs", vmAttributes);
+  const handleAttributeChange = (key, newValues) => {
     setVmAttributes({
       ...vmAttributes,
-      options: newOptionsValues,
+      [key]: newValues,
     });
   };
 
   const componentMap = {
     'qemu': {
-      options: <ProxmoxServerOptions options={vmAttributes.options} onOptionsChange={handleOptionsChange}/>,
-      hardware: <ProxmoxServerHardware />,
-      network: <ProxmoxServerNetwork />,
-      storage: <ProxmoxServerStorage />,
+      options: <ProxmoxServerOptions options={vm_attributes} />,
+      hardware: <ProxmoxServerHardware hardware={vm_attributes} />,
+      network: <ProxmoxServerNetwork network={vm_attributes.interfaces} />,
+      storage: <ProxmoxServerStorage storage={vm_attributes.disks} storages={storages}/>,
     },
     'lxc': {
-      options: <ProxmoxContainerOptions />,
-      network: <ProxmoxContainerNetwork />,
-      storage: <ProxmoxContainerStorage />
+      options: <ProxmoxContainerOptions options={vm_attributes} />,
+      hardware: <ProxmoxContainerHardware hardware={vm_attributes}  />,
+      network: <ProxmoxContainerNetwork network={vm_attributes.interfaces} />,
+      storage: <ProxmoxContainerStorage storage={vm_attributes.disks} />
     },
   };
 
   const handleChange = (e) => { 
-    setGeneral({
-      ...general,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    const updatedKey = Object.keys(general).find(key => general[key].name === name);
+
+    setGeneral(prevGeneral => ({
+      ...prevGeneral,
+      [updatedKey]: { ...prevGeneral[updatedKey], value: value },
+    }));
   };
 
-  console.log("*************** vm_attributes", vm_attributes);
   return (
     <div>
       <InputField
-	name='type'
+	name={general.type.name}
         label="Type"
         required
-        onChange={e => handlechange(e)}
-        value={general.type}
+        onChange={e => handleChange(e)}
+        value={general.type.value}
         options={ProxmoxComputeSelectors.proxmoxTypesMap}
         type="select"
       />
@@ -86,21 +89,29 @@ const ProxmoxVmType = ({
       <PageSection padding={{ default: 'noPadding' }}>
         <Divider component="li" style={{ marginBottom: '2rem' }} />
         <InputField
-	  name='vmid'
+	  name={general.vmid.name}
           label="VM ID"
           required
-          value={general.vmid}
+          value={general.vmid.value}
           onChange={handleChange}
         />
         <InputField
-	  name='node'
+	  name={general.node_id.name}
           label="Node"
           required
           type="select"
-          value={general.node_id}
+          value={general.node_id.value}
           options={nodesMap}
           onChange={handleChange}
         />
+	<InputField
+	  name={general.pool.name}
+          label="Pool"
+          type="select"
+          value={general.pool.value}
+          options={poolsMap}
+          onChange={handleChange}
+	/>
         <InputField
 	  name='image'
           label="Image"
@@ -109,19 +120,12 @@ const ProxmoxVmType = ({
           options={imagesMap}
           onChange={handleChange}
         />
-        <InputField
-	  name='pool'
-          label="Pool"
-          type="select"
-          value={general.pool}
-          options={poolsMap}
-          onChange={handleChange}
-        />
 	<InputField
 	  name='description'
+	  name={general.description.name}
               label="Description"
               type="textarea"
-              value={general.description}
+              value={general.description.value}
               onChange={handleChange}
             />
 	
@@ -130,36 +134,28 @@ const ProxmoxVmType = ({
       <Tab eventKey={1} title={<TabTitleText>Advanced Options</TabTitleText>} aria-label="advanced options">
         <PageSection padding={{ default: 'noPadding' }}>
         <Divider component="li" style={{ marginBottom: '2rem' }} />
-	  {componentMap[general.type]?.options}
+	  {componentMap[general.type.value]?.options}
 	</PageSection>
       </Tab>
       <Tab eventKey={2} title={<TabTitleText>Hardware</TabTitleText>} aria-label="hardware">
         <PageSection padding={{ default: 'noPadding' }}>
         <Divider component="li" style={{ marginBottom: '2rem' }} />
-	  {componentMap[general.type]?.hardware}
+	  {componentMap[general.type.value]?.hardware}
         </PageSection>
       </Tab>
       <Tab eventKey={3} title={<TabTitleText>Network Interfaces</TabTitleText>} aria-label="Network interface">
         <PageSection padding={{ default: 'noPadding' }}>
         <Divider component="li" style={{ marginBottom: '2rem' }} />
-          {componentMap[general.type]?.network}
+          {componentMap[general.type.value]?.network}
         </PageSection>
       </Tab>
       <Tab eventKey={4} title={<TabTitleText>Storage</TabTitleText>} aria-label="storage">
         <PageSection padding={{ default: 'noPadding' }}>
         <Divider component="li" style={{ marginBottom: '2rem' }} />
-          {componentMap[general.type]?.storage}
+          {componentMap[general.type.value]?.storage}
         </PageSection>
       </Tab>
       </Tabs>
-      <div className="compute-attribute-body">
-	  <input
-	  value={{'type': general.type}}
-            id="controller_hidden"
-            name={paramsScope}
-            type="hidden"
-          />
-      </div>
     </div>
   );
 };

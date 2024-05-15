@@ -11,13 +11,9 @@ import ProxmoxComputeSelectors from '../ProxmoxComputeSelectors';
 import HardDisk from './components/HardDisk';
 import CloudInit from './components/CloudInit';
 import TimesIcon from '@patternfly/react-icons/dist/esm/icons/times-icon';
-const ProxmoxServerStorage = () => {
-const [hdStorage, setHdStorage] = useState('');
-  const handleHdStorage = (hdStorage, event) => {
-    setHdStorage(hdStorage);
-  };
+const ProxmoxServerStorage = ({storage, storages}) => {
   const [hardDisks, setHardDisks] = useState([]); 
-  const [nextId, setNextId] = useState(1);
+  const [nextId, setNextId] = useState(0);
 
   useEffect(() => {  
     addHardDisk();
@@ -25,7 +21,7 @@ const [hdStorage, setHdStorage] = useState('');
 
   const addHardDisk = (event) => {
     if (event) event.preventDefault();
-    const newHardDisk = <HardDisk key={nextId} id={nextId} />;
+    const newHardDisk = <HardDisk key={nextId} id={nextId} storage={storage} storages={storages}/>;
     setHardDisks([...hardDisks, newHardDisk]);
     setNextId(prevId => prevId + 1);
   };

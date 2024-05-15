@@ -14,8 +14,6 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
-<%= webpacked_plugins_js_for :foreman_fog_proxmox %>
-<%= webpacked_plugins_css_for :foreman_fog_proxmox %>
 <% nodes = compute_resource.nodes %>
 <% unless local_assigns[:hide_image] && !new_vm %>
     <%
@@ -23,7 +21,8 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
       images = possible_images(compute_resource, arch, os)
     -%>
 <% end %>
+<% content_for(:javascripts) do %>
+  <%= webpacked_plugins_js_for :foreman_fog_proxmox %>
 <%= javascript_include_tag 'foreman_fog_proxmox/proxmox_vm', "data-turbolinks-track" => true %>
-<%= f.object %>
-<% logger.debug("************** the base obj is #{f.object.config} #{object_to_attributes_hash(f.object)}") %>
-<%= react_component('ProxmoxVmType',  { vm_attributes: object_to_attributes_hash(f.object), nodes: nodes, images: images, pools: compute_resource.pools, from_profile: true, new_vm: new_vm, paramsScope: "#{f.object_name}"}) %>
+<% end %>
+<%= react_component('ProxmoxVmType',  { vm_attributes: object_to_attributes_hash(f.object, from_profile, compute_resource), nodes: nodes, images: images, pools: compute_resource.pools, storages: compute_resource.storages(f.object.node_id), from_profile: true, new_vm: new_vm}) %>

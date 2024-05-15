@@ -22,32 +22,44 @@ require 'fog/proxmox/helpers/nic_helper'
 require 'fog/proxmox/helpers/cpu_helper'
 require 'foreman_fog_proxmox/value'
 require 'foreman_fog_proxmox/hash_collection'
-
+include ForemanFogProxmox::ProxmoxComputeAttributes
 # Convert a foreman form server hash into a fog-proxmox server attributes hash
 module ProxmoxVmAttrsHelper
-  def object_to_attributes_hash(vm)
+  def object_to_attributes_hash(vm, from_profile, cr)
+    paramScope = from_profile ? "compute_attribute[vm_attrs]" : "host[compute_attributes]"
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
-    keys = [ :vmid, :node_id, :type]
+    keys = [ :vmid, :node_id, :type, :pool]
+    extra_keys = [:cpu_type]
     main = vm.attributes.select { |key, _value| keys.include? key }
-    config = vm.config.all_attributes
-    general = [:pool, :description]
-    main.merge!(config.select {|key, _value| general.include? key})
-    opts = [:boot, :vga, :bios, :scsihw, :kvm, :agent, :ostype, :onboot]
-    options = config.select {|key, _value| opts.include? key}
-    cpu = [:cpu_type, :cpulimit, :cpuunits, :vcpus, :cores, :sockets, :numa]
-    cpu_opts = config.select {|key, _value| cpu.include? key}
-    memory = [:memory, :balloon, :shares]
-    mem_opts = config.select {|key, _value| memory.include? key}
-    hw = {'cpus': cpu_opts, 'memory': mem_opts}
-    cloudinit_opts = [:volid, :storage_type, :storage, :controller, :device]
-    cloudinit = config.select {|key, _value| [:ciuser, :cipassword, :searchdomain, :nameserver, :sshkeys].include? key}
-    hdd_opts = [:volid, :storage_type, :storage, :controller, :device, :cache, :size]
-    cdrom_opts = [:storage_type, :cdrom, :storage, :volid]
-    storage = {'hdd': hdd_opts, 'cdrom': cdrom_opts, 'cloudinitVal': cloudinit, 'cloudinit': cloudinit_opts,  'disks': config[:disks] }
-    network = [:id, :model, :bridge, :tag, :rate, :queues, :firewall, :link_down]
-    nics = {'nic': network, 'interfaces': config[:interfaces]}
-    attributes = {'general': main, 'options': options, 'hw': hw, 'storage': storage, 'network': nics }
-    logger
-    vm_h = vm_h.merge(attributes)
+    disks = Hash[vm.config.disks.each_with_index.map do |disk, idx|
+                   [idx.to_s, disk.attributes]
+                 end ]
+    interfaces = Hash[vm.config.interfaces.each_with_index.map do |interface, idx|
+	    [idx.to_s, interface_compute_attributes(interface.attributes)]
+                                               end ]
+    #server = cr.new_typed_vm(vm.attributes, 'qemu')    
+    vm.config.all_attributes.each do |key, value|
+      if key == :interfaces
+        vm_h.merge!({key => {:name => "#{paramScope}[interfaces_attributes]", :value => interfaces }})
+      elsif key == :disks
+	vm_h.merge!({ key => {:name => "#{paramScope}[volumes_attributes]", :value => disks}})
+      elsif !keys.include? key
+        vm_h.merge!({key => {:name => "#{paramScope}[config_attributes][#{key}]", :value => value}})
+      end
+    end
+    main.each do |key, value|
+      vm_h.merge!({key => {:name => "#{paramScope}[#{key}]", :value => value}})
+    end
+    vm_h.merge!({:pool => {:name => "#{paramScope}[pool]", :value => vm.pool}})
+    vm_h.merge!({:cpu_type => {:name => "#{paramScope}[config_attributes][cpu_type]", :value => ""}})
+    vm_h.merge(cpu_flags_attrs(paramScope, config))
+  end
+
+  def cpu_flags_attrs(paramScope, config)
+    flag_attrs = ActiveSupport::HashWithIndifferentAccess.new 
+    Fog::Proxmox::CpuHelper.flags.each do |key, _val|
+	    flag_attrs.merge!({key => {:name => "#{paramScope}[config_attributes][#{key}]", :value => config[key]}})
+    end
+    flag_attrs
   end
 end

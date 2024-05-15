@@ -7,10 +7,11 @@ import {
   Button,
 } from '@patternfly/react-core';
 import TimesIcon from '@patternfly/react-icons/dist/esm/icons/times-icon';
-const ProxmoxServerNetwork = () => {
+const ProxmoxServerNetwork = ({network}) => {
 
   const [interfaces, setInterfaces] = useState([]);
-  const [nextId, setNextId] = useState(1);
+  const [nextId, setNextId] = useState(0);
+  const [availableIds, setAvailableIds] = useState([]);
 
   useEffect(() => {
     addInterface();
@@ -18,14 +19,20 @@ const ProxmoxServerNetwork = () => {
 
   const addInterface = (event) => {
     if (event) event.preventDefault();
-    const newInterface = <NetworkInterface key={nextId} id={nextId} />;
+    const newId = availableIds.length > 0 ? availableIds[0] : nextId;
+    if (availableIds.length > 0) {
+      setAvailableIds(availableIds.slice(1));
+    } else {
+      setNextId(prevId => prevId + 1);
+    }
+    const newInterface = <NetworkInterface key={nextId} id={newId} network={network}  />;
     setInterfaces([...interfaces, newInterface]);
-    setNextId(prevId => prevId + 1);
   };
 
-  const removeInterface = (indexToRemove) => {
-    const newInterfaces = interfaces.filter(nic => nic.props.id !== indexToRemove);
+  const removeInterface = (idToRemove) => {
+    const newInterfaces = interfaces.filter(nic => nic.props.id !== idToRemove);
     setInterfaces(newInterfaces);
+    setAvailableIds([...availableIds, idToRemove].sort((a, b) => a - b));
   };
 
   return (

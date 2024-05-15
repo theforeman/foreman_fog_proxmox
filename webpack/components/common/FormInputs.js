@@ -22,41 +22,69 @@ const InputField = ({
   type,
   disabled,
   options,
+  checked,
 }) => {
   const renderOptions = opts =>
     options.map(option => <option value={option.value}>{option.label}</option>);
 
-  return (
-    <CommonForm label={label} required={required} className="common-textInput">
-      {type === 'textarea' ? (
-        <textarea
-	  name={name}
+  let renderComponent;
+
+  switch (type) {
+        case 'textarea':
+        renderComponent = (
+	<textarea
+          name={name}
           className="form-control"
           rows="3"
           cols="50"
           value={value}
           onChange={onChange}
         />
-      ) : type === 'select' ? (
-        <select
+        );
+	break;
+        case 'select':
+        renderComponent = (
+	<select
           disabled={disabled}
-	  name={name}
+          name={name}
           className="form-control"
           value={value}
           onChange={onChange}
         >
           {renderOptions(options)}
         </select>
-      ) : (
-        <input
-	  name={name}
+        );
+	break;
+        case 'checkbox':
+        renderComponent = (
+	<input
+          name={name}
           type={type}
-          className={type === 'checkbox' ? '' : 'form-control'}
+          className=''
+          value={value}
+	  checked={checked}
+          onChange={onChange}
+          disabled={disabled}
+        />
+	);
+	break;
+	default:
+	renderComponent = (
+         <input
+          name={name}
+          type={type}
+          className='form-control'
           value={value}
           onChange={onChange}
           disabled={disabled}
         />
-      )}
+	);
+	break;
+      }
+
+  return (
+    <CommonForm label={label} required={required} className="common-textInput">
+	  {renderComponent}
     </CommonForm>
   );
 };
@@ -73,6 +101,7 @@ InputField.propTypes = {
   required: PropTypes.bool,
   type: PropTypes.oneOf(['text', 'number', 'textarea', 'select', 'checkbox']),
   disabled: PropTypes.bool,
+  checked: PropTypes.bool,
   options: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,

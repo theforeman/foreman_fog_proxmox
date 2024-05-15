@@ -19,17 +19,19 @@ import {Table, Caption, Thead, Tr, Th, Tbody, Td} from '@patternfly/react-table'
 import PlusCircleIcon from '@patternfly/react-icons/dist/esm/icons/plus-circle-icon';
 const cacheOptions = { key: 'Cached', value: 'No Cached' };
 
-const ProxmoxServerHardware = () => {
-  const [selectedValue, setSelectedValue] = useState('Cached');
+const ProxmoxServerHardware = ({hardware}) => {
+  const [hw, setHw] = useState(hardware);
+  console.log("***************8 hwssssss", hw);
 
-  const handleController = (val, e) => {
-    setSelectedValue(e.target.value);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    const updatedKey = Object.keys(hw).find(key => hw[key].name === name);
+
+    setHw(prevHw => ({
+      ...prevHw,
+      [updatedKey]: { ...prevHw[updatedKey], value: value },
+    }));
   };
-  const [hdStorage, setHdStorage] = useState('');
-  const handleHdStorage = (hdStorage, event) => {
-    setHdStorage(hdStorage);
-  };
-  
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleModalToggle = _event => {
@@ -42,47 +44,54 @@ const ProxmoxServerHardware = () => {
             <Title headingLevel="h3">CPU</Title>
             <Divider component="li" style={{ marginBottom: '2rem' }} />
       <InputField
+	      name={hw.cpu_type.name}
               label="Type"
               type="select"
-              value={hdStorage}
+              value={hw.cpu_type.value}
               options={ProxmoxComputeSelectors.proxmoxCpusMap}
-              onChange={e => setHdStorage(e.target.value)}
+              onChange={handleChange}
             />
             <InputField
+	      name={hw.sockets.name}
               label="Sockets"
               type="number"
-              value={hdStorage}
-              onChange={e => setHdStorage(e.target.value)}
+              value={hw.sockets.value}
+              onChange={handleChange}
             />
             <InputField
+	      name={hw.cores.name}
               label="Cores"
               type="number"
-              value={hdStorage}
-              onChange={e => setHdStorage(e.target.value)}
+              value={hw.cores.value}
+              onChange={handleChange}
             />
             <InputField
+	      name={hw.vcpus.name}
               label="VCPUs"
               type="number"
-              value={hdStorage}
-              onChange={e => setHdStorage(e.target.value)}
+              value={hw.vcpus.value}
+              onChange={handleChange}
             />
             <InputField
+	      name={hw.cpulimit.name}
               label="CPU limit"
               type="number"
-              value={hdStorage}
-              onChange={e => setHdStorage(e.target.value)}
+              value={hw.cpulimit.value}
+              onChange={handleChange}
             />
             <InputField
+	      name={hw.cpuunits.name}
               label="CPU units"
               type="number"
-              value={hdStorage}
-              onChange={e => setHdStorage(e.target.value)}
+              value={hw.cpuunits.value}
+              onChange={handleChange}
             />
             <InputField
+	      name={hw.numa.name}
               label="Enable NUMA"
               type="checkbox"
-              value={hdStorage}
-              onChange={e => setHdStorage(e.target.value)}
+              value={hw.numa.value}
+              onChange={handleChange}
             />
 	    <Button variant="link" icon={<PlusCircleIcon />} onClick={handleModalToggle}>
         Extra CPU Flags
@@ -116,10 +125,11 @@ const ProxmoxServerHardware = () => {
             <Td>md-clear</Td>
 	    <Td>
               <InputField
+	        name={hw.md_clear.name}
                 type="select"
-                value={hdStorage}
+                value={hw.md_clear.value}
                 options={ProxmoxComputeSelectors.proxmoxCpuFlagsMap}
-                onChange={e => setHdStorage(e.target.value)}
+	        onChange={handleChange}
               />
 	     </Td>
             <Td>Required to let the guest OS know if MDS is mitigated correctly</Td>
@@ -128,10 +138,11 @@ const ProxmoxServerHardware = () => {
             <Td>pcid</Td>
 	    <Td>
 	      <InputField
+	        name={hw.pcid.name}
                 type="select"
-                value={hdStorage}
+                value={hw.pcid.value}
                 options={ProxmoxComputeSelectors.proxmoxCpuFlagsMap}
-                onChange={e => setHdStorage(e.target.value)}
+	        onChange={handleChange}
               />
               </Td>
             <Td>Meltdown fix cost reduction on Westmere, Sandy-, and IvyBridge Intel CPUs</Td>
@@ -140,10 +151,11 @@ const ProxmoxServerHardware = () => {
             <Td>spec-ctrl</Td>
             <Td>
 	     <InputField
+	        name={hw.spectre.name}
                 type="select"
-                value={hdStorage}
+                value={hw.spectre.value}
                 options={ProxmoxComputeSelectors.proxmoxCpuFlagsMap}
-                onChange={e => setHdStorage(e.target.value)}
+	        onChange={handleChange}
               />
 	    </Td>
             <Td>Allows improved Spectre mitigation with Intel CPUs</Td>
@@ -152,10 +164,11 @@ const ProxmoxServerHardware = () => {
             <Td>ssbd</Td>
             <Td>
 	     <InputField
+	        name={hw.ssbd.name}
                 type="select"
-                value={hdStorage}
+                value={hw.ssbd.value}
                 options={ProxmoxComputeSelectors.proxmoxCpuFlagsMap}
-                onChange={e => setHdStorage(e.target.value)}
+	        onChange={handleChange}
               />
               </Td>
             <Td>Protection for "Speculative Store Bypass" for Intel models</Td>
@@ -164,10 +177,11 @@ const ProxmoxServerHardware = () => {
             <Td>ibpb</Td>
             <Td>
 	     <InputField
+	        name={hw.ibpb.name}
                 type="select"
-                value={hdStorage}
+                value={hw.ibpb.value}
                 options={ProxmoxComputeSelectors.proxmoxCpuFlagsMap}
-                onChange={e => setHdStorage(e.target.value)}
+	        onChange={handleChange}
               />
               </Td>
             <Td>Allows improved Spectre mitigation with AMD CPUs</Td>
@@ -176,10 +190,11 @@ const ProxmoxServerHardware = () => {
             <Td>virt-ssbd</Td>
             <Td>
 	     <InputField
+	        name={hw.virt_ssbd.name}
                 type="select"
-                value={hdStorage}
+                value={hw.virt_ssbd.value}
                 options={ProxmoxComputeSelectors.proxmoxCpuFlagsMap}
-                onChange={e => setHdStorage(e.target.value)}
+	        onChange={handleChange}
               />
               </Td>
             <Td>Basis for "Speculative Store Bypass" protection for AMD models</Td>
@@ -188,10 +203,11 @@ const ProxmoxServerHardware = () => {
             <Td>amd-ssbd</Td>
             <Td>
 	     <InputField
+	        name={hw.amd_ssbd.name}
                 type="select"
-                value={hdStorage}
+                value={hw.amd_ssbd.value}
                 options={ProxmoxComputeSelectors.proxmoxCpuFlagsMap}
-                onChange={e => setHdStorage(e.target.value)}
+	        onChange={handleChange}
               />
               </Td>
             <Td>Improves Spectre mitigation performance with AMD CPUs, best used with "virt-ssbd"</Td>
@@ -200,10 +216,11 @@ const ProxmoxServerHardware = () => {
             <Td>amd-no-ssb</Td>
             <Td>
 	     <InputField
+	        name={hw.amd_no_ssb.name}
                 type="select"
-                value={hdStorage}
+                value={hw.amd_no_ssb.value}
                 options={ProxmoxComputeSelectors.proxmoxCpuFlagsMap}
-                onChange={e => setHdStorage(e.target.value)}
+	        onChange={handleChange}
               />
               </Td>
             <Td>Notifies guest OS that host is not vulnerable for Spectre on AMD CPUs</Td>
@@ -212,10 +229,11 @@ const ProxmoxServerHardware = () => {
             <Td>pdpe1gb</Td>
             <Td>
 	     <InputField
+	        name={hw.pdpe1gb.name}
                 type="select"
-                value={hdStorage}
+                value={hw.pdpe1gb.value}
                 options={ProxmoxComputeSelectors.proxmoxCpuFlagsMap}
-                onChange={e => setHdStorage(e.target.value)}
+	        onChange={handleChange}
               />
               </Td>
             <Td>Allow guest OS to use 1GB size pages, if host HW supports it</Td>
@@ -224,10 +242,11 @@ const ProxmoxServerHardware = () => {
             <Td>hv-tlbflush</Td>
             <Td>
 	     <InputField
+	        name={hw.hv_tlbflush.name}
                 type="select"
-                value={hdStorage}
+                value={hw.hv_tlbflush.value}
                 options={ProxmoxComputeSelectors.proxmoxCpuFlagsMap}
-                onChange={e => setHdStorage(e.target.value)}
+	        onChange={handleChange}
               />
               </Td>
             <Td>Improve performance in overcommitted Windows guests. May lead to guest bluescreens on old CPUs.</Td>
@@ -236,10 +255,11 @@ const ProxmoxServerHardware = () => {
             <Td>hv-evmcs</Td>
             <Td>
 	     <InputField
+	        name={hw.hv_evmcs.name}
                 type="select"
-                value={hdStorage}
+                value={hw.hv_evmcs.value}
                 options={ProxmoxComputeSelectors.proxmoxCpuFlagsMap}
-                onChange={e => setHdStorage(e.target.value)}
+	        onChange={handleChange}
               />
 	     </Td>
             <Td>Improve performance for nested virtualization. Only supported on Intel CPUs.</Td>
@@ -248,10 +268,11 @@ const ProxmoxServerHardware = () => {
             <Td>aes</Td>
             <Td>
 	     <InputField
+	        name={hw.aes.name}
                 type="select"
-                value={hdStorage}
+                value={hw.aes.value}
                 options={ProxmoxComputeSelectors.proxmoxCpuFlagsMap}
-                onChange={e => setHdStorage(e.target.value)}
+	        onChange={handleChange}
               />
 	     </Td>
             <Td>Activate AES instruction set for HW instruction</Td>
@@ -264,22 +285,25 @@ const ProxmoxServerHardware = () => {
 	    <Title headingLevel="h3">Memory</Title>
             <Divider component="li" style={{ marginBottom: '2rem' }} />
             <InputField
+	      name={hw.memory.name}
               label="Memory (MB)"
               type="text"
-              value={hdStorage}
-              onChange={e => setHdStorage(e.target.value)}
+              value={hw.memory.value}
+	      onChange={handleChange}
             />
             <InputField
+	      name={hw.balloon.name}
               label="Minimum Memory (MB)"
               type="text"
-              value={hdStorage}
-              onChange={e => setHdStorage(e.target.value)}
+              value={hw.balloon.value}
+	      onChange={handleChange}
             />
             <InputField
+	      name={hw.shares.name}
               label="Shares (MB)"
               type="text"
-              value={hdStorage}
-              onChange={e => setHdStorage(e.target.value)}
+              value={hw.shares.value}
+	      onChange={handleChange}
             />
 	   </PageSection>
 	    </div>

@@ -42,7 +42,7 @@ module ForemanFogProxmox
         controller = 'virtio'
         device = 0
         id = "#{controller}#{device}"
-        options = { cache: 'none' }
+        options = { cache: 'none' , backup: '1' }
         volume_attributes_h = volume_attributes_h.merge(controller: controller, device: device)
       when 'lxc'
         id = 'rootfs'

@@ -51,13 +51,35 @@ module ProxmoxVMVolumesHelper
   def parse_hard_disk_volume(args)
     logger.debug(format(_('parse_hard_disk_volume(): args=%<args>s'), args: args))
     disk = {}
+    rootfs_volume = rootfs_volume?(args)
+    set_disk_attributes(disk, args)
+    if rootfs_volume
+      args.delete('backup')
+    elsif args['backup'].nil?
+      args['backup'] = '1'
+    end
+    if args.key?('options')
+      options = args['options']
+      if rootfs_volume && options.respond_to?(:delete)
+        options = options.dup
+        options.delete('backup')
+      end
+      disk[:options] = options
+    else
+      add_disk_options(disk, args)
+    end
+    disk.key?(:storage) ? disk : {}
+  end
+
+  def rootfs_volume?(args)
+    args['storage_type'] == 'rootfs' || args['id'] == 'rootfs'
+  end
+
+  def set_disk_attributes(disk, args)
     disk[:id] = args['id'] if args.key?('id')
     disk[:volid] = args['volid'] if args.key?('volid') && !args['volid'].empty?
     disk[:storage] = args['storage'].to_s if args.key?('storage') && !args['storage'].empty?
     disk[:size] = args['size'].to_i if args.key?('size') && !args['size'].empty?
-    add_disk_options(disk, args) unless args.key?('options')
-    disk[:options] = args['options'] if args.key?('options')
-    disk.key?(:storage) ? disk : {}
   end
 
   def volume_type?(args, type)

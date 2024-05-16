@@ -156,7 +156,7 @@ module ForemanFogProxmox
           :net0 => 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876',
           :net1 => 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876',
           :rootfs => 'local-lvm:1',
-          :mp0 => 'local-lvm:1,mp=/opt/path'
+          :mp0 => 'local-lvm:1,mp=/opt/path,backup=1'
         )
         assert_equal expected_vm, vm
       end
@@ -170,7 +170,7 @@ module ForemanFogProxmox
         assert_equal 'local-lvm:1', rootfs[:rootfs]
         assert mp0 = volumes[1]
         assert mp0.key?(:mp0)
-        assert_equal 'local-lvm:1,mp=/opt/path', mp0[:mp0]
+        assert_equal 'local-lvm:1,mp=/opt/path,backup=1', mp0[:mp0]
       end
 
       test '#interface with name eth0 and bridge' do

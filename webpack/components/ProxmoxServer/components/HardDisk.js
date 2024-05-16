@@ -30,7 +30,6 @@ const HardDisk = ({
   const handleChange = e => {
     const { name, value } = e.target;
     const updatedKey = Object.keys(hdd).find(key => hdd[key].name === name);
-
     if (updatedKey === 'controller') {
       const updatedDeviceInfo = createUniqueDevice('hard_disk', value);
       if (updatedDeviceInfo) {
@@ -117,6 +116,15 @@ const HardDisk = ({
         type="select"
         value={hdd?.cache?.value}
         options={ProxmoxComputeSelectors.proxmoxCachesMap}
+        onChange={handleChange}
+      />
+      <InputField
+        name={hdd?.backup?.name}
+        label={__('Backup')}
+        type="select"
+        value={hdd?.backup?.value}
+        info={__('Enable/disable volume backup')}
+        options={ProxmoxComputeSelectors.proxmoxBackupsMap}
         onChange={handleChange}
       />
       <InputField

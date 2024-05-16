@@ -3,6 +3,7 @@ import { Divider } from '@patternfly/react-core';
 import { translate as __ } from 'foremanReact/common/I18n';
 import PropTypes from 'prop-types';
 import InputField from '../common/FormInputs';
+import ProxmoxComputeSelectors from '../ProxmoxComputeSelectors';
 
 const MountPoint = ({ id, data, storagesMap }) => {
   const [mp, setMp] = useState(data);
@@ -57,6 +58,15 @@ const MountPoint = ({ id, data, storagesMap }) => {
         value={mp?.device?.value}
         onChange={handleChange}
         tooltip={__('Device value is set automatically.')}
+      />
+      <InputField
+        name={mp?.backup?.name}
+        label={__('Backup')}
+        type="select"
+        value={mp?.backup?.value}
+        info={__('Enable/disable volume backup')}
+        options={ProxmoxComputeSelectors.proxmoxBackupsMap}
+        onChange={handleChange}
       />
       <input
         name={mp?.id?.name}

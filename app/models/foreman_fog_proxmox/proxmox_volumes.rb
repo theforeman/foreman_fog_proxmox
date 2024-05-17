@@ -37,10 +37,12 @@ module ForemanFogProxmox
       options = {}
 
       # Default to iothread and backup being enabled, as they are enabled by default
-      # This will pickup and reset properly if previous to adding setting reset it
-      logger.error("disk stuff #{vm.identity} delete volume #{id}")
+      # This will pickup and set value properly if run before this change was 
+      # implemented
       volume_attributes['iothread'] = '1' if volume_attributes['iothread'].empty?
       volume_attributes['backup'] = '1' if volume_attributes['backup'].empty?
+
+      # Fixes issue with cache being blank when it should be 'none' if nothing is selected
       volume_attributes['cache'] = 'none' if volume_attributes['cache'].empty?
 
       options.store(:mp, volume_attributes['mp']) if vm.container? && id != 'rootfs'

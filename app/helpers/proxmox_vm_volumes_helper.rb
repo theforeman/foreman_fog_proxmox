@@ -45,7 +45,6 @@ module ProxmoxVmVolumesHelper
     end
     volumes = parse_typed_volumes(volumes_attributes, type)
     volumes.each { |volume| parsed_vm = parsed_vm.merge(volume) }
-    logger.warn("**************************** parse_typed_volumes #{volumes} ......... #{parsed_vm}")
     parsed_vm
   end
 

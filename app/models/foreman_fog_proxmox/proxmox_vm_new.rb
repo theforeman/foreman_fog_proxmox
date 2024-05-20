@@ -161,7 +161,6 @@ module ForemanFogProxmox
     end
 
     def new_vm(new_attr = {})
-      logger.warn("*************************** new_vm ssattrs #{new_attr}")
       new_attr = ActiveSupport::HashWithIndifferentAccess.new(new_attr)
       type = new_attr['type']
       type ||= 'qemu'
@@ -169,7 +168,6 @@ module ForemanFogProxmox
     end
 
     def convert_config_attributes(new_attr)
-      logger.warn("*************************** convert config ssattrs #{new_attr}")
       config_attributes = new_attr[:config_attributes]
       if config_attributes.key?(:disks)
         config_attributes[:volumes_attributes] = Hash[config_attributes[:disks].each_with_index.map do |disk, idx|
@@ -185,7 +183,6 @@ module ForemanFogProxmox
     end
 
     def new_typed_vm(new_attr, type)
-      logger.warn("*************************** new typed vmsattrs #{new_attr}")
       convert_config_attributes(new_attr) if new_attr.key?(:config_attributes)
       node_id = new_attr['node_id']
       node = node_id ? client.nodes.get(node_id) : default_node

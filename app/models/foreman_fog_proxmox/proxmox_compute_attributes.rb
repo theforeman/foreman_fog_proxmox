@@ -49,7 +49,6 @@ ostype: ostype)
 
     def vm_compute_attributes(vm)
       vm_attrs = {}
-      logger.warn("********************* vm comp attrs are vm #{vm}")
       vm_attrs = vm_attrs.merge(vmid: vm.identity, node_id: vm.node_id, type: vm.type)
       if vm.respond_to?(:config)
         if vm.config.respond_to?(:disks)

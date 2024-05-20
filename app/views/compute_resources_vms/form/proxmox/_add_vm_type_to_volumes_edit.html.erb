@@ -26,7 +26,6 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     <% cloud_init = f.object.cloud_init? %>
     <% logger.debug("_add_vm_type_to_volumes_edit.html cloud_init=#{cloud_init}") %>
     <% container = type == 'lxc' %>
-    <% logger.debug("************************************ _add_vm_type_to_volumes_edit.html type=#{type}") %> 
     <%= add_child_link_typed '+ ' + _("Add Hard Disk"), :volumes, 'hard_disk', { :class => "info #{'hide' unless server }", :title => _('add new hard disk') } %>
     <%= add_child_link_typed '+ ' + _("Add CD-ROM"), :volumes, 'cdrom', { :class => "info #{'hide' if cdrom }", :title => _('add new cd-rom') } %>
     <%= add_child_link_typed '+ ' + _("Add Cloud-init"), :volumes, 'cloud_init', { :class => "info #{'hide' if cloud_init }", :title => _('add new cloud-init') } %>

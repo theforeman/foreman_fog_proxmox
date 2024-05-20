@@ -37,7 +37,7 @@ module ProxmoxVmAttrsHelper
     interfaces = Hash[vm.config.interfaces.each_with_index.map do |interface, idx|
 	    [idx.to_s, interface_compute_attributes(interface.attributes)]
                                                end ]
-    #server = cr.new_typed_vm(vm.attributes, 'qemu')    
+    server = cr.new_vm(vm.attributes)    
     vm.config.all_attributes.each do |key, value|
       if key == :interfaces
         vm_h.merge!({key => {:name => "#{paramScope}[interfaces_attributes]", :value => interfaces }})

@@ -29,7 +29,7 @@ const ProxmoxVmType = ({
   images,
   pools,
  from_profile, new_vm, storages }) => {
-  console.log("*************** vm_attributes", storages);
+  console.log("*************** vm_attrs", vm_attributes);
   const nodesMap = nodes.map(node => ({value: node.node, label: node.node}));
   const imagesMap = images.map(image => ({value: image, label: image}));
   const poolsMap = pools.map(pool => ({value: pool.poolid, label: pool.poolid}));

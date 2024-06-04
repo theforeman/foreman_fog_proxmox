@@ -24,7 +24,7 @@ const InputField = ({
   options,
   checked,
 }) => {
-  const renderOptions = opts =>
+  const renderOptions = options =>
     options.map(option => <option value={option.value}>{option.label}</option>);
 
   let renderComponent;

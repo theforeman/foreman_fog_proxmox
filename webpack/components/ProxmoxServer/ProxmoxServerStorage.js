@@ -11,24 +11,71 @@ import ProxmoxComputeSelectors from '../ProxmoxComputeSelectors';
 import HardDisk from './components/HardDisk';
 import CloudInit from './components/CloudInit';
 import TimesIcon from '@patternfly/react-icons/dist/esm/icons/times-icon';
+
 const ProxmoxServerStorage = ({storage, storages}) => {
   const [hardDisks, setHardDisks] = useState([]); 
   const [nextId, setNextId] = useState(0);
 
-  useEffect(() => {  
-    addHardDisk();
-  }, []);
+  const getNextAvailableDeviceNumber = (controller, storage) => {
+    const controllerRanges = {
+      ide: { min: 0, max: 3 },
+      sata: { min: 0, max: 5 },
+      scsi: { min: 0, max: 30 },
+      virtio: { min: 0, max: 15 }
+    };
+    const devicesWithSameController = storage.filter(device => device.value.controller.value === controller);
+    const existingDeviceNumbers = devicesWithSameController.map(device => device.value.device.value);
+    const { min, max } = controllerRanges[controller];
 
-  const addHardDisk = (event) => {
+    let nextDeviceNumber = min;
+    while (existingDeviceNumbers.includes(nextDeviceNumber)) {
+      nextDeviceNumber++;
+      if (nextDeviceNumber > max) {
+        nextDeviceNumber = min;
+      }
+    }
+    return nextDeviceNumber;
+  };
+
+  useEffect(() => {
+    if (storage && storage.length > 0) {
+      storage.forEach((disk, index) => {
+	if (disk.name === 'hard_disk') {
+          addHardDisk(null, disk.value);
+	}
+      });
+    }
+  }, [storage]);
+  const device = '0';   
+  const initHdd = {
+    id: {name: 'compute_attribute[vm_attrs][volumes_attributes][' + (storage.length + 1) + '][id]', value: ('virtio' + device)},
+    device: {name: 'compute_attribute[vm_attrs][volumes_attributes][' + (storage.length + 1) + '][device]', value: device},
+    storage_type: {name: 'compute_attribute[vm_attrs][volumes_attributes][' + (storage.length + 1) + '][storage_type]', value: 'hard_disk'},
+    storage: {name: 'compute_attribute[vm_attrs][volumes_attributes][' + (storage.length + 1) + '][storage]', value: 'local'},
+    cache: {name: 'compute_attribute[vm_attrs][volumes_attributes][' + (storage.length + 1) + '][cache]', value: null},
+    size: {name: 'compute_attribute[vm_attrs][volumes_attributes][' + (storage.length + 1) + '][size]', value: 8},
+    controller: {name: 'compute_attribute[vm_attrs][volumes_attributes][' + (storage.length + 1) + '][controller]', value: 'virtio'},
+  };
+  const addHardDisk = (event, initialData = initHdd) => {
     if (event) event.preventDefault();
-    const newHardDisk = <HardDisk key={nextId} id={nextId} storage={storage} storages={storages}/>;
-    setHardDisks([...hardDisks, newHardDisk]);
+    const newHardDisk = {
+      id: nextId,
+      storages: storages,
+      data: initialData,
+      disks: storage,
+    };
+    setHardDisks(prevHardDisks => [...prevHardDisks, newHardDisk]);
     setNextId(prevId => prevId + 1);
   };
 
-  const removeHardDisk = (idToRemove) => {
+  const removeHardDisk = (event, idToRemove) => {
+    if (event) event.preventDefault();
     const newHardDisks = hardDisks.filter(hardDisk => hardDisk.props.id !== idToRemove);
     setHardDisks(newHardDisks);
+  };
+
+  const updateHardDiskData = (id, updatedData) => {
+    setHardDisks(hardDisks.map(disk => disk.id === id ? { ...disk, data: updatedData } : disk));
   };
 
   const [cloudInit, setCloudInit] = useState(false);
@@ -64,18 +111,25 @@ const ProxmoxServerStorage = ({storage, storages}) => {
       {cdRom && (
         <CloudInit onRemove={removeCdRom} />
       )}
-      {hardDisks.map(hardDisk => (
-        <div key={hardDisk.props.id} style={{ position: 'relative' }}>
+      {hardDisks.map((hardDisk) => (
+        <div style={{ position: 'relative' }}>
 	  <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Title headingLevel="h4"> Hard Disk {hardDisk.props.id} </Title>
+            <Title headingLevel="h4"> Hard Disk {hardDisk.id} </Title>
 	  <button
-              onClick={() => removeHardDisk(hardDisk.props.id)}
+              onClick={() => removeHardDisk(hardDisk.id)}
               variant="plain"
 	  >
             <TimesIcon/>
           </button>
           </div>
-          {hardDisk}
+	  <HardDisk
+              id={hardDisk.id}
+              data={hardDisk.data}
+              storages={hardDisk.storages}
+	      disks={hardDisk.disks}
+	      getNextAvailableDeviceNumber={getNextAvailableDeviceNumber}
+	      updateHardDiskData={updateHardDiskData}
+            />
         </div>
       ))}
       </PageSection>

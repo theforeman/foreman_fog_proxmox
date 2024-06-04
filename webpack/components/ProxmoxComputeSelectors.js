@@ -132,4 +132,9 @@ const ProxmoxComputeSelectors = {
   ],
 };
 
+ProxmoxComputeSelectors.proxmoxControllersHDDMap = [
+  ...ProxmoxComputeSelectors.proxmoxControllersCloudinitMap,
+  { value: 'virtio', label: 'VirtIO Block' }
+];
+
 export default ProxmoxComputeSelectors;

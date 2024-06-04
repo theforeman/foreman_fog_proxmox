@@ -15,7 +15,6 @@ const ProxmoxServerOptions = ({options}) => {
   const [opts, setOpts] = useState(options);
 
   const handleChange = (e) => {
-    console.log("****************** opts", opts.onboot.value, (opts.onboot.value === 1));
     const { name, type, checked } = e.target;
     const value = type === "checkbox" ? (checked ? "1" : "0") : e.target.value;
     const updatedKey = Object.keys(opts).find(key => opts[key].name === name);
@@ -25,7 +24,6 @@ const ProxmoxServerOptions = ({options}) => {
     }));
   };
   
-  console.log("****************** opts.onboot", opts.onboot.value, (opts.onboot.value === "1"));
   return (
     <div>
             <InputField

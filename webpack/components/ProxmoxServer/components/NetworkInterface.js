@@ -26,7 +26,7 @@ const NetworkInterface = ({ id }) => {
         <InputField
           label="Card"
           type="select"
-          options={ProxmoxComputeSelectors.proxmoxOperatingSystemsMap}
+          options={ProxmoxComputeSelectors.proxmoxNetworkcardsMap}
           value={hdStorage}
           onChange={e => setHdStorage(e.target.value)}
         />

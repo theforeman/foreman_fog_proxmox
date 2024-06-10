@@ -10,32 +10,13 @@ import InputField from '../common/FormInputs';
 import ProxmoxComputeSelectors from '../ProxmoxComputeSelectors';
 import HardDisk from './components/HardDisk';
 import CloudInit from './components/CloudInit';
+import CDRom from './components/CDRom';
 import TimesIcon from '@patternfly/react-icons/dist/esm/icons/times-icon';
 
 const ProxmoxServerStorage = ({storage, storages}) => {
   const [hardDisks, setHardDisks] = useState([]); 
   const [nextId, setNextId] = useState(0);
-
-  const getNextAvailableDeviceNumber = (controller, storage) => {
-    const controllerRanges = {
-      ide: { min: 0, max: 3 },
-      sata: { min: 0, max: 5 },
-      scsi: { min: 0, max: 30 },
-      virtio: { min: 0, max: 15 }
-    };
-    const devicesWithSameController = storage.filter(device => device.value.controller.value === controller);
-    const existingDeviceNumbers = devicesWithSameController.map(device => device.value.device.value);
-    const { min, max } = controllerRanges[controller];
-
-    let nextDeviceNumber = min;
-    while (existingDeviceNumbers.includes(nextDeviceNumber)) {
-      nextDeviceNumber++;
-      if (nextDeviceNumber > max) {
-        nextDeviceNumber = min;
-      }
-    }
-    return nextDeviceNumber;
-  };
+  console.log("************** storage values.", storage);
 
   useEffect(() => {
     if (storage && storage.length > 0) {
@@ -68,9 +49,8 @@ const ProxmoxServerStorage = ({storage, storages}) => {
     setNextId(prevId => prevId + 1);
   };
 
-  const removeHardDisk = (event, idToRemove) => {
-    if (event) event.preventDefault();
-    const newHardDisks = hardDisks.filter(hardDisk => hardDisk.props.id !== idToRemove);
+  const removeHardDisk = (idToRemove) => {
+    const newHardDisks = hardDisks.filter(hardDisk => hardDisk.id !== idToRemove);
     setHardDisks(newHardDisks);
   };
 
@@ -88,13 +68,13 @@ const ProxmoxServerStorage = ({storage, storages}) => {
     setCloudInit(false);
   };
 
-  const [cdRom, setCdRom] = useState(false);
-  const addCdRom = (event) => {
-      setCdRom(true);
+  const [cDRom, setCDRom] = useState(false);
+  const addCDRom = (event) => {
+      setCDRom(true);
   };
 
-  const removeCdRom = () => {
-    setCdRom(false);
+  const removeCDRom = () => {
+    setCDRom(false);
   };
 
   return (
@@ -102,14 +82,14 @@ const ProxmoxServerStorage = ({storage, storages}) => {
       <PageSection padding={{ default: 'noPadding' }}>
         <Button onClick={addCloudInit} variant="secondary"  isDisabled={cloudInit}> Add Cloud-init </Button>
       {'  '}
-        <Button onClick={addCdRom} variant="secondary" isDisabled={cdRom}> Add CD-ROM </Button>
+        <Button onClick={addCDRom} variant="secondary" isDisabled={cDRom}> Add CD-ROM </Button>
       {'  '}
       <Button onClick={addHardDisk} variant="secondary" >Add HardDisk</Button>
       {cloudInit && (
         <CloudInit onRemove={removeCloudInit} />
       )}
-      {cdRom && (
-        <CloudInit onRemove={removeCdRom} />
+      {cDRom && (
+        <CDRom onRemove={removeCDRom} />
       )}
       {hardDisks.map((hardDisk) => (
         <div style={{ position: 'relative' }}>
@@ -118,6 +98,7 @@ const ProxmoxServerStorage = ({storage, storages}) => {
 	  <button
               onClick={() => removeHardDisk(hardDisk.id)}
               variant="plain"
+	      type="button"
 	  >
             <TimesIcon/>
           </button>
@@ -127,7 +108,6 @@ const ProxmoxServerStorage = ({storage, storages}) => {
               data={hardDisk.data}
               storages={hardDisk.storages}
 	      disks={hardDisk.disks}
-	      getNextAvailableDeviceNumber={getNextAvailableDeviceNumber}
 	      updateHardDiskData={updateHardDiskData}
             />
         </div>

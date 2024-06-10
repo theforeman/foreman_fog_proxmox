@@ -8,7 +8,7 @@ import {
 import InputField from '../../common/FormInputs';
 import ProxmoxComputeSelectors from '../../ProxmoxComputeSelectors';
 
-const HardDisk = ({ id, data, storages, disks, getNextAvailableDeviceNumber, updateHardDiskData }) => {
+const HardDisk = ({ id, data, storages, disks, updateHardDiskData }) => {
   const [hdd, setHdd] = useState(data);
   const storagesMap = storages.map(st => ({value: st.storage, label: st.storage}));
 
@@ -27,24 +27,6 @@ const HardDisk = ({ id, data, storages, disks, getNextAvailableDeviceNumber, upd
       ...prevData,
       [updatedKey]: { ...prevData[updatedKey], value: value },
     }));
-
-    if (name.endsWith('[controller]')) {
-    const controllerValue = value; 
-    const nextDeviceNumber = getNextAvailableDeviceNumber(controllerValue, disks);
-    
-    const updatedDeviceKey = Object.keys(hdd).find(key => hdd[key].name.endsWith('[device]'));
-    setHdd(prevData => ({
-      ...prevData,
-      [updatedDeviceKey]: { ...prevData[updatedDeviceKey], value: nextDeviceNumber },
-    }));
-
-    const updatedIdKey = Object.keys(hdd).find(key => hdd[key].name.endsWith('[id]'));
-    const updatedIdValue = controllerValue + nextDeviceNumber;
-    setHdd(prevData => ({
-      ...prevData,
-      [updatedIdKey]: { ...prevData[updatedIdKey], value: updatedIdValue },
-    }));
-  }
   };
   return (
     <div >

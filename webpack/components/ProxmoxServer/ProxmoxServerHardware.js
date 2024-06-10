@@ -13,7 +13,6 @@ import Select from 'foremanReact/components/common/forms/Select';
 import TextInput from 'foremanReact/components/common/forms/TextInput';
 import InputField from '../common/FormInputs';
 import ProxmoxComputeSelectors from '../ProxmoxComputeSelectors';
-import './customStyles.css';
 import {Tabs, Tab, TabTitleText, Tooltip} from '@patternfly/react-core';
 import {Table, Caption, Thead, Tr, Th, Tbody, Td} from '@patternfly/react-table';
 import PlusCircleIcon from '@patternfly/react-icons/dist/esm/icons/plus-circle-icon';

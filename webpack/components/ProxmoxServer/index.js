@@ -14,7 +14,6 @@ import ProxmoxComputeSelectors from '../ProxmoxComputeSelectors';
 import NetworkInterface from './components/NetworkInterface';
 import CloudInit from './components/CloudInit';
 import HardDisk from './components/HardDisk';
-import './customStyles.css';
 import {Tabs, Tab, TabTitleText, Tooltip} from '@patternfly/react-core';
 const cacheOptions = { key: 'Cached', value: 'No Cached' };
 

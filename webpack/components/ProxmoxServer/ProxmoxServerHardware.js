@@ -126,16 +126,8 @@ const ProxmoxServerHardware = ({hardware}) => {
               value={hw.numa.value}
               onChange={handleChange}
             />
-	    {Object.keys(cpuFlags).map(key => (
-	    <input
-		key={hw[key].name}
-                name={hw[key].name}
-                type="hidden"
-                value={hw[key].value}
-            />
-	    ))}
-	  <div style={{ marginLeft: '25%', display: 'inline-block', marginTop: '10px' }}>
-	    <Button variant="link" icon={<PlusCircleIcon />} onClick={handleModalToggle}>
+	  <div style={{ marginLeft: '5%', display: 'inline-block'}}>
+	    <Button variant="link" onClick={handleModalToggle}>
         Extra CPU Flags
       </Button>
 	  </div>
@@ -145,6 +137,14 @@ const ProxmoxServerHardware = ({hardware}) => {
             flags={cpuFlags}
             handleChange={handleChange}
           />
+	  {Object.keys(cpuFlags).map(key => (
+            <input
+                key={hw[key].name}
+                name={hw[key].name}
+                type="hidden"
+                value={hw[key].value}
+            />
+            ))}
 	  </PageSection>
 	    <PageSection padding={{ default: 'noPadding' }}>
 	    <Title headingLevel="h3">Memory</Title>

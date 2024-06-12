@@ -8,7 +8,7 @@ import {
 import InputField from '../../common/FormInputs';
 import ProxmoxComputeSelectors from '../../ProxmoxComputeSelectors';
 
-const HardDisk = ({ id, data, storages, disks, updateHardDiskData }) => {
+const HardDisk = ({ id, data, storages, disks, updateHardDiskData, createUniqueDevice }) => {
   const [hdd, setHdd] = useState(data);
   const storagesMap = storages.map(st => ({value: st.storage, label: st.storage}));
 
@@ -23,10 +23,22 @@ const HardDisk = ({ id, data, storages, disks, updateHardDiskData }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     const updatedKey = Object.keys(hdd).find(key => hdd[key].name === name);
-    setHdd(prevData => ({
-      ...prevData,
-      [updatedKey]: { ...prevData[updatedKey], value: value },
-    }));
+    console.log("************ updated key", updatedKey);
+
+    if (updatedKey === 'controller') {
+      const updatedDeviceInfo = createUniqueDevice('hard_disk', value);
+      if (updatedDeviceInfo) {
+        setHdd({
+          ...hdd,
+          controller: { ...hdd.controller, value },
+          device: { ...hdd.device, value: updatedDeviceInfo.device },
+          id: { ...hdd.id, value: updatedDeviceInfo.id },
+        });
+      }
+    } else {
+      const updatedData = { ...hdd, [updatedKey]: { ...hdd[updatedKey], value } };
+      setHdd(updatedData);
+    }
   };
   return (
     <div >

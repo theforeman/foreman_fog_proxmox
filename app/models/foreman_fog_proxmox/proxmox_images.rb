@@ -48,9 +48,14 @@ module ForemanFogProxmox
       volumes = []
       nodes.each do |node|
         storages(node.node).each do |storage|
+          # fetches volumes of QEMU servers for images
           volumes += storage.volumes.list_by_content_type('images')
+
+          # fetches volumes of KVM containers for images
+          volumes += storage.volumes.list_by_content_type('rootdir')
         end
       end
+      # for creating image, only list volumes which are templated
       volumes.select(&:template?)
     end
 

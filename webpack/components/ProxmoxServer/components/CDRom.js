@@ -10,7 +10,7 @@ import InputField from '../../common/FormInputs';
 import ProxmoxComputeSelectors from '../../ProxmoxComputeSelectors';
 import TimesIcon from '@patternfly/react-icons/dist/esm/icons/times-icon';
 const CDRom = ({ onRemove, data }) => {
-  const [cdrom, setCdrom] = useState(data);
+  const [cdrom, setCdrom] = useState('');
 
   const [selectedOption, setSelectedOption] = useState('');
 
@@ -19,12 +19,8 @@ const CDRom = ({ onRemove, data }) => {
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    const updatedKey = Object.keys(cdrom).find(key => cdrom[key].name === name);
-    console.log("************ updated key", updatedKey);
-
-    const updatedData = { ...cdrom, [updatedKey]: { ...cdrom[updatedKey], value } };
-    setCdrom(updatedData);
+    const { value } = e.target;
+    setCdrom(value);
   };
 
   return (
@@ -69,43 +65,38 @@ const CDRom = ({ onRemove, data }) => {
         <Title headingLevel="h5">Image</Title>
         <Divider component="li" style={{marginBottom: '2rem' }} />
 	<InputField
-          name={cdrom.controller.name}
+	  label="Controller"
           type="select"
-          value={cdrom.controller.value}
+          value={cdrom}
 	  options={ProxmoxComputeSelectors.proxmoxControllersCloudinitMap}
           onChange={handleChange}
         />
         <InputField
           label="Storage"
-	  name={cdrom.storage.name}
           type="text"
-          value={cdrom.storage.value}
+          value=""
           onChange={e => setHdStorage(e.target.value)}
         />
         <InputField
           label="Image ISO"
-	  name={cdrom.volid.name}
-          type="select"
-          options={ProxmoxComputeSelectors.proxmoxControllersCloudinitMap}
-          value={cdrom.volid.value}
+          type="text"
+          value=""
           onChange={handleChange}
         />
         <input
-          name={cdrom.id.name}
           type="hidden"
-          value={cdrom.id.value}
+          value={cdrom}
           onChange={handleChange}
         />
 	<input
-          name={cdrom.storage_type.name}
           type="hidden"
-          value={cdrom.storage_type.value}
+          value={cdrom}
           onChange={handleChange}
         />
         <input
-          name={cdrom.device.name}
+          name={cdrom}
           type="hidden"
-          value={cdrom.device.value}
+          value={cdrom}
           onChange={handleChange}
         />
        </PageSection>

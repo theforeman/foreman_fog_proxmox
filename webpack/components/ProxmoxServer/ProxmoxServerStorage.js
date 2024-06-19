@@ -39,26 +39,18 @@ const ProxmoxServerStorage = ({storage, storages}) => {
     virtio: 0,
   };
 
-
   useEffect(() => {
     if (storage && storage.length > 0) {
       const updatedCounts = { ...nextDeviceNumbers };
       storage.forEach((disk) => {
-        const controller = disk.value.controller.value;
-        const device = parseInt(disk.value.device.value, 10);
-        if (device >= updatedCounts[controller]) {
-          updatedCounts[controller] = device + 1;
-        }
-      });
-
-      storage.forEach((disk) => {
         if (disk.name === 'hard_disk') {
-          addHardDisk(null, disk.value, true);
-        } else if (disk.name === 'cdrom') {
-          setCDRom(true);
-        } else if (disk.name === 'cloud_init') {
-          setCloudInit(true);
-        }
+          const controller = disk.value.controller.value;
+          const device = parseInt(disk.value.device.value, 10);
+          if (device >= updatedCounts[controller]) {
+            updatedCounts[controller] = device + 1;
+          }
+	  addHardDisk(null, disk.value, true);
+	}
       });
       setNextDeviceNumbers(updatedCounts);
     }
@@ -126,9 +118,7 @@ const ProxmoxServerStorage = ({storage, storages}) => {
         setHardDisks(prevHardDisks => [...prevHardDisks, newHardDisk]);
         return newNextId;
     });
-    console.log('Updated nextId value:', nextId);
   };
-  console.log("************ nextid is", nextId);
 
   const removeHardDisk = (idToRemove) => {
     const newHardDisks = hardDisks.filter(hardDisk => hardDisk.id !== idToRemove);

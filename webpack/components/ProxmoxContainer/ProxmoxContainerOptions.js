@@ -80,7 +80,6 @@ const ProxmoxContainerOptions = ({options}) => {
               name='ostype'
               label="Search Domain"
               value={opts.searchdomain.value}
-              value={options.ostype}
               onChange={handleChange}
             />
     </div>

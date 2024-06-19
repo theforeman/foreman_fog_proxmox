@@ -35,16 +35,16 @@ module ProxmoxVmAttrsHelper
 	    [idx.to_s, interface_compute_attributes(interface.attributes)]
                                                end ]
     vm.config.all_attributes.each do |key, value|
-      if key == :interfaces
-        vm_h.merge!({key => {:name => "#{paramScope}[interfaces_attributes]", :value => interfaces }})
-      elsif !keys.include? key
+      if !keys.include? key
         vm_h.merge!({key => {:name => "#{paramScope}[config_attributes][#{key}]", :value => value}})
       end
     end
     main.each do |key, value|
       vm_h.merge!({key => {:name => "#{paramScope}[#{key}]", :value => value}})
     end
-    logger.warn("******************* volumes_attrs() #{volumes_attrs(paramScope, vm.volumes)}")
+    logger.warn("*********************8 interfaces #{vm.interfaces}")
+    logger.warn("******************* net attrs #{network_attrs(paramScope, vm.interfaces)}")
+    vm_h.merge!({ :interfaces => network_attrs(paramScope, vm.interfaces) })
     vm_h.merge!({:pool => {:name => "#{paramScope}[pool]", :value => vm.pool}})
     vm_h.merge!({:cpu_type => {:name => "#{paramScope}[config_attributes][cpu_type]", :value => vm.config.cpu_type}})
     vm_h.merge!({ :disks => volumes_attrs(paramScope, vm.volumes) })
@@ -94,6 +94,14 @@ module ProxmoxVmAttrsHelper
   end
 
   def network_attrs(paramScope, interfaces)
-
+    networks_attrs = []
+    interfaces.each_with_index do |interface, id|
+      attrs = ActiveSupport::HashWithIndifferentAccess.new
+      interface.all_attributes.each do |key, value|
+        attrs[key] = {:name => "#{paramScope}[interfaces_attributes][#{id}][#{key}]", :value => value}
+      end
+      networks_attrs << {:name => 'interface', :value => attrs }
+    end
+    networks_attrs
   end
 end

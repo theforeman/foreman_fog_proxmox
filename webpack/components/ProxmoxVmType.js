@@ -28,7 +28,7 @@ const ProxmoxVmType = ({
   nodes,
   images,
   pools,
- from_profile, new_vm, storages }) => {
+ from_profile, new_vm, storages, bridges }) => {
   console.log("*************** vm_attrs", vm_attributes);
   const nodesMap = nodes.map(node => ({value: node.node, label: node.node}));
   const imagesMap = images.map(image => ({value: image, label: image}));
@@ -52,13 +52,13 @@ const ProxmoxVmType = ({
     'qemu': {
       options: <ProxmoxServerOptions options={vm_attributes} />,
       hardware: <ProxmoxServerHardware hardware={vm_attributes} />,
-      network: <ProxmoxServerNetwork network={vm_attributes.interfaces} />,
+      network: <ProxmoxServerNetwork network={vm_attributes.interfaces} bridges={bridges} />,
       storage: <ProxmoxServerStorage storage={vm_attributes.disks} storages={storages}/>,
     },
     'lxc': {
       options: <ProxmoxContainerOptions options={vm_attributes} />,
       hardware: <ProxmoxContainerHardware hardware={vm_attributes}  />,
-      network: <ProxmoxContainerNetwork network={vm_attributes.interfaces} />,
+      network: <ProxmoxContainerNetwork network={vm_attributes.interfaces} bridges={bridges} />,
       storage: <ProxmoxContainerStorage storage={vm_attributes.disks} />
     },
   };

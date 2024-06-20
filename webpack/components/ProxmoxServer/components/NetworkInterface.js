@@ -8,9 +8,17 @@ import {
 import InputField from '../../common/FormInputs';
 import ProxmoxComputeSelectors from '../../ProxmoxComputeSelectors';
 
-const NetworkInterface = ({ id, networks, bridges, data }) => {
+const NetworkInterface = ({ id, networks, bridges, data, updateNetworkData }) => {
   const [network, setNetwork] = useState(data);
-  
+ 
+  useEffect(() => {
+    const currentNetData = JSON.stringify(network);
+    const parentNetData = JSON.stringify(data);
+
+    if (currentNetData !== parentNetData) {
+      updateNetworkData(id, network);
+    }
+  }, [network, id, data, updateNetworkData]);
   const handleChange = (e) => {
     const { name, type, checked } = e.target;
     const value = type === "checkbox" ? (checked ? "1" : "0") : e.target.value;
@@ -19,6 +27,7 @@ const NetworkInterface = ({ id, networks, bridges, data }) => {
     setNetwork(updatedData);
   };
   const bridgesMap = bridges.map(bridge => ({value: bridge.iface, label: bridge.iface }));
+  console.log("******************8 interface", network);
   return (
     <div style={{ position: 'relative' }} >
         <Divider component="li" style={{ marginBottom: '2rem' }} />
@@ -38,7 +47,7 @@ const NetworkInterface = ({ id, networks, bridges, data }) => {
           onChange={handleChange}
         />
         <InputField
-	  network={network.bridge.name}
+	  name={network.bridge.name}
           label="Bridge"
           type="select"
           options={bridgesMap}
@@ -48,12 +57,14 @@ const NetworkInterface = ({ id, networks, bridges, data }) => {
         <InputField
 	  name={network.tag.name}
           label="VLAN Tag"
+          type="text"
           value={network.tag.value}
           onChange={handleChange}
         />
         <InputField
 	  name={network.rate.name}
           label="Rate limit"
+          type="text"
           value={network.rate.value}
           onChange={handleChange}
         />

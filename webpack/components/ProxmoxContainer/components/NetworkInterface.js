@@ -8,9 +8,17 @@ import {
 import InputField from '../../common/FormInputs';
 import ProxmoxComputeSelectors from '../../ProxmoxComputeSelectors';
 
-const NetworkInterface = ({ id, networks, bridges, data }) => {
+const NetworkInterface = ({ id, networks, bridges, data, updateNetworkData }) => {
   const [network, setNetwork] = useState(data);
-  
+ 
+  useEffect(() => {
+    const currentNetData = JSON.stringify(network);
+    const parentNetData = JSON.stringify(data);
+
+    if (currentNetData !== parentNetData) {
+      updateNetworkData(id, network);
+    }
+  }, [network, id, data, updateNetworkData]);
   const handleChange = (e) => {
     const { name, type, checked } = e.target;
     const value = type === "checkbox" ? (checked ? "1" : "0") : e.target.value;
@@ -19,6 +27,7 @@ const NetworkInterface = ({ id, networks, bridges, data }) => {
     setNetwork(updatedData);
   };
   const bridgesMap = bridges.map(bridge => ({value: bridge.iface, label: bridge.iface }));
+  console.log("******************8 interface", network);
   return (
     <div style={{ position: 'relative' }} >
         <Divider component="li" style={{ marginBottom: '2rem' }} />
@@ -30,38 +39,76 @@ const NetworkInterface = ({ id, networks, bridges, data }) => {
           onChange={handleChange}
         />
         <InputField
-	  name={network.model.name}
-          label="Card"
-          type="select"
-          options={ProxmoxComputeSelectors.proxmoxNetworkcardsMap}
-          value={network.model.value}
+	  name={network.name.name}
+          label="Name"
+          type="text"
+          value={network.name.value}
           onChange={handleChange}
         />
         <InputField
-	  network={network.bridge.name}
+	  name={network.bridge.name}
           label="Bridge"
           type="select"
           options={bridgesMap}
           value={network.bridge.value}
           onChange={handleChange}
         />
+	<InputField
+          name={network.dhcp.name}
+          label="DHCP IPv4"
+          type="checkbox"
+          value={network.dhcp.value}
+          checked={network.dhcp.value === "1"}
+          onChange={handleChange}
+        />
+	<InputField
+          name={network.cidr.name}
+          label="CIDR IPv4"
+          type="text"
+          value={network.cidr.value}
+          onChange={handleChange}
+        />
+	<InputField
+          name={network.gw.name}
+          label="Gateway IPv4"
+          type="text"
+          value={network.gw.value}
+          onChange={handleChange}
+        />
+	<InputField
+          name={network.dhcp6.name}
+          label="DHCP IPv6"
+          type="checkbox"
+          value={network.dhcp6.value}
+          checked={network.dhcp6.value === "1"}
+          onChange={handleChange}
+        />
+        <InputField
+          name={network.cidr6.name}
+          label="CIDR IPv6"
+          type="text"
+          value={network.cidr6.value}
+          onChange={handleChange}
+        />
+        <InputField
+          name={network.gw6.name}
+          label="Gateway IPv6"
+          type="text"
+          value={network.gw6.value}
+          onChange={handleChange}
+        />
         <InputField
 	  name={network.tag.name}
           label="VLAN Tag"
+          type="text"
           value={network.tag.value}
           onChange={handleChange}
         />
         <InputField
 	  name={network.rate.name}
           label="Rate limit"
-          value={network.rate.value}
-          onChange={handleChange}
-        />
-        <InputField
-	  name={network.queues.name}
-          label="Multiqueue"
           type="text"
-          value={network.queues.value}
+          value={network.rate.value}
           onChange={handleChange}
         />
         <InputField
@@ -70,14 +117,6 @@ const NetworkInterface = ({ id, networks, bridges, data }) => {
           type="checkbox"
           value={network.firewall.value}
 	  checked={network.firewall.value === "1"}
-          onChange={handleChange}
-        />
-        <InputField
-	  name={network.link_down.name}
-          label="Disconnect"
-          type="checkbox"
-          value={network.link_down.value}
-	  checked={network.link_down.value === "1"}
           onChange={handleChange}
         />
     </div>

@@ -12,21 +12,34 @@ const ProxmoxServerNetwork = ({network, bridges}) => {
   const [interfaces, setInterfaces] = useState([]);
   const [nextId, setNextId] = useState(0);
   const [availableIds, setAvailableIds] = useState([]);
+  const [usedIds, setUsedIds] = useState(new Set());
 
   useEffect(() => {
     if (network && network.length > 0) {
+      const existingIds = new Set();
       network.forEach((net) => {
+	const id = parseInt(net.value.id.value.replace('net', ''), 10);
+        existingIds.add(id);
         console.log("****************8 net value", net);
         addInterface(null, net.value);
       });
+      setUsedIds(existingIds);
     }
   }, [network]);
 
+  const getLowestAvailableId = () => {
+    let id = 0;
+    while (usedIds.has(id)) {
+      id += 1;
+    }
+    return id;
+  };
+
   const addInterface = (event, initialData = null ) => {
     if (event) event.preventDefault();
-    const newId = availableIds.length > 0 ? availableIds[0] : nextId;
+    const netId = getLowestAvailableId();
     const initData = initialData || {
-      id: { name: `compute_attribute[vm_attrs][interfaces_attributes][${nextId}][id]`, value: `net${newId}` },
+      id: { name: `compute_attribute[vm_attrs][interfaces_attributes][${nextId}][id]`, value: `net${netId}` },
       model: { name: `compute_attribute[vm_attrs][interfaces_attributes][${nextId}][model]`, value: 'virtio' },
       bridge: { name: `compute_attribute[vm_attrs][interfaces_attributes][${nextId}][bridge]`, value: bridges?.[0]?.iface || '' },
       tag: { name: `compute_attribute[vm_attrs][interfaces_attributes][${nextId}][tag]`, value: '' },
@@ -35,24 +48,35 @@ const ProxmoxServerNetwork = ({network, bridges}) => {
       firewall: { name: `compute_attribute[vm_attrs][interfaces_attributes][${nextId}][firewall]`, value: '0' },
       link_down: { name: `compute_attribute[vm_attrs][interfaces_attributes][${nextId}][link_down]`, value: '0' },
     };
-
     setNextId(prevId => {
-      const newNextId = prevId + 1;
+      if (availableIds.length > 0) {
+        setAvailableIds(availableIds.slice(1));
+      } else {
+        prevId += 1;
+      }
+      setUsedIds(prevIds => new Set(prevIds).add(netId));
+      const newId = availableIds.length > 0 ? availableIds[0] : prevId;
       const newInterface = {
-            id: newNextId,
-            bridges: bridges,
-            data: initData,
-            networks: network,
-        };
-        setInterfaces(interfaces => [...interfaces, newInterface]);
-        return newNextId;
-      });
+        id: newId,
+        bridges: bridges,
+        data: initData,
+        networks: network,
+      };
+
+      setInterfaces(interfaces => [...interfaces, newInterface]);
+      return prevId;
+    });
   };
 
   const removeInterface = (idToRemove) => {
     const newInterfaces = interfaces.filter(nic => nic.id !== idToRemove);
     setInterfaces(newInterfaces);
     setAvailableIds([...availableIds, idToRemove].sort((a, b) => a - b));
+    setUsedIds(prevIds => {
+      const newIds = new Set(prevIds);
+      newIds.delete(idToRemove);
+      return newIds;
+    });
   };
 
   const updateNetworkData = (id, updatedData) => {

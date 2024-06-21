@@ -28,7 +28,7 @@ const ProxmoxVmType = ({
   nodes,
   images,
   pools,
- from_profile, new_vm, storages, bridges }) => {
+ from_profile, new_vm, storages, bridges, volids }) => {
   console.log("*************** vm_attrs", vm_attributes);
   const nodesMap = nodes.map(node => ({value: node.node, label: node.node}));
   const imagesMap = images.map(image => ({value: image, label: image}));
@@ -53,7 +53,7 @@ const ProxmoxVmType = ({
       options: <ProxmoxServerOptions options={vm_attributes} />,
       hardware: <ProxmoxServerHardware hardware={vm_attributes} />,
       network: <ProxmoxServerNetwork network={vm_attributes.interfaces} bridges={bridges} />,
-      storage: <ProxmoxServerStorage storage={vm_attributes.disks} storages={storages}/>,
+      storage: <ProxmoxServerStorage storage={vm_attributes.disks} storages={storages} volids={volids} />,
     },
     'lxc': {
       options: <ProxmoxContainerOptions options={vm_attributes} />,

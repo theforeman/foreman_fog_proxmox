@@ -18,6 +18,7 @@ const ProxmoxContainerNetwork = ({network, bridges}) => {
     if (network && network.length > 0) {
       const existingIds = new Set();
       network.forEach((net) => {
+        if (!net.value.name.value) return;  
 	const id = parseInt(net.value.id.value.replace('net', ''), 10);
         existingIds.add(id);
         console.log("****************8 net value", net);

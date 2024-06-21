@@ -9,9 +9,10 @@ import {
 import InputField from '../../common/FormInputs';
 import ProxmoxComputeSelectors from '../../ProxmoxComputeSelectors';
 import TimesIcon from '@patternfly/react-icons/dist/esm/icons/times-icon';
-const CDRom = ({ onRemove, data }) => {
-  const [cdrom, setCdrom] = useState('');
-
+const CDRom = ({ onRemove, data, storages, volids }) => {
+  const [cdrom, setCdrom] = useState(data);
+  const storagesMap = [{ value: '', label: '' }, {value: 'local', label: 'local'}];
+  const imagesMap = [{ value: '', label: '' }, ...volids.map(v => ({value: v.volid, label: v.volid}))];
   const [selectedOption, setSelectedOption] = useState('');
 
   const handleMediaChange = (_, event) => {
@@ -19,10 +20,13 @@ const CDRom = ({ onRemove, data }) => {
   };
 
   const handleChange = (e) => {
-    const { value } = e.target;
-    setCdrom(value);
+    const { name, type, checked } = e.target;
+    const value = type === "checkbox" ? (checked ? "1" : "0") : e.target.value;
+    const updatedKey = Object.keys(cdrom).find(key => cdrom[key].name === name);
+    const updatedData = { ...cdrom, [updatedKey]: { ...cdrom[updatedKey], value } };
+    setCdrom(updatedData);
   };
-
+  console.log("***************** data and volids, ", data, volids);
   return (
     <div style={{ position: 'relative' }} >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -37,7 +41,7 @@ const CDRom = ({ onRemove, data }) => {
       <div style={{ display: 'flex', gap: '1rem' }}>
         <Radio
           id="radio-none"
-          name="cdrom"
+          name={cdrom.cdrom.name}
           label="None"
           value="None"
           isChecked={selectedOption === 'None'}
@@ -45,7 +49,7 @@ const CDRom = ({ onRemove, data }) => {
         />
         <Radio
           id="radio-physical"
-          name="cdrom"
+          name={cdrom.cdrom.name}
           label="Physical"
           value="Physical"
           isChecked={selectedOption === 'Physical'}
@@ -53,7 +57,7 @@ const CDRom = ({ onRemove, data }) => {
         />
         <Radio
           id="radio-image"
-          name="cdrom"
+          name={cdrom.cdrom.name}
           label="Image"
           value="Image"
           isChecked={selectedOption === 'Image'}
@@ -64,40 +68,26 @@ const CDRom = ({ onRemove, data }) => {
       <PageSection padding={{ default: 'noPadding' }}>
         <Title headingLevel="h5">Image</Title>
         <Divider component="li" style={{marginBottom: '2rem' }} />
-	<InputField
-	  label="Controller"
-          type="select"
-          value={cdrom}
-	  options={ProxmoxComputeSelectors.proxmoxControllersCloudinitMap}
-          onChange={handleChange}
-        />
         <InputField
           label="Storage"
-          type="text"
-          value=""
-          onChange={e => setHdStorage(e.target.value)}
+          name={cdrom.storage.name}
+          type="select"
+          value={cdrom.storage.value}
+	  options={storagesMap}
+          onChange={handleChange}
         />
         <InputField
+	  name={cdrom.volid.name}
           label="Image ISO"
-          type="text"
-          value=""
+          type="select"
+          value={cdrom.volid.value}
+	  options={imagesMap}
           onChange={handleChange}
         />
         <input
+          name={cdrom.storage_type.name}
           type="hidden"
-          value={cdrom}
-          onChange={handleChange}
-        />
-	<input
-          type="hidden"
-          value={cdrom}
-          onChange={handleChange}
-        />
-        <input
-          name={cdrom}
-          type="hidden"
-          value={cdrom}
-          onChange={handleChange}
+          value="cdrom"
         />
        </PageSection>
        )}

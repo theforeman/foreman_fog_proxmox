@@ -25,5 +25,7 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= webpacked_plugins_js_for :foreman_fog_proxmox %>
 <%= javascript_include_tag 'foreman_fog_proxmox/proxmox_vm', "data-turbolinks-track" => true %>
 <% end %>
-<% bridges = compute_resource.bridges(f.object.node_id) %>
-<%= react_component('ProxmoxVmType',  { vm_attributes: object_to_attributes_hash(f.object, from_profile), nodes: nodes, images: images, pools: compute_resource.pools, storages: compute_resource.storages(f.object.node_id), from_profile: from_profile, new_vm: new_vm, bridges: bridges}) %>
+<% node_id = f.object.node_id %>
+<% bridges = compute_resource.bridges(node_id) %>
+<% volids = compute_resource.images_by_storage(node_id, 'local', 'iso') %>
+<%= react_component('ProxmoxVmType',  { vm_attributes: object_to_attributes_hash(f.object, from_profile), nodes: nodes, images: images, pools: compute_resource.pools, storages: compute_resource.storages(node_id), from_profile: from_profile, new_vm: new_vm, bridges: bridges, volids: volids}) %>

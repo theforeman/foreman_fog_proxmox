@@ -13,18 +13,19 @@ import CloudInit from './components/CloudInit';
 import CDRom from './components/CDRom';
 import TimesIcon from '@patternfly/react-icons/dist/esm/icons/times-icon';
 
-const ProxmoxServerStorage = ({storage, storages}) => {
+const ProxmoxServerStorage = ({storage, storages, volids}) => {
   const [hardDisks, setHardDisks] = useState([]); 
   const [nextId, setNextId] = useState(0);
   const [cloudInit, setCloudInit] = useState(false);
   const [cDRom, setCDRom] = useState(false);
+  const [cdRomData, setCDRomData] = useState(null);
   const [nextDeviceNumbers, setNextDeviceNumbers] = useState({
     ide: 0,
     sata: 0,
     scsi: 0,
     virtio: 0,
   });
-
+  const images = '';
   const controllerRanges = {
     ide: { min: 0, max: 3 },
     sata: { min: 0, max: 5 },
@@ -94,7 +95,6 @@ const ProxmoxServerStorage = ({storage, storages}) => {
       deviceInfo = createUniqueDevice('hard_disk', selectedController);
       if (!deviceInfo) return;
     }
-    console.log("*************** inital dala", initialData);
     const { controller, device, id } = deviceInfo || {};
     const initHdd = initialData || {
       id: { name: `compute_attribute[vm_attrs][volumes_attributes][${nextId}][id]`, value: id },
@@ -106,7 +106,6 @@ const ProxmoxServerStorage = ({storage, storages}) => {
       controller: { name: `compute_attribute[vm_attrs][volumes_attributes][${nextId}][controller]`, value: controller },
     };
 
-    console.log("************8 next id is", nextId);
     setNextId(prevNextId => {
         const newNextId = prevNextId + 1;
         const newHardDisk = {
@@ -137,8 +136,23 @@ const ProxmoxServerStorage = ({storage, storages}) => {
     setCloudInit(false);
   };
 
-  const addCDRom = (event) => {
-      setCDRom(true);
+  const addCDRom = (event, initialData = null, isPreExisting = false) => {
+    if (event) event.preventDefault();
+    if (cDRom) return;
+
+    const deviceInfo = initialData ? { controller: 'ide', device: 2, id: 'ide2' } : createUniqueDevice('cdrom');
+    if (!deviceInfo) return;
+
+    const initCDRom = initialData || {
+      id: { name: `compute_attribute[vm_attrs][volumes_attributes][${nextId}][id]`, value: deviceInfo.id },
+      volid: { name: `compute_attribute[vm_attrs][volumes_attributes][${nextId}][volid]`, value: '' },
+      storage_type: { name: `compute_attribute[vm_attrs][volumes_attributes][${nextId}][storage_type]`, value: 'cdrom' },
+      storage: { name: `compute_attribute[vm_attrs][volumes_attributes][${nextId}][storage]`, value: 'local' },
+      cdrom: { name: `compute_attribute[vm_attrs][volumes_attributes][${nextId}][cdrom]`, value: '' },
+    };
+
+    setCDRom(true);
+    setCDRomData(initCDRom);
   };
 
   const removeCDRom = () => {
@@ -157,8 +171,8 @@ const ProxmoxServerStorage = ({storage, storages}) => {
       {cloudInit && (
         <CloudInit onRemove={removeCloudInit} />
       )}
-      {cDRom && (
-        <CDRom onRemove={removeCDRom} />
+      {cDRom && cdRomData && (
+        <CDRom onRemove={removeCDRom} data={cdRomData} storages={storages} volids={volids} />
       )}
       {hardDisks.map((hardDisk) => (
         <div style={{ position: 'relative' }}>

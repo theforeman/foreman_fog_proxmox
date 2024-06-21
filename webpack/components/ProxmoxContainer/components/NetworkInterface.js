@@ -54,18 +54,18 @@ const NetworkInterface = ({ id, networks, bridges, data, updateNetworkData }) =>
           onChange={handleChange}
         />
 	<InputField
-          name={network.dhcp.name}
+          name={network?.dhcp?.name}
           label="DHCP IPv4"
           type="checkbox"
-          value={network.dhcp.value}
-          checked={network.dhcp.value === "1"}
+          value={network?.dhcp?.value}
+          checked={network?.dhcp?.value === "1"}
           onChange={handleChange}
         />
 	<InputField
-          name={network.cidr.name}
+          name={network?.cidr?.name}
           label="CIDR IPv4"
           type="text"
-          value={network.cidr.value}
+          value={network?.cidr?.value}
           onChange={handleChange}
         />
 	<InputField
@@ -76,18 +76,18 @@ const NetworkInterface = ({ id, networks, bridges, data, updateNetworkData }) =>
           onChange={handleChange}
         />
 	<InputField
-          name={network.dhcp6.name}
+          name={network?.dhcp6?.name}
           label="DHCP IPv6"
           type="checkbox"
-          value={network.dhcp6.value}
-          checked={network.dhcp6.value === "1"}
+          value={network?.dhcp6?.value}
+          checked={network?.dhcp6?.value === "1"}
           onChange={handleChange}
         />
         <InputField
-          name={network.cidr6.name}
+          name={network?.cidr6?.name}
           label="CIDR IPv6"
           type="text"
-          value={network.cidr6.value}
+          value={network?.cidr6?.value}
           onChange={handleChange}
         />
         <InputField

@@ -19,14 +19,8 @@
 
 module ProxmoxComputeSelectorsHelper
   def proxmox_types_map
-    [OpenStruct.new(id: 'qemu', value: 'qemu', name: 'KVM/Qemu server'),
-     OpenStruct.new(id: 'lxc', value: 'lxc', name: 'LXC container')]
-  end
-  def types_map
-    [
-    {key:1, value:'qemu', name: 'KVM/Qemu server'},
-    {key:2, value:'lxc', name: 'LXC container' }
-    ]
+    [OpenStruct.new(id: 'qemu', name: 'KVM/Qemu server'),
+     OpenStruct.new(id: 'lxc', name: 'LXC container')]
   end
 
   def proxmox_archs_map

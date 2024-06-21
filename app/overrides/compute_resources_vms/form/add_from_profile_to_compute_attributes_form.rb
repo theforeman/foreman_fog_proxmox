@@ -16,6 +16,12 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 Deface::Override.new(
+  virtual_path: 'compute_attributes/_compute_form',
+  name: 'remove_networks_and_volumes_partial',
+  remove: "erb[loud]:contains('compute_resources_vms/form/networks'), erb[loud]:contains('compute_resources_vms/form/volumes')"
+)
+
+Deface::Override.new(
   :virtual_path => 'compute_attributes/_form',
   :name => 'add_from_profile_to_compute_attributes_form',
   :replace => "erb[loud]:contains('render')",

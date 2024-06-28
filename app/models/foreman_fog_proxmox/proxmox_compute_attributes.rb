@@ -42,8 +42,8 @@ module ForemanFogProxmox
 
     def interface_compute_attributes(interface_attributes)
       vm_attrs = ForemanFogProxmox::HashCollection.new_hash_reject_keys(interface_attributes, [:identifier, :macaddr, :hwaddr])
-      vm_attrs[:dhcp] = interface_attributes[:ip] == 'dhcp' ? '1' : '0'
-      vm_attrs[:dhcp6] = interface_attributes[:ip6] == 'dhcp' ? '1' : '0'
+      vm_attrs[:dhcp] = (interface_attributes[:ip] == 'dhcp') ? '1' : '0'
+      vm_attrs[:dhcp6] = (interface_attributes[:ip6] == 'dhcp') ? '1' : '0'
       vm_attrs
     end
 

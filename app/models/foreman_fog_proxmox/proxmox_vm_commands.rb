@@ -55,7 +55,7 @@ module ForemanFogProxmox
     end
 
     def assign_vmid(vmid, node)
-      vmid < 1 ? node.servers.next_id : vmid
+      (vmid < 1) ? node.servers.next_id : vmid
     end
 
     def compute_clone_attributes(args, container, type)

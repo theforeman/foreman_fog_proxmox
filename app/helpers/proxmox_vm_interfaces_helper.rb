@@ -56,13 +56,13 @@ module ProxmoxVmInterfacesHelper
   end
 
   def interface_common_typed_keys(type)
-    ['id', type == 'qemu' ? 'macaddr' : 'hwaddr']
+    ['id', (type == 'qemu') ? 'macaddr' : 'hwaddr']
   end
 
   def compute_dhcps(interface_attributes_h)
-    interface_attributes_h[:dhcp] = interface_attributes_h[:ip] == 'dhcp' ? '1' : '0'
+    interface_attributes_h[:dhcp] = (interface_attributes_h[:ip] == 'dhcp') ? '1' : '0'
     interface_attributes_h[:ip] = '' if interface_attributes_h[:dhcp] == '1'
-    interface_attributes_h[:dhcp6] = interface_attributes_h[:ip6] == 'dhcp' ? '1' : '0'
+    interface_attributes_h[:dhcp6] = (interface_attributes_h[:ip6] == 'dhcp') ? '1' : '0'
     interface_attributes_h[:ip6] = '' if interface_attributes_h[:dhcp6] == '1'
   end
 

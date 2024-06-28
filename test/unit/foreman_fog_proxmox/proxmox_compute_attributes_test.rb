@@ -62,7 +62,7 @@ module ForemanFogProxmox
 
       it 'sets container hostname with host name' do
         physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :primary => true,
-:compute_attributes => { 'dhcp' => '1', 'dhcp6' => '1' })
+          :compute_attributes => { 'dhcp' => '1', 'dhcp6' => '1' })
         host = FactoryBot.build(
           :host_empty,
           :interfaces => [physical_nic],

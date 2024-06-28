@@ -30,7 +30,7 @@ module ForemanFogProxmox
         unless compute_os_types(host).include?(ostype)
           raise ::Foreman::Exception,
             format(_('Operating system family %<type>s is not consistent with %<ostype>s'), type: host.operatingsystem.type,
-ostype: ostype)
+              ostype: ostype)
         end
       end
       super

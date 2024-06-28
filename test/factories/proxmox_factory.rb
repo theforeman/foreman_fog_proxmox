@@ -20,7 +20,7 @@
 require 'fog/proxmox/compute/models/node'
 
 FactoryBot.define do
-  factory :proxmox_resource, :class => ComputeResource do
+  factory :proxmox_resource, :class => 'ComputeResource' do
     sequence(:name) { |n| "compute_resource#{n}" }
     organizations { [Organization.find_by(name: 'Organization 1')] }
     locations { [Location.find_by(name: 'Location 1')] }
@@ -32,10 +32,10 @@ FactoryBot.define do
       url { 'https://192.168.56.101:8006/api2/json' }
     end
 
-    factory :proxmox_cr, :class => ForemanFogProxmox::Proxmox, :traits => [:proxmox]
+    factory :proxmox_cr, :class => 'ForemanFogProxmox::Proxmox', :traits => [:proxmox]
   end
 
-  factory :node, :class => Fog::Proxmox::Compute::Node do
+  factory :node, :class => 'Fog::Proxmox::Compute::Node' do
     sequence(:identity) { |n| "node#{n}" }
     trait :proxmox do
       identity { 'proxmox' }
@@ -43,7 +43,7 @@ FactoryBot.define do
     trait :service do
       service { :proxmox_cr }
     end
-    factory :proxmox_node, :class => Fog::Proxmox::Compute::Node, :traits => [:proxmox, :service]
+    factory :proxmox_node, :class => 'Fog::Proxmox::Compute::Node', :traits => [:proxmox, :service]
   end
 
   def deferred_nic_attrs
@@ -59,16 +59,16 @@ FactoryBot.define do
     host
   end
 
-  factory :nic_base_empty, :class => Nic::Base do
+  factory :nic_base_empty, :class => 'Nic::Base' do
     type { 'Nic::Base' }
   end
 
-  factory :nic_managed_empty, :class => Nic::Managed, :parent => :nic_base_empty do
+  factory :nic_managed_empty, :class => 'Nic::Managed', :parent => :nic_base_empty do
     type { 'Nic::Managed' }
     identifier { 'net0' }
   end
 
-  factory :host_empty, :class => Host do
+  factory :host_empty, :class => 'Host' do
     sequence(:name) { |n| "host#{n}" }
     sequence(:hostname) { |n| "host#{n}" }
     trait :compute_attributes do

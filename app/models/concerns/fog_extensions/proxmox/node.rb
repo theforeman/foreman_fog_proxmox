@@ -31,7 +31,7 @@ module FogExtensions
             # We need to explicitly use the base 'each' method here on the page,
             #  otherwise we get infinite recursion
             base_each = Fog::Collection.instance_method(:each)
-            base_each.bind(page).call(&block)
+            base_each.bind_call(page, &block)
           end
         end
         self

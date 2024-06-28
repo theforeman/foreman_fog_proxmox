@@ -191,7 +191,7 @@ module ForemanFogProxmox
       new_attr_type ||= type
       logger.debug("new_typed_vm(#{type}): new_attr_type=#{new_attr_type}")
       logger.debug("new_typed_vm(#{type}): new_attr=#{new_attr}'")
-      options = !new_attr.key?('vmid') || ForemanFogProxmox::Value.empty?(new_attr['vmid']) ? vm_typed_instance_defaults(type).merge(new_attr).merge(type: type) : new_attr
+      options = (!new_attr.key?('vmid') || ForemanFogProxmox::Value.empty?(new_attr['vmid'])) ? vm_typed_instance_defaults(type).merge(new_attr).merge(type: type) : new_attr
       logger.debug("new_typed_vm(#{type}): options=#{options}")
       vm_h = parse_typed_vm(options, type).deep_symbolize_keys
       logger.debug("new_typed_vm(#{type}): vm_h=#{vm_h}")

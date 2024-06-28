@@ -20,15 +20,15 @@
 Rails.application.routes.draw do
   namespace :foreman_fog_proxmox do
     match 'isos/:compute_resource_id/:node_id/:storage', :to => 'compute_resources#isos_by_id_and_node_and_storage',
-:via => 'get'
+      :via => 'get'
     match 'ostemplates/:compute_resource_id/:node_id/:storage',
       :to => 'compute_resources#ostemplates_by_id_and_node_and_storage', :via => 'get'
     match 'isos/:compute_resource_id/:node_id', :to => 'compute_resources#isos_by_id_and_node', :via => 'get'
     match 'ostemplates/:compute_resource_id/:node_id', :to => 'compute_resources#ostemplates_by_id_and_node',
-:via => 'get'
+      :via => 'get'
     match 'storages/:compute_resource_id/:node_id', :to => 'compute_resources#storages_by_id_and_node', :via => 'get'
     match 'isostorages/:compute_resource_id/:node_id', :to => 'compute_resources#iso_storages_by_id_and_node',
-:via => 'get'
+      :via => 'get'
     match 'bridges/:compute_resource_id/:node_id', :to => 'compute_resources#bridges_by_id_and_node', :via => 'get'
   end
 end

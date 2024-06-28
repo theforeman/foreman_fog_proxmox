@@ -34,7 +34,7 @@ module ProxmoxComputeResourcesHelper
   def cluster_nodes(compute_resource)
     nodes = compute_resource.nodes ? compute_resource.nodes.collect(&:node) : []
   rescue ::Foreman::Exception => e
-    return [] if e.message == 'User token expired'
+    [] if e.message == 'User token expired'
   rescue StandardError => e
     logger.warn("failed to get cluster nodes: #{e}")
     raise e

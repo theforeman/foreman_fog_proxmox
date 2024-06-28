@@ -30,7 +30,7 @@ module ForemanFogProxmox
         unless compute_os_types(host).include?(ostype)
           raise ::Foreman::Exception,
             format(_('Operating system family %<type>s is not consistent with %<ostype>s'), type: host.operatingsystem.type,
-ostype: ostype)
+              ostype: ostype)
         end
       end
       super
@@ -42,8 +42,8 @@ ostype: ostype)
 
     def interface_compute_attributes(interface_attributes)
       vm_attrs = ForemanFogProxmox::HashCollection.new_hash_reject_keys(interface_attributes, [:identifier, :macaddr, :hwaddr])
-      vm_attrs[:dhcp] = interface_attributes[:ip] == 'dhcp' ? '1' : '0'
-      vm_attrs[:dhcp6] = interface_attributes[:ip6] == 'dhcp' ? '1' : '0'
+      vm_attrs[:dhcp] = (interface_attributes[:ip] == 'dhcp') ? '1' : '0'
+      vm_attrs[:dhcp6] = (interface_attributes[:ip6] == 'dhcp') ? '1' : '0'
       vm_attrs
     end
 

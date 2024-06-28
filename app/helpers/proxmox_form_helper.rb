@@ -30,7 +30,7 @@ module ProxmoxFormHelper
         addClass options, 'form-control'
         pass = f.password_field(attr, options) +
                tag(:span, '', class: 'glyphicon glyphicon-warning-sign input-addon', title: 'Caps lock ON',
-style: 'display:none')
+                 style: 'display:none')
         if unset_button
           button = link_to_function(icon_text('edit', '', :kind => 'pficon'), 'toggle_input_group(this)',
             :id => 'disable-pass-btn', :class => 'btn btn-default', :title => _('Change the password'))
@@ -56,7 +56,7 @@ style: 'display:none')
     options[:form_builder_attrs] ||= {}
 
     content_tag(:div, :class => "#{options[:type]}_#{association}_fields_template form_template",
-:style => 'display: none;') do
+      :style => 'display: none;') do
       form_builder.fields_for(association, options[:object],
         :child_index => "new_#{options[:type]}_#{association}") do |f|
         render(:partial => options[:partial], :layout => options[:layout],

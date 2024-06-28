@@ -36,7 +36,7 @@ module ForemanFogProxmox
       v = identity_client.read_version if identity_client
       v ? v['version'] : 'Unknown'
     rescue ::Foreman::Exception => e
-      return 'Unkown' if e.message == 'User token expired'
+      'Unkown' if e.message == 'User token expired'
     rescue StandardError => e
       logger.warn("failed to get identity client version: #{e}")
       raise e

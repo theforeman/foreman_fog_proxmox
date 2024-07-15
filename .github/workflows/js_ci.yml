@@ -1,0 +1,26 @@
+name: JS
+on:
+  pull_request:
+    paths:
+      - 'webpack/**'
+      - 'package.json'
+      - '.github/workflows/js_ci.yml'
+jobs:
+  test_js:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [14]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version:  ${{ matrix.node-version }}
+      - name: Npm install
+        run: |
+          npm install
+      - name: Run plugin linter
+        run: |
+          npm run lint

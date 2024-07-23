@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "paths": {
+      "foremanReact/*": ["../foreman/webpack/assets/javascripts/react_app/*"]
+    }
+  }
+}

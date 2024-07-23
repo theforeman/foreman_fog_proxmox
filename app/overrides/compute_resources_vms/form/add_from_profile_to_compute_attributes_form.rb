@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright 2018 Tristan Robert
 
 # This file is part of ForemanFogProxmox.
@@ -14,6 +16,12 @@
 
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
+
+Deface::Override.new(
+  virtual_path: 'compute_attributes/_compute_form',
+  name: 'remove_networks_and_volumes_partial',
+  remove: "erb[loud]:contains('compute_resources_vms/form/networks'), erb[loud]:contains('compute_resources_vms/form/volumes')"
+)
 
 Deface::Override.new(
   :virtual_path => 'compute_attributes/_form',

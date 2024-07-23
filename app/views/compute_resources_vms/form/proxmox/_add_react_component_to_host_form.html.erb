@@ -1,0 +1,5 @@
+<% content_for(:javascripts) do %>
+  <%= webpacked_plugins_js_for :foreman_fog_proxmox %>
+  <%= javascript_include_tag 'foreman_fog_proxmox/proxmox_vm', "data-turbolinks-track" => true %>
+<% end %>
+<%= react_component('ProxmoxVmType', { registerComp: true }) unless @host.managed %>

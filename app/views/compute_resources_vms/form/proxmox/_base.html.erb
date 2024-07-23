@@ -14,25 +14,25 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
-
-<%= javascript_include_tag 'foreman_fog_proxmox/proxmox_vm', "data-turbolinks-track" => true %>
-
-<%= select_f f, :type, proxmox_types_map, :id, :name, { }, :label => _('Type'), :label_size => "col-md-2", :required => true, :onchange => "vmTypeSelected()", :disabled => !new_vm %>
-
-<!-- VM General Settings -->
-<%= render :partial => "compute_resources_vms/form/proxmox/general", :locals => { :f => f, :compute_resource =>  compute_resource, :new_vm => new_vm, :from_profile => from_profile } %>
-
-<!-- VM Extended Settings -->
-<%= render :partial => "compute_resources_vms/form/proxmox/container/extended", :locals => { :f => f, :compute_resource =>  compute_resource, :new_vm => new_vm } %>
-
-<!-- VM Advanced Settings -->
-<%= render :partial => "compute_resources_vms/form/proxmox/server/advanced", :locals => { :f => f, :compute_resource =>  compute_resource, :new_vm => new_vm } %>
-<%= render :partial => "compute_resources_vms/form/proxmox/container/advanced", :locals => { :f => f, :compute_resource =>  compute_resource, :new_vm => new_vm } %>
-
-<!-- Config Options Settings-->
-<%= f.fields_for :config, compute_resource.new_typed_vm(object_to_config_hash(f.object, 'qemu'), 'qemu').config, include_id: false do |server_config|%>
-  <%= render :partial => "compute_resources_vms/form/proxmox/server/config", :locals => { :f => server_config, :cloudinit => f.object.cloud_init?, :compute_resource =>  compute_resource, :host => @host, :new_vm => new_vm, :item_layout => 'removable', :type => f.object.type, :node_id => f.object.node_id } %>
+<% nodes = compute_resource.nodes %>
+<% unless local_assigns[:hide_image] && !new_vm %>
+    <%
+      arch ||= nil ; os ||= nil
+      images = possible_images(compute_resource, arch, os)
+    -%>
+    <div id='image_selection'>
+    <%= select_f f, :image_id, images, :uuid, :name, { :include_blank => true },
+      :disabled => true,
+      :help_inline => :indicator,
+      :class => ('hide' if from_profile),
+      :label => _('Image'),
+      :no_label => from_profile,
+      :label_size => "col-md-2" %>
+    </div>
 <% end %>
-<%= f.fields_for :config, compute_resource.new_typed_vm(object_to_config_hash(f.object, 'lxc'), 'lxc').config, include_id: false do |container_config|%>
-  <%= render :partial => "compute_resources_vms/form/proxmox/container/config", :locals => { :f => container_config, :compute_resource =>  compute_resource, :host => @host, :new_vm => new_vm, :item_layout => 'removable', :type => f.object.type, :node_id => f.object.node_id } %>
+<% untemplatable = new_vm || f.object.templated? %>
+<% checked = params[:host] && params[:host][:compute_attributes] && params[:host][:compute_attributes][:start_after_create] || '1' %>
+<% content_for(:javascripts) do %>
+  <%= webpacked_plugins_js_for :foreman_fog_proxmox %>
 <% end %>
+<%= react_component('ProxmoxVmType',  { vmAttrs: object_to_attributes_hash(f.object, from_profile, checked), nodes: nodes.as_json, images: images.as_json, pools: compute_resource.pools.as_json, storages: compute_resource.storages.as_json, fromProfile: from_profile, newVm: new_vm, bridges: compute_resource.bridges.as_json, untemplatable: untemplatable }) %>

@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.16.0](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.15.1...v0.16.0) (2024-07-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* Move from jquery to react js ([#331](https://github.com/theforeman/foreman_fog_proxmox/issues/331))
+
+### Features
+
+* Move from jquery to react js ([#331](https://github.com/theforeman/foreman_fog_proxmox/issues/331)) ([3c18767](https://github.com/theforeman/foreman_fog_proxmox/commit/3c18767237c74bc61c71871506c698ab220b55a1)), closes [#333](https://github.com/theforeman/foreman_fog_proxmox/issues/333)
+
+
+### Bug Fixes
+
+* container templates to create image in compute resource ([#327](https://github.com/theforeman/foreman_fog_proxmox/issues/327)) ([8f86f79](https://github.com/theforeman/foreman_fog_proxmox/commit/8f86f79f74606be8b0ccfc6ec89f2f1b729f68f4)), closes [#328](https://github.com/theforeman/foreman_fog_proxmox/issues/328)
+
 ## [0.15.1](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.15.0...v0.15.1) (2024-04-05)
 
 

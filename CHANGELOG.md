@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.1](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.16.0...v0.16.1) (2024-07-24)
+
+
+### Bug Fixes
+
+* Update package.json ([#335](https://github.com/theforeman/foreman_fog_proxmox/issues/335)) ([595fa60](https://github.com/theforeman/foreman_fog_proxmox/commit/595fa60c04654571a2cacfb894440c63a61df45a))
+
 ## [0.16.0](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.15.1...v0.16.0) (2024-07-23)
 
 

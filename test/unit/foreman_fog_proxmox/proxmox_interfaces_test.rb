@@ -54,7 +54,7 @@ module ForemanFogProxmox
 
       it 'sets interface identifier with server compute id, ip and ip6 and mac adress' do
         ip = '192.168.56.100'
-        mac_address = '36:25:8c:53:0c:50'
+        mac_address = '36:25:8C:53:0C:50'
         ip6 = Array.new(4) { format('%<x>s', x: rand(16**4)) }.join(':') + '::1'
         compute_attributes = ActiveSupport::HashWithIndifferentAccess.new({ 'id' => 'net0' })
         physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :ip => ip, :ip6 => ip6,
@@ -131,7 +131,7 @@ module ForemanFogProxmox
 
       it 'sets container compute ip DHCP, mac adress and firewall' do
         ip = '192.168.56.100'
-        mac_address = '36:25:8c:53:0c:50'
+        mac_address = '36:25:8C:53:0C:50'
         ip6 = '2001:0:1234::c1c0:abcd:876'
         firewall = '1'
         compute_attributes = ActiveSupport::HashWithIndifferentAccess.new({ 'id' => 'net0', 'dhcp' => '1',

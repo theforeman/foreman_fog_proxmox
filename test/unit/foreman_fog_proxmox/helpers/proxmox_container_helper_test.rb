@@ -84,6 +84,43 @@ module ForemanFogProxmox
           } }
       end
 
+      let(:host_edit) do
+        { 'vmid' => '123',
+          'node_id' => 'proxmox-noris',
+          'config_attributes' => {
+            'ostype' => 'alpine',
+            'hostname' => 'test-container.example.com',
+            'arch' => 'amd64',
+            'cores' => '1',
+            'memory' => '1024',
+            'swap' => '512',
+          },
+          'ostemplate_storage' => 'local',
+          'ostemplate_file' => 'local:vztmpl/alpine_amd64.tar.xz',
+          'volumes_attributes' => {
+            '0' => {
+              'storage' => 'local',
+              'size' => '8',
+              'id' => 'rootfs',
+              'volid' => 'local:123/vm-123-disk-0.raw',
+            },
+          },
+          'interfaces_attributes' => {
+            '0' => {
+              'id' => 'net0',
+              'name' => 'eth0',
+              'firewall' => '0',
+              'bridge' => 'vmbr0',
+              'hwaddr' => '8E:96:2A:D3:42:80',
+              'ip' => 'dhcp',
+              'ip6' => '',
+            },
+          },
+          'name' => 'test-container.example.com',
+          'provision_method' => 'build',
+          'firmware_type' => :bios }
+      end
+
       let(:container) do
         { 'vmid' => '100',
           :vmid => '100',
@@ -181,6 +218,15 @@ module ForemanFogProxmox
         assert nics[0].key?(:net0)
         assert_equal 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876',
           nics[0][:net0]
+      end
+
+      test '#interface with name eth0 and bridge in host edit' do
+        deletes = []
+        nics = []
+        add_or_delete_typed_interface(host_edit['interfaces_attributes']['0'], deletes, nics, type)
+        assert 1, nics.length
+        assert nics[0].key?(:net0)
+        assert_equal 'hwaddr=8E:96:2A:D3:42:80,bridge=vmbr0,name=eth0,ip=dhcp,firewall=0', nics[0][:net0]
       end
 
       test '#interface with name eth1 and bridge' do

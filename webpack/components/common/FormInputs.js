@@ -39,7 +39,7 @@ const InputField = ({
         <select
           disabled={disabled}
           name={name}
-          className="form-control"
+          className="without_select2 form-control"
           value={value}
           onChange={onChange}
         >

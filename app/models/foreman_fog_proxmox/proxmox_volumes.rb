@@ -107,7 +107,7 @@ module ForemanFogProxmox
       return false unless disk
 
       # Return boolean if disk of type hard_disk, cloud_init, cdrom or rootfs(LXC container) exists
-      if disk.hard_disk? || disk.cloud_init? || disk.rootfs?
+      if disk.hard_disk? || disk.cloud_init? || disk.rootfs? || disk.mount_point?
         volume_attributes['volid'].present?
       elsif disk.cdrom?
         volume_attributes['cdrom'].present?

@@ -38,7 +38,7 @@ const ProxmoxServerOptions = ({ options }) => {
         label={__('Start at boot')}
         type="checkbox"
         value={opts?.onboot?.value}
-        checked={opts?.onboot?.value === '1'}
+        checked={String(opts?.onboot?.value) === '1'}
         onChange={handleChange}
       />
       <InputField
@@ -46,7 +46,7 @@ const ProxmoxServerOptions = ({ options }) => {
         label={__('Qemu Agent')}
         type="checkbox"
         value={opts?.agent?.value}
-        checked={opts?.agent?.value === '1'}
+        checked={String(opts?.agent?.value) === '1'}
         onChange={handleChange}
       />
       <InputField
@@ -55,7 +55,7 @@ const ProxmoxServerOptions = ({ options }) => {
         info={__('Enable/disable KVM hardware virtualization')}
         type="checkbox"
         value={opts?.kvm?.value}
-        checked={opts?.kvm?.value === '1'}
+        checked={String(opts?.kvm?.value) === '1'}
         onChange={handleChange}
       />
       <InputField

@@ -120,7 +120,7 @@ const HardDisk = ({
       />
       <InputField
         name={hdd?.size?.name}
-        label={__('Size')}
+        label={__('Size (GB)')}
         type="number"
         value={hdd?.size?.value}
         onChange={handleChange}

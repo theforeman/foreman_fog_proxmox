@@ -141,7 +141,7 @@ const ProxmoxServerHardware = ({ hardware }) => {
           label={__('Enable NUMA')}
           type="checkbox"
           value={hw?.numa?.value}
-          checked={hw?.numa?.value === '1'}
+          checked={String(hw?.numa?.value) === '1'}
           onChange={handleChange}
         />
         <div style={{ marginLeft: '5%', display: 'inline-block' }}>

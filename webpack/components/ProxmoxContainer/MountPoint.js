@@ -45,7 +45,7 @@ const MountPoint = ({ id, data, storagesMap }) => {
       />
       <InputField
         name={mp?.size?.name}
-        label={__('Size')}
+        label={__('Size (GB)')}
         type="number"
         value={mp?.size?.value}
         onChange={handleChange}
@@ -69,11 +69,6 @@ const MountPoint = ({ id, data, storagesMap }) => {
         type="hidden"
         value={mp?.volid?.value}
         onChange={handleChange}
-      />
-      <input
-        name={mp?.storageType?.name}
-        type="hidden"
-        value={mp?.storageType?.value}
       />
     </div>
   );

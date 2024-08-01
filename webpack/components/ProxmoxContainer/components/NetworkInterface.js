@@ -108,7 +108,7 @@ const NetworkInterface = ({
         label={__('DHCP IPv4')}
         type="checkbox"
         value={network?.dhcp?.value}
-        checked={network?.dhcp?.value === '1'}
+        checked={String(network?.dhcp?.value) === '1'}
         onChange={handleChange}
       />
       <InputField
@@ -131,7 +131,7 @@ const NetworkInterface = ({
         label={__('DHCP IPv6')}
         type="checkbox"
         value={network?.dhcp6?.value}
-        checked={network?.dhcp6?.value === '1'}
+        checked={String(network?.dhcp6?.value) === '1'}
         onChange={handleChange}
       />
       <InputField
@@ -168,7 +168,7 @@ const NetworkInterface = ({
         label={__('Firewall')}
         type="checkbox"
         value={network?.firewall?.value}
-        checked={network?.firewall?.value === '1'}
+        checked={String(network?.firewall?.value) === '1'}
         onChange={handleChange}
       />
     </div>

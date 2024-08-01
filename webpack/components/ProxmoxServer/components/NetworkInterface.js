@@ -115,7 +115,7 @@ const NetworkInterface = ({
         label={__('Firewall')}
         type="checkbox"
         value={network?.firewall?.value}
-        checked={network?.firewall?.value === '1'}
+        checked={String(network?.firewall?.value) === '1'}
         onChange={handleChange}
       />
       <InputField
@@ -123,7 +123,7 @@ const NetworkInterface = ({
         label={__('Disconnect')}
         type="checkbox"
         value={network?.linkDown?.value}
-        checked={network?.linkDown?.value === '1'}
+        checked={String(network?.linkDown?.value) === '1'}
         onChange={handleChange}
       />
     </div>

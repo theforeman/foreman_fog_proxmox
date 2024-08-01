@@ -13,7 +13,8 @@ const NetworkInterface = ({
   existingInterfaces,
 }) => {
   const [network, setNetwork] = useState(data);
-  const [error, setError] = useState('');
+  const [idError, setIdError] = useState('');
+  const [nameError, setNameError] = useState('');
   useEffect(() => {
     const currentNetData = JSON.stringify(network);
     const parentNetData = JSON.stringify(data);
@@ -48,23 +49,23 @@ const NetworkInterface = ({
             net.data.id.value !== network.id.value
         )
       ) {
-        setError(__('Error: Duplicate ID found.'));
+        setIdError(__('Error: Duplicate ID found.'));
         return;
       }
-      setError('');
+      setIdError('');
     }
     if (updatedKey === 'name') {
-      const idValue = value;
+      const nameValue = value;
       if (
         Object.values(existingInterfaces).some(
           net =>
-            net.data.id.value === idValue &&
-            net.data.id.value !== network.id.value
+            net.data.name.value === nameValue &&
+            net.data.name.value !== network.name.value
         )
       ) {
-        setError(__('Error: Duplicate Name found.'));
+        setNameError(__('Error: Duplicate Name found.'));
       } else {
-        setError('');
+        setNameError('');
       }
     }
   };
@@ -83,7 +84,7 @@ const NetworkInterface = ({
         type="text"
         value={network?.id?.value}
         onChange={handleChange}
-        error={error}
+        error={idError}
       />
       <InputField
         name={network?.name?.name}
@@ -92,7 +93,7 @@ const NetworkInterface = ({
         type="text"
         value={network?.name?.value}
         onChange={handleChange}
-        error={error}
+        error={nameError}
       />
       <InputField
         name={network?.bridge?.name}

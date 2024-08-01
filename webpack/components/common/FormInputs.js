@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import { FieldLevelHelp } from 'patternfly-react';
+import { Tooltip } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
 import CommonForm from 'foremanReact/components/common/forms/CommonForm';
 
@@ -15,6 +16,7 @@ const InputField = ({
   options,
   checked,
   error,
+  tooltip,
 }) => {
   const renderOptions = opts =>
     opts.map(option => <option value={option.value}>{option.label}</option>);
@@ -88,7 +90,11 @@ const InputField = ({
         )
       }
     >
-      {renderComponent}
+      {tooltip ? (
+        <Tooltip content={tooltip}>{renderComponent}</Tooltip>
+      ) : (
+        renderComponent
+      )}
       {error && (
         <div style={{ color: 'red', marginTop: '0.5rem' }}>{error}</div>
       )}
@@ -125,6 +131,7 @@ InputField.propTypes = {
     })
   ),
   error: PropTypes.string,
+  tooltip: PropTypes.string,
 };
 
 InputField.defaultProps = {
@@ -138,6 +145,7 @@ InputField.defaultProps = {
   checked: false,
   options: [],
   error: '',
+  tooltip: '',
 };
 
 export default InputField;

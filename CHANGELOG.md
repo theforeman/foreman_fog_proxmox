@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.2](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.16.1...v0.16.2) (2024-08-01)
+
+
+### Bug Fixes
+
+* fixes react UI issues which prevented host creation and edit ([#337](https://github.com/theforeman/foreman_fog_proxmox/issues/337)) ([a40c106](https://github.com/theforeman/foreman_fog_proxmox/commit/a40c1061f7a5a71dd8f13279ce3ed43fb97e0d72))
+
 ## [0.16.1](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.16.0...v0.16.1) (2024-07-24)
 
 

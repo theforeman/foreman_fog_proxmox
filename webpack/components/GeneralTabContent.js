@@ -22,7 +22,7 @@ const GeneralTabContent = ({
       required
       type="number"
       value={general?.vmid?.value}
-      disabled={fromProfile}
+      disabled={!newVm || fromProfile}
       onChange={handleChange}
     />
     <InputField
@@ -48,7 +48,7 @@ const GeneralTabContent = ({
         label={__('Start after creation?')}
         type="checkbox"
         value={general?.startAfterCreate?.value}
-        checked={general?.startAfterCreate?.value === '1'}
+        checked={String(general?.startAfterCreate?.value) === '1'}
         onChange={handleChange}
       />
     )}
@@ -58,7 +58,7 @@ const GeneralTabContent = ({
         label={__('Create image?')}
         type="checkbox"
         value={general?.templated?.value}
-        checked={general?.templated?.value === '1'}
+        checked={String(general?.templated?.value) === '1'}
         disabled={untemplatable}
         onChange={handleChange}
       />

@@ -74,15 +74,15 @@ const HardDisk = ({
         onChange={handleChange}
       />
       <input
-        name={hdd?.device?.name}
-        type="hidden"
-        value={hdd?.device?.value}
-        onChange={handleChange}
-      />
-      <input
         name={hdd?.id?.name}
         type="hidden"
         value={hdd?.id?.value}
+        onChange={handleChange}
+      />
+      <input
+        name={hdd?.volid?.name}
+        type="hidden"
+        value={hdd?.volid?.value}
         onChange={handleChange}
       />
       <InputField
@@ -103,6 +103,14 @@ const HardDisk = ({
         error={error}
       />
       <InputField
+        label={__('Device')}
+        name={hdd?.device?.name}
+        value={hdd?.device?.value}
+        onChange={handleChange}
+        disabled
+        tooltip={__('Device value is set automatically.')}
+      />
+      <InputField
         name={hdd?.cache?.name}
         label={__('Cache')}
         type="select"
@@ -112,7 +120,7 @@ const HardDisk = ({
       />
       <InputField
         name={hdd?.size?.name}
-        label={__('Size')}
+        label={__('Size (GB)')}
         type="number"
         value={hdd?.size?.value}
         onChange={handleChange}

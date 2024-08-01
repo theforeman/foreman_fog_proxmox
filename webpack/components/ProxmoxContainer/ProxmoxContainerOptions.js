@@ -56,14 +56,14 @@ const ProxmoxContainerOptions = ({ options, storages, nodeId }) => {
         label={__('Start at boot')}
         type="checkbox"
         value={opts?.onboot?.value}
-        checked={opts?.onboot?.value === '1'}
+        checked={String(opts?.onboot?.value) === '1'}
         onChange={handleChange}
       />
       <InputField
         name={opts?.ostype?.name}
         label={__('OS Type')}
         type="select"
-        options={ProxmoxComputeSelectors.proxmoxOperatingSystemsMap}
+        options={ProxmoxComputeSelectors.proxmoxOstypesMap}
         value={opts?.ostype?.value}
         onChange={handleChange}
       />
@@ -71,6 +71,7 @@ const ProxmoxContainerOptions = ({ options, storages, nodeId }) => {
         name={opts?.hostname?.name}
         label={__('Hostname')}
         value={opts?.hostname?.value}
+        disabled
         onChange={handleChange}
       />
       <InputField

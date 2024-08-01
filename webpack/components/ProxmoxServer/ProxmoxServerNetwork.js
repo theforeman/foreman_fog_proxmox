@@ -63,7 +63,7 @@ const ProxmoxServerNetwork = ({ network, bridges, paramScope }) => {
           name: `${paramScope}[interfaces_attributes][${nextId}][firewall]`,
           value: '0',
         },
-        link_down: {
+        linkDown: {
           name: `${paramScope}[interfaces_attributes][${nextId}][link_down]`,
           value: '0',
         },

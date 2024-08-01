@@ -45,16 +45,18 @@ const MountPoint = ({ id, data, storagesMap }) => {
       />
       <InputField
         name={mp?.size?.name}
-        label={__('Size')}
+        label={__('Size (GB)')}
         type="number"
         value={mp?.size?.value}
         onChange={handleChange}
       />
-      <input
+      <InputField
+        label={__('Device')}
         name={mp?.device?.name}
-        type="hidden"
+        disabled
         value={mp?.device?.value}
         onChange={handleChange}
+        tooltip={__('Device value is set automatically.')}
       />
       <input
         name={mp?.id?.name}
@@ -67,11 +69,6 @@ const MountPoint = ({ id, data, storagesMap }) => {
         type="hidden"
         value={mp?.volid?.value}
         onChange={handleChange}
-      />
-      <input
-        name={mp?.storageType?.name}
-        type="hidden"
-        value={mp?.storageType?.value}
       />
     </div>
   );

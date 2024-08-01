@@ -124,7 +124,7 @@ const ProxmoxContainerStorage = ({ storage, storages, nodeId, paramScope }) => {
         />
         <InputField
           name={rootfs?.size?.name}
-          label={__('Size')}
+          label={__('Size (GB)')}
           type="number"
           value={rootfs?.size?.value}
           onChange={handleChange}

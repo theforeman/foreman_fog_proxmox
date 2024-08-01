@@ -52,6 +52,7 @@ const ProxmoxComputeSelectors = {
   ],
 
   proxmoxVgasMap: [
+    { value: '', labal: '' },
     { value: 'std', label: 'Standard VGA' },
     { value: 'vmware', label: 'Vmware compatible' },
     { value: 'qxl', label: 'SPICE' },

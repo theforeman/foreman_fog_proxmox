@@ -6,19 +6,19 @@ import InputField from '../common/FormInputs';
 import ProxmoxComputeSelectors from '../ProxmoxComputeSelectors';
 import CPUFlagsModal from './components/CPUFlagsModal';
 
-const cpuFlagNames = [
-  'md_clear',
-  'pcid',
-  'spec_ctrl',
-  'ssbd',
-  'ibpb',
-  'virt_ssbd',
-  'amd_ssbd',
-  'amd_no_ssb',
-  'pdpe1gb',
-  'hv_tlbflush',
-  'hv_evmcs',
-  'aes',
+const cpuFlagsHash = [
+  { key: 'md_clear', label: 'md-clear' },
+  { key: 'pcid', label: 'pcid' },
+  { key: 'spectre', label: 'spec-ctrl' },
+  { key: 'ssbd', label: 'ssbd' },
+  { key: 'ibpb', label: 'ibpb' },
+  { key: 'virt_ssbd', label: 'virt-ssbd' },
+  { key: 'amd_ssbd', label: 'amd-ssbd' },
+  { key: 'amd_no_ssb', label: 'amd-no-ssb' },
+  { key: 'pdpe1gb', label: 'pdpe1gb' },
+  { key: 'hv_tlbflush', label: 'hv-tlbflush' },
+  { key: 'hv_evmcs', label: 'hv-evmcs' },
+  { key: 'aes', label: 'aes' },
 ];
 
 const cpuFlagDescriptions = {
@@ -28,7 +28,7 @@ const cpuFlagDescriptions = {
   pcid: __(
     'Meltdown fix cost reduction on Westmere, Sandy-, and IvyBridge Intel CPUs'
   ),
-  spec_ctrl: __('Allows improved Spectre mitigation with Intel CPUs'),
+  spectre: __('Allows improved Spectre mitigation with Intel CPUs'),
   ssbd: __('Protection for "Speculative Store Bypass" for Intel models'),
   ibpb: __('Allows improved Spectre mitigation with AMD CPUs'),
   virt_ssbd: __(
@@ -47,20 +47,20 @@ const cpuFlagDescriptions = {
   hv_evmcs: __(
     'Improve performance for nested virtualization. Only supported on Intel CPUs.'
   ),
-  aes: __('Activate AES instruction set for HW instruction'),
+  aes: __('Activate AES instruction set for HW accelaration.'),
 };
 
 const filterAndAddDescriptions = hardware =>
-  Object.keys(hardware)
-    .filter(key => cpuFlagNames.includes(key))
-    .reduce((acc, key) => {
+  cpuFlagsHash.reduce((acc, { key, label }) => {
+    if (key in hardware) {
       acc[key] = {
         ...hardware[key],
         description: cpuFlagDescriptions[key] || '',
-        label: key,
+        label,
       };
-      return acc;
-    }, {});
+    }
+    return acc;
+  }, {});
 
 const ProxmoxServerHardware = ({ hardware }) => {
   const [hw, setHw] = useState(hardware);
@@ -141,7 +141,7 @@ const ProxmoxServerHardware = ({ hardware }) => {
           label={__('Enable NUMA')}
           type="checkbox"
           value={hw?.numa?.value}
-          checked={hw?.numa?.value === '1'}
+          checked={String(hw?.numa?.value) === '1'}
           onChange={handleChange}
         />
         <div style={{ marginLeft: '5%', display: 'inline-block' }}>

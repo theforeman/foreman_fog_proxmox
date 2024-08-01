@@ -33,27 +33,30 @@ const ProxmoxVmType = ({
   registerComp,
   untemplatable,
 }) => {
-  const nodesMap = nodes
-    ? nodes.map(node => ({ value: node.node, label: node.node }))
-    : [];
-  const imagesMap = images
-    ? [
-        { value: '', label: '' },
-        ...images.map(image => ({
-          value: image.uuid,
-          label: image.name,
-        })),
-      ]
-    : [];
-  const poolsMap = pools
-    ? [
-        { value: '', label: '' },
-        ...pools.map(pool => ({
-          value: pool.poolid,
-          label: pool.poolid,
-        })),
-      ]
-    : [];
+  const nodesMap =
+    nodes.length > 0
+      ? nodes.map(node => ({ value: node.node, label: node.node }))
+      : [];
+  const imagesMap =
+    images.length > 0
+      ? [
+          { value: '', label: '' },
+          ...images.map(image => ({
+            value: image.uuid,
+            label: image.name,
+          })),
+        ]
+      : [];
+  const poolsMap =
+    pools.length > 0
+      ? [
+          { value: '', label: '' },
+          ...pools.map(pool => ({
+            value: pool.poolid,
+            label: pool.poolid,
+          })),
+        ]
+      : [];
   const [activeTabKey, setActiveTabKey] = useState(0);
   const handleTabClick = (event, tabIndex) => {
     setActiveTabKey(tabIndex);

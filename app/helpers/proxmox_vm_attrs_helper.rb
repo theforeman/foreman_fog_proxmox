@@ -114,11 +114,11 @@ module ProxmoxVmAttrsHelper
       start_after_create: vms.start_after_create,
       templated: vms.templated,
     }
-    vms_keys = [:pool, :start_after_create]
+    vms_keys = [:cpu_type, :nameserver, :searchdomain, :hostname]
     extra_attrs = ActiveSupport::HashWithIndifferentAccess.new
     attributes.each do |key, value|
       camel_key = key.to_s.include?('_') ? snake_to_camel(key.to_s).to_sym : key
-      nested_key = vms_keys.include?(key) ? key : "config_attributes[#{key}]"
+      nested_key = vms_keys.include?(key) ? "config_attributes[#{key}]" : key
       value = start_checked if key == :start_after_create
       extra_attrs[camel_key] = { name: "#{param_scope}[#{nested_key}]", value: value }
     end

@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.16.2](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.16.1...v0.16.2) (2024-08-02)
+
+
+### Bug Fixes
+
+* Fix network interface capitalize issue ([#338](https://github.com/theforeman/foreman_fog_proxmox/issues/338)) ([7c285cb](https://github.com/theforeman/foreman_fog_proxmox/commit/7c285cb6e9293d0c484d1d79e181f56a30584588))
+* fixes react UI issues which prevented host creation and edit ([#337](https://github.com/theforeman/foreman_fog_proxmox/issues/337)) ([a40c106](https://github.com/theforeman/foreman_fog_proxmox/commit/a40c1061f7a5a71dd8f13279ce3ed43fb97e0d72))
+* Prevent mount point volid to change on host edit ([#341](https://github.com/theforeman/foreman_fog_proxmox/issues/341)) ([c552fd2](https://github.com/theforeman/foreman_fog_proxmox/commit/c552fd20b8be20b81a25b09e173ce9f91b3eec19))
+
 ## [0.16.1](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.16.0...v0.16.1) (2024-07-24)
 
 

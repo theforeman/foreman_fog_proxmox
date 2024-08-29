@@ -103,6 +103,8 @@ const ProxmoxComputeSelectors = {
     { value: 'Opteron_G3', label: 'Opteron_G3' },
     { value: 'Opteron_G4', label: 'Opteron_G4' },
     { value: 'Opteron_G5', label: 'Opteron_G5' },
+    { value: 'x86-64-v2-AES', label: 'x86-64-v2-AES' },
+    { value: 'x86-64-v4', label: 'x86-64-v4' },
     { value: 'host', label: 'host' },
   ],
 

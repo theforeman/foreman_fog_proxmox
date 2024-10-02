@@ -23,7 +23,7 @@ require 'foreman_fog_proxmox/value'
 require 'foreman_fog_proxmox/hash_collection'
 
 # Convert a foreman form server hash into a fog-proxmox server attributes hash
-module ProxmoxVmInterfacesHelper
+module ProxmoxVMInterfacesHelper
   def parsed_typed_interfaces(args, type, parsed_vm)
     interfaces_to_add, interfaces_to_delete = parse_typed_interfaces(args, type)
     interfaces_to_add.each { |interface| parsed_vm = parsed_vm.merge(interface) }

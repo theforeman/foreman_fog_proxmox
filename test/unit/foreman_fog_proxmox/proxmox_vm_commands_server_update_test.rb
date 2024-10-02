@@ -24,11 +24,11 @@ require 'factories/foreman_fog_proxmox/proxmox_server_mock_factory'
 require 'active_support/core_ext/hash/indifferent_access'
 
 module ForemanFogProxmox
-  class ProxmoxVmCommandsServerUpdateTest < ActiveSupport::TestCase
+  class ProxmoxVMCommandsServerUpdateTest < ActiveSupport::TestCase
     include ComputeResourceTestHelpers
     include ProxmoxNodeMockFactory
     include ProxmoxServerMockFactory
-    include ProxmoxVmHelper
+    include ProxmoxVMHelper
 
     describe 'save_vm' do
       before do

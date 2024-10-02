@@ -23,7 +23,7 @@ require 'foreman_fog_proxmox/value'
 require 'foreman_fog_proxmox/hash_collection'
 
 # Convert a foreman form server hash into a fog-proxmox server attributes hash
-module ProxmoxVmCloudinitHelper
+module ProxmoxVMCloudinitHelper
   def parse_server_cloudinit(args)
     cloudinit_h = {}
     cloudinit = args['cloudinit']

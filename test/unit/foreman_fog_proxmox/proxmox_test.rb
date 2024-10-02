@@ -30,7 +30,7 @@ module ForemanFogProxmox
     include ProxmoxNodeMockFactory
     include ProxmoxServerMockFactory
     include ProxmoxContainerMockFactory
-    include ProxmoxVmHelper
+    include ProxmoxVMHelper
 
     should validate_presence_of(:url)
     should validate_presence_of(:user)

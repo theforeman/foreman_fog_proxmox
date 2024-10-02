@@ -20,8 +20,8 @@
 require 'test_plugin_helper'
 
 module ForemanFogProxmox
-  class ProxmoxVmVolumesHelperTest < ActiveSupport::TestCase
-    include ProxmoxVmVolumesHelper
+  class ProxmoxVMVolumesHelperTest < ActiveSupport::TestCase
+    include ProxmoxVMVolumesHelper
 
     describe 'remove_deletes' do
       setup { Fog.mock! }

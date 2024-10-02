@@ -24,11 +24,11 @@ require 'factories/foreman_fog_proxmox/proxmox_server_mock_factory'
 require 'active_support/core_ext/hash/indifferent_access'
 
 module ForemanFogProxmox
-  class ProxmoxVmCommandsServerUpdateHardDiskTest < ActiveSupport::TestCase # rubocop:disable Metrics/ClassLength
+  class ProxmoxVMCommandsServerUpdateHardDiskTest < ActiveSupport::TestCase # rubocop:disable Metrics/ClassLength
     include ComputeResourceTestHelpers
     include ProxmoxNodeMockFactory
     include ProxmoxServerMockFactory
-    include ProxmoxVmHelper
+    include ProxmoxVMHelper
 
     # rubocop:disable Metrics/BlockLength
     describe 'save_vm' do

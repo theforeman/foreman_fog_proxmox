@@ -22,7 +22,7 @@ require 'foreman_fog_proxmox/hash_collection'
 
 module ForemanFogProxmox
   module ProxmoxVolumes
-    include ProxmoxVmHelper
+    include ProxmoxVMHelper
 
     def delete_volume(vm, id, volume_attributes)
       logger.info("vm #{vm.identity} delete volume #{id}")

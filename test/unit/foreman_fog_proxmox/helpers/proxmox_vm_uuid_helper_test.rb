@@ -20,8 +20,8 @@
 require 'test_plugin_helper'
 
 module ForemanFogProxmox
-  class ProxmoxVmUuidHelperTest < ActiveSupport::TestCase
-    include ProxmoxVmUuidHelper
+  class ProxmoxVMUuidHelperTest < ActiveSupport::TestCase
+    include ProxmoxVMUuidHelper
 
     describe 'extract_vmid' do
       setup { Fog.mock! }

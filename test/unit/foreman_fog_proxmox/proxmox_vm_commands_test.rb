@@ -25,12 +25,12 @@ require 'factories/foreman_fog_proxmox/proxmox_container_mock_factory'
 require 'active_support/core_ext/hash/indifferent_access'
 
 module ForemanFogProxmox
-  class ProxmoxVmCommandsServerTest < ActiveSupport::TestCase
+  class ProxmoxVMCommandsServerTest < ActiveSupport::TestCase
     include ComputeResourceTestHelpers
     include ProxmoxNodeMockFactory
     include ProxmoxServerMockFactory
     include ProxmoxContainerMockFactory
-    include ProxmoxVmHelper
+    include ProxmoxVMHelper
 
     describe 'destroy_vm' do
       it 'handles situation when vm is not present' do

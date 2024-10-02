@@ -25,12 +25,12 @@ require 'factories/foreman_fog_proxmox/proxmox_container_mock_factory'
 require 'active_support/core_ext/hash/indifferent_access'
 
 module ForemanFogProxmox
-  class ProxmoxVmNewTest < ActiveSupport::TestCase
+  class ProxmoxVMNewTest < ActiveSupport::TestCase
     include ComputeResourceTestHelpers
     include ProxmoxNodeMockFactory
     include ProxmoxServerMockFactory
     include ProxmoxContainerMockFactory
-    include ProxmoxVmHelper
+    include ProxmoxVMHelper
 
     describe 'new_vm' do
       before do

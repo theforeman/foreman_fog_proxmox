@@ -21,7 +21,7 @@ require 'test_plugin_helper'
 
 module ForemanFogProxmox
   class ProxmoxServerHelperTest < ActiveSupport::TestCase
-    include ProxmoxVmHelper
+    include ProxmoxVMHelper
 
     describe 'parse' do
       setup { Fog.mock! }

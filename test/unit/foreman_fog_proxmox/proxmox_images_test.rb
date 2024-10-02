@@ -21,7 +21,7 @@ require 'test_plugin_helper'
 require 'active_support/core_ext/hash/indifferent_access'
 
 module ForemanFogProxmox
-  class ProxmoxVmCommandsServerTest < ActiveSupport::TestCase
+  class ProxmoxVMCommandsServerTest < ActiveSupport::TestCase
     include ComputeResourceTestHelpers
 
     describe 'clone_from_image' do

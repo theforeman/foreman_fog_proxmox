@@ -22,7 +22,7 @@ require 'fog/proxmox/helpers/nic_helper'
 require 'foreman_fog_proxmox/value'
 require 'foreman_fog_proxmox/hash_collection'
 
-module ProxmoxVmOsTemplateHelper
+module ProxmoxVMOsTemplateHelper
   def ostemplate_keys
     ['ostemplate_storage', 'ostemplate_file']
   end

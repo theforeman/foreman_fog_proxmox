@@ -1,4 +1,4 @@
-include ProxmoxVmUuidHelper
+include ProxmoxVMUuidHelper
 class UpdateProxmoxUuidHost < ActiveRecord::Migration[6.0]
   def up
     execute(sql(:concat))

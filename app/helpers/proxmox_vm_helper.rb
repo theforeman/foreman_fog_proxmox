@@ -21,11 +21,11 @@ require 'fog/proxmox/helpers/disk_helper'
 require 'fog/proxmox/helpers/nic_helper'
 require 'foreman_fog_proxmox/value'
 
-module ProxmoxVmHelper
-  include ProxmoxVmInterfacesHelper
-  include ProxmoxVmVolumesHelper
-  include ProxmoxVmConfigHelper
-  include ProxmoxVmOsTemplateHelper
+module ProxmoxVMHelper
+  include ProxmoxVMInterfacesHelper
+  include ProxmoxVMVolumesHelper
+  include ProxmoxVMConfigHelper
+  include ProxmoxVMOsTemplateHelper
 
   def vm_collection(type)
     collection = :servers

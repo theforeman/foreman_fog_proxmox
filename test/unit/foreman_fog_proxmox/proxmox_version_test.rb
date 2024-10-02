@@ -24,7 +24,7 @@ require 'active_support/core_ext/hash/indifferent_access'
 module ForemanFogProxmox
   class ProxmoxVersionTest < ActiveSupport::TestCase
     include ComputeResourceTestHelpers
-    include ProxmoxVmHelper
+    include ProxmoxVMHelper
 
     wrong_version = { version: '5.a', release: '5.a-1' }.with_indifferent_access
     supported_version = { version: '5.4', release: '5.4-3' }.with_indifferent_access

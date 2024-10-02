@@ -19,7 +19,7 @@
 
 module HostExt
   module Proxmox
-    module ForVm
+    module ForVM
       extend ActiveSupport::Concern
       module ClassMethods
         def for_vm_uuid(cr, vm)

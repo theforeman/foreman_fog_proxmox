@@ -24,7 +24,7 @@ require 'foreman_fog_proxmox/value'
 require 'foreman_fog_proxmox/hash_collection'
 
 # Convert a foreman form server hash into a fog-proxmox server attributes hash
-module ProxmoxVmConfigHelper
+module ProxmoxVMConfigHelper
   def object_to_config_hash(vm, type)
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
     main_a = ['vmid', 'type']

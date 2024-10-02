@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
-module ProxmoxVmUuidHelper
+module ProxmoxVMUuidHelper
   UUID_REGEXP = /(?<cluster_id>\d+)_(?<vmid>\d+)/.freeze
   def extract(uuid, name)
     captures_h = uuid ? UUID_REGEXP.match(uuid.to_s) : { cluster_id: '', vmid: '' }

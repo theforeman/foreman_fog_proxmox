@@ -24,7 +24,7 @@ require 'foreman_fog_proxmox/value'
 require 'foreman_fog_proxmox/hash_collection'
 
 # Convert a foreman form server hash into a fog-proxmox server attributes hash
-module ProxmoxVmAttrsHelper
+module ProxmoxVMAttrsHelper
   def object_to_attributes_hash(vms, from_profile, start_checked)
     param_scope = from_profile ? "compute_attribute[vm_attrs]" : "host[compute_attributes]"
     vm_h = ActiveSupport::HashWithIndifferentAccess.new

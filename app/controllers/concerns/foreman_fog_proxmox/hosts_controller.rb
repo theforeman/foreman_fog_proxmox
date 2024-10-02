@@ -24,7 +24,7 @@ module ForemanFogProxmox
       prepend Overrides
     end
     module Overrides
-      include ForemanFogProxmox::ProxmoxVmNew
+      include ForemanFogProxmox::ProxmoxVMNew
       # Clone the host
       def clone
         super

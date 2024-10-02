@@ -23,13 +23,6 @@ module ForemanFogProxmox
   class Engine < ::Rails::Engine
     engine_name 'foreman_fog_proxmox'
 
-    config.autoload_paths += Dir["#{config.root}/app/controllers/concerns"]
-    config.autoload_paths += Dir["#{config.root}/app/helpers/concerns"]
-    config.autoload_paths += Dir["#{config.root}/app/models/concerns"]
-    config.autoload_paths += Dir["#{config.root}/app/services/concerns"]
-    config.autoload_paths += Dir["#{config.root}/app/overrides"]
-    config.autoload_paths += Dir["#{config.root}/app/services"]
-
     # Add any db migrations
     initializer 'foreman_fog_proxmox.load_app_instance_data' do |app|
       ForemanFogProxmox::Engine.paths['db/migrate'].existent.each do |path|
@@ -37,25 +30,27 @@ module ForemanFogProxmox
       end
     end
 
-    initializer 'foreman_fog_proxmox.register_plugin', :before => :finisher_hook do |_app|
-      Foreman::Plugin.register :foreman_fog_proxmox do
-        requires_foreman '>= 1.22.0'
-        # Add Global files for extending foreman-core components and routes
-        register_global_js_file 'global'
-        # Register Proxmox VE compute resource in foreman
-        compute_resource ForemanFogProxmox::Proxmox
-        parameter_filter(ComputeResource, :uuid)
-        # add dashboard widget
-        widget 'foreman_fog_proxmox_widget', name: N_('Foreman Fog Proxmox widget'), sizex: 8, sizey: 1
-        security_block :foreman_fog_proxmox do
-          permission :view_compute_resources, { :'foreman_fog_proxmox/compute_resources' =>
-            [:ostemplates_by_id_and_node_and_storage,
-             :isos_by_id_and_node_and_storage,
-             :ostemplates_by_id_and_node,
-             :isos_by_id_and_node,
-             :storages_by_id_and_node,
-             :iso_storages_by_id_and_node,
-             :bridges_by_id_and_node] }
+    initializer 'foreman_fog_proxmox.register_plugin', :before => :finisher_hook do |app|
+      app.reloader.to_prepare do
+        Foreman::Plugin.register :foreman_fog_proxmox do
+          requires_foreman '>= 1.22.0'
+          # Add Global files for extending foreman-core components and routes
+          register_global_js_file 'global'
+          # Register Proxmox VE compute resource in foreman
+          compute_resource ForemanFogProxmox::Proxmox
+          parameter_filter(ComputeResource, :uuid)
+          # add dashboard widget
+          widget 'foreman_fog_proxmox_widget', name: N_('Foreman Fog Proxmox widget'), sizex: 8, sizey: 1
+          security_block :foreman_fog_proxmox do
+            permission :view_compute_resources, { :'foreman_fog_proxmox/compute_resources' =>
+              [:ostemplates_by_id_and_node_and_storage,
+               :isos_by_id_and_node_and_storage,
+               :ostemplates_by_id_and_node,
+               :isos_by_id_and_node,
+               :storages_by_id_and_node,
+               :iso_storages_by_id_and_node,
+               :bridges_by_id_and_node] }
+          end
         end
       end
     end
@@ -112,7 +107,7 @@ module ForemanFogProxmox
       ::Host::Managed.include Orchestration::Proxmox::Compute
       ::Host::Managed.include HostExt::Proxmox::Interfaces
       ::Host::Managed.include HostExt::Proxmox::Associator
-      ::Host::Base.include HostExt::Proxmox::ForVm
+      ::Host::Base.include HostExt::Proxmox::ForVM
       ::ComputeResourceHostAssociator.include ForemanFogProxmox::ComputeResourceHostAssociator
     end
   end

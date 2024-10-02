@@ -24,11 +24,11 @@ require 'factories/foreman_fog_proxmox/proxmox_server_mock_factory'
 require 'active_support/core_ext/hash/indifferent_access'
 
 module ForemanFogProxmox
-  class ProxmoxVmCommandsServerCreateTest < ActiveSupport::TestCase
+  class ProxmoxVMCommandsServerCreateTest < ActiveSupport::TestCase
     include ComputeResourceTestHelpers
     include ProxmoxNodeMockFactory
     include ProxmoxServerMockFactory
-    include ProxmoxVmHelper
+    include ProxmoxVMHelper
 
     describe 'create_vm' do
       it 'raises Foreman::Exception when vmid <= 100 and vmid > 0' do

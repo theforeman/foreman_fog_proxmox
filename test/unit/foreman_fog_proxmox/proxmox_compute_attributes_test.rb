@@ -30,7 +30,7 @@ module ForemanFogProxmox
     include ProxmoxNodeMockFactory
     include ProxmoxServerMockFactory
     include ProxmoxContainerMockFactory
-    include ProxmoxVmHelper
+    include ProxmoxVMHelper
 
     describe 'host_compute_attrs' do
       before do

@@ -28,8 +28,8 @@ require 'fog/proxmox/compute/models/snapshots'
 require 'fog/proxmox/compute/models/tasks'
 
 module ForemanFogProxmox
-  class ProxmoxVmHelperTest < ActiveSupport::TestCase
-    include ProxmoxVmHelper
+  class ProxmoxVMHelperTest < ActiveSupport::TestCase
+    include ProxmoxVMHelper
 
     let(:container) do
       service = mock('service')

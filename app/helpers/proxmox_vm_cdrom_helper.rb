@@ -23,7 +23,7 @@ require 'foreman_fog_proxmox/value'
 require 'foreman_fog_proxmox/hash_collection'
 
 # Convert a foreman form server hash into a fog-proxmox server attributes hash
-module ProxmoxVmCdromHelper
+module ProxmoxVMCdromHelper
   def parse_server_cdrom(args)
     cdrom_media = args['cdrom'] if args.key?('cdrom')
     cdrom_image = args['volid'] if args.key?('volid')

@@ -20,10 +20,10 @@
 require 'foreman_fog_proxmox/hash_collection'
 
 module ForemanFogProxmox
-  module ProxmoxVmCommands
+  module ProxmoxVMCommands
     include ProxmoxVolumes
     include ProxmoxPools
-    include ProxmoxVmHelper
+    include ProxmoxVMHelper
 
     def start_on_boot(vm, args)
       startonboot = args[:start_after_create].blank? ? false : Foreman::Cast.to_bool(args[:start_after_create])

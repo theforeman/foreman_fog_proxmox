@@ -45,7 +45,7 @@ module ForemanFogProxmox
         update_pool(vm, args[:pool]) if args[:pool]
       else
         logger.warn("create vm: args=#{args}")
-        vm = node.send(vm_collection(type)).create(parse_typed_vm(args, type))
+        vm = node.send(vm_collection(type)).create(parse_typed_vm(update_extra_volumes_definitions(args), type))
       end
       start_on_boot(vm, args)
     rescue StandardError => e

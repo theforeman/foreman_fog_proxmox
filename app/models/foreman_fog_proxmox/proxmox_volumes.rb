@@ -37,7 +37,7 @@ module ForemanFogProxmox
       options = {}
 
       # Default to iothread and backup being enabled, as they are enabled by default
-      # This will pickup and set value properly if run before this change was 
+      # This will pickup and set value properly if run before this change was
       # implemented
       volume_attributes['iothread'] = '1' if volume_attributes['iothread'].empty?
       volume_attributes['backup'] = '1' if volume_attributes['backup'].empty?

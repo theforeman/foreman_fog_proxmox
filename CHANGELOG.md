@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.0](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.16.2...v0.17.0) (2024-10-02)
+
+
+### Features
+
+* Add Zeitwerk loader support ([#355](https://github.com/theforeman/foreman_fog_proxmox/issues/355)) ([c237bc0](https://github.com/theforeman/foreman_fog_proxmox/commit/c237bc012ce5cc965ce74ad97c7ae62296e0418a))
+
 ## [0.16.2](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.16.1...v0.16.2) (2024-10-02)
 
 

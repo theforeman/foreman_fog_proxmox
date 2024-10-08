@@ -119,6 +119,24 @@ const HardDisk = ({
         onChange={handleChange}
       />
       <InputField
+        name={hdd?.backup?.name}
+        label={__('Backup')}
+        type="checkbox"
+        value={hdd?.backup?.value}
+        checked={String(hdd?.backup?.value) === '1'}
+        onChange={handleChange}
+        tooltip={__('Do we backup this disk.')}
+      />
+      <InputField
+        name={hdd?.iothread?.name}
+        label={__('IOThread')}
+        type="checkbox"
+        value={hdd?.iothread?.value}
+        checked={String(hdd?.iothread?.value) === '1'}
+        onChange={handleChange}
+        tooltip={__('Do we enable IO Threads.')}
+      />
+      <InputField
         name={hdd?.size?.name}
         label={__('Size (GB)')}
         type="number"

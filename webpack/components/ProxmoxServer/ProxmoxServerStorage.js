@@ -123,6 +123,14 @@ const ProxmoxServerStorage = ({ storage, storages, paramScope, nodeId }) => {
           name: `${paramScope}[volumes_attributes][${nextId}][cache]`,
           value: null,
         },
+        backup: {
+          name: `${paramScope}[volumes_attributes][${nextId}][backup]`,
+          value: 1,
+        },
+        iothread: {
+          name: `${paramScope}[volumes_attributes][${nextId}][iothread]`,
+          value: null,
+        },
         size: {
           name: `${paramScope}[volumes_attributes][${nextId}][size]`,
           value: 8,

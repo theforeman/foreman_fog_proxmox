@@ -23,8 +23,8 @@ require 'fog/proxmox/helpers/disk_helper'
 require 'foreman_fog_proxmox/hash_collection'
 
 module ForemanFogProxmox
-  module ProxmoxVMNew
-    include ProxmoxVMHelper
+  module ProxmoxVmNew
+    include ProxmoxVmHelper
 
     def cdrom_defaults
       { storage_type: 'cdrom', id: 'ide2', volid: 'none', media: 'cdrom' }

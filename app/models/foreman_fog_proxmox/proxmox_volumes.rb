@@ -22,7 +22,7 @@ require 'foreman_fog_proxmox/hash_collection'
 
 module ForemanFogProxmox
   module ProxmoxVolumes
-    include ProxmoxVMHelper
+    include ProxmoxVmHelper
 
     def delete_volume(vm, id, volume_attributes)
       logger.info("vm #{vm.identity} delete volume #{id}")
@@ -35,16 +35,14 @@ module ForemanFogProxmox
 
     def volume_options(vm, id, volume_attributes)
       options = {}
-
       # Default to iothread and backup being enabled, as they are enabled by default
-      # This will pickup and set value properly if run before this change was
+      # This will pickup and set value properly if run before this change was 
       # implemented
       volume_attributes['iothread'] = '1' if volume_attributes['iothread'].empty?
       volume_attributes['backup'] = '1' if volume_attributes['backup'].empty?
-
       # Fixes issue with cache being blank when it should be 'none' if nothing is selected
       volume_attributes['cache'] = 'none' if volume_attributes['cache'].empty?
-
+      
       options.store(:mp, volume_attributes['mp']) if vm.container? && id != 'rootfs'
       options.store(:cache, volume_attributes['cache']) unless vm.container? || volume_attributes['cache'].empty?
       options.store(:backup, volume_attributes['backup']) unless vm.container? || volume_attributes['backup'].empty?

@@ -29,7 +29,7 @@ const HardDisk = ({
   const handleChange = e => {
     const { name, value } = e.target;
     const updatedKey = Object.keys(hdd).find(key => hdd[key].name === name);
-
+    
     if (updatedKey === 'controller') {
       const updatedDeviceInfo = createUniqueDevice('hard_disk', value);
       if (updatedDeviceInfo) {
@@ -121,20 +121,10 @@ const HardDisk = ({
       <InputField
         name={hdd?.backup?.name}
         label={__('Backup')}
-        type="checkbox"
+        type="select"
         value={hdd?.backup?.value}
-        checked={String(hdd?.backup?.value) === '1'}
+        options={ProxmoxComputeSelectors.proxmoxBackupsMap}
         onChange={handleChange}
-        tooltip={__('Do we backup this disk.')}
-      />
-      <InputField
-        name={hdd?.iothread?.name}
-        label={__('IOThread')}
-        type="checkbox"
-        value={hdd?.iothread?.value}
-        checked={String(hdd?.iothread?.value) === '1'}
-        onChange={handleChange}
-        tooltip={__('Do we enable IO Threads.')}
       />
       <InputField
         name={hdd?.size?.name}

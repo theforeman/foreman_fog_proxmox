@@ -23,9 +23,9 @@ require 'foreman_fog_proxmox/value'
 require 'foreman_fog_proxmox/hash_collection'
 
 # Convert a foreman form server hash into a fog-proxmox server attributes hash
-module ProxmoxVmVolumesHelper
-  include ProxmoxVmCdromHelper
-  include ProxmoxVmCloudinitHelper
+module ProxmoxVMVolumesHelper
+  include ProxmoxVMCdromHelper
+  include ProxmoxVMCloudinitHelper
 
   def add_disk_options(disk, args)
     options = ForemanFogProxmox::HashCollection.new_hash_reject_keys(args,
@@ -55,7 +55,7 @@ module ProxmoxVmVolumesHelper
     disk[:volid] = args['volid'] if args.key?('volid') && !args['volid'].empty?
     disk[:storage] = args['storage'].to_s if args.key?('storage') && !args['storage'].empty?
     disk[:size] = args['size'].to_i if args.key?('size') && !args['size'].empty?
-    args['backup'] = '1' if args.key?('backup') && args['backup'].nil?
+    args['backup'] = '1' if args['backup'].nil?
     add_disk_options(disk, args) unless args.key?('options')
     disk[:options] = args['options'] if args.key?('options')
     disk.key?(:storage) ? disk : {}

@@ -29,7 +29,6 @@ const HardDisk = ({
   const handleChange = e => {
     const { name, value } = e.target;
     const updatedKey = Object.keys(hdd).find(key => hdd[key].name === name);
-    
     if (updatedKey === 'controller') {
       const updatedDeviceInfo = createUniqueDevice('hard_disk', value);
       if (updatedDeviceInfo) {

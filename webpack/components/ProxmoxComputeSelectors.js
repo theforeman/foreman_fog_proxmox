@@ -73,7 +73,7 @@ const ProxmoxComputeSelectors = {
     { value: 'unsafe', label: 'Write back unsafe' },
     { value: 'none', label: 'No cache' },
   ],
-  
+
   proxmoxBackupsMap: [
     { value: '1', label: 'Yes' },
     { value: '0', label: 'No' },

@@ -47,7 +47,7 @@ module ProxmoxVMAttrsHelper
 
   def cpu_flags_attrs(param_scope, config)
     flag_attrs = ActiveSupport::HashWithIndifferentAccess.new
-    Fog::Proxmox::CpuHelper.flags.each do |key, _val|
+    Fog::Proxmox::CpuHelper.flags.each_key do |key|
       flag_attrs.merge!({ key => { :name => "#{param_scope}[config_attributes][#{key}]", :value => config.public_send(key) } })
     end
     flag_attrs

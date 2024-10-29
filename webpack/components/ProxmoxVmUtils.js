@@ -58,5 +58,9 @@ function toggleFieldsets(fieldSet) {
   });
 }
 
+$(document).ready(function () {
+  networkSelected('qemu');
+});
+
 window.networkSelected = networkSelected;
 export { networkSelected };

@@ -32,4 +32,5 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     </div>
     <%= select_f f, :cache, proxmox_caches_map, :id, :name, { include_blank: true }, :label => _('Cache'), :label_size => "col-md-2" %>
     <%= text_f f, :size, :class => "input-mini", :label => _("Size (GB)"), :label_size => "col-md-2", :disabled => !hard_disk %>
+    <%= checkbox_f f, :backup, :checked => (f.object.backup == '1' || f.object.backup.nil? ), :label => _('Backup'), :label_help => _('Enable/disable volume backup') %>
 <% end %>

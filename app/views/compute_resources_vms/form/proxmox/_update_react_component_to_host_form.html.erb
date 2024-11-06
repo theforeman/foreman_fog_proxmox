@@ -23,4 +23,7 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <%= render :partial => provider_partial(compute_resource, 'base'),
             locals: { f: compute, host: host, compute_resource: compute_resource, new_host: host.new_record?, new_vm: !compute.object.persisted?,
                      arch: host.architecture_id, os: host.operatingsystem_id } %>
+
+<!--Storage-->
+<%= render :partial => 'compute_resources_vms/form/volumes', :locals => { :f => compute, :compute_resource => compute_resource, :new_host => !compute.object.persisted?, :new_vm => !compute.object.persisted?, :item_layout => 'removable' } %>
 <% end %>

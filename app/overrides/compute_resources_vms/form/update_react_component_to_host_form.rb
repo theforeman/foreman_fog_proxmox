@@ -21,5 +21,6 @@ Deface::Override.new(
   :virtual_path => 'hosts/_compute',
   :name => 'update_react_component_to_virtual_machine_tab',
   :replace => "erb[loud]:contains('hosts/compute_detail')",
-  :partial => 'compute_resources_vms/form/proxmox/update_react_component_to_host_form'
+  :partial => 'compute_resources_vms/form/proxmox/update_react_component_to_host_form',
+  :original => 'c71aceb245363af92515509d25cac0c066bd58ed'
 )

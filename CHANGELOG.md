@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.17.1](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.17.0...v0.17.1) (2024-11-06)
+
+
+### Bug Fixes
+
+* Only remove network interface section if compute resource is proxmox ([#371](https://github.com/theforeman/foreman_fog_proxmox/issues/371)) ([04082e4](https://github.com/theforeman/foreman_fog_proxmox/commit/04082e4e57573b5f708bc8945e70edca81774e12))
+* Readd storage to host's compute details ([#373](https://github.com/theforeman/foreman_fog_proxmox/issues/373)) ([5dea655](https://github.com/theforeman/foreman_fog_proxmox/commit/5dea65590299b1187e88e333b8b8782c53e5cac9))
+
 ## [0.17.0](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.16.2...v0.17.0) (2024-10-02)
 
 

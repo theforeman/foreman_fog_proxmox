@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.16.3](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.16.2...v0.16.3) (2024-11-07)
+
+
+### Bug Fixes
+
+* Only remove network interface section if compute resource is proxmox ([#371](https://github.com/theforeman/foreman_fog_proxmox/issues/371)) ([22cb534](https://github.com/theforeman/foreman_fog_proxmox/commit/22cb534d5e3a59219cffc88f080d4d6c3e6f9257))
+* Readd storage to host's compute details ([#373](https://github.com/theforeman/foreman_fog_proxmox/issues/373)) ([b3a5bb3](https://github.com/theforeman/foreman_fog_proxmox/commit/b3a5bb34dca98b02ab9451e8a5fbd49f7c20f3c2))
+* release please default branch ([#384](https://github.com/theforeman/foreman_fog_proxmox/issues/384)) ([8e0d3c4](https://github.com/theforeman/foreman_fog_proxmox/commit/8e0d3c499c5a2ca66fc016bbb3679b189c8a3043))
+
+
+### Miscellaneous Chores
+
+* **0.16-stable:** release 0.16.3 ([b8a842c](https://github.com/theforeman/foreman_fog_proxmox/commit/b8a842c7efda25d3c5ba556f9d8865a468e6c460))
+* **0.16-stable:** release 0.16.3 ([#382](https://github.com/theforeman/foreman_fog_proxmox/issues/382)) ([8679fa2](https://github.com/theforeman/foreman_fog_proxmox/commit/8679fa200f33cca828fe542e1e2795b639adda5a))
+
 ## [0.16.2](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.16.1...v0.16.2) (2024-10-02)
 
 

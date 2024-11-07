@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - 0.16-stable
+      - update_release_please_test_branch
 
 jobs:
   release-please:

@@ -9,11 +9,13 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: google-github-actions/release-please-action@v4
+      - uses: google-github-actions/release-please-action@v3
         id: release
         with:
           release-type: ruby
-          target-branch: ${{ github.ref_name }}
+          package-name: foreman_fog_proxmox
+          bump-minor-pre-major: true
+          version-file: "lib/foreman_fog_proxmox/version.rb"
       - uses: actions/checkout@v3
         if: ${{ steps.release.outputs.release_created }}
       - uses: ruby/setup-ruby@v1

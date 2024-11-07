@@ -1,9 +1,0 @@
-{
-  "packages": {
-    ".": {
-      "package-name": "foreman_fog_proxmox",
-      "bump-minor-pre-major": true,
-      "version-file": "lib/foreman_fog_proxmox/version.rb"
-    }
-  }
-}

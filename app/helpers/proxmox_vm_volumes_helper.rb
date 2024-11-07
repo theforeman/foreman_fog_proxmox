@@ -55,8 +55,12 @@ module ProxmoxVMVolumesHelper
     disk[:volid] = args['volid'] if args.key?('volid') && !args['volid'].empty?
     disk[:storage] = args['storage'].to_s if args.key?('storage') && !args['storage'].empty?
     disk[:size] = args['size'].to_i if args.key?('size') && !args['size'].empty?
-    add_disk_options(disk, args) unless args.key?('options')
-    disk[:options] = args['options'] if args.key?('options')
+    args['backup'] = '1' if args['backup'].nil?
+    if args.key?('options')
+      disk[:options] = args['options']
+    else
+      add_disk_options(disk, args)
+    end
     disk.key?(:storage) ? disk : {}
   end
 

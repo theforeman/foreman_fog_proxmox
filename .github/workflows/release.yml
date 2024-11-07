@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - 0.16-stable
 
 jobs:
   release-please:
@@ -16,6 +17,7 @@ jobs:
           package-name: foreman_fog_proxmox
           bump-minor-pre-major: true
           version-file: "lib/foreman_fog_proxmox/version.rb"
+	  target-branch: ${{ github.ref_name }}
       - uses: actions/checkout@v3
         if: ${{ steps.release.outputs.release_created }}
       - uses: ruby/setup-ruby@v1

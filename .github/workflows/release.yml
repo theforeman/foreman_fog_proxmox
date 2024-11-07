@@ -3,7 +3,7 @@ name: release
 on:
   push:
     branches:
-      - master
+      - 0.16-stable
 
 jobs:
   release-please:

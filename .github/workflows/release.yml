@@ -15,6 +15,7 @@ jobs:
           release-type: ruby
           package-name: foreman_fog_proxmox
           bump-minor-pre-major: true
+          default-branch: 0.16-stable
           version-file: "lib/foreman_fog_proxmox/version.rb"
       - uses: actions/checkout@v3
         if: ${{ steps.release.outputs.release_created }}

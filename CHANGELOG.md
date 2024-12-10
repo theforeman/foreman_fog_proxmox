@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.2](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.17.1...v0.17.2) (2024-12-10)
+
+
+### Bug Fixes
+
+* Drop EL8 from packit config ([#388](https://github.com/theforeman/foreman_fog_proxmox/issues/388)) ([6da5e52](https://github.com/theforeman/foreman_fog_proxmox/commit/6da5e5269fdc9188bd1b34749b6f11c1b859d82e))
+
 ## [0.17.1](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.17.0...v0.17.1) (2024-11-06)
 
 

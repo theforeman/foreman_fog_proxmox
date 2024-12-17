@@ -49,12 +49,11 @@ module HostExt
 
       def add_interface_to_compute_attributes(index, interface_attributes, compute_attributes)
         compute_attributes[index] = {}
-        compute_attributes[index].store('id', interface_attributes['identifier'])
         compute_attributes[index].store('_delete', interface_attributes['_destroy'])
         compute_attributes[index].store('macaddr', interface_attributes['mac'])
         compute_attributes[index].store('ip', cidr_ip(interface_attributes))
         compute_attributes[index].store('ip6', cidr_ip(interface_attributes, 6))
-        compute_attributes[index].merge!(interface_attributes['compute_attributes'].reject { |k, _v| k == 'id' })
+        compute_attributes[index].merge(interface_attributes['compute_attributes'])
       end
     end
   end

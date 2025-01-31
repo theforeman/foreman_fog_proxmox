@@ -62,7 +62,7 @@ module ProxmoxVMAttrsHelper
         keys = ['id', 'volid', 'storage', 'size', 'storage_type']
         type = 'rootfs'
       elsif vol.hard_disk?
-        keys = ['id', 'volid', 'storage_type', 'storage', 'controller', 'device', 'cache', 'size']
+        keys = ['id', 'volid', 'storage_type', 'storage', 'controller', 'device', 'cache', 'size', '_delete']
         type = 'hard_disk'
       elsif  vol.cdrom?
         keys = ['id', 'storage_type', 'cdrom', 'storage', 'volid']
@@ -82,7 +82,7 @@ module ProxmoxVMAttrsHelper
   def vol_keys(param_scope, keys, vol, id)
     attrs = ActiveSupport::HashWithIndifferentAccess.new
     keys.each do |key|
-      camel_key = key.to_s.include?('_') ? snake_to_camel(key.to_s).to_sym : key
+      camel_key = key.to_s.include?('_') && key.to_s != '_delete' ? snake_to_camel(key.to_s).to_sym : key
       attrs[camel_key] = { :name => "#{param_scope}[volumes_attributes][#{id}][#{key}]", :value => vol.public_send(key) }
     end
     attrs

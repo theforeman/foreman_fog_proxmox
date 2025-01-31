@@ -13,6 +13,7 @@ const HardDisk = ({
   disks,
   updateHardDiskData,
   createUniqueDevice,
+  hidden,
   nodeId,
 }) => {
   const [hdd, setHdd] = useState(data);
@@ -125,6 +126,7 @@ const HardDisk = ({
         value={hdd?.size?.value}
         onChange={handleChange}
       />
+      <input name={hdd?._delete?.name} type="hidden" value={hidden} />
     </div>
   );
 };
@@ -134,6 +136,7 @@ HardDisk.propTypes = {
   data: PropTypes.object,
   storages: PropTypes.array,
   disks: PropTypes.array,
+  hidden: PropTypes.bool,
   updateHardDiskData: PropTypes.func,
   createUniqueDevice: PropTypes.func,
   nodeId: PropTypes.string,
@@ -144,6 +147,7 @@ HardDisk.defaultProps = {
   storages: [],
   disks: [],
   nodeId: '',
+  hidden: 'false',
   updateHardDiskData: Function.prototype,
   createUniqueDevice: Function.prototype,
 };

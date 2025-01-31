@@ -140,6 +140,7 @@ const ProxmoxServerStorage = ({ storage, storages, paramScope, nodeId }) => {
           storages,
           data: initHdd,
           disks: storage,
+          isNew: !isPreExisting,
         };
         setHardDisks(prevHardDisks => [...prevHardDisks, newHardDisk]);
         return newNextId;
@@ -149,9 +150,11 @@ const ProxmoxServerStorage = ({ storage, storages, paramScope, nodeId }) => {
   );
 
   const removeHardDisk = idToRemove => {
-    const newHardDisks = hardDisks.filter(
-      hardDisk => hardDisk.id !== idToRemove
-    );
+    const newHardDisks = hardDisks
+      .filter(hardDisk => !(hardDisk.id === idToRemove && hardDisk.isNew))
+      .map(hardDisk =>
+        hardDisk.id === idToRemove ? { ...hardDisk, hidden: true } : hardDisk
+      );
     setHardDisks(newHardDisks);
   };
 
@@ -224,7 +227,13 @@ const ProxmoxServerStorage = ({ storage, storages, paramScope, nodeId }) => {
           />
         )}
         {hardDisks.map(hardDisk => (
-          <div style={{ position: 'relative' }}>
+          <div
+            key={hardDisk.id}
+            style={{
+              position: 'relative',
+              display: hardDisk.hidden ? 'none' : 'block',
+            }}
+          >
             <div
               style={{
                 marginTop: '10px',
@@ -247,6 +256,7 @@ const ProxmoxServerStorage = ({ storage, storages, paramScope, nodeId }) => {
               disks={hardDisk.disks}
               updateHardDiskData={updateHardDiskData}
               createUniqueDevice={createUniqueDevice}
+              hidden={hardDisk.hidden ? true : ''}
             />
           </div>
         ))}

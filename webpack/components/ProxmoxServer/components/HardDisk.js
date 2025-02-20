@@ -107,7 +107,7 @@ const HardDisk = ({
         name={hdd?.device?.name}
         value={hdd?.device?.value}
         onChange={handleChange}
-        disabled
+        readOnly
         tooltip={__('Device value is set automatically.')}
       />
       <InputField

@@ -56,11 +56,11 @@ module ForemanFogProxmox
       identity_client
       version_suitable?
     rescue StandardError => e
-      errors[:base] << e.message
+      errors.add(:base, e.message)
       if e.message.include?('SSL')
-        errors[:ssl_certs] << e.message
+        errors.add(:ssl_certs, e.message)
       else
-        errors[:url] << e.message
+        errors.add(:url, e.message)
       end
     end
 

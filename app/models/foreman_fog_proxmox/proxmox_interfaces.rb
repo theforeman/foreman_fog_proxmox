@@ -18,7 +18,6 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 require 'fog/proxmox/helpers/ip_helper'
-require 'net/validations'
 
 module ForemanFogProxmox
   module ProxmoxInterfaces

@@ -117,7 +117,7 @@ module ForemanFogProxmox
     def set_mac(nic_compute_attributes, mac, type)
       mac_attr_name = { 'qemu' => :macaddr, 'lxc' => :hwaddr }
       mac_key = mac_attr_name[type] || 'mac'
-      nic_compute_attributes[mac_key] = Net::Validations.normalize_mac(mac).upcase
+      nic_compute_attributes[mac_key] = Net::Validations.normalize_mac(mac)
     end
 
     def host_interfaces_attrs(host)

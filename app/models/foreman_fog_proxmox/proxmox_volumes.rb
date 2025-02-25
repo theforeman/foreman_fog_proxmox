@@ -35,8 +35,10 @@ module ForemanFogProxmox
 
     def volume_options(vm, id, volume_attributes)
       options = {}
+      volume_attributes['backup'] = '1' if volume_attributes['backup'].empty?
       options.store(:mp, volume_attributes['mp']) if vm.container? && id != 'rootfs'
       options.store(:cache, volume_attributes['cache']) unless vm.container? || volume_attributes['cache'].empty?
+      options.store(:backup, volume_attributes['backup']) unless vm.container? || volume_attributes['backup'].empty?
       options
     end
 

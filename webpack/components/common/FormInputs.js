@@ -13,6 +13,7 @@ const InputField = ({
   required,
   type,
   disabled,
+  readOnly,
   options,
   checked,
   error,
@@ -40,6 +41,7 @@ const InputField = ({
       renderComponent = (
         <select
           disabled={disabled}
+          readOnly={readOnly}
           name={name}
           className="without_select2 form-control"
           value={value}
@@ -59,6 +61,7 @@ const InputField = ({
           checked={checked}
           onChange={onChange}
           disabled={disabled}
+          readOnly={readOnly}
         />
       );
       break;
@@ -71,6 +74,7 @@ const InputField = ({
           value={value}
           onChange={onChange}
           disabled={disabled}
+          readOnly={readOnly}
         />
       );
       break;
@@ -122,6 +126,7 @@ InputField.propTypes = {
     'checkbox',
   ]),
   disabled: PropTypes.bool,
+  readOnly: PropTypes.bool,
   checked: PropTypes.bool,
   options: PropTypes.arrayOf(
     PropTypes.shape({
@@ -142,6 +147,7 @@ InputField.defaultProps = {
   required: false,
   type: 'text',
   disabled: false,
+  readOnly: false,
   checked: false,
   options: [],
   error: '',

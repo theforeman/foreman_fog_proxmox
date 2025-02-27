@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.17.2](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.17.1...v0.17.2) (2025-02-27)
+
+
+### Bug Fixes
+
+* Drop EL8 from packit config ([#388](https://github.com/theforeman/foreman_fog_proxmox/issues/388)) ([6da5e52](https://github.com/theforeman/foreman_fog_proxmox/commit/6da5e5269fdc9188bd1b34749b6f11c1b859d82e))
+* Fixes adding new storage to edit host page ([#399](https://github.com/theforeman/foreman_fog_proxmox/issues/399)) ([404ec77](https://github.com/theforeman/foreman_fog_proxmox/commit/404ec776e984fcbb5114aa7e1931176da49cd8ff))
+* Fixes deletion of storage volumes from host in proxmox server ([#394](https://github.com/theforeman/foreman_fog_proxmox/issues/394)) ([a8dbec4](https://github.com/theforeman/foreman_fog_proxmox/commit/a8dbec47666c9ee4d362b3f180bc5a32e4f9adca)), closes [#397](https://github.com/theforeman/foreman_fog_proxmox/issues/397)
+* Support Rails 7.0 ([#400](https://github.com/theforeman/foreman_fog_proxmox/issues/400)) ([a7b5c62](https://github.com/theforeman/foreman_fog_proxmox/commit/a7b5c6281f18d780f29094f77573c8a279ef3dc4))
+* Update fog-proxmox version to 0.15.1 ([#404](https://github.com/theforeman/foreman_fog_proxmox/issues/404)) ([3c008bf](https://github.com/theforeman/foreman_fog_proxmox/commit/3c008bf987b7269526d77b858557d9a7c67084b3))
+
 ## [0.17.1](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.17.0...v0.17.1) (2024-11-06)
 
 

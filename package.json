@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "tfm-lint --plugin -d webpack",
-    "test": "tfm-test --config jest.config.js",
+    "test": "tfm-test --plugin",
     "test:watch": "tfm-test --plugin --watchAll",
     "test:current": "tfm-test --plugin --watch",
     "publish-coverage": "tfm-publish-coverage",

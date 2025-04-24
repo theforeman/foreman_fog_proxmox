@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.2](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.18.1...v0.18.2) (2025-04-24)
+
+
+### Bug Fixes
+
+* Improve error handlng for compute resource test connection ([#413](https://github.com/theforeman/foreman_fog_proxmox/issues/413)) ([0f9c0b5](https://github.com/theforeman/foreman_fog_proxmox/commit/0f9c0b5f8482cbe70d05e0ee46d46b05f7274605))
+
 ## [0.18.1](https://github.com/theforeman/foreman_fog_proxmox/compare/v0.18.0...v0.18.1) (2025-02-27)
 
 

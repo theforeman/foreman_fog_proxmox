@@ -151,7 +151,7 @@ module ForemanFogProxmox
     def client
       @client ||= ::Fog::Proxmox::Compute.new(fog_credentials)
     rescue Excon::Errors::Unauthorized => e
-      raise ::Foreman::Exception, 'User token expired' if token_expired?(e)
+      raise ::Foreman::Exception, token_expired?(e) ? 'User token expired' : "Authentication Failure: #{error_message(e)}"
     rescue StandardError => e
       logger.warn("failed to create compute client: #{e}")
       raise ::Foreman::Exception, error_message(e)
@@ -160,7 +160,7 @@ module ForemanFogProxmox
     def identity_client
       @identity_client ||= ::Fog::Proxmox::Identity.new(fog_credentials)
     rescue Excon::Errors::Unauthorized => e
-      raise ::Foreman::Exception, 'User token expired' if token_expired?(e)
+      raise ::Foreman::Exception, token_expired?(e) ? 'User token expired' : "Authentication Failure: #{error_message(e)}"
     rescue StandardError => e
       logger.warn("failed to create identity client: #{e}")
       raise ::Foreman::Exception, error_message(e)
@@ -169,14 +169,14 @@ module ForemanFogProxmox
     def network_client
       @network_client ||= ::Fog::Proxmox::Network.new(fog_credentials)
     rescue Excon::Errors::Unauthorized => e
-      raise ::Foreman::Exception, 'User token expired' if token_expired?(e)
+      raise ::Foreman::Exception, token_expired?(e) ? 'User token expired' : "Authentication Failure: #{error_message(e)}"
     rescue StandardError => e
       logger.warn("failed to create network client: #{e}")
       raise ::Foreman::Exception, error_message(e)
     end
 
     def error_message(e)
-      "Failed to create Proxmox compute resource: #{e.message}.
+      "Failed to create Proxmox compute resource: #{e.response.reason_phrase}.
        Either provided credentials or FQDN is wrong or
        your server cannot connect to Proxmox due to network issues."
     end

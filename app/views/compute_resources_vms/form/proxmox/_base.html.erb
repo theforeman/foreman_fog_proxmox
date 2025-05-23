@@ -24,7 +24,7 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     <%= select_f f, :image_id, images, :uuid, :name, { :include_blank => true },
       :disabled => true,
       :help_inline => :indicator,
-      :class => ('hide' if from_profile),
+      :class => ("without_select2 #{'hide' if from_profile}"),
       :label => _('Image'),
       :no_label => from_profile,
       :label_size => "col-md-2" %>

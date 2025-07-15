@@ -33,7 +33,7 @@ module ForemanFogProxmox
     initializer 'foreman_fog_proxmox.register_plugin', :before => :finisher_hook do |app|
       app.reloader.to_prepare do
         Foreman::Plugin.register :foreman_fog_proxmox do
-          requires_foreman '>= 1.22.0'
+          requires_foreman '>= 3.15'
           # Add Global files for extending foreman-core components and routes
           register_global_js_file 'global'
           # Register Proxmox VE compute resource in foreman

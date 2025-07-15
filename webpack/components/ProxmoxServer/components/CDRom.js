@@ -74,7 +74,7 @@ const CDRom = ({ onRemove, data, storages, nodeId }) => {
           label={__('None')}
           value="none"
           isChecked={cdrom?.cdrom?.value === 'none'}
-          onChange={handleMediaChange}
+          onChange={(e, _) => handleMediaChange(_, e)}
         />
         <Radio
           id="radio-physical"
@@ -82,7 +82,7 @@ const CDRom = ({ onRemove, data, storages, nodeId }) => {
           label={__('Physical')}
           value="physical"
           isChecked={cdrom?.cdrom?.value === 'physical'}
-          onChange={handleMediaChange}
+          onChange={(e, _) => handleMediaChange(_, e)}
         />
         <Radio
           id="radio-image"
@@ -90,7 +90,7 @@ const CDRom = ({ onRemove, data, storages, nodeId }) => {
           label={__('Image')}
           value="image"
           isChecked={cdrom?.cdrom?.value === 'image'}
-          onChange={handleMediaChange}
+          onChange={(e, _) => handleMediaChange(_, e)}
         />
       </div>
       {cdrom?.cdrom?.value === 'image' && (

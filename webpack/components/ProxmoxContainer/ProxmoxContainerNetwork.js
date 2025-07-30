@@ -129,7 +129,11 @@ const ProxmoxContainerNetwork = ({ network, bridges, paramScope }) => {
   return (
     <div>
       <PageSection padding={{ default: 'noPadding' }}>
-        <Button onClick={addInterface} variant="secondary">
+        <Button
+          ouiaId="proxmox-container-network-interface"
+          onClick={addInterface}
+          variant="secondary"
+        >
           {__('Add Interface')}
         </Button>
         {interfaces.map(nic => (
@@ -142,7 +146,7 @@ const ProxmoxContainerNetwork = ({ network, bridges, paramScope }) => {
                 alignItems: 'center',
               }}
             >
-              <Title headingLevel="h4">
+              <Title ouiaId="proxmox-container-network-nic" headingLevel="h4">
                 {sprintf(__('Nic %(nicId)s'), { nicId: nic.id })}
               </Title>
               <button onClick={() => removeInterface(nic.id)} type="button">

@@ -162,12 +162,14 @@ const ProxmoxVmType = ({
         type="select"
       />
       <Tabs
+        ouiaId="proxmox-vm-type-tabs-options"
         activeKey={activeTabKey}
         onSelect={handleTabClick}
         aria-label="Options tabs"
         role="region"
       >
         <Tab
+          ouiaId="proxmox-vm-type-tab-general"
           eventKey={0}
           title={<TabTitleText>{__('General')}</TabTitleText>}
           aria-label="Default content - general"
@@ -184,6 +186,7 @@ const ProxmoxVmType = ({
           />
         </Tab>
         <Tab
+          ouiaId="proxmox-vm-type-tab-advanced"
           eventKey={1}
           title={<TabTitleText>{__('Advanced Options')}</TabTitleText>}
           aria-label="advanced options"
@@ -194,6 +197,7 @@ const ProxmoxVmType = ({
           </PageSection>
         </Tab>
         <Tab
+          ouiaId="proxmox-vm-type-tab-hardware"
           eventKey={2}
           title={<TabTitleText>{__('Hardware')}</TabTitleText>}
           aria-label="hardware"
@@ -205,6 +209,7 @@ const ProxmoxVmType = ({
         </Tab>
         {fromProfile && (
           <Tab
+            ouiaId="proxmox-vm-type-tab-network"
             eventKey={3}
             title={<TabTitleText>{__('Network Interfaces')}</TabTitleText>}
             aria-label="Network interface"
@@ -216,6 +221,7 @@ const ProxmoxVmType = ({
           </Tab>
         )}
         <Tab
+          ouiaId="proxmox-vm-type-tab-storage"
           eventKey={4}
           title={<TabTitleText>{__('Storage')}</TabTitleText>}
           aria-label="storage"

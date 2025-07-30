@@ -210,12 +210,21 @@ const ProxmoxServerStorage = ({ storage, storages, paramScope, nodeId }) => {
   return (
     <div>
       <PageSection padding={{ default: 'noPadding' }}>
-        <Button onClick={addCDRom} variant="secondary" isDisabled={cdRom}>
+        <Button
+          ouiaId="proxmox-server-storage-cdrom"
+          onClick={addCDRom}
+          variant="secondary"
+          isDisabled={cdRom}
+        >
           {' '}
           {__('Add CD-ROM')}
         </Button>
         {'  '}
-        <Button onClick={addHardDisk} variant="secondary">
+        <Button
+          ouiaId="proxmox-server-storage-harddisk"
+          onClick={addHardDisk}
+          variant="secondary"
+        >
           {__('Add HardDisk')}
         </Button>
         {cdRom && cdRomData && (
@@ -242,7 +251,7 @@ const ProxmoxServerStorage = ({ storage, storages, paramScope, nodeId }) => {
                 alignItems: 'center',
               }}
             >
-              <Title headingLevel="h4">
+              <Title ouiaId="proxmox-server-storage-harddisk" headingLevel="h4">
                 {sprintf(__('Hard Disk %(hddId)s'), { hddId: hardDisk.id })}
               </Title>
               <button onClick={() => removeHardDisk(hardDisk.id)} type="button">

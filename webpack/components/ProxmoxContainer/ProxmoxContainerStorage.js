@@ -112,7 +112,9 @@ const ProxmoxContainerStorage = ({ storage, storages, nodeId, paramScope }) => {
   return (
     <div>
       <PageSection padding={{ default: 'noPadding' }}>
-        <Title headingLevel="h3">{__('Rootfs')}</Title>
+        <Title ouiaId="proxmox-container-storage-rootfs" headingLevel="h3">
+          {__('Rootfs')}
+        </Title>
         <Divider component="li" style={{ marginBottom: '2rem' }} />
         <InputField
           name={rootfs?.storage?.name}
@@ -142,9 +144,15 @@ const ProxmoxContainerStorage = ({ storage, storages, nodeId, paramScope }) => {
         />
       </PageSection>
       <PageSection padding={{ default: 'noPadding' }}>
-        <Title headingLevel="h3">Storage</Title>
+        <Title ouiaId="proxmox-container-storage-title" headingLevel="h3">
+          Storage
+        </Title>
         <Divider component="li" style={{ marginBottom: '2rem' }} />
-        <Button onClick={addMountPoint} variant="secondary">
+        <Button
+          ouiaId="proxmox-container-storage-mountpoint-button"
+          onClick={addMountPoint}
+          variant="secondary"
+        >
           {__('Add MountPoint')}
         </Button>
         {mountPoints.map(mountPoint => (
@@ -157,7 +165,10 @@ const ProxmoxContainerStorage = ({ storage, storages, nodeId, paramScope }) => {
                 alignItems: 'center',
               }}
             >
-              <Title headingLevel="h4">
+              <Title
+                ouiaId="proxmox-container-storage-mountpoint-title"
+                headingLevel="h4"
+              >
                 {sprintf(__('Mount Point %(mp)s'), { mp: mountPoint.id })}
               </Title>
               <button onClick={() => removeMountPoint(mountPoint.id)}>

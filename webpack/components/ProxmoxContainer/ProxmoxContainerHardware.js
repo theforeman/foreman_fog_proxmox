@@ -20,7 +20,9 @@ const ProxmoxContainerHardware = ({ hardware }) => {
   return (
     <div>
       <PageSection padding={{ default: 'noPadding' }}>
-        <Title headingLevel="h3">{__('CPU')}</Title>
+        <Title ouiaId="proxmox-container-hardware-cpu" headingLevel="h3">
+          {__('CPU')}
+        </Title>
         <Divider component="li" style={{ marginBottom: '2rem' }} />
         <InputField
           name={hw?.arch?.name}
@@ -53,7 +55,9 @@ const ProxmoxContainerHardware = ({ hardware }) => {
         />
       </PageSection>
       <PageSection padding={{ default: 'noPadding' }}>
-        <Title headingLevel="h3">{__('Memory')}</Title>
+        <Title ouiaId="proxmox-container-hardware-memory" headingLevel="h3">
+          {__('Memory')}
+        </Title>
         <Divider component="li" style={{ marginBottom: '2rem' }} />
         <InputField
           name={hw?.memory?.name}

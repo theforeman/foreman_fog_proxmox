@@ -91,7 +91,9 @@ const ProxmoxServerHardware = ({ hardware }) => {
   return (
     <div>
       <PageSection padding={{ default: 'noPadding' }}>
-        <Title headingLevel="h3">{__('CPU')}</Title>
+        <Title ouiaId="proxmox-server-hardware-cpu" headingLevel="h3">
+          {__('CPU')}
+        </Title>
         <Divider component="li" style={{ marginBottom: '2rem' }} />
         <InputField
           name={hw?.cpuType?.name}
@@ -145,7 +147,11 @@ const ProxmoxServerHardware = ({ hardware }) => {
           onChange={handleChange}
         />
         <div style={{ marginLeft: '5%', display: 'inline-block' }}>
-          <Button variant="link" onClick={handleModalToggle}>
+          <Button
+            ouiaId="proxmox-server-hardware-cpu-flags"
+            variant="link"
+            onClick={handleModalToggle}
+          >
             {__('Extra CPU Flags')}
           </Button>
         </div>
@@ -165,7 +171,9 @@ const ProxmoxServerHardware = ({ hardware }) => {
         ))}
       </PageSection>
       <PageSection padding={{ default: 'noPadding' }}>
-        <Title headingLevel="h3">{__('Memory')}</Title>
+        <Title ouiaId="proxmox-server-hardware-memory" headingLevel="h3">
+          {__('Memory')}
+        </Title>
         <Divider component="li" style={{ marginBottom: '2rem' }} />
         <InputField
           name={hw?.memory?.name}

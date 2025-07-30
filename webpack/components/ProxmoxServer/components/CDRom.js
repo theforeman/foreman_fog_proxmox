@@ -51,7 +51,9 @@ const CDRom = ({ onRemove, data, storages, nodeId }) => {
           alignItems: 'center',
         }}
       >
-        <Title headingLevel="h4">{__('CD-ROM')}</Title>
+        <Title ouiaId="proxmox-server-cdrom-title" headingLevel="h4">
+          {__('CD-ROM')}
+        </Title>
         <button onClick={onRemove}>
           <TimesIcon />
         </button>
@@ -64,11 +66,14 @@ const CDRom = ({ onRemove, data, storages, nodeId }) => {
           alignItems: 'center',
         }}
       >
-        <Title headingLevel="h5">{__('Media')}</Title>
+        <Title ouiaId="proxmox-server-cdrom-media-title" headingLevel="h5">
+          {__('Media')}
+        </Title>
       </div>
       <Divider component="li" style={{ marginBottom: '1rem' }} />
       <div style={{ display: 'flex', gap: '1rem' }}>
         <Radio
+          ouiaId="proxmox-server-cdrom-media-none"
           id="radio-none"
           name={cdrom?.cdrom?.name}
           label={__('None')}
@@ -77,6 +82,7 @@ const CDRom = ({ onRemove, data, storages, nodeId }) => {
           onChange={(e, _) => handleMediaChange(_, e)}
         />
         <Radio
+          ouiaId="proxmox-server-cdrom-media-physical"
           id="radio-physical"
           name={cdrom?.cdrom?.name}
           label={__('Physical')}
@@ -85,6 +91,7 @@ const CDRom = ({ onRemove, data, storages, nodeId }) => {
           onChange={(e, _) => handleMediaChange(_, e)}
         />
         <Radio
+          ouiaId="proxmox-server-cdrom-media-image"
           id="radio-image"
           name={cdrom?.cdrom?.name}
           label={__('Image')}
@@ -95,7 +102,9 @@ const CDRom = ({ onRemove, data, storages, nodeId }) => {
       </div>
       {cdrom?.cdrom?.value === 'image' && (
         <PageSection padding={{ default: 'noPadding' }}>
-          <Title headingLevel="h5">{__('Image')}</Title>
+          <Title ouiaId="proxmox-server-cdrom-image-title" headingLevel="h5">
+            {__('Image')}
+          </Title>
           <Divider component="li" style={{ marginBottom: '2rem' }} />
           <InputField
             label={__('Storage')}

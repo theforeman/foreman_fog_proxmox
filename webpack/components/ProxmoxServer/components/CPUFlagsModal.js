@@ -1,8 +1,7 @@
 import React from 'react';
 import { Modal, Button } from '@patternfly/react-core';
 import { translate as __ } from 'foremanReact/common/I18n';
-import { Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
-import { Table } from '@patternfly/react-table/deprecated';
+import { Thead, Tr, Th, Tbody, Td, Table } from '@patternfly/react-table';
 import PropTypes from 'prop-types';
 import ProxmoxComputeSelectors from '../../ProxmoxComputeSelectors';
 

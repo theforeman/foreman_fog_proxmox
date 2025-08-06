@@ -30,5 +30,5 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     <%= text_f f, :tag, :class => "input-mini", :label => _('VLAN tag'), :label_size => "col-md-2" %>
     <%= text_f f, :rate, :class => "input-mini", :label => _('Rate limit'), :label_size => "col-md-2" %>
     <%= checkbox_f f, :firewall, :label => _('Firewall') %>
-    <%= select_f f, :bridge, compute_resource.bridges(node_id), :iface, :iface, { }, :label => _('Bridge'), :label_size => "col-md-2" %>
+    <%= select_f f, :bridge, compute_resource.bridges(node_id), :iface, :iface, { }, :label => _('Bridge'), :label_size => "col-md-2", :id => "host_interfaces_attributes_0_compute_attributes_bridge_1" %>
 <% end %>

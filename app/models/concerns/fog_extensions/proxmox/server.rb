@@ -44,6 +44,10 @@ module FogExtensions
         reboot
       end
 
+      def poweroff
+        stop
+      end
+
       def mac
         config.mac_addresses.first
       end

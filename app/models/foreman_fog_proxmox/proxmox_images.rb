@@ -48,11 +48,18 @@ module ForemanFogProxmox
       volumes = []
       nodes.each do |node|
         storages(node.node).each do |storage|
-          # fetches volumes of QEMU servers for images
-          volumes += storage.volumes.list_by_content_type('images')
+          # Skip disabled storages (enabled == 0 or nil)
+          unless storage.enabled.to_i == 1
+            logger.warn("Skipping disabled storage #{storage.identity} on #{node.node}")
+            next
+          end
 
-          # fetches volumes of KVM containers for images
+          # Fetch QEMU and LXC template images
+          volumes += storage.volumes.list_by_content_type('images')
           volumes += storage.volumes.list_by_content_type('rootdir')
+        rescue StandardError => e
+          logger.error("Failed to fetch volumes for storage #{storage.identity} on #{node.node}: #{e.message}")
+          next
         end
       end
       # for creating image, only list volumes which are templated

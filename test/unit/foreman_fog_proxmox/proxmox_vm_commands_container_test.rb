@@ -39,6 +39,7 @@ module ForemanFogProxmox
         uuid = '100'
         config = mock('config')
         config.stubs(:attributes).returns(:cores => '')
+        config.stubs(:efidisk).returns(nil)
         vm = mock('vm')
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(true)
@@ -59,6 +60,7 @@ module ForemanFogProxmox
         uuid = '100'
         config = mock('config')
         config.stubs(:attributes).returns(:cores => '')
+        config.stubs(:efidisk).returns(nil)
         vm = mock('vm')
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(true)
@@ -87,6 +89,7 @@ module ForemanFogProxmox
         disk.stubs(:id).returns('mp0')
         disks.stubs(:get).returns
         config.stubs(:disks).returns(disks)
+        config.stubs(:efidisk).returns(nil)
         config.stubs(:attributes).returns(:cores => '')
         vm = mock('vm')
         vm.stubs(:identity).returns(uuid)
@@ -148,6 +151,7 @@ module ForemanFogProxmox
         disk.stubs(:attributes).returns(id: 'rootfs', storage: 'local-lvm', size: '1')
         disks.stubs(:get).returns(disk)
         config.stubs(:disks).returns(disks)
+        config.stubs(:efidisk).returns(nil)
         config.stubs(:attributes).returns(:cores => '')
         vm = mock('vm')
         vm.stubs(:identity).returns(uuid)
@@ -207,6 +211,7 @@ module ForemanFogProxmox
         disk.stubs(:attributes).returns(id: 'mp0', storage: 'local-lvm', size: '1', volid: 'local-lvm:vm-100-disk-0')
         disks.stubs(:get).returns(disk)
         config.stubs(:disks).returns(disks)
+        config.stubs(:efidisk).returns(nil)
         config.stubs(:attributes).returns(:cores => '')
         vm = mock('vm')
         vm.stubs(:identity).returns(uuid)

@@ -8,6 +8,7 @@ import {
 } from '@patternfly/react-core';
 import { translate as __ } from 'foremanReact/common/I18n';
 import PropTypes from 'prop-types';
+import { ProxmoxBiosProvider } from "./ProxmoxBiosContext";
 import { networkSelected } from './ProxmoxVmUtils';
 import ProxmoxComputeSelectors from './ProxmoxComputeSelectors';
 import ProxmoxServerStorage from './ProxmoxServer/ProxmoxServerStorage';
@@ -83,6 +84,7 @@ const ProxmoxVmType = ({
   if (registerComp) {
     return null;
   }
+
   const componentMap = {
     qemu: {
       options: <ProxmoxServerOptions options={vmAttrs} />,
@@ -97,8 +99,10 @@ const ProxmoxVmType = ({
       storage: (
         <ProxmoxServerStorage
           storage={vmAttrs?.disks || {}}
+          efidisk={vmAttrs?.efidisk || {}}
           storages={storages}
           nodeId={general?.nodeId?.value}
+          vmId={general?.vmid?.value}
           paramScope={paramScope}
         />
       ),
@@ -150,6 +154,7 @@ const ProxmoxVmType = ({
   };
 
   return (
+  <ProxmoxBiosProvider>
     <div>
       <InputField
         name={general?.type?.name}
@@ -233,6 +238,7 @@ const ProxmoxVmType = ({
         </Tab>
       </Tabs>
     </div>
+  </ProxmoxBiosProvider>
   );
 };
 

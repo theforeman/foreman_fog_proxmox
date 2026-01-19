@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { translate as __ } from 'foremanReact/common/I18n';
 import InputField from '../common/FormInputs';
 import ProxmoxComputeSelectors from '../ProxmoxComputeSelectors';
+import { useBios } from "../ProxmoxBiosContext";
 
 const ProxmoxServerOptions = ({ options }) => {
   const [opts, setOpts] = useState(options);
+  const { setBios } = useBios();
 
   const handleChange = e => {
     const { name, type, checked, value: targetValue } = e.target;
@@ -15,12 +17,22 @@ const ProxmoxServerOptions = ({ options }) => {
     } else {
       value = targetValue;
     }
+
+    if (name === opts?.bios?.name) {
+      setBios(value);
+    }
+
     const updatedKey = Object.keys(opts).find(key => opts[key].name === name);
     setOpts(prevOpts => ({
       ...prevOpts,
       [updatedKey]: { ...prevOpts[updatedKey], value },
     }));
   };
+
+  useEffect(() => {
+    const biosValue = opts?.bios?.value;
+    setBios(biosValue);
+  }, [opts, setBios]);
 
   return (
     <div>

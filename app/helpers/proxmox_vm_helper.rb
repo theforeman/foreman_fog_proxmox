@@ -26,6 +26,7 @@ module ProxmoxVMHelper
   include ProxmoxVMVolumesHelper
   include ProxmoxVMConfigHelper
   include ProxmoxVMOsTemplateHelper
+  include ProxmoxVMEfidiskHelper
 
   def vm_collection(type)
     collection = :servers
@@ -42,6 +43,7 @@ module ProxmoxVMHelper
 
     logger.debug("parse_typed_vm(#{type}): args=#{args}")
     parsed_vm = parsed_typed_config(args, type)
+    parsed_vm = parsed_typed_efidisk(args, type, parsed_vm)
     parsed_vm = parsed_typed_interfaces(args, type, parsed_vm)
     parsed_vm = parsed_typed_volumes(args, type, parsed_vm)
     logger.debug("parse_typed_vm(#{type}): parsed_vm=#{parsed_vm}")

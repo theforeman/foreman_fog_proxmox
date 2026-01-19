@@ -22,6 +22,7 @@ require 'foreman_fog_proxmox/hash_collection'
 module ForemanFogProxmox
   module ProxmoxVMCommands
     include ProxmoxVolumes
+    include ProxmoxEfidisks
     include ProxmoxPools
     include ProxmoxVMHelper
 
@@ -109,9 +110,17 @@ module ForemanFogProxmox
             ['volumes_attributes']).merge(type: vm.type), vm.type
         )
         config_attributes = compute_config_attributes(parsed_attr)
+
         volumes_attributes = new_attributes['volumes_attributes']
         logger.debug("save_vm(#{uuid}) volumes_attributes=#{volumes_attributes}")
         volumes_attributes&.each_value { |volume_attributes| save_volume(vm, volume_attributes) }
+
+        efidisk_attributes = new_attributes['efidisk_attributes']
+        if vm.config.efidisk.present? && efidisk_attributes.empty?
+          logger.debug("Removing efidisk from VM #{vm}")
+          delete_efidisk(vm)
+        end
+
         vm.update(config_attributes[:config_attributes])
         poolid = new_attributes['pool'] if new_attributes.key?('pool')
         update_pool(vm, poolid) if poolid

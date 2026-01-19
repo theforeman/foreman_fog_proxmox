@@ -58,5 +58,15 @@ function toggleFieldsets(fieldSet) {
   });
 }
 
+function setEfiDiskVolId(realVolId, storageName, vmId) {
+  // use realVolId if provided
+  if ((realVolId) && (realVolId.length > 0)) {
+    return realVolId;
+  }
+
+  // otherwise, construct volId from storageName and vmId
+  return `${storageName}:${vmId}`;
+}
+
 window.networkSelected = networkSelected;
-export { networkSelected };
+export { networkSelected, setEfiDiskVolId };

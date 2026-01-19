@@ -44,6 +44,7 @@ module ForemanFogProxmox
         disk.stubs(:id).returns('ide0')
         disks.stubs(:get).returns
         config.stubs(:disks).returns(disks)
+        config.stubs(:efidisk).returns(nil)
         config.stubs(:attributes).returns(:cores => '')
         vm = mock('vm')
         vm.stubs(:identity).returns(uuid)
@@ -96,6 +97,7 @@ module ForemanFogProxmox
         disk.stubs(:cloud_init?).returns(true)
         disks.stubs(:get).returns(disk)
         config.stubs(:disks).returns(disks)
+        config.stubs(:efidisk).returns(nil)
         config.stubs(:attributes).returns(:cores => '1')
         vm = mock('vm')
         vm.stubs(:identity).returns(uuid)

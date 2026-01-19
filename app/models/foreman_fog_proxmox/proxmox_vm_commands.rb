@@ -72,7 +72,7 @@ module ForemanFogProxmox
       vm = find_vm_by_uuid(uuid)
       return true if vm.nil?
       vm.stop if vm.ready?
-      vm.destroy
+      vm.ha&.dig("managed").to_i == 1 ? vm.destroy(query: { purge: 1 }) : vm.destroy
     rescue ActiveRecord::RecordNotFound
       # if the VM does not exists, we don't really care.
       true

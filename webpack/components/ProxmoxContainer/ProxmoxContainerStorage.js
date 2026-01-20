@@ -42,7 +42,7 @@ const ProxmoxContainerStorage = ({ storage, storages, nodeId, paramScope }) => {
         }
       });
     }
-  }, [storage]);
+  }, [storage, addMountPoint]);
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -189,14 +189,14 @@ const ProxmoxContainerStorage = ({ storage, storages, nodeId, paramScope }) => {
 };
 
 ProxmoxContainerStorage.propTypes = {
-  storage: PropTypes.object,
+  storage: PropTypes.array,
   storages: PropTypes.array,
   nodeId: PropTypes.string,
   paramScope: PropTypes.string,
 };
 
 ProxmoxContainerStorage.defaultProps = {
-  storage: {},
+  storage: [],
   storages: [],
   nodeId: '',
   paramScope: '',

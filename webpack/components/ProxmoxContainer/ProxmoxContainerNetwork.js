@@ -21,7 +21,7 @@ const ProxmoxContainerNetwork = ({ network, bridges, paramScope }) => {
       });
       setUsedIds(existingIds);
     }
-  }, [network]);
+  }, [network, addInterface]);
 
   const getLowestAvailableId = useCallback(() => {
     let id = 0;
@@ -169,13 +169,13 @@ const ProxmoxContainerNetwork = ({ network, bridges, paramScope }) => {
 };
 
 ProxmoxContainerNetwork.propTypes = {
-  network: PropTypes.object,
+  network: PropTypes.array,
   bridges: PropTypes.array,
   paramScope: PropTypes.string,
 };
 
 ProxmoxContainerNetwork.defaultProps = {
-  network: {},
+  network: [],
   bridges: [],
   paramScope: '',
 };

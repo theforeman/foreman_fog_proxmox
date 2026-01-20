@@ -60,7 +60,7 @@ function toggleFieldsets(fieldSet) {
 
 function setEfiDiskVolId(realVolId, storageName, vmId) {
   // use realVolId if provided
-  if ((realVolId) && (realVolId.length > 0)) {
+  if (realVolId && realVolId.length > 0) {
     return realVolId;
   }
 

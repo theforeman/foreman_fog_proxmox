@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { translate as __ } from 'foremanReact/common/I18n';
 import InputField from '../common/FormInputs';
 import ProxmoxComputeSelectors from '../ProxmoxComputeSelectors';
-import { useBios } from "../ProxmoxBiosContext";
+import { useBios } from '../ProxmoxBiosContext';
 
 const ProxmoxServerOptions = ({ options }) => {
   const [opts, setOpts] = useState(options);

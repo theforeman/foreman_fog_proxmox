@@ -1,18 +1,25 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Title, Divider, FormHelperText, HelperText, HelperTextItem, PageSection } from '@patternfly/react-core';
+import {
+  Title,
+  Divider,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  PageSection,
+} from '@patternfly/react-core';
 import { TimesIcon } from '@patternfly/react-icons';
 import { translate as __ } from 'foremanReact/common/I18n';
-import { imagesByStorage, createStoragesMap } from '../../ProxmoxStoragesUtils';
+import { createStoragesMap } from '../../ProxmoxStoragesUtils';
 import { setEfiDiskVolId } from '../../ProxmoxVmUtils';
 import InputField from '../../common/FormInputs';
-import { useBios } from "../../ProxmoxBiosContext";
+import { useBios } from '../../ProxmoxBiosContext';
 
 const EFIDisk = ({ onRemove, data, storages, nodeId, vmId }) => {
   const [efidisk, setEfiDisk] = useState(data);
   const storagesMap = createStoragesMap(storages, null, nodeId);
   const { bios } = useBios();
-  const isBiosOvmf = bios === "ovmf";
+  const isBiosOvmf = bios === 'ovmf';
 
   const handleChange = e => {
     const { name, type, checked, value: targetValue } = e.target;
@@ -23,7 +30,9 @@ const EFIDisk = ({ onRemove, data, storages, nodeId, vmId }) => {
       value = targetValue;
     }
 
-    const updatedKey = Object.keys(efidisk).find(key => efidisk[key].name === name);
+    const updatedKey = Object.keys(efidisk).find(
+      key => efidisk[key].name === name
+    );
     const updatedData = {
       ...efidisk,
       [updatedKey]: { ...efidisk[updatedKey], value },
@@ -32,7 +41,7 @@ const EFIDisk = ({ onRemove, data, storages, nodeId, vmId }) => {
 
     // If storage is changed, update volid accordingly
     if (name === efidisk?.storage?.name) {
-      let newVolId = setEfiDiskVolId(null, value, vmId);
+      const newVolId = setEfiDiskVolId(null, value, vmId);
       efidisk.volid.value = newVolId;
     }
   };
@@ -48,15 +57,17 @@ const EFIDisk = ({ onRemove, data, storages, nodeId, vmId }) => {
       >
         <Title ouiaId="proxmox-server-efidisk-title" headingLevel="h4">
           {__('EFI Disk')}
-          { !isBiosOvmf && (
-          <FormHelperText>
-            <HelperText id="helper-bios">
-              <HelperTextItem variant="warning">
-                {__('The EFI Disk requires OVMF BIOS. Please switch the BIOS type to OVMF.')}
-              </HelperTextItem>
-            </HelperText>
-          </FormHelperText>
-        )}
+          {!isBiosOvmf && (
+            <FormHelperText>
+              <HelperText id="helper-bios">
+                <HelperTextItem variant="warning">
+                  {__(
+                    'The EFI Disk requires OVMF BIOS. Please switch the BIOS type to OVMF.'
+                  )}
+                </HelperTextItem>
+              </HelperText>
+            </FormHelperText>
+          )}
         </Title>
         <button onClick={onRemove}>
           <TimesIcon />
@@ -68,13 +79,24 @@ const EFIDisk = ({ onRemove, data, storages, nodeId, vmId }) => {
           justifyContent: 'space-between',
           alignItems: 'center',
         }}
-      >
-      </div>
+      />
       <PageSection padding={{ default: 'noPadding' }}>
         <Divider component="li" style={{ marginBottom: '2rem' }} />
-        <input name={efidisk?.id?.name} type="hidden" value={efidisk?.id.value} />
-        <input name={efidisk?.volid?.name} type="hidden" value={efidisk?.volid.value} />
-        <input name={efidisk?.format?.name} type="hidden" value={efidisk?.format.value} />
+        <input
+          name={efidisk?.id?.name}
+          type="hidden"
+          value={efidisk?.id.value}
+        />
+        <input
+          name={efidisk?.volid?.name}
+          type="hidden"
+          value={efidisk?.volid.value}
+        />
+        <input
+          name={efidisk?.format?.name}
+          type="hidden"
+          value={efidisk?.format.value}
+        />
         <InputField
           label={__('EFI Storage')}
           name={efidisk?.storage?.name}
@@ -87,11 +109,11 @@ const EFIDisk = ({ onRemove, data, storages, nodeId, vmId }) => {
           onChange={handleChange}
         />
         <InputField
-          name={efidisk?.pre_enrolled_keys?.name}
+          name={efidisk?.preEnrolledKeys?.name}
           label={__('Pre-Enrolled Keys')}
           type="checkbox"
-          value={efidisk?.pre_enrolled_keys?.value}
-          checked={String(efidisk?.pre_enrolled_keys?.value) === '1'}
+          value={efidisk?.preEnrolledKeys?.value}
+          checked={String(efidisk?.preEnrolledKeys?.value) === '1'}
           onChange={handleChange}
         />
       </PageSection>
@@ -114,7 +136,7 @@ EFIDisk.propTypes = {
       name: PropTypes.string.isRequired,
       value: PropTypes.string,
     }).isRequired,
-    pre_enrolled_keys: PropTypes.shape({
+    preEnrolledKeys: PropTypes.shape({
       name: PropTypes.string.isRequired,
       value: PropTypes.string,
     }).isRequired,

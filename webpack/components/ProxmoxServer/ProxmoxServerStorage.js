@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Title, PageSection, Button } from '@patternfly/react-core';
@@ -8,7 +9,14 @@ import CDRom from './components/CDRom';
 import EFIDisk from './components/EFIDisk';
 import { setEfiDiskVolId } from '../ProxmoxVmUtils';
 
-const ProxmoxServerStorage = ({ storage, efidisk, storages, nodeId, vmId, paramScope }) => {
+const ProxmoxServerStorage = ({
+  storage,
+  efidisk,
+  storages,
+  nodeId,
+  vmId,
+  paramScope,
+}) => {
   const [hardDisks, setHardDisks] = useState([]);
   const [nextId, setNextId] = useState(0);
   const [cdRom, setCdRom] = useState(false);
@@ -49,7 +57,8 @@ const ProxmoxServerStorage = ({ storage, efidisk, storages, nodeId, vmId, paramS
     if (efidisk && Object.keys(efidisk).length > 0) {
       addEfiDisk(null, efidisk, true);
     }
-  }, [storage, efidisk]);
+  }, [storage, efidisk, addHardDisk, addCDRom, addEfiDisk]); // eslint-disable-line react-hooks/exhaustive-deps
+  // This is necessary because of nextDeviceNumbers. Adding nextDeviceNumbers results in infinite loop in browser.
 
   const getNextDevice = useCallback(
     (controller, type = null) => {
@@ -237,21 +246,32 @@ const ProxmoxServerStorage = ({ storage, efidisk, storages, nodeId, vmId, paramS
           name: `${paramScope}[efidisk_attributes][format]`,
           value: 'raw',
         },
-        pre_enrolled_keys: {
+        preEnrolledKeys: {
           name: `${paramScope}[efidisk_attributes][pre_enrolled_keys]`,
           value: '1',
         },
       };
 
       if (!isPreExisting) {
-        let initialVolId = setEfiDiskVolId(null, initEfiDisk.storage.value, vmId);
+        const initialVolId = setEfiDiskVolId(
+          null,
+          initEfiDisk.storage.value,
+          vmId
+        );
         initEfiDisk.volid.value = initialVolId;
+      }
+
+      // Handle pre_enrolled_keys naming difference
+      if (initEfiDisk.hasOwnProperty('pre_enrolled_keys')) {
+        initEfiDisk.preEnrolledKeys = initEfiDisk.pre_enrolled_keys;
+        /* remove old key to avoid confusion */
+        delete initEfiDisk.pre_enrolled_keys;
       }
 
       setEfiDisk(true);
       setEfiDiskData(initEfiDisk);
     },
-    [efiDisk, 0, paramScope]
+    [efiDisk, paramScope, vmId]
   );
 
   const removeEfiDisk = () => {
@@ -344,7 +364,7 @@ const ProxmoxServerStorage = ({ storage, efidisk, storages, nodeId, vmId, paramS
 };
 
 ProxmoxServerStorage.propTypes = {
-  storage: PropTypes.object,
+  storage: PropTypes.array,
   efidisk: PropTypes.object,
   storages: PropTypes.array,
   nodeId: PropTypes.string,
@@ -353,7 +373,7 @@ ProxmoxServerStorage.propTypes = {
 };
 
 ProxmoxServerStorage.defaultProps = {
-  storage: {},
+  storage: [],
   efidisk: {},
   storages: [],
   nodeId: '',

@@ -8,6 +8,7 @@ import {
 } from '@patternfly/react-core';
 import { translate as __ } from 'foremanReact/common/I18n';
 import PropTypes from 'prop-types';
+import { ProxmoxBiosProvider } from './ProxmoxBiosContext';
 import { networkSelected } from './ProxmoxVmUtils';
 import ProxmoxComputeSelectors from './ProxmoxComputeSelectors';
 import ProxmoxServerStorage from './ProxmoxServer/ProxmoxServerStorage';
@@ -70,7 +71,7 @@ const ProxmoxVmType = ({
     if (!registerComp && !fromProfile) {
       networkSelected(general?.type?.value);
     }
-  }, [general?.type?.value]);
+  }, [general, registerComp, fromProfile]);
 
   useEffect(() => {
     if (!registerComp) {
@@ -79,10 +80,11 @@ const ProxmoxVmType = ({
       );
       setFilteredBridges(filtered);
     }
-  }, [general?.nodeId?.value, bridges]);
+  }, [general, bridges, registerComp]);
   if (registerComp) {
     return null;
   }
+
   const componentMap = {
     qemu: {
       options: <ProxmoxServerOptions options={vmAttrs} />,
@@ -96,9 +98,11 @@ const ProxmoxVmType = ({
       ),
       storage: (
         <ProxmoxServerStorage
-          storage={vmAttrs?.disks || {}}
+          storage={vmAttrs?.disks || []}
+          efidisk={vmAttrs?.efidisk || {}}
           storages={storages}
           nodeId={general?.nodeId?.value}
+          vmId={general?.vmid?.value}
           paramScope={paramScope}
         />
       ),
@@ -115,14 +119,14 @@ const ProxmoxVmType = ({
       hardware: <ProxmoxContainerHardware hardware={vmAttrs} />,
       network: (
         <ProxmoxContainerNetwork
-          network={vmAttrs?.interfaces || {}}
+          network={vmAttrs?.interfaces || []}
           bridges={filteredBridges}
           paramScope={paramScope}
         />
       ),
       storage: (
         <ProxmoxContainerStorage
-          storage={vmAttrs?.disks || {}}
+          storage={vmAttrs?.disks || []}
           storages={storages}
           nodeId={general?.nodeId?.value}
           paramScope={paramScope}
@@ -150,89 +154,91 @@ const ProxmoxVmType = ({
   };
 
   return (
-    <div>
-      <InputField
-        name={general?.type?.name}
-        label={__('Type')}
-        required
-        onChange={handleChange}
-        value={general?.type?.value}
-        options={ProxmoxComputeSelectors.proxmoxTypesMap}
-        disabled={!newVm}
-        type="select"
-      />
-      <Tabs
-        ouiaId="proxmox-vm-type-tabs-options"
-        activeKey={activeTabKey}
-        onSelect={handleTabClick}
-        aria-label="Options tabs"
-        role="region"
-      >
-        <Tab
-          ouiaId="proxmox-vm-type-tab-general"
-          eventKey={0}
-          title={<TabTitleText>{__('General')}</TabTitleText>}
-          aria-label="Default content - general"
+    <ProxmoxBiosProvider>
+      <div>
+        <InputField
+          name={general?.type?.name}
+          label={__('Type')}
+          required
+          onChange={handleChange}
+          value={general?.type?.value}
+          options={ProxmoxComputeSelectors.proxmoxTypesMap}
+          disabled={!newVm}
+          type="select"
+        />
+        <Tabs
+          ouiaId="proxmox-vm-type-tabs-options"
+          activeKey={activeTabKey}
+          onSelect={handleTabClick}
+          aria-label="Options tabs"
+          role="region"
         >
-          <GeneralTabContent
-            general={general}
-            fromProfile={fromProfile}
-            newVm={newVm}
-            nodesMap={nodesMap}
-            poolsMap={poolsMap}
-            imagesMap={imagesMap}
-            handleChange={handleChange}
-            untemplatable={untemplatable}
-          />
-        </Tab>
-        <Tab
-          ouiaId="proxmox-vm-type-tab-advanced"
-          eventKey={1}
-          title={<TabTitleText>{__('Advanced Options')}</TabTitleText>}
-          aria-label="advanced options"
-        >
-          <PageSection padding={{ default: 'noPadding' }}>
-            <Divider component="li" style={{ marginBottom: '2rem' }} />
-            {componentMap[general?.type?.value]?.options}
-          </PageSection>
-        </Tab>
-        <Tab
-          ouiaId="proxmox-vm-type-tab-hardware"
-          eventKey={2}
-          title={<TabTitleText>{__('Hardware')}</TabTitleText>}
-          aria-label="hardware"
-        >
-          <PageSection padding={{ default: 'noPadding' }}>
-            <Divider component="li" style={{ marginBottom: '2rem' }} />
-            {componentMap[general?.type?.value]?.hardware}
-          </PageSection>
-        </Tab>
-        {fromProfile && (
           <Tab
-            ouiaId="proxmox-vm-type-tab-network"
-            eventKey={3}
-            title={<TabTitleText>{__('Network Interfaces')}</TabTitleText>}
-            aria-label="Network interface"
+            ouiaId="proxmox-vm-type-tab-general"
+            eventKey={0}
+            title={<TabTitleText>{__('General')}</TabTitleText>}
+            aria-label="Default content - general"
+          >
+            <GeneralTabContent
+              general={general}
+              fromProfile={fromProfile}
+              newVm={newVm}
+              nodesMap={nodesMap}
+              poolsMap={poolsMap}
+              imagesMap={imagesMap}
+              handleChange={handleChange}
+              untemplatable={untemplatable}
+            />
+          </Tab>
+          <Tab
+            ouiaId="proxmox-vm-type-tab-advanced"
+            eventKey={1}
+            title={<TabTitleText>{__('Advanced Options')}</TabTitleText>}
+            aria-label="advanced options"
           >
             <PageSection padding={{ default: 'noPadding' }}>
               <Divider component="li" style={{ marginBottom: '2rem' }} />
-              {componentMap[general?.type?.value]?.network}
+              {componentMap[general?.type?.value]?.options}
             </PageSection>
           </Tab>
-        )}
-        <Tab
-          ouiaId="proxmox-vm-type-tab-storage"
-          eventKey={4}
-          title={<TabTitleText>{__('Storage')}</TabTitleText>}
-          aria-label="storage"
-        >
-          <PageSection padding={{ default: 'noPadding' }}>
-            <Divider component="li" style={{ marginBottom: '2rem' }} />
-            {componentMap[general?.type?.value]?.storage}
-          </PageSection>
-        </Tab>
-      </Tabs>
-    </div>
+          <Tab
+            ouiaId="proxmox-vm-type-tab-hardware"
+            eventKey={2}
+            title={<TabTitleText>{__('Hardware')}</TabTitleText>}
+            aria-label="hardware"
+          >
+            <PageSection padding={{ default: 'noPadding' }}>
+              <Divider component="li" style={{ marginBottom: '2rem' }} />
+              {componentMap[general?.type?.value]?.hardware}
+            </PageSection>
+          </Tab>
+          {fromProfile && (
+            <Tab
+              ouiaId="proxmox-vm-type-tab-network"
+              eventKey={3}
+              title={<TabTitleText>{__('Network Interfaces')}</TabTitleText>}
+              aria-label="Network interface"
+            >
+              <PageSection padding={{ default: 'noPadding' }}>
+                <Divider component="li" style={{ marginBottom: '2rem' }} />
+                {componentMap[general?.type?.value]?.network}
+              </PageSection>
+            </Tab>
+          )}
+          <Tab
+            ouiaId="proxmox-vm-type-tab-storage"
+            eventKey={4}
+            title={<TabTitleText>{__('Storage')}</TabTitleText>}
+            aria-label="storage"
+          >
+            <PageSection padding={{ default: 'noPadding' }}>
+              <Divider component="li" style={{ marginBottom: '2rem' }} />
+              {componentMap[general?.type?.value]?.storage}
+            </PageSection>
+          </Tab>
+        </Tabs>
+      </div>
+    </ProxmoxBiosProvider>
   );
 };
 

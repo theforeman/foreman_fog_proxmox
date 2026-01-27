@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Title, PageSection, Button } from '@patternfly/react-core';
@@ -5,12 +6,23 @@ import { TimesIcon } from '@patternfly/react-icons';
 import { sprintf, translate as __ } from 'foremanReact/common/I18n';
 import HardDisk from './components/HardDisk';
 import CDRom from './components/CDRom';
+import EFIDisk from './components/EFIDisk';
+import { setEfiDiskVolId } from '../ProxmoxVmUtils';
 
-const ProxmoxServerStorage = ({ storage, storages, paramScope, nodeId }) => {
+const ProxmoxServerStorage = ({
+  storage,
+  efidisk,
+  storages,
+  nodeId,
+  vmId,
+  paramScope,
+}) => {
   const [hardDisks, setHardDisks] = useState([]);
   const [nextId, setNextId] = useState(0);
   const [cdRom, setCdRom] = useState(false);
   const [cdRomData, setCdRomData] = useState(null);
+  const [efiDisk, setEfiDisk] = useState(false);
+  const [efiDiskData, setEfiDiskData] = useState(null);
   const [nextDeviceNumbers, setNextDeviceNumbers] = useState({
     ide: 0,
     sata: 0,
@@ -42,7 +54,11 @@ const ProxmoxServerStorage = ({ storage, storages, paramScope, nodeId }) => {
       });
       setNextDeviceNumbers(updatedCounts);
     }
-  }, [storage]);
+    if (efidisk && Object.keys(efidisk).length > 0) {
+      addEfiDisk(null, efidisk, true);
+    }
+  }, [storage, efidisk, addHardDisk, addCDRom, addEfiDisk]); // eslint-disable-line react-hooks/exhaustive-deps
+  // This is necessary because of nextDeviceNumbers. Adding nextDeviceNumbers results in infinite loop in browser.
 
   const getNextDevice = useCallback(
     (controller, type = null) => {
@@ -207,6 +223,61 @@ const ProxmoxServerStorage = ({ storage, storages, paramScope, nodeId }) => {
   const removeCDRom = () => {
     setCdRom(false);
   };
+
+  const addEfiDisk = useCallback(
+    (event, initialData = null, isPreExisting = false) => {
+      if (event) event.preventDefault();
+      if (!initialData && efiDisk) return;
+
+      const initEfiDisk = initialData || {
+        id: {
+          name: `${paramScope}[efidisk_attributes][id]`,
+          value: 0, // there is only one efi disk allowed
+        },
+        volid: {
+          name: `${paramScope}[efidisk_attributes][volid]`,
+          value: '',
+        },
+        storage: {
+          name: `${paramScope}[efidisk_attributes][storage]`,
+          value: 'local',
+        },
+        format: {
+          name: `${paramScope}[efidisk_attributes][format]`,
+          value: 'raw',
+        },
+        preEnrolledKeys: {
+          name: `${paramScope}[efidisk_attributes][pre_enrolled_keys]`,
+          value: '1',
+        },
+      };
+
+      if (!isPreExisting) {
+        const initialVolId = setEfiDiskVolId(
+          null,
+          initEfiDisk.storage.value,
+          vmId
+        );
+        initEfiDisk.volid.value = initialVolId;
+      }
+
+      // Handle pre_enrolled_keys naming difference
+      if (initEfiDisk.hasOwnProperty('pre_enrolled_keys')) {
+        initEfiDisk.preEnrolledKeys = initEfiDisk.pre_enrolled_keys;
+        /* remove old key to avoid confusion */
+        delete initEfiDisk.pre_enrolled_keys;
+      }
+
+      setEfiDisk(true);
+      setEfiDiskData(initEfiDisk);
+    },
+    [efiDisk, paramScope, vmId]
+  );
+
+  const removeEfiDisk = () => {
+    setEfiDisk(false);
+  };
+
   return (
     <div>
       <PageSection padding={{ default: 'noPadding' }}>
@@ -227,12 +298,30 @@ const ProxmoxServerStorage = ({ storage, storages, paramScope, nodeId }) => {
         >
           {__('Add HardDisk')}
         </Button>
+        {'  '}
+        <Button
+          ouiaId="proxmox-server-storage-efidisk"
+          onClick={addEfiDisk}
+          variant="secondary"
+          isDisabled={efiDisk}
+        >
+          {__('Add Efi Disk')}
+        </Button>
         {cdRom && cdRomData && (
           <CDRom
             onRemove={removeCDRom}
             data={cdRomData}
             storages={storages}
             nodeId={nodeId}
+          />
+        )}
+        {efiDisk && efiDiskData && (
+          <EFIDisk
+            onRemove={removeEfiDisk}
+            data={efiDiskData}
+            storages={storages}
+            nodeId={nodeId}
+            vmId={vmId}
           />
         )}
         {hardDisks.map(hardDisk => (
@@ -275,17 +364,21 @@ const ProxmoxServerStorage = ({ storage, storages, paramScope, nodeId }) => {
 };
 
 ProxmoxServerStorage.propTypes = {
-  storage: PropTypes.object,
+  storage: PropTypes.array,
+  efidisk: PropTypes.object,
   storages: PropTypes.array,
-  paramScope: PropTypes.string,
   nodeId: PropTypes.string,
+  vmId: PropTypes.string,
+  paramScope: PropTypes.string,
 };
 
 ProxmoxServerStorage.defaultProps = {
-  storage: {},
+  storage: [],
+  efidisk: {},
   storages: [],
-  paramScope: '',
   nodeId: '',
+  vmId: '',
+  paramScope: '',
 };
 
 export default ProxmoxServerStorage;

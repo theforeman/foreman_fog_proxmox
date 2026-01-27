@@ -92,6 +92,7 @@ module ForemanFogProxmox
       require 'fog/proxmox/compute/models/server'
       require 'fog/proxmox/compute/models/server_config'
       require 'fog/proxmox/compute/models/disk'
+      require 'fog/proxmox/compute/models/efidisk'
       require 'fog/proxmox/compute/models/interface'
       require 'fog/proxmox/compute/models/volume'
       require 'fog/proxmox/compute/models/node'

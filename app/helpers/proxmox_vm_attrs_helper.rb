@@ -28,7 +28,7 @@ module ProxmoxVMAttrsHelper
   def object_to_attributes_hash(vms, from_profile, start_checked)
     param_scope = from_profile ? "compute_attribute[vm_attrs]" : "host[compute_attributes]"
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
-    keys = [:vmid, :node_id, :type, :pool]
+    keys = [:vmid, :node_id, :type, :pool, :efidisk]
     main = vms.attributes.select { |key, _value| keys.include? key }
     vms.config.all_attributes.each do |key, value|
       camel_key = key.to_s.include?('_') ? snake_to_camel(key.to_s).to_sym : key
@@ -42,7 +42,9 @@ module ProxmoxVMAttrsHelper
     vm_h.merge!(additional_attrs(vms, param_scope, start_checked))
     vm_h[:interfaces] = network_attrs(param_scope, vms.interfaces)
     vm_h[:disks] = volumes_attrs(param_scope, vms.volumes)
+    vm_h[:efidisk] = efidisk_attrs(param_scope, vms.efidisk) if vms.efidisk.present?
     vm_h.merge(cpu_flags_attrs(param_scope, vms.config))
+    vm_h
   end
 
   def cpu_flags_attrs(param_scope, config)
@@ -51,6 +53,15 @@ module ProxmoxVMAttrsHelper
       flag_attrs.merge!({ key => { :name => "#{param_scope}[config_attributes][#{key}]", :value => config.public_send(key) } })
     end
     flag_attrs
+  end
+
+  def efidisk_attrs(param_scope, efidisk)
+    attrs = ActiveSupport::HashWithIndifferentAccess.new
+    keys = ['id', 'volid', 'size', 'storage', 'format', 'efitype', 'pre_enrolled_keys']
+    keys.each do |key|
+      attrs[key] = { :name => "#{param_scope}[efidisk_attributes][#{key}]", :value => efidisk.public_send(key) }
+    end
+    attrs
   end
 
   def volumes_attrs(param_scope, volumes)

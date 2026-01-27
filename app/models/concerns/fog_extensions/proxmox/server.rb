@@ -85,6 +85,7 @@ module FogExtensions
         config.disks.collect(&:to_s)
       end
 
+      delegate :efidisk, to: :config
       delegate :vga, to: :config
       delegate :pool, to: :config
       delegate :cloud_init?, to: :config

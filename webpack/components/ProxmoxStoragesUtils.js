@@ -12,12 +12,14 @@ export const createStoragesMap = (
   filterContent = null,
   nodeId = null
 ) =>
-  storages
+  (Array.isArray(storages) ? storages : [])
     .filter(st => {
+      const content = st?.content || '';
       const contentMatch = filterContent
-        ? st.content.includes(filterContent)
+        ? content.includes(filterContent)
         : true;
-      const nodeMatch = nodeId ? st.node_id === nodeId : true;
+      // eslint-disable-next-line camelcase
+      const nodeMatch = nodeId ? st?.node_id === nodeId : true;
       return contentMatch && nodeMatch;
     })
     .map(st => ({
@@ -34,17 +36,19 @@ export const createStoragesMap = (
     }));
 
 export const imagesByStorage = (storages, nodeId, storageId, type = 'iso') => {
-  const storage = storages.find(
-    st => st.node_id === nodeId && st.storage === storageId
+  const safeStorages = Array.isArray(storages) ? storages : [];
+
+  const storage = safeStorages.find(
+    st => st?.node_id === nodeId && st?.storage === storageId // eslint-disable-line camelcase
   );
 
-  const filteredVolumes = storage.volumes
-    .filter(volume => volume.content.includes(type))
-    .sort((a, b) => a.volid.localeCompare(b.volid))
+  const volumes = Array.isArray(storage?.volumes) ? storage.volumes : [];
+
+  return volumes
+    .filter(volume => (volume?.content || '').includes(type))
+    .sort((a, b) => (a?.volid || '').localeCompare(b?.volid || ''))
     .map(volume => ({
       value: volume.volid,
       label: volume.volid,
     }));
-
-  return filteredVolumes;
 };

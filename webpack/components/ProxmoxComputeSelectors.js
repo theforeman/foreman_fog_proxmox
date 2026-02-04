@@ -52,7 +52,7 @@ const ProxmoxComputeSelectors = {
   ],
 
   proxmoxVgasMap: [
-    { value: '', labal: '' },
+    { value: '', label: '' },
     { value: 'std', label: 'Standard VGA' },
     { value: 'vmware', label: 'Vmware compatible' },
     { value: 'qxl', label: 'SPICE' },
@@ -66,7 +66,7 @@ const ProxmoxComputeSelectors = {
   ],
 
   proxmoxCachesMap: [
-    { value: '', labal: '' },
+    { value: '', label: '' },
     { value: 'directsync', label: 'Direct sync' },
     { value: 'writethrough', label: 'Write through' },
     { value: 'writeback', label: 'Write back' },

@@ -49,7 +49,9 @@ module ForemanFogProxmox
                :isos_by_id_and_node,
                :storages_by_id_and_node,
                :iso_storages_by_id_and_node,
-               :bridges_by_id_and_node] }
+               :bridges_by_id_and_node,
+               :volumes_by_node_and_storage,
+               :metadata] }
           end
         end
       end

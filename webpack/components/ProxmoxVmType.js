@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import React, { useState, useEffect } from 'react';
 import {
   PageSection,
@@ -5,10 +6,14 @@ import {
   Tabs,
   Tab,
   TabTitleText,
+  Spinner,
+  Bullseye,
 } from '@patternfly/react-core';
-import { translate as __ } from 'foremanReact/common/I18n';
 import PropTypes from 'prop-types';
+import { translate as __ } from 'foremanReact/common/I18n';
+import { API } from 'foremanReact/redux/API';
 import { ProxmoxBiosProvider } from './ProxmoxBiosContext';
+
 import { networkSelected } from './ProxmoxVmUtils';
 import ProxmoxComputeSelectors from './ProxmoxComputeSelectors';
 import ProxmoxServerStorage from './ProxmoxServer/ProxmoxServerStorage';
@@ -24,63 +29,111 @@ import GeneralTabContent from './GeneralTabContent';
 
 const ProxmoxVmType = ({
   vmAttrs,
-  nodes,
   images,
-  pools,
   fromProfile,
   newVm,
-  storages,
-  bridges,
   registerComp,
   untemplatable,
+  computeResourceId,
+  propsLoaded,
 }) => {
+  const [activeTabKey, setActiveTabKey] = useState(0);
+  const handleTabClick = (event, tabIndex) => setActiveTabKey(tabIndex);
+
+  const [general, setGeneral] = useState(vmAttrs);
+
+  const paramScope = fromProfile
+    ? 'compute_attribute[vm_attrs]'
+    : 'host[compute_attributes]';
+
+  const [metaLoaded, setMetaLoaded] = useState(!!propsLoaded);
+  const [metaError, setMetaError] = useState(false);
+  const [metaNodes, setMetaNodes] = useState([]);
+  const [metaPools, setMetaPools] = useState([]);
+  const [metaStorages, setMetaStorages] = useState([]);
+  const [metaBridges, setMetaBridges] = useState([]);
+  const [metaImages, setMetaImages] = useState(images || []);
+
+  useEffect(() => {
+    if (registerComp) return undefined;
+    if (metaLoaded) return undefined;
+    if (!computeResourceId) return undefined;
+
+    let isMounted = true;
+
+    const fetchMetadata = async () => {
+      try {
+        const { data } = await API.get(
+          `/foreman_fog_proxmox/metadata/${computeResourceId}`
+        );
+        if (!isMounted) return;
+        setMetaNodes(data?.nodes || []);
+        setMetaPools(data?.pools || []);
+        setMetaStorages(data?.storages || []);
+        setMetaBridges(data?.bridges || []);
+        setMetaImages(data?.images || []);
+        setMetaLoaded(true);
+        setMetaError(false);
+      } catch (error) {
+        if (!isMounted) return;
+        setMetaError(true);
+        setMetaLoaded(true);
+      }
+    };
+
+    fetchMetadata();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [computeResourceId, metaLoaded, registerComp]);
+
   const nodesMap =
-    nodes.length > 0
-      ? nodes.map(node => ({ value: node.node, label: node.node }))
+    metaNodes.length > 0
+      ? metaNodes.map(node => ({ value: node.node, label: node.node }))
       : [];
+
   const imagesMap =
-    images.length > 0
+    metaImages.length > 0
       ? [
           { value: '', label: '' },
-          ...images.map(image => ({
+          ...metaImages.map(image => ({
             value: image.uuid,
             label: image.name,
           })),
         ]
       : [];
+
   const poolsMap =
-    pools.length > 0
+    metaPools.length > 0
       ? [
           { value: '', label: '' },
-          ...pools.map(pool => ({
+          ...metaPools.map(pool => ({
             value: pool.poolid,
             label: pool.poolid,
           })),
         ]
       : [];
-  const [activeTabKey, setActiveTabKey] = useState(0);
-  const handleTabClick = (event, tabIndex) => {
-    setActiveTabKey(tabIndex);
-  };
-  const [general, setGeneral] = useState(vmAttrs);
-  const paramScope = fromProfile
-    ? 'compute_attribute[vm_attrs]'
-    : 'host[compute_attributes]';
+
   const [filteredBridges, setFilteredBridges] = useState([]);
-  useEffect(() => {
-    if (!registerComp && !fromProfile) {
-      networkSelected(general?.type?.value);
-    }
-  }, [general, registerComp, fromProfile]);
+
+  const typeValue = general?.type?.value;
+  const nodeIdValue = general?.nodeId?.value;
 
   useEffect(() => {
-    if (!registerComp) {
-      const filtered = bridges.filter(
-        bridge => bridge.node_id === general?.nodeId?.value
-      );
-      setFilteredBridges(filtered);
+    if (!registerComp && !fromProfile) {
+      networkSelected(typeValue);
     }
-  }, [general, bridges, registerComp]);
+  }, [typeValue, registerComp, fromProfile]);
+
+  useEffect(() => {
+    if (registerComp) return;
+    const filtered = metaBridges.filter(
+      bridge => bridge.node_id === nodeIdValue
+    );
+    setFilteredBridges(filtered);
+  }, [nodeIdValue, metaBridges, registerComp]);
+
   if (registerComp) {
     return null;
   }
@@ -91,7 +144,7 @@ const ProxmoxVmType = ({
       hardware: <ProxmoxServerHardware hardware={vmAttrs} />,
       network: (
         <ProxmoxServerNetwork
-          network={vmAttrs?.interfaces || {}}
+          network={vmAttrs?.interfaces || []}
           bridges={filteredBridges}
           paramScope={paramScope}
         />
@@ -99,11 +152,14 @@ const ProxmoxVmType = ({
       storage: (
         <ProxmoxServerStorage
           storage={vmAttrs?.disks || []}
-          efidisk={vmAttrs?.efidisk || {}}
-          storages={storages}
+          efidisk={vmAttrs?.efidisk || []}
+          storages={metaStorages}
           nodeId={general?.nodeId?.value}
           vmId={general?.vmid?.value}
           paramScope={paramScope}
+          isLoading={!metaLoaded}
+          isTabActive={activeTabKey === 4}
+          computeResourceId={computeResourceId}
         />
       ),
     },
@@ -111,9 +167,10 @@ const ProxmoxVmType = ({
       options: (
         <ProxmoxContainerOptions
           options={vmAttrs}
-          storages={storages}
+          storages={metaStorages}
           paramScope={paramScope}
           nodeId={general?.nodeId?.value}
+          computeResourceId={computeResourceId}
         />
       ),
       hardware: <ProxmoxContainerHardware hardware={vmAttrs} />,
@@ -127,9 +184,12 @@ const ProxmoxVmType = ({
       storage: (
         <ProxmoxContainerStorage
           storage={vmAttrs?.disks || []}
-          storages={storages}
+          storages={metaStorages}
           nodeId={general?.nodeId?.value}
           paramScope={paramScope}
+          isLoading={!metaLoaded}
+          computeResourceId={computeResourceId}
+          isTabActive={activeTabKey === 4}
         />
       ),
     },
@@ -166,6 +226,24 @@ const ProxmoxVmType = ({
           disabled={!newVm}
           type="select"
         />
+
+        {!metaLoaded && (
+          <PageSection padding={{ default: 'noPadding' }}>
+            <Divider component="li" style={{ marginBottom: '1rem' }} />
+            <Bullseye>
+              <Spinner size="lg" />
+            </Bullseye>
+          </PageSection>
+        )}
+
+        {metaError && (
+          <div style={{ color: '#c9190b', fontSize: '14px', marginTop: '8px' }}>
+            {__(
+              'Failed to load Proxmox metadata. Please check your compute resource connection.'
+            )}
+          </div>
+        )}
+
         <Tabs
           ouiaId="proxmox-vm-type-tabs-options"
           activeKey={activeTabKey}
@@ -190,6 +268,7 @@ const ProxmoxVmType = ({
               untemplatable={untemplatable}
             />
           </Tab>
+
           <Tab
             ouiaId="proxmox-vm-type-tab-advanced"
             eventKey={1}
@@ -201,6 +280,7 @@ const ProxmoxVmType = ({
               {componentMap[general?.type?.value]?.options}
             </PageSection>
           </Tab>
+
           <Tab
             ouiaId="proxmox-vm-type-tab-hardware"
             eventKey={2}
@@ -212,6 +292,7 @@ const ProxmoxVmType = ({
               {componentMap[general?.type?.value]?.hardware}
             </PageSection>
           </Tab>
+
           {fromProfile && (
             <Tab
               ouiaId="proxmox-vm-type-tab-network"
@@ -225,6 +306,7 @@ const ProxmoxVmType = ({
               </PageSection>
             </Tab>
           )}
+
           <Tab
             ouiaId="proxmox-vm-type-tab-storage"
             eventKey={4}
@@ -244,28 +326,24 @@ const ProxmoxVmType = ({
 
 ProxmoxVmType.propTypes = {
   vmAttrs: PropTypes.object,
-  nodes: PropTypes.array,
   images: PropTypes.array,
-  pools: PropTypes.array,
   fromProfile: PropTypes.bool,
   newVm: PropTypes.bool,
-  storages: PropTypes.array,
-  bridges: PropTypes.array,
   registerComp: PropTypes.bool,
   untemplatable: PropTypes.bool,
+  computeResourceId: PropTypes.number,
+  propsLoaded: PropTypes.bool,
 };
 
 ProxmoxVmType.defaultProps = {
   vmAttrs: {},
-  nodes: [],
   images: [],
-  pools: [],
   fromProfile: false,
   newVm: false,
-  storages: [],
-  bridges: [],
   registerComp: false,
   untemplatable: false,
+  computeResourceId: null,
+  propsLoaded: false,
 };
 
 export default ProxmoxVmType;

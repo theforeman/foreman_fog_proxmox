@@ -43,7 +43,7 @@ module ProxmoxVMAttrsHelper
     vm_h[:interfaces] = network_attrs(param_scope, vms.interfaces)
     vm_h[:disks] = volumes_attrs(param_scope, vms.volumes)
     vm_h[:efidisk] = efidisk_attrs(param_scope, vms.efidisk) if vms.efidisk.present?
-    vm_h.merge(cpu_flags_attrs(param_scope, vms.config))
+    vm_h.merge!(cpu_flags_attrs(param_scope, vms.config))
     vm_h
   end
 

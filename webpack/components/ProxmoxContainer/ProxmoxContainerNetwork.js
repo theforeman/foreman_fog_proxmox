@@ -10,18 +10,6 @@ const ProxmoxContainerNetwork = ({ network, bridges, paramScope }) => {
   const [nextId, setNextId] = useState(0);
   const [availableIds, setAvailableIds] = useState([]);
   const [usedIds, setUsedIds] = useState(new Set());
-  useEffect(() => {
-    if (network?.length > 0) {
-      const existingIds = new Set();
-      network.forEach(net => {
-        if (!net.value.name.value) return;
-        const id = parseInt(net.value.id.value.replace('net', ''), 10);
-        existingIds.add(id);
-        addInterface(null, net.value);
-      });
-      setUsedIds(existingIds);
-    }
-  }, [network, addInterface]);
 
   const getLowestAvailableId = useCallback(() => {
     let id = 0;
@@ -107,6 +95,19 @@ const ProxmoxContainerNetwork = ({ network, bridges, paramScope }) => {
     [availableIds, bridges, network, nextId, paramScope, getLowestAvailableId]
   );
 
+  useEffect(() => {
+    if (network?.length > 0 && interfaces.length === 0) {
+      const existingIds = new Set();
+      network.forEach(net => {
+        if (!net.value.name.value) return;
+        const id = parseInt(net.value.id.value.replace('net', ''), 10);
+        existingIds.add(id);
+        addInterface(null, net.value);
+      });
+      setUsedIds(existingIds);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [network]);
   const removeInterface = idToRemove => {
     const newInterfaces = interfaces.filter(nic => nic.id !== idToRemove);
     setInterfaces(newInterfaces);

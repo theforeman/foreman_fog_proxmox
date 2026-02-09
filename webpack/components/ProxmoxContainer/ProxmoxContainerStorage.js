@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Button, Title, Divider, PageSection } from '@patternfly/react-core';
+import {
+  Button,
+  Title,
+  Divider,
+  PageSection,
+  Spinner,
+  Bullseye,
+} from '@patternfly/react-core';
 import { TimesIcon } from '@patternfly/react-icons';
 import { sprintf, translate as __ } from 'foremanReact/common/I18n';
 import PropTypes from 'prop-types';
@@ -7,7 +14,13 @@ import { createStoragesMap } from '../ProxmoxStoragesUtils';
 import InputField from '../common/FormInputs';
 import MountPoint from './MountPoint';
 
-const ProxmoxContainerStorage = ({ storage, storages, nodeId, paramScope }) => {
+const ProxmoxContainerStorage = ({
+  storage,
+  storages,
+  nodeId,
+  paramScope,
+  isLoading,
+}) => {
   const initData = {
     id: {
       name: `${paramScope}[volumes_attributes][0][id]`,
@@ -30,7 +43,11 @@ const ProxmoxContainerStorage = ({ storage, storages, nodeId, paramScope }) => {
       value: null,
     },
   };
+
   const [rootfs, setRootfs] = useState(initData);
+  const [mountPoints, setMountPoints] = useState([]);
+  const [nextId, setNextId] = useState(0);
+
   useEffect(() => {
     if (storage && storage.length > 0) {
       storage.forEach(disk => {
@@ -46,21 +63,24 @@ const ProxmoxContainerStorage = ({ storage, storages, nodeId, paramScope }) => {
 
   const handleChange = e => {
     const { name, value } = e.target;
+
     const updatedKey = Object.keys(rootfs).find(
       key => rootfs[key].name === name
     );
-    const updatedData = {
-      ...rootfs,
-      [updatedKey]: { ...rootfs[updatedKey], value },
-    };
-    setRootfs(updatedData);
+    if (!updatedKey) return;
+
+    setRootfs(prev => ({
+      ...prev,
+      [updatedKey]: { ...prev[updatedKey], value },
+    }));
   };
-  const [mountPoints, setMountPoints] = useState([]);
-  const [nextId, setNextId] = useState(0);
+
   const storagesMap = createStoragesMap(storages, null, nodeId);
+
   const addMountPoint = useCallback(
     (event, initialData = null) => {
       if (event) event.preventDefault();
+
       const initMP = initialData || {
         id: {
           name: `${paramScope}[volumes_attributes][${nextId}][id]`,
@@ -84,7 +104,7 @@ const ProxmoxContainerStorage = ({ storage, storages, nodeId, paramScope }) => {
         },
         volid: {
           name: `${paramScope}[volumes_attributes][${nextId}][volid]`,
-          value: null,
+          value: '',
         },
       };
 
@@ -95,19 +115,27 @@ const ProxmoxContainerStorage = ({ storage, storages, nodeId, paramScope }) => {
           data: initMP,
           storagesMap,
         };
-        setMountPoints(prevMountPoints => [...prevMountPoints, newMountPoint]);
+        setMountPoints(prev => [...prev, newMountPoint]);
         return newNextId;
       });
     },
-    [nextId, paramScope, setMountPoints, setNextId, storagesMap]
+    [nextId, paramScope, storagesMap]
   );
 
   const removeMountPoint = idToRemove => {
-    const newMountPoints = mountPoints.filter(
-      mountPoint => mountPoint.props.id !== idToRemove
-    );
-    setMountPoints(newMountPoints);
+    setMountPoints(prev => prev.filter(mp => mp.id !== idToRemove));
   };
+
+  if (isLoading) {
+    return (
+      <PageSection padding={{ default: 'noPadding' }}>
+        <Divider component="li" style={{ marginBottom: '1rem' }} />
+        <Bullseye>
+          <Spinner size="lg" />
+        </Bullseye>
+      </PageSection>
+    );
+  }
 
   return (
     <div>
@@ -116,6 +144,7 @@ const ProxmoxContainerStorage = ({ storage, storages, nodeId, paramScope }) => {
           {__('Rootfs')}
         </Title>
         <Divider component="li" style={{ marginBottom: '2rem' }} />
+
         <InputField
           name={rootfs?.storage?.name}
           label="Storage"
@@ -124,6 +153,7 @@ const ProxmoxContainerStorage = ({ storage, storages, nodeId, paramScope }) => {
           options={storagesMap}
           onChange={handleChange}
         />
+
         <InputField
           name={rootfs?.size?.name}
           label={__('Size (GB)')}
@@ -131,6 +161,7 @@ const ProxmoxContainerStorage = ({ storage, storages, nodeId, paramScope }) => {
           value={rootfs?.size?.value}
           onChange={handleChange}
         />
+
         <input
           name={rootfs?.id?.name}
           type="hidden"
@@ -140,14 +171,16 @@ const ProxmoxContainerStorage = ({ storage, storages, nodeId, paramScope }) => {
         <input
           name={rootfs?.volid?.name}
           type="hidden"
-          value={rootfs?.volid?.value}
+          value={rootfs?.volid?.value || ''}
         />
       </PageSection>
+
       <PageSection padding={{ default: 'noPadding' }}>
         <Title ouiaId="proxmox-container-storage-title" headingLevel="h3">
           Storage
         </Title>
         <Divider component="li" style={{ marginBottom: '2rem' }} />
+
         <Button
           ouiaId="proxmox-container-storage-mountpoint-button"
           onClick={addMountPoint}
@@ -155,6 +188,7 @@ const ProxmoxContainerStorage = ({ storage, storages, nodeId, paramScope }) => {
         >
           {__('Add MountPoint')}
         </Button>
+
         {mountPoints.map(mountPoint => (
           <div key={mountPoint.id} style={{ position: 'relative' }}>
             <div
@@ -171,10 +205,14 @@ const ProxmoxContainerStorage = ({ storage, storages, nodeId, paramScope }) => {
               >
                 {sprintf(__('Mount Point %(mp)s'), { mp: mountPoint.id })}
               </Title>
-              <button onClick={() => removeMountPoint(mountPoint.id)}>
+              <button
+                onClick={() => removeMountPoint(mountPoint.id)}
+                type="button"
+              >
                 <TimesIcon />
               </button>
             </div>
+
             <MountPoint
               key={mountPoint.id}
               id={mountPoint.id}
@@ -193,6 +231,7 @@ ProxmoxContainerStorage.propTypes = {
   storages: PropTypes.array,
   nodeId: PropTypes.string,
   paramScope: PropTypes.string,
+  isLoading: PropTypes.bool,
 };
 
 ProxmoxContainerStorage.defaultProps = {
@@ -200,6 +239,7 @@ ProxmoxContainerStorage.defaultProps = {
   storages: [],
   nodeId: '',
   paramScope: '',
+  isLoading: false,
 };
 
 export default ProxmoxContainerStorage;

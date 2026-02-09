@@ -14,25 +14,43 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
-<% nodes = compute_resource.nodes %>
+
 <% unless local_assigns[:hide_image] && !new_vm %>
-    <%
-      arch ||= nil ; os ||= nil
-      images = possible_images(compute_resource, arch, os)
-    -%>
-    <div id='image_selection'>
-    <%= select_f f, :image_id, images, :uuid, :name, { :include_blank => true },
-      :disabled => true,
-      :help_inline => :indicator,
-      :class => ("without_select2 #{'hide' if from_profile}"),
-      :label => _('Image'),
-      :no_label => from_profile,
-      :label_size => "col-md-2" %>
-    </div>
+  <%
+    arch ||= nil ; os ||= nil
+    images = possible_images(compute_resource, arch, os)
+  -%>
+  <div id='image_selection'>
+    <%= select_f f, :image_id, images, :uuid, :name, { include_blank: true },
+      disabled: true,
+      help_inline: :indicator,
+      class: ("without_select2 #{'hide' if from_profile}"),
+      label: _('Image'),
+      no_label: from_profile,
+      label_size: "col-md-2" %>
+  </div>
 <% end %>
+
 <% untemplatable = new_vm || f.object.templated? %>
-<% checked = params[:host] && params[:host][:compute_attributes] && params[:host][:compute_attributes][:start_after_create] || '1' %>
+<% checked = (params.dig(:host, :compute_attributes, :start_after_create) || '1') %>
+
 <% content_for(:javascripts) do %>
   <%= webpacked_plugins_js_for :foreman_fog_proxmox %>
 <% end %>
-<%= react_component('ProxmoxVmType',  { vmAttrs: object_to_attributes_hash(f.object, from_profile, checked), nodes: nodes.as_json, images: images.as_json, pools: compute_resource.pools.as_json, storages: compute_resource.storages.as_json, fromProfile: from_profile, newVm: new_vm, bridges: compute_resource.bridges.as_json, untemplatable: untemplatable }) %>
+
+<%
+  vm_attrs = object_to_attributes_hash(f.object, from_profile, checked)
+
+  props = {
+    vmAttrs: vm_attrs,
+    computeResourceId: compute_resource.id,
+    propsLoaded: false,
+    fromProfile: from_profile,
+    newVm: new_vm,
+    untemplatable: untemplatable,
+    registerComp: local_assigns[:registerComp] || false,
+    images: (defined?(images) && images ? images.as_json : [])
+  }
+%>
+
+<%= react_component('ProxmoxVmType', props) %>

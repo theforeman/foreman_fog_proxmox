@@ -1,7 +1,14 @@
 /* eslint-disable max-lines */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { Title, PageSection, Button } from '@patternfly/react-core';
+import {
+  Title,
+  PageSection,
+  Button,
+  Spinner,
+  Bullseye,
+  Divider,
+} from '@patternfly/react-core';
 import { TimesIcon } from '@patternfly/react-icons';
 import { sprintf, translate as __ } from 'foremanReact/common/I18n';
 import HardDisk from './components/HardDisk';
@@ -16,6 +23,9 @@ const ProxmoxServerStorage = ({
   nodeId,
   vmId,
   paramScope,
+  isLoading,
+  computeResourceId,
+  isTabActive,
 }) => {
   const [hardDisks, setHardDisks] = useState([]);
   const [nextId, setNextId] = useState(0);
@@ -29,6 +39,8 @@ const ProxmoxServerStorage = ({
     scsi: 0,
     virtio: 0,
   });
+  const initializedRef = useRef(false);
+
   const controllerRanges = {
     ide: { min: 0, max: 3 },
     sata: { min: 0, max: 5 },
@@ -37,7 +49,9 @@ const ProxmoxServerStorage = ({
   };
 
   useEffect(() => {
-    if (storage?.length > 0) {
+    if (initializedRef.current) return;
+
+    if (Array.isArray(storage) && storage.length > 0) {
       const updatedCounts = { ...nextDeviceNumbers };
       storage.forEach(disk => {
         if (disk.name === 'hard_disk') {
@@ -57,6 +71,8 @@ const ProxmoxServerStorage = ({
     if (efidisk && Object.keys(efidisk).length > 0) {
       addEfiDisk(null, efidisk, true);
     }
+
+    initializedRef.current = true;
   }, [storage, efidisk, addHardDisk, addCDRom, addEfiDisk]); // eslint-disable-line react-hooks/exhaustive-deps
   // This is necessary because of nextDeviceNumbers. Adding nextDeviceNumbers results in infinite loop in browser.
 
@@ -92,31 +108,31 @@ const ProxmoxServerStorage = ({
         controller = 'ide';
         return { controller, device: 2, id: 'ide2' };
       }
-
       const device = getNextDevice(controller, type);
       if (device !== null) {
         const id = `${controller}${device}`;
-        const newCounts = {
-          ...nextDeviceNumbers,
-          [controller]: nextDeviceNumbers[controller] + 1,
-        };
-        setNextDeviceNumbers(newCounts);
+        setNextDeviceNumbers(prev => ({
+          ...prev,
+          [controller]: prev[controller] + 1,
+        }));
         return { controller, device, id };
       }
       return null;
     },
-    [getNextDevice, nextDeviceNumbers]
+    [getNextDevice]
   );
 
   const addHardDisk = useCallback(
     (event, initialData = null, isPreExisting = false) => {
       if (event) event.preventDefault();
       let deviceInfo = null;
+
       if (!isPreExisting) {
         const selectedController = initialData?.controller?.value || 'virtio';
         deviceInfo = createUniqueDevice('hard_disk', selectedController);
         if (!deviceInfo) return;
       }
+
       const { controller, device, id } = deviceInfo || {};
       const initHdd = initialData || {
         id: {
@@ -153,7 +169,6 @@ const ProxmoxServerStorage = ({
         const newNextId = prevNextId + 1;
         const newHardDisk = {
           id: newNextId,
-          storages,
           data: initHdd,
           disks: storage,
           isNew: !isPreExisting,
@@ -162,7 +177,7 @@ const ProxmoxServerStorage = ({
         return newNextId;
       });
     },
-    [nextId, paramScope, storage, storages, createUniqueDevice]
+    [nextId, paramScope, storage, createUniqueDevice]
   );
 
   const removeHardDisk = idToRemove => {
@@ -190,6 +205,7 @@ const ProxmoxServerStorage = ({
       const deviceInfo = initialData
         ? { controller: 'ide', device: 2, id: 'ide2' }
         : createUniqueDevice('cdrom');
+
       if (!deviceInfo) return;
 
       const initCDRom = initialData || {
@@ -214,15 +230,14 @@ const ProxmoxServerStorage = ({
           value: '',
         },
       };
+
       setCdRom(true);
       setCdRomData(initCDRom);
     },
     [cdRom, nextId, paramScope, createUniqueDevice]
   );
 
-  const removeCDRom = () => {
-    setCdRom(false);
-  };
+  const removeCDRom = () => setCdRom(false);
 
   const addEfiDisk = useCallback(
     (event, initialData = null, isPreExisting = false) => {
@@ -278,6 +293,17 @@ const ProxmoxServerStorage = ({
     setEfiDisk(false);
   };
 
+  if (isLoading) {
+    return (
+      <PageSection padding={{ default: 'noPadding' }}>
+        <Divider component="li" style={{ marginBottom: '1rem' }} />
+        <Bullseye>
+          <Spinner size="lg" />
+        </Bullseye>
+      </PageSection>
+    );
+  }
+
   return (
     <div>
       <PageSection padding={{ default: 'noPadding' }}>
@@ -313,6 +339,8 @@ const ProxmoxServerStorage = ({
             data={cdRomData}
             storages={storages}
             nodeId={nodeId}
+            computeResourceId={computeResourceId}
+            isTabActive={isTabActive}
           />
         )}
         {efiDisk && efiDiskData && (
@@ -347,14 +375,15 @@ const ProxmoxServerStorage = ({
                 <TimesIcon />
               </button>
             </div>
+
             <HardDisk
               id={hardDisk.id}
               data={hardDisk.data}
-              storages={hardDisk.storages}
+              storages={storages}
               disks={hardDisk.disks}
               updateHardDiskData={updateHardDiskData}
               createUniqueDevice={createUniqueDevice}
-              hidden={hardDisk.hidden ? true : ''}
+              hidden={!!hardDisk.hidden}
             />
           </div>
         ))}
@@ -365,20 +394,26 @@ const ProxmoxServerStorage = ({
 
 ProxmoxServerStorage.propTypes = {
   storage: PropTypes.array,
-  efidisk: PropTypes.object,
+  efidisk: PropTypes.array,
   storages: PropTypes.array,
   nodeId: PropTypes.string,
   vmId: PropTypes.string,
   paramScope: PropTypes.string,
+  isLoading: PropTypes.bool,
+  computeResourceId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  isTabActive: PropTypes.bool,
 };
 
 ProxmoxServerStorage.defaultProps = {
   storage: [],
-  efidisk: {},
+  efidisk: [],
   storages: [],
   nodeId: '',
   vmId: '',
   paramScope: '',
+  isLoading: false,
+  computeResourceId: null,
+  isTabActive: false,
 };
 
 export default ProxmoxServerStorage;

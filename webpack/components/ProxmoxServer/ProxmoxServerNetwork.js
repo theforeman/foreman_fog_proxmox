@@ -157,7 +157,7 @@ ProxmoxServerNetwork.propTypes = {
 };
 
 ProxmoxServerNetwork.defaultProps = {
-  network: {},
+  network: [],
   bridges: [],
   paramScope: '',
 };

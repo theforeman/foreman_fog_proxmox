@@ -1,29 +1,44 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Title, Divider, PageSection, Radio } from '@patternfly/react-core';
+import {
+  Title,
+  Divider,
+  PageSection,
+  Radio,
+  Spinner,
+} from '@patternfly/react-core';
 import { TimesIcon } from '@patternfly/react-icons';
 import { translate as __ } from 'foremanReact/common/I18n';
-import { imagesByStorage, createStoragesMap } from '../../ProxmoxStoragesUtils';
+import { createStoragesMap } from '../../ProxmoxStoragesUtils';
 import InputField from '../../common/FormInputs';
+import useVolumes from '../../hooks/useVolumes';
 
-const CDRom = ({ onRemove, data, storages, nodeId }) => {
+const CDRom = ({ onRemove, data, storages, nodeId, computeResourceId }) => {
   const [cdrom, setCdrom] = useState(data);
-  const storagesMap = createStoragesMap(storages, 'iso', nodeId);
-  const imagesMap = imagesByStorage(
-    storages,
-    nodeId,
-    cdrom?.storage?.value,
-    'iso'
+
+  const storagesMap = useMemo(
+    () => createStoragesMap(storages, 'iso', nodeId),
+    [storages, nodeId]
+  );
+
+  const mediaValue = cdrom?.cdrom?.value;
+  const storageValue = cdrom?.storage?.value || '';
+
+  const shouldFetch =
+    mediaValue === 'image' && computeResourceId && nodeId && storageValue;
+  const { volumes, loadingVolumes, volumeError } = useVolumes(
+    shouldFetch ? computeResourceId : null,
+    shouldFetch ? nodeId : null,
+    shouldFetch ? storageValue : null
   );
 
   const handleMediaChange = (_, e) => {
-    setCdrom({
-      ...cdrom,
-      cdrom: {
-        ...cdrom.cdrom,
-        value: e.target.value,
-      },
-    });
+    const media = e.target.value;
+    setCdrom(prev => ({
+      ...prev,
+      cdrom: { ...prev.cdrom, value: media },
+      ...(media !== 'image' ? { volid: { ...prev.volid, value: '' } } : {}),
+    }));
   };
 
   const handleChange = e => {
@@ -34,13 +49,46 @@ const CDRom = ({ onRemove, data, storages, nodeId }) => {
     } else {
       value = targetValue;
     }
+
     const updatedKey = Object.keys(cdrom).find(key => cdrom[key].name === name);
-    const updatedData = {
-      ...cdrom,
-      [updatedKey]: { ...cdrom[updatedKey], value },
-    };
-    setCdrom(updatedData);
+    if (!updatedKey) return;
+
+    setCdrom(prev => {
+      const next = {
+        ...prev,
+        [updatedKey]: { ...prev[updatedKey], value },
+      };
+
+      if (updatedKey === 'storage') {
+        next.volid = { ...next.volid, value: '' };
+      }
+
+      return next;
+    });
   };
+
+  useEffect(() => {
+    if (mediaValue !== 'image') return;
+    if (storageValue) return;
+    if (!storagesMap?.length) return;
+
+    const first = storagesMap[0]?.value || '';
+    if (!first) return;
+
+    setCdrom(prev => ({
+      ...prev,
+      storage: { ...prev.storage, value: first },
+      volid: { ...prev.volid, value: '' },
+    }));
+  }, [mediaValue, storageValue, storagesMap]);
+
+  const imagesMap = useMemo(
+    () => [
+      { value: '', label: '' },
+      ...volumes.map(v => ({ value: v.volid, label: v.volid })),
+    ],
+    [volumes]
+  );
 
   return (
     <div style={{ position: 'relative' }}>
@@ -54,11 +102,13 @@ const CDRom = ({ onRemove, data, storages, nodeId }) => {
         <Title ouiaId="proxmox-server-cdrom-title" headingLevel="h4">
           {__('CD-ROM')}
         </Title>
-        <button onClick={onRemove}>
+        <button onClick={onRemove} type="button">
           <TimesIcon />
         </button>
       </div>
+
       <Divider component="li" style={{ marginBottom: '1rem' }} />
+
       <div
         style={{
           display: 'flex',
@@ -70,7 +120,9 @@ const CDRom = ({ onRemove, data, storages, nodeId }) => {
           {__('Media')}
         </Title>
       </div>
+
       <Divider component="li" style={{ marginBottom: '1rem' }} />
+
       <div style={{ display: 'flex', gap: '1rem' }}>
         <Radio
           ouiaId="proxmox-server-cdrom-media-none"
@@ -100,12 +152,14 @@ const CDRom = ({ onRemove, data, storages, nodeId }) => {
           onChange={(e, _) => handleMediaChange(_, e)}
         />
       </div>
+
       {cdrom?.cdrom?.value === 'image' && (
         <PageSection padding={{ default: 'noPadding' }}>
           <Title ouiaId="proxmox-server-cdrom-image-title" headingLevel="h5">
             {__('Image')}
           </Title>
           <Divider component="li" style={{ marginBottom: '2rem' }} />
+
           <InputField
             label={__('Storage')}
             name={cdrom?.storage?.name}
@@ -117,14 +171,34 @@ const CDRom = ({ onRemove, data, storages, nodeId }) => {
             options={storagesMap}
             onChange={handleChange}
           />
-          <InputField
-            name={cdrom?.volid?.name}
-            label={__('Image ISO')}
-            type="select"
-            value={cdrom?.volid?.value}
-            options={imagesMap}
-            onChange={handleChange}
-          />
+
+          {loadingVolumes ? (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '0.5rem',
+              }}
+            >
+              <Spinner size="md" />
+              <span>{__('Fetching images ISO...')}</span>
+            </div>
+          ) : (
+            <InputField
+              name={cdrom?.volid?.name}
+              label={__('Image ISO')}
+              type="select"
+              value={cdrom?.volid?.value}
+              options={imagesMap}
+              onChange={handleChange}
+              error={
+                volumeError
+                  ? __('Failed fetching images ISO please try again.')
+                  : ''
+              }
+            />
+          )}
+
           <input name={cdrom?.storageType?.name} type="hidden" value="cdrom" />
         </PageSection>
       )}
@@ -153,6 +227,7 @@ CDRom.propTypes = {
   }).isRequired,
   storages: PropTypes.array.isRequired,
   nodeId: PropTypes.string.isRequired,
+  computeResourceId: PropTypes.number.isRequired,
 };
 
 export default CDRom;

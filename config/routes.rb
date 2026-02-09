@@ -30,5 +30,11 @@ Rails.application.routes.draw do
     match 'isostorages/:compute_resource_id/:node_id', :to => 'compute_resources#iso_storages_by_id_and_node',
       :via => 'get'
     match 'bridges/:compute_resource_id/:node_id', :to => 'compute_resources#bridges_by_id_and_node', :via => 'get'
+    match 'volumes/:compute_resource_id/:node_id/:storage',
+      :to => 'compute_resources#volumes_by_node_and_storage',
+      :via => 'get'
+    match 'metadata/:compute_resource_id',
+      :to => 'compute_resources#metadata',
+      :via => 'get'
   end
 end

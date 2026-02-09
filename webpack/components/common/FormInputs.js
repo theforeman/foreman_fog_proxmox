@@ -20,7 +20,11 @@ const InputField = ({
   tooltip,
 }) => {
   const renderOptions = opts =>
-    opts.map(option => <option value={option.value}>{option.label}</option>);
+    opts.map(option => (
+      <option key={option.value} value={option.value}>
+        {option.label}
+      </option>
+    ));
 
   let renderComponent;
 

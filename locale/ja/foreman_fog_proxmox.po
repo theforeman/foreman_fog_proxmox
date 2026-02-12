@@ -1,27 +1,36 @@
-# French translations for foreman_fog_proxmox package.
-# Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the foreman_fog_proxmox package.
-# Tristan Robert <tristan.robert.44@gmail.com>, 2018.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+# Translators:
+# e93ed3aa97dec2eb31063731872555fc_1460a05 <71305a0095156d8e18373a5b7cfeb79e_8587>, 2020
+# 山田 修司 🍣 Shuji Yamada <uzy.exe@gmail.com>, 2020
+# mhulan <mhulan@redhat.com>, 2022
+# Lukáš Zapletal, 2022
+# Transifex Bot <>, 2022
+# Amit Upadhye <aupadhye@redhat.com>, 2022
+# Bryan Kearney <bryan.kearney@gmail.com>, 2022
+# 0868a4d1af5275b3f70b0a6dac4c99a4, 2022
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: foreman_fog_proxmox 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2018-07-17 15:16+0200\n"
-"Last-Translator: Tristan Robert <tristan.robert.44@gmail.com>\n"
-"Language-Team: French\n"
-"Language: fr\n"
+"PO-Revision-Date: 2020-03-08 09:47+0000\n"
+"Last-Translator: 0868a4d1af5275b3f70b0a6dac4c99a4, 2022\n"
+"Language-Team: Japanese (https://app.transifex.com/foreman/teams/114/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n>1;\n"
-"\n"
+"Language: ja\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 msgid "%(name)s (free: %(free)s, used: %(used)s, total: %(total)s)"
 msgstr ""
 
 msgid "%<s>s console is not supported at this time"
-msgstr ""
+msgstr "%<s>s コンソールはまだサポートされていません"
 
 msgid "%<vm>s is now %<vm_state>s"
 msgstr ""
@@ -57,10 +66,10 @@ msgid "Add MountPoint"
 msgstr ""
 
 msgid "Add Volume"
-msgstr "Ajouter un volume"
+msgstr "ボリュームの追加"
 
 msgid "Advanced"
-msgstr "Avancé"
+msgstr "詳細"
 
 msgid "Advanced Options"
 msgstr ""
@@ -75,34 +84,34 @@ msgid "Allows improved Spectre mitigation with Intel CPUs"
 msgstr ""
 
 msgid "Architecture"
-msgstr ""
+msgstr "アーキテクチャー"
 
 msgid "Associate VM"
-msgstr ""
+msgstr "VM の関連付け"
 
 msgid "Associate VM to a Foreman host"
-msgstr ""
+msgstr "VM の Foreman ホストへの関連付け"
 
 msgid "Authentication method"
 msgstr ""
 
 msgid "Average load (x100)"
-msgstr "Charge moyenne du serveur (x100)"
+msgstr "平均負荷 (x100)"
 
 msgid "BIOS"
-msgstr ""
+msgstr "BIOS"
 
 msgid "Basis for \\\"Speculative Store Bypass\\\" protection for AMD models"
 msgstr ""
 
 msgid "Boot device order"
-msgstr ""
+msgstr "起動デバイスの順番"
 
 msgid "Bridge"
-msgstr "Pont"
+msgstr "ブリッジ"
 
 msgid "CD-ROM"
-msgstr ""
+msgstr "CD-ROM"
 
 msgid "CIDR IPv4"
 msgstr ""
@@ -111,28 +120,28 @@ msgid "CIDR IPv6"
 msgstr ""
 
 msgid "CPU"
-msgstr ""
+msgstr "CPU"
 
 msgid "CPU Flags"
 msgstr ""
 
 msgid "CPU limit"
-msgstr "Limite CPU"
+msgstr "CPU 制限"
 
 msgid "CPU units"
-msgstr "Unités CPU"
+msgstr "CPU ユニット"
 
 msgid "CPUs"
-msgstr ""
+msgstr "CPU"
 
 msgid "Cache"
-msgstr ""
+msgstr "キャッシュ"
 
 msgid "Card"
-msgstr "Carte"
+msgstr "カード"
 
 msgid "Change the password"
-msgstr "Changer le mot de passe"
+msgstr "パスワードの変更"
 
 msgid "Click Test connection button before changing it"
 msgstr ""
@@ -144,7 +153,7 @@ msgid "Cloud-init"
 msgstr ""
 
 msgid "Cluster nodes"
-msgstr "Noeuds de la ferme"
+msgstr "クラスターノード"
 
 msgid "Common fields"
 msgstr ""
@@ -153,49 +162,49 @@ msgid "Confirm"
 msgstr ""
 
 msgid "Console"
-msgstr ""
+msgstr "コンソール"
 
 msgid "Controller"
-msgstr "Contrôleur"
+msgstr "コントローラー"
 
 msgid "Cores"
-msgstr "Coeurs"
+msgstr "コア数"
 
 msgid "Create image?"
-msgstr "Créer image?"
+msgstr "イメージを作成しますか?"
 
 msgid "DHCP IPv4"
-msgstr ""
+msgstr "DHCP IPv4"
 
 msgid "DHCP IPv6"
-msgstr ""
+msgstr "DHCP IPv6"
 
 msgid "DNS"
-msgstr ""
+msgstr "DNS"
 
 msgid "DNS domain"
 msgstr ""
 
 msgid "DNS server"
-msgstr ""
+msgstr "DNS サーバー"
 
 msgid "DNS servers"
 msgstr ""
 
 msgid "Description"
-msgstr ""
+msgstr "説明"
 
 msgid "Device"
-msgstr "Périphérque"
+msgstr "デバイス"
 
 msgid "Device value is set automatically."
 msgstr ""
 
 msgid "Disconnect"
-msgstr "Se déconnecter"
+msgstr "切断"
 
 msgid "Does this image support user data input (e.g. via cloud-init)?"
-msgstr "Cette immage gère-t-elle les données utilisateurs (par exemple via cloud-init)?"
+msgstr "このイメージはユーザーのデータ入力に対応しますか (例: cloud-init 経由)?"
 
 msgid "EFI Disk"
 msgstr ""
@@ -204,10 +213,10 @@ msgid "EFI Storage"
 msgstr ""
 
 msgid "Enable NUMA"
-msgstr "Activer NUMA"
+msgstr "NUMA の有効化"
 
 msgid "Enable/disable KVM hardware virtualization"
-msgstr "Activer/désactiver la virtualisation matérielle de KVM"
+msgstr "KVM ハードウェア仮想化の有効化/無効化"
 
 msgid "Error - %<message>s"
 msgstr ""
@@ -219,7 +228,7 @@ msgid "Error: Duplicate Name found."
 msgstr ""
 
 msgid "Extended"
-msgstr "Etendu"
+msgstr "拡張"
 
 msgid "Extra CPU Flags"
 msgstr ""
@@ -231,7 +240,7 @@ msgid "Failed fetching templates please try again."
 msgstr ""
 
 msgid "Failed retrieving proxmox server vm by vmid=%<vmid>s"
-msgstr ""
+msgstr "vmid=%<vmid>s による proxmox サーバー仮想マシンの取得に失敗しました"
 
 msgid "Failed to acquire IP addresses from compute resource for %<name>s"
 msgstr ""
@@ -240,13 +249,13 @@ msgid "Failed to load Proxmox metadata. Please check your compute resource conne
 msgstr ""
 
 msgid "Failed to set console: %s"
-msgstr ""
+msgstr "コンソールの設定に失敗しました: %s"
 
 msgid "Failed to undo update compute %<compute_resource>s instance %<name>s: %<e>s"
-msgstr ""
+msgstr "コンピュート %<compute_resource>s のインスタンス %<name>s を元に戻せませんでした: %<e>s"
 
 msgid "Failed to update a compute %<compute_resource>s instance %<name>s: %<e>s"
-msgstr ""
+msgstr "コンピュート %<compute_resource>s のインスタンス %<name>s の更新に失敗しました: %<e>s"
 
 msgid "Fetching images ISO..."
 msgstr ""
@@ -255,55 +264,55 @@ msgid "Fetching templates..."
 msgstr ""
 
 msgid "Firewall"
-msgstr "Pare-feu"
+msgstr "ファイアウォール"
 
 msgid "Foreman Fog Proxmox widget"
-msgstr ""
+msgstr "Foreman Fog Proxmox ウィジェット"
 
 msgid "ForemanFogProxmox plugin adds Proxmox VE compute resource to Foreman using fog-proxmox gem."
-msgstr "Le plugin ForemanFogProxmox ajoute la ressource de calcul Proxmox VE à foreman en utilisant le gem fog-proxmox"
+msgstr "ForemanFogProxmox プラグインは、fog-proxmox gem を使用して、Proxmox VE コンピュートリソースを Foreman に追加します。"
 
 msgid "Gateway IPv4"
-msgstr ""
+msgstr "ゲートウェイ IPv4"
 
 msgid "Gateway IPv6"
-msgstr ""
+msgstr "ゲートウェイ IPv6"
 
 msgid "General"
-msgstr "Général"
+msgstr "全般"
 
 msgid "Hard Disk %(hddId)s"
 msgstr ""
 
 msgid "Hard disk"
-msgstr ""
+msgstr "ハードディスク"
 
 msgid "Hardware"
 msgstr ""
 
 msgid "Host"
-msgstr ""
+msgstr "ホスト"
 
 msgid "Hostname"
-msgstr "Nom d'hôte"
+msgstr "ホスト名"
 
 msgid "Identifier"
-msgstr ""
+msgstr "ID"
 
 msgid "Image"
-msgstr ""
+msgstr "イメージ"
 
 msgid "Image ISO"
-msgstr ""
+msgstr "イメージ ISO"
 
 msgid "Image VMID"
-msgstr ""
+msgstr "イメージ VMID"
 
 msgid "Import as managed Host"
-msgstr ""
+msgstr "管理対象ホストとしてインポート"
 
 msgid "Import as unmanaged Host"
-msgstr ""
+msgstr "管理対象外ホストとしてインポート"
 
 msgid "Improve performance for nested virtualization. Only supported on Intel CPUs."
 msgstr ""
@@ -315,24 +324,23 @@ msgid "Improves Spectre mitigation performance with AMD CPUs, best used with \\\
 msgstr ""
 
 msgid "KVM"
-msgstr ""
+msgstr "KVM"
 
 msgid "Main option"
 msgid_plural "Main options"
-msgstr[0] "Option principale"
-msgstr[1] "Options principales"
+msgstr[0] "メインオプション"
 
 msgid "Media"
-msgstr ""
+msgstr "メディア"
 
 msgid "Meltdown fix cost reduction on Westmere, Sandy-, and IvyBridge Intel CPUs"
 msgstr ""
 
 msgid "Memory"
-msgstr "Mémoire"
+msgstr "メモリー"
 
 msgid "Memory (MB)"
-msgstr ""
+msgstr "メモリー (MB)"
 
 msgid "Minimum Memory (MB)"
 msgstr ""
@@ -344,76 +352,76 @@ msgid "Mount Point %(mp)s"
 msgstr ""
 
 msgid "Mount point"
-msgstr "Point de montage"
+msgstr "マウントポイント"
 
 msgid "Multiqueue"
-msgstr ""
+msgstr "マルチキュー"
 
 msgid "Name"
-msgstr "Nom"
+msgstr "名前"
 
 msgid "Network Interfaces"
 msgstr ""
 
 msgid "Nic"
-msgstr ""
+msgstr "NIC"
 
 msgid "Nic %(nicId)s"
 msgstr ""
 
 msgid "No host found to associate this VM with"
-msgstr ""
+msgstr "この VM を関連付けるホストが見つかりません"
 
 msgid "Node"
-msgstr "Noeud"
+msgstr "ノード"
 
 msgid "None"
-msgstr "Aucun"
+msgstr "なし"
 
 msgid "Notifies guest OS that host is not vulnerable for Spectre on AMD CPUs"
 msgstr ""
 
 msgid "OS Template"
-msgstr "Modèle d'OS"
+msgstr "OS テンプレート"
 
 msgid "OS Type"
 msgstr ""
 
 msgid "OS type"
-msgstr "Type de système d'exploitation"
+msgstr "OS タイプ"
 
 msgid "Operating System"
-msgstr "Système d'exploitation"
+msgstr "オペレーティングシステム"
 
 msgid "Operating system family %<type>s is not consistent with %<ostype>s"
-msgstr ""
+msgstr "オペレーティングシステムファミリー %<type>s は %<ostype>s と一致しません。"
 
 msgid "Optionally provide a CA, or a correctly ordered CA chain. If left blank, disable ssl_verify_peer."
-msgstr "Vous pouvez éventuellement fournir un certificat ou une chaîne de certificats. Si non renseigné, alors désactivez ssl_verify_peer."
+msgstr "オプションで CA、正しく順序付けされた CA チェーンを指定してください。空白のままにすると、ssl_verify_peer は無効になります。"
 
 msgid "Order your devices, e.g. order=net0;ide2;scsi0. Default empty (any)"
 msgstr ""
 
 msgid "Password"
-msgstr ""
+msgstr "パスワード"
 
 msgid "Password to authenticate with - used for SSH finish step."
-msgstr "Mot de passe d'authentification - utilisé dans la dernière phase avec SSH."
+msgstr "認証に使用するパスワード: SSH の最終ステップで使用されます。"
 
 msgid "Path"
-msgstr "Chemin"
+msgstr "パス"
 
 msgid "Path cannot be empty"
 msgstr ""
 
 msgid "Physical"
-msgstr "Physique"
+msgstr "物理"
 
 msgid "Pool"
-msgstr ""
+msgstr "プール"
 
 msgid "Power"
-msgstr "Alimentation"
+msgstr "電源"
 
 msgid "Pre-Enrolled Keys"
 msgstr ""
@@ -422,16 +430,16 @@ msgid "Protection for \\\"Speculative Store Bypass\\\" for Intel models"
 msgstr ""
 
 msgid "Proxmox Node Statistics: %s"
-msgstr "Statistiques du noeud Proxmox: %s"
+msgstr "proxmoxノードの統計: %s"
 
 msgid "Proxmox version %<version>s is not semver suitable"
-msgstr ""
+msgstr "Proxmox バージョン %<version>s は semver に適していません"
 
 msgid "Qemu Agent"
-msgstr "Agent Qemu"
+msgstr "Qemu エージェント"
 
 msgid "Rate limit"
-msgstr "Taux limite"
+msgstr "レート制限"
 
 msgid "Reached maximum number of devices for controller %(value)s. Please select another controller."
 msgstr ""
@@ -446,13 +454,13 @@ msgid "Root Password"
 msgstr ""
 
 msgid "Root password"
-msgstr "Mot de passe root"
+msgstr "root パスワード"
 
 msgid "Rootfs"
-msgstr ""
+msgstr "rootfs"
 
 msgid "SCSI Controller"
-msgstr ""
+msgstr "SCSI Controller"
 
 msgid "SSH public key"
 msgstr ""
@@ -461,31 +469,31 @@ msgid "SSL fields"
 msgstr ""
 
 msgid "SSL verify peer"
-msgstr ""
+msgstr "SSL 検証ピア"
 
 msgid "Search Domain"
 msgstr ""
 
 msgid "Search domain"
-msgstr "Domaine de recherche"
+msgstr "検索ドメイン"
 
 msgid "Shares (MB)"
 msgstr ""
 
 msgid "Size (GB)"
-msgstr ""
+msgstr "サイズ (GB)"
 
 msgid "Sockets"
-msgstr ""
+msgstr "ソケット"
 
 msgid "Start after creation?"
-msgstr "Démarrer après création?"
+msgstr "作成後に開始しますか？"
 
 msgid "Start at boot"
-msgstr "Démarrer au boot"
+msgstr "起動時に開始"
 
 msgid "Storage"
-msgstr "Stockage"
+msgstr "ストレージ"
 
 msgid "Swap (MB)"
 msgstr ""
@@ -494,37 +502,37 @@ msgid "Template Storage"
 msgstr ""
 
 msgid "Template storage"
-msgstr "Modèle de stockage"
+msgstr "テンプレートストレージ"
 
 msgid "The EFI Disk requires OVMF BIOS. Please switch the BIOS type to OVMF."
 msgstr ""
 
 msgid "The user that is used to ssh into the instance, normally cloud-user, ubuntu, root etc"
-msgstr "Le compte utilisé pour SSH, en général compte cloud, ubuntu ou root, etc"
+msgstr "SSH をインスタンスに実行するために、通常 cloud-user、ubuntu、root などのユーザーを使用します"
 
 msgid "Time"
-msgstr "Temps"
+msgstr "時間"
 
 msgid "Type"
-msgstr ""
+msgstr "タイプ"
 
 msgid "Type %<type>s, node %<node>s, %<cpus>s CPUs and %<memory>s MB memory"
 msgstr ""
 
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 msgid "Unable to shrink %<id>s size. Proxmox allows only increasing size."
-msgstr ""
+msgstr "%<id>s のサイズを縮小できません。Proxmox を使用する場合は、サイズを増やすことしかできません。"
 
 msgid "Unable to store X509 certificates"
-msgstr "Impossible d'enregistrer les certificats X509"
+msgstr "X509 証明書を保存できません"
 
 msgid "Uptime"
-msgstr "En marche depuis (s)"
+msgstr "アップタイム"
 
 msgid "User"
-msgstr ""
+msgstr "ユーザー"
 
 msgid "User token expires"
 msgstr ""
@@ -539,31 +547,31 @@ msgid "User token value"
 msgstr ""
 
 msgid "VCPUs"
-msgstr ""
+msgstr "仮想 CPU"
 
 msgid "VGA"
-msgstr ""
+msgstr "VGA"
 
 msgid "VLAN Tag"
 msgstr ""
 
 msgid "VLAN tag"
-msgstr "Etiquette VLAN"
+msgstr "VLAN タグ"
 
 msgid "VM ID"
-msgstr ""
+msgstr "VM ID"
 
 msgid "VM already associated with a host"
-msgstr ""
+msgstr "ホストにすでに関連付けられている VM"
 
 msgid "VM associated to host %s"
-msgstr ""
+msgstr "ホスト %s に関連付けられている VM"
 
 msgid "Version"
-msgstr ""
+msgstr "バージョン"
 
 msgid "X509 Certification Authorities"
-msgstr "Autorités de certification X509"
+msgstr "X509 証明機関"
 
 msgid "add new cd-rom"
 msgstr ""
@@ -578,16 +586,16 @@ msgid "add new mount point"
 msgstr ""
 
 msgid "add new storage volume"
-msgstr "ajouter un nouveau volume de stockage"
+msgstr "新規ストレージボリュームの追加"
 
 msgid "e.g. /path/to/"
-msgstr ""
+msgstr "(例: /path/to/)"
 
 msgid "e.g. https://127.0.0.1:8006/api2/json"
-msgstr "par exemple https://127.0.0.1:8006/api2/json"
+msgstr "e.g. https://127.0.0.1:8006/api2/json"
 
 msgid "e.g. root@pam"
-msgstr "par exemple root@pam"
+msgstr "(例: root@pam)"
 
 msgid "eth[n] with n integer >= 0, e.g. eth0"
 msgstr ""
@@ -605,7 +613,7 @@ msgid "integer within [0..32]"
 msgstr ""
 
 msgid "invalid vmid=%<vmid>s"
-msgstr "vmid=%<vmid>s incorrect"
+msgstr "無効な vmid=%<vmid>s"
 
 msgid "net[n] with n integer >= 0, e.g. net0"
 msgstr ""
@@ -632,10 +640,10 @@ msgid "remove mount point"
 msgstr ""
 
 msgid "remove network interface"
-msgstr "retirer l'interface réseau"
+msgstr "ネットワークインターフェースの削除"
 
 msgid "remove storage volume"
-msgstr "retirer le stockage de volume"
+msgstr "ストレージボリュームの削除"
 
 msgid "vmid of template vm."
-msgstr "vmid de la VM modèle."
+msgstr "テンプレート仮想マシンの vmid"

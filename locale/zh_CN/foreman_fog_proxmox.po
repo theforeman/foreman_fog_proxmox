@@ -1,27 +1,34 @@
-# French translations for foreman_fog_proxmox package.
-# Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the foreman_fog_proxmox package.
-# Tristan Robert <tristan.robert.44@gmail.com>, 2018.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+# Translators:
+# Martin Liu <liuzh66@gmail.com>, 2020
+# Bryan Kearney <bryan.kearney@gmail.com>, 2022
+# 0868a4d1af5275b3f70b0a6dac4c99a4, 2022
+# Amit Upadhye <aupadhye@redhat.com>, 2022
+# tim123, 2022
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: foreman_fog_proxmox 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2018-07-17 15:16+0200\n"
-"Last-Translator: Tristan Robert <tristan.robert.44@gmail.com>\n"
-"Language-Team: French\n"
-"Language: fr\n"
+"PO-Revision-Date: 2020-03-08 09:47+0000\n"
+"Last-Translator: tim123, 2022\n"
+"Language-Team: Chinese (China) (https://app.transifex.com/foreman/teams/114/zh"
+"_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n>1;\n"
-"\n"
+"Language: zh_CN\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 msgid "%(name)s (free: %(free)s, used: %(used)s, total: %(total)s)"
 msgstr ""
 
 msgid "%<s>s console is not supported at this time"
-msgstr ""
+msgstr "%<s>s 控制台不被支持"
 
 msgid "%<vm>s is now %<vm_state>s"
 msgstr ""
@@ -57,10 +64,10 @@ msgid "Add MountPoint"
 msgstr ""
 
 msgid "Add Volume"
-msgstr "Ajouter un volume"
+msgstr "添加值"
 
 msgid "Advanced"
-msgstr "Avancé"
+msgstr "高级"
 
 msgid "Advanced Options"
 msgstr ""
@@ -75,34 +82,34 @@ msgid "Allows improved Spectre mitigation with Intel CPUs"
 msgstr ""
 
 msgid "Architecture"
-msgstr ""
+msgstr "架构"
 
 msgid "Associate VM"
-msgstr ""
+msgstr "关联 VM"
 
 msgid "Associate VM to a Foreman host"
-msgstr ""
+msgstr "将 VM 关联到 Foreman 主机"
 
 msgid "Authentication method"
 msgstr ""
 
 msgid "Average load (x100)"
-msgstr "Charge moyenne du serveur (x100)"
+msgstr "平均负载 (x100)"
 
 msgid "BIOS"
-msgstr ""
+msgstr "BIOS"
 
 msgid "Basis for \\\"Speculative Store Bypass\\\" protection for AMD models"
 msgstr ""
 
 msgid "Boot device order"
-msgstr ""
+msgstr "引导设备顺序"
 
 msgid "Bridge"
-msgstr "Pont"
+msgstr "桥接"
 
 msgid "CD-ROM"
-msgstr ""
+msgstr "CD-ROM"
 
 msgid "CIDR IPv4"
 msgstr ""
@@ -111,28 +118,28 @@ msgid "CIDR IPv6"
 msgstr ""
 
 msgid "CPU"
-msgstr ""
+msgstr "CPU"
 
 msgid "CPU Flags"
 msgstr ""
 
 msgid "CPU limit"
-msgstr "Limite CPU"
+msgstr "CPU 限制"
 
 msgid "CPU units"
-msgstr "Unités CPU"
+msgstr "CPU 单元"
 
 msgid "CPUs"
-msgstr ""
+msgstr "CPU"
 
 msgid "Cache"
-msgstr ""
+msgstr "缓存"
 
 msgid "Card"
-msgstr "Carte"
+msgstr "卡"
 
 msgid "Change the password"
-msgstr "Changer le mot de passe"
+msgstr "更改密码"
 
 msgid "Click Test connection button before changing it"
 msgstr ""
@@ -144,7 +151,7 @@ msgid "Cloud-init"
 msgstr ""
 
 msgid "Cluster nodes"
-msgstr "Noeuds de la ferme"
+msgstr "集群节点"
 
 msgid "Common fields"
 msgstr ""
@@ -153,49 +160,49 @@ msgid "Confirm"
 msgstr ""
 
 msgid "Console"
-msgstr ""
+msgstr "控制台"
 
 msgid "Controller"
-msgstr "Contrôleur"
+msgstr "控制器"
 
 msgid "Cores"
-msgstr "Coeurs"
+msgstr "内核"
 
 msgid "Create image?"
-msgstr "Créer image?"
+msgstr "创建镜像？"
 
 msgid "DHCP IPv4"
-msgstr ""
+msgstr "DHCP IPv4"
 
 msgid "DHCP IPv6"
-msgstr ""
+msgstr "DHCP IPv6"
 
 msgid "DNS"
-msgstr ""
+msgstr "DNS"
 
 msgid "DNS domain"
 msgstr ""
 
 msgid "DNS server"
-msgstr ""
+msgstr "DNS 服务器"
 
 msgid "DNS servers"
 msgstr ""
 
 msgid "Description"
-msgstr ""
+msgstr "描述"
 
 msgid "Device"
-msgstr "Périphérque"
+msgstr "设备"
 
 msgid "Device value is set automatically."
 msgstr ""
 
 msgid "Disconnect"
-msgstr "Se déconnecter"
+msgstr "断开连接"
 
 msgid "Does this image support user data input (e.g. via cloud-init)?"
-msgstr "Cette immage gère-t-elle les données utilisateurs (par exemple via cloud-init)?"
+msgstr "这个镜像是否支持用户数据输入（例如：通过 cloud-init）？"
 
 msgid "EFI Disk"
 msgstr ""
@@ -204,10 +211,10 @@ msgid "EFI Storage"
 msgstr ""
 
 msgid "Enable NUMA"
-msgstr "Activer NUMA"
+msgstr "启用 NUMA"
 
 msgid "Enable/disable KVM hardware virtualization"
-msgstr "Activer/désactiver la virtualisation matérielle de KVM"
+msgstr "启用/禁用 KVM 硬件虚拟化"
 
 msgid "Error - %<message>s"
 msgstr ""
@@ -219,7 +226,7 @@ msgid "Error: Duplicate Name found."
 msgstr ""
 
 msgid "Extended"
-msgstr "Etendu"
+msgstr "扩展"
 
 msgid "Extra CPU Flags"
 msgstr ""
@@ -231,7 +238,7 @@ msgid "Failed fetching templates please try again."
 msgstr ""
 
 msgid "Failed retrieving proxmox server vm by vmid=%<vmid>s"
-msgstr ""
+msgstr "根据 vmid=%<vmid>s 获 proxmox 服务器 vm 失败"
 
 msgid "Failed to acquire IP addresses from compute resource for %<name>s"
 msgstr ""
@@ -240,13 +247,13 @@ msgid "Failed to load Proxmox metadata. Please check your compute resource conne
 msgstr ""
 
 msgid "Failed to set console: %s"
-msgstr ""
+msgstr "设置控制台失败：%s"
 
 msgid "Failed to undo update compute %<compute_resource>s instance %<name>s: %<e>s"
-msgstr ""
+msgstr "无法撤消更新计算 %<compute_resource>s 实例 %<name>s: %<e>s"
 
 msgid "Failed to update a compute %<compute_resource>s instance %<name>s: %<e>s"
-msgstr ""
+msgstr "无法更新计算 %<compute_resource>s 实例 %<name>s: %<e>s"
 
 msgid "Fetching images ISO..."
 msgstr ""
@@ -255,55 +262,55 @@ msgid "Fetching templates..."
 msgstr ""
 
 msgid "Firewall"
-msgstr "Pare-feu"
+msgstr "防火墙"
 
 msgid "Foreman Fog Proxmox widget"
-msgstr ""
+msgstr "Foreman Fog Proxmox widget"
 
 msgid "ForemanFogProxmox plugin adds Proxmox VE compute resource to Foreman using fog-proxmox gem."
-msgstr "Le plugin ForemanFogProxmox ajoute la ressource de calcul Proxmox VE à foreman en utilisant le gem fog-proxmox"
+msgstr "ForemanFogProxmox 插件使用 fog-proxmox gem 向 Foreman 添加 Proxmox VE 计算资源。"
 
 msgid "Gateway IPv4"
-msgstr ""
+msgstr "网关 IPv4"
 
 msgid "Gateway IPv6"
-msgstr ""
+msgstr "网关 IPv6"
 
 msgid "General"
-msgstr "Général"
+msgstr "常规"
 
 msgid "Hard Disk %(hddId)s"
 msgstr ""
 
 msgid "Hard disk"
-msgstr ""
+msgstr "硬盘"
 
 msgid "Hardware"
 msgstr ""
 
 msgid "Host"
-msgstr ""
+msgstr "主机"
 
 msgid "Hostname"
-msgstr "Nom d'hôte"
+msgstr "主机名"
 
 msgid "Identifier"
-msgstr ""
+msgstr "鉴定"
 
 msgid "Image"
-msgstr ""
+msgstr "镜像"
 
 msgid "Image ISO"
-msgstr ""
+msgstr "镜像 ISO"
 
 msgid "Image VMID"
-msgstr ""
+msgstr "镜像 VMID"
 
 msgid "Import as managed Host"
-msgstr ""
+msgstr "作为管理的主机导入"
 
 msgid "Import as unmanaged Host"
-msgstr ""
+msgstr "作为非管理的主机导入"
 
 msgid "Improve performance for nested virtualization. Only supported on Intel CPUs."
 msgstr ""
@@ -315,24 +322,23 @@ msgid "Improves Spectre mitigation performance with AMD CPUs, best used with \\\
 msgstr ""
 
 msgid "KVM"
-msgstr ""
+msgstr "KVM"
 
 msgid "Main option"
 msgid_plural "Main options"
-msgstr[0] "Option principale"
-msgstr[1] "Options principales"
+msgstr[0] "主选项"
 
 msgid "Media"
-msgstr ""
+msgstr "介质"
 
 msgid "Meltdown fix cost reduction on Westmere, Sandy-, and IvyBridge Intel CPUs"
 msgstr ""
 
 msgid "Memory"
-msgstr "Mémoire"
+msgstr "内存"
 
 msgid "Memory (MB)"
-msgstr ""
+msgstr "内存 (MB)"
 
 msgid "Minimum Memory (MB)"
 msgstr ""
@@ -344,76 +350,76 @@ msgid "Mount Point %(mp)s"
 msgstr ""
 
 msgid "Mount point"
-msgstr "Point de montage"
+msgstr "挂载点"
 
 msgid "Multiqueue"
-msgstr ""
+msgstr "多队列"
 
 msgid "Name"
-msgstr "Nom"
+msgstr "名称"
 
 msgid "Network Interfaces"
 msgstr ""
 
 msgid "Nic"
-msgstr ""
+msgstr "Nic"
 
 msgid "Nic %(nicId)s"
 msgstr ""
 
 msgid "No host found to associate this VM with"
-msgstr ""
+msgstr "没有找到与这个 VM 关联的主机"
 
 msgid "Node"
-msgstr "Noeud"
+msgstr "节点"
 
 msgid "None"
-msgstr "Aucun"
+msgstr "没有"
 
 msgid "Notifies guest OS that host is not vulnerable for Spectre on AMD CPUs"
 msgstr ""
 
 msgid "OS Template"
-msgstr "Modèle d'OS"
+msgstr "操作系统模板"
 
 msgid "OS Type"
 msgstr ""
 
 msgid "OS type"
-msgstr "Type de système d'exploitation"
+msgstr "操作系统类型"
 
 msgid "Operating System"
-msgstr "Système d'exploitation"
+msgstr "操作系统"
 
 msgid "Operating system family %<type>s is not consistent with %<ostype>s"
-msgstr ""
+msgstr "操作系统系列 %<type>s 与 %<ostype>s 不一致"
 
 msgid "Optionally provide a CA, or a correctly ordered CA chain. If left blank, disable ssl_verify_peer."
-msgstr "Vous pouvez éventuellement fournir un certificat ou une chaîne de certificats. Si non renseigné, alors désactivez ssl_verify_peer."
+msgstr "（可选）提供一个 CA，或具有正确顺序的 CA 链。如果留空则禁用 ssl_verify_peer。"
 
 msgid "Order your devices, e.g. order=net0;ide2;scsi0. Default empty (any)"
 msgstr ""
 
 msgid "Password"
-msgstr ""
+msgstr "密码"
 
 msgid "Password to authenticate with - used for SSH finish step."
-msgstr "Mot de passe d'authentification - utilisé dans la dernière phase avec SSH."
+msgstr "进行验证的密码 - 用于 SSH 完成步骤。"
 
 msgid "Path"
-msgstr "Chemin"
+msgstr "路径"
 
 msgid "Path cannot be empty"
 msgstr ""
 
 msgid "Physical"
-msgstr "Physique"
+msgstr "物理"
 
 msgid "Pool"
-msgstr ""
+msgstr "池"
 
 msgid "Power"
-msgstr "Alimentation"
+msgstr "电源"
 
 msgid "Pre-Enrolled Keys"
 msgstr ""
@@ -422,16 +428,16 @@ msgid "Protection for \\\"Speculative Store Bypass\\\" for Intel models"
 msgstr ""
 
 msgid "Proxmox Node Statistics: %s"
-msgstr "Statistiques du noeud Proxmox: %s"
+msgstr "Proxmox 节点统计信息： %s"
 
 msgid "Proxmox version %<version>s is not semver suitable"
-msgstr ""
+msgstr "Proxmox 版本 %<version>s 不适合于 semver"
 
 msgid "Qemu Agent"
-msgstr "Agent Qemu"
+msgstr "QEMU 代理"
 
 msgid "Rate limit"
-msgstr "Taux limite"
+msgstr "速率限制"
 
 msgid "Reached maximum number of devices for controller %(value)s. Please select another controller."
 msgstr ""
@@ -446,13 +452,13 @@ msgid "Root Password"
 msgstr ""
 
 msgid "Root password"
-msgstr "Mot de passe root"
+msgstr "Root 密码"
 
 msgid "Rootfs"
-msgstr ""
+msgstr "Rootfs"
 
 msgid "SCSI Controller"
-msgstr ""
+msgstr "SCSI 控制器"
 
 msgid "SSH public key"
 msgstr ""
@@ -461,31 +467,31 @@ msgid "SSL fields"
 msgstr ""
 
 msgid "SSL verify peer"
-msgstr ""
+msgstr "SSL 验证对等"
 
 msgid "Search Domain"
 msgstr ""
 
 msgid "Search domain"
-msgstr "Domaine de recherche"
+msgstr "搜索域"
 
 msgid "Shares (MB)"
 msgstr ""
 
 msgid "Size (GB)"
-msgstr ""
+msgstr "大小 (GB)"
 
 msgid "Sockets"
-msgstr ""
+msgstr "插槽"
 
 msgid "Start after creation?"
-msgstr "Démarrer après création?"
+msgstr "创建后即启动？"
 
 msgid "Start at boot"
-msgstr "Démarrer au boot"
+msgstr "引导时开始"
 
 msgid "Storage"
-msgstr "Stockage"
+msgstr "存储"
 
 msgid "Swap (MB)"
 msgstr ""
@@ -494,37 +500,37 @@ msgid "Template Storage"
 msgstr ""
 
 msgid "Template storage"
-msgstr "Modèle de stockage"
+msgstr "模板存储"
 
 msgid "The EFI Disk requires OVMF BIOS. Please switch the BIOS type to OVMF."
 msgstr ""
 
 msgid "The user that is used to ssh into the instance, normally cloud-user, ubuntu, root etc"
-msgstr "Le compte utilisé pour SSH, en général compte cloud, ubuntu ou root, etc"
+msgstr "使用 ssh 进入该实例的用户，通常为 cloud-user, ubuntu, root 等等。"
 
 msgid "Time"
-msgstr "Temps"
+msgstr "时间"
 
 msgid "Type"
-msgstr ""
+msgstr "类型"
 
 msgid "Type %<type>s, node %<node>s, %<cpus>s CPUs and %<memory>s MB memory"
 msgstr ""
 
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 msgid "Unable to shrink %<id>s size. Proxmox allows only increasing size."
-msgstr ""
+msgstr "无法缩小 %<id>s 的大小。proxmox 仅允许增大大小。"
 
 msgid "Unable to store X509 certificates"
-msgstr "Impossible d'enregistrer les certificats X509"
+msgstr "无法存储 X509 证书"
 
 msgid "Uptime"
-msgstr "En marche depuis (s)"
+msgstr "上線時間"
 
 msgid "User"
-msgstr ""
+msgstr "用户"
 
 msgid "User token expires"
 msgstr ""
@@ -539,31 +545,31 @@ msgid "User token value"
 msgstr ""
 
 msgid "VCPUs"
-msgstr ""
+msgstr "VCPU"
 
 msgid "VGA"
-msgstr ""
+msgstr "VGA"
 
 msgid "VLAN Tag"
 msgstr ""
 
 msgid "VLAN tag"
-msgstr "Etiquette VLAN"
+msgstr "VLAN 标签"
 
 msgid "VM ID"
-msgstr ""
+msgstr "VM ID"
 
 msgid "VM already associated with a host"
-msgstr ""
+msgstr "VM 已经与主机关联"
 
 msgid "VM associated to host %s"
-msgstr ""
+msgstr "与主机 %s 关联的虚拟机"
 
 msgid "Version"
-msgstr ""
+msgstr "版本"
 
 msgid "X509 Certification Authorities"
-msgstr "Autorités de certification X509"
+msgstr "X509 证书授权"
 
 msgid "add new cd-rom"
 msgstr ""
@@ -578,16 +584,16 @@ msgid "add new mount point"
 msgstr ""
 
 msgid "add new storage volume"
-msgstr "ajouter un nouveau volume de stockage"
+msgstr "添加新的存储卷"
 
 msgid "e.g. /path/to/"
-msgstr ""
+msgstr "例如：/path/to/"
 
 msgid "e.g. https://127.0.0.1:8006/api2/json"
-msgstr "par exemple https://127.0.0.1:8006/api2/json"
+msgstr "例如 https://127.0.0.1:8006/api2/json"
 
 msgid "e.g. root@pam"
-msgstr "par exemple root@pam"
+msgstr "例如，root@pam"
 
 msgid "eth[n] with n integer >= 0, e.g. eth0"
 msgstr ""
@@ -605,7 +611,7 @@ msgid "integer within [0..32]"
 msgstr ""
 
 msgid "invalid vmid=%<vmid>s"
-msgstr "vmid=%<vmid>s incorrect"
+msgstr "无效的 vmid=%<vmid>s"
 
 msgid "net[n] with n integer >= 0, e.g. net0"
 msgstr ""
@@ -632,10 +638,10 @@ msgid "remove mount point"
 msgstr ""
 
 msgid "remove network interface"
-msgstr "retirer l'interface réseau"
+msgstr "删除网络接口"
 
 msgid "remove storage volume"
-msgstr "retirer le stockage de volume"
+msgstr "删除存储卷"
 
 msgid "vmid of template vm."
-msgstr "vmid de la VM modèle."
+msgstr "模板 vm 的 vmid。"

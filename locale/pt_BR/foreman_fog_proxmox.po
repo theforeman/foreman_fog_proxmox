@@ -1,21 +1,31 @@
-# French translations for foreman_fog_proxmox package.
-# Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the foreman_fog_proxmox package.
-# Tristan Robert <tristan.robert.44@gmail.com>, 2018.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+# Translators:
+# Felipe Nogaroto Gonzalez <felipeng84@gmail.com>, 2020
+# Bruno Emanuel Silva <bemanuel.pe@gmail.com>, 2020
+# Luiz Henrique Vasconcelos <luizvasconceloss@yahoo.com.br>, 2022
+# Bryan Kearney <bryan.kearney@gmail.com>, 2022
+# 0868a4d1af5275b3f70b0a6dac4c99a4, 2022
+# Amit Upadhye <aupadhye@redhat.com>, 2022
+# Flamarion Jorge <jorge.flamarion@gmail.com>, 2022
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: foreman_fog_proxmox 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2018-07-17 15:16+0200\n"
-"Last-Translator: Tristan Robert <tristan.robert.44@gmail.com>\n"
-"Language-Team: French\n"
-"Language: fr\n"
+"PO-Revision-Date: 2020-03-08 09:47+0000\n"
+"Last-Translator: Flamarion Jorge <jorge.flamarion@gmail.com>, 2022\n"
+"Language-Team: Portuguese (Brazil) (https://app.transifex.com/foreman/teams/11"
+"4/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n>1;\n"
-"\n"
+"Language: pt_BR\n"
+"Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 100000"
+"0 == 0 ? 1 : 2;\n"
 
 msgid "%(name)s (free: %(free)s, used: %(used)s, total: %(total)s)"
 msgstr ""
@@ -57,10 +67,10 @@ msgid "Add MountPoint"
 msgstr ""
 
 msgid "Add Volume"
-msgstr "Ajouter un volume"
+msgstr "Adicionar volume"
 
 msgid "Advanced"
-msgstr "Avancé"
+msgstr "Avançado"
 
 msgid "Advanced Options"
 msgstr ""
@@ -75,34 +85,34 @@ msgid "Allows improved Spectre mitigation with Intel CPUs"
 msgstr ""
 
 msgid "Architecture"
-msgstr ""
+msgstr "Arquitetura"
 
 msgid "Associate VM"
-msgstr ""
+msgstr "Associar VM"
 
 msgid "Associate VM to a Foreman host"
-msgstr ""
+msgstr "Associar VM à um host Foremam"
 
 msgid "Authentication method"
 msgstr ""
 
 msgid "Average load (x100)"
-msgstr "Charge moyenne du serveur (x100)"
+msgstr ""
 
 msgid "BIOS"
-msgstr ""
+msgstr "BIOS"
 
 msgid "Basis for \\\"Speculative Store Bypass\\\" protection for AMD models"
 msgstr ""
 
 msgid "Boot device order"
-msgstr ""
+msgstr "Pedido do dispositivo de inicialização"
 
 msgid "Bridge"
-msgstr "Pont"
+msgstr "Bridge"
 
 msgid "CD-ROM"
-msgstr ""
+msgstr "CD-ROM"
 
 msgid "CIDR IPv4"
 msgstr ""
@@ -111,28 +121,28 @@ msgid "CIDR IPv6"
 msgstr ""
 
 msgid "CPU"
-msgstr ""
+msgstr "CPU"
 
 msgid "CPU Flags"
 msgstr ""
 
 msgid "CPU limit"
-msgstr "Limite CPU"
+msgstr "Limite de CPU"
 
 msgid "CPU units"
-msgstr "Unités CPU"
+msgstr "Unidades de CPU"
 
 msgid "CPUs"
-msgstr ""
+msgstr "CPUs"
 
 msgid "Cache"
 msgstr ""
 
 msgid "Card"
-msgstr "Carte"
+msgstr ""
 
 msgid "Change the password"
-msgstr "Changer le mot de passe"
+msgstr "Trocar a senha"
 
 msgid "Click Test connection button before changing it"
 msgstr ""
@@ -144,7 +154,7 @@ msgid "Cloud-init"
 msgstr ""
 
 msgid "Cluster nodes"
-msgstr "Noeuds de la ferme"
+msgstr "Nós de agrupamento"
 
 msgid "Common fields"
 msgstr ""
@@ -153,49 +163,49 @@ msgid "Confirm"
 msgstr ""
 
 msgid "Console"
-msgstr ""
+msgstr "Console"
 
 msgid "Controller"
-msgstr "Contrôleur"
+msgstr "Controlador"
 
 msgid "Cores"
-msgstr "Coeurs"
+msgstr "Núcleos"
 
 msgid "Create image?"
-msgstr "Créer image?"
+msgstr "Criar imagem?"
 
 msgid "DHCP IPv4"
-msgstr ""
+msgstr "DHCP IPv4"
 
 msgid "DHCP IPv6"
-msgstr ""
+msgstr "DHCP IPv6"
 
 msgid "DNS"
-msgstr ""
+msgstr "DNS"
 
 msgid "DNS domain"
 msgstr ""
 
 msgid "DNS server"
-msgstr ""
+msgstr "Servidor DNS"
 
 msgid "DNS servers"
 msgstr ""
 
 msgid "Description"
-msgstr ""
+msgstr "Descrição"
 
 msgid "Device"
-msgstr "Périphérque"
+msgstr "Dispositivo"
 
 msgid "Device value is set automatically."
 msgstr ""
 
 msgid "Disconnect"
-msgstr "Se déconnecter"
+msgstr "Desconectar"
 
 msgid "Does this image support user data input (e.g. via cloud-init)?"
-msgstr "Cette immage gère-t-elle les données utilisateurs (par exemple via cloud-init)?"
+msgstr "Esta imagem suporta a entrada de dados do usuário (ex.: via cloud-init)?"
 
 msgid "EFI Disk"
 msgstr ""
@@ -204,10 +214,10 @@ msgid "EFI Storage"
 msgstr ""
 
 msgid "Enable NUMA"
-msgstr "Activer NUMA"
+msgstr ""
 
 msgid "Enable/disable KVM hardware virtualization"
-msgstr "Activer/désactiver la virtualisation matérielle de KVM"
+msgstr "Habilitar/desabilitar a virtualização do hardware KVM"
 
 msgid "Error - %<message>s"
 msgstr ""
@@ -219,7 +229,7 @@ msgid "Error: Duplicate Name found."
 msgstr ""
 
 msgid "Extended"
-msgstr "Etendu"
+msgstr ""
 
 msgid "Extra CPU Flags"
 msgstr ""
@@ -240,7 +250,7 @@ msgid "Failed to load Proxmox metadata. Please check your compute resource conne
 msgstr ""
 
 msgid "Failed to set console: %s"
-msgstr ""
+msgstr "Falha ao definir console: %s"
 
 msgid "Failed to undo update compute %<compute_resource>s instance %<name>s: %<e>s"
 msgstr ""
@@ -255,55 +265,55 @@ msgid "Fetching templates..."
 msgstr ""
 
 msgid "Firewall"
-msgstr "Pare-feu"
+msgstr ""
 
 msgid "Foreman Fog Proxmox widget"
 msgstr ""
 
 msgid "ForemanFogProxmox plugin adds Proxmox VE compute resource to Foreman using fog-proxmox gem."
-msgstr "Le plugin ForemanFogProxmox ajoute la ressource de calcul Proxmox VE à foreman en utilisant le gem fog-proxmox"
+msgstr ""
 
 msgid "Gateway IPv4"
-msgstr ""
+msgstr "Gateway IPv4"
 
 msgid "Gateway IPv6"
-msgstr ""
+msgstr "Porta de entrada IPv6"
 
 msgid "General"
-msgstr "Général"
+msgstr "Geral"
 
 msgid "Hard Disk %(hddId)s"
 msgstr ""
 
 msgid "Hard disk"
-msgstr ""
+msgstr "Disco rígido"
 
 msgid "Hardware"
 msgstr ""
 
 msgid "Host"
-msgstr ""
+msgstr "Máquina"
 
 msgid "Hostname"
-msgstr "Nom d'hôte"
+msgstr "Nome da máquina"
 
 msgid "Identifier"
-msgstr ""
+msgstr "Identificador"
 
 msgid "Image"
-msgstr ""
+msgstr "Imagem"
 
 msgid "Image ISO"
-msgstr ""
+msgstr "Imagem ISO"
 
 msgid "Image VMID"
 msgstr ""
 
 msgid "Import as managed Host"
-msgstr ""
+msgstr "Importar como host gerenciado"
 
 msgid "Import as unmanaged Host"
-msgstr ""
+msgstr "Importar como host não gerenciado"
 
 msgid "Improve performance for nested virtualization. Only supported on Intel CPUs."
 msgstr ""
@@ -315,24 +325,24 @@ msgid "Improves Spectre mitigation performance with AMD CPUs, best used with \\\
 msgstr ""
 
 msgid "KVM"
-msgstr ""
+msgstr "KVM"
 
 msgid "Main option"
 msgid_plural "Main options"
-msgstr[0] "Option principale"
-msgstr[1] "Options principales"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Media"
-msgstr ""
+msgstr "Mídia"
 
 msgid "Meltdown fix cost reduction on Westmere, Sandy-, and IvyBridge Intel CPUs"
 msgstr ""
 
 msgid "Memory"
-msgstr "Mémoire"
+msgstr "Memória"
 
 msgid "Memory (MB)"
-msgstr ""
+msgstr "Memória (MB)"
 
 msgid "Minimum Memory (MB)"
 msgstr ""
@@ -344,13 +354,13 @@ msgid "Mount Point %(mp)s"
 msgstr ""
 
 msgid "Mount point"
-msgstr "Point de montage"
+msgstr "Ponto de montagem"
 
 msgid "Multiqueue"
 msgstr ""
 
 msgid "Name"
-msgstr "Nom"
+msgstr "Nome"
 
 msgid "Network Interfaces"
 msgstr ""
@@ -362,58 +372,58 @@ msgid "Nic %(nicId)s"
 msgstr ""
 
 msgid "No host found to associate this VM with"
-msgstr ""
+msgstr "Nenhum host encontrado ao qual associar este VM"
 
 msgid "Node"
-msgstr "Noeud"
+msgstr "Nó"
 
 msgid "None"
-msgstr "Aucun"
+msgstr "Nenhum"
 
 msgid "Notifies guest OS that host is not vulnerable for Spectre on AMD CPUs"
 msgstr ""
 
 msgid "OS Template"
-msgstr "Modèle d'OS"
+msgstr "Modelo de SO"
 
 msgid "OS Type"
 msgstr ""
 
 msgid "OS type"
-msgstr "Type de système d'exploitation"
+msgstr "Tipo de SO"
 
 msgid "Operating System"
-msgstr "Système d'exploitation"
+msgstr "Sistema Operacional"
 
 msgid "Operating system family %<type>s is not consistent with %<ostype>s"
 msgstr ""
 
 msgid "Optionally provide a CA, or a correctly ordered CA chain. If left blank, disable ssl_verify_peer."
-msgstr "Vous pouvez éventuellement fournir un certificat ou une chaîne de certificats. Si non renseigné, alors désactivez ssl_verify_peer."
+msgstr ""
 
 msgid "Order your devices, e.g. order=net0;ide2;scsi0. Default empty (any)"
 msgstr ""
 
 msgid "Password"
-msgstr ""
+msgstr "Senha"
 
 msgid "Password to authenticate with - used for SSH finish step."
-msgstr "Mot de passe d'authentification - utilisé dans la dernière phase avec SSH."
+msgstr "Senha para autenticar-se - usada para o passo final do SSH"
 
 msgid "Path"
-msgstr "Chemin"
+msgstr "Caminho"
 
 msgid "Path cannot be empty"
 msgstr ""
 
 msgid "Physical"
-msgstr "Physique"
+msgstr "Físico"
 
 msgid "Pool"
 msgstr ""
 
 msgid "Power"
-msgstr "Alimentation"
+msgstr "Energia"
 
 msgid "Pre-Enrolled Keys"
 msgstr ""
@@ -422,16 +432,16 @@ msgid "Protection for \\\"Speculative Store Bypass\\\" for Intel models"
 msgstr ""
 
 msgid "Proxmox Node Statistics: %s"
-msgstr "Statistiques du noeud Proxmox: %s"
+msgstr ""
 
 msgid "Proxmox version %<version>s is not semver suitable"
 msgstr ""
 
 msgid "Qemu Agent"
-msgstr "Agent Qemu"
+msgstr "Agente Qemu"
 
 msgid "Rate limit"
-msgstr "Taux limite"
+msgstr ""
 
 msgid "Reached maximum number of devices for controller %(value)s. Please select another controller."
 msgstr ""
@@ -446,7 +456,7 @@ msgid "Root Password"
 msgstr ""
 
 msgid "Root password"
-msgstr "Mot de passe root"
+msgstr "Senha raiz"
 
 msgid "Rootfs"
 msgstr ""
@@ -467,25 +477,25 @@ msgid "Search Domain"
 msgstr ""
 
 msgid "Search domain"
-msgstr "Domaine de recherche"
+msgstr ""
 
 msgid "Shares (MB)"
 msgstr ""
 
 msgid "Size (GB)"
-msgstr ""
+msgstr "Tamanho (GB)"
 
 msgid "Sockets"
-msgstr ""
+msgstr "Sockets"
 
 msgid "Start after creation?"
-msgstr "Démarrer après création?"
+msgstr "Começar após a criação?"
 
 msgid "Start at boot"
-msgstr "Démarrer au boot"
+msgstr "Comece na inicialização"
 
 msgid "Storage"
-msgstr "Stockage"
+msgstr "Armazenamento"
 
 msgid "Swap (MB)"
 msgstr ""
@@ -494,37 +504,37 @@ msgid "Template Storage"
 msgstr ""
 
 msgid "Template storage"
-msgstr "Modèle de stockage"
+msgstr ""
 
 msgid "The EFI Disk requires OVMF BIOS. Please switch the BIOS type to OVMF."
 msgstr ""
 
 msgid "The user that is used to ssh into the instance, normally cloud-user, ubuntu, root etc"
-msgstr "Le compte utilisé pour SSH, en général compte cloud, ubuntu ou root, etc"
+msgstr ""
 
 msgid "Time"
-msgstr "Temps"
+msgstr "Tempo"
 
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
 msgid "Type %<type>s, node %<node>s, %<cpus>s CPUs and %<memory>s MB memory"
 msgstr ""
 
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 msgid "Unable to shrink %<id>s size. Proxmox allows only increasing size."
 msgstr ""
 
 msgid "Unable to store X509 certificates"
-msgstr "Impossible d'enregistrer les certificats X509"
+msgstr ""
 
 msgid "Uptime"
-msgstr "En marche depuis (s)"
+msgstr "Tempo de execução"
 
 msgid "User"
-msgstr ""
+msgstr "Usuário"
 
 msgid "User token expires"
 msgstr ""
@@ -539,31 +549,31 @@ msgid "User token value"
 msgstr ""
 
 msgid "VCPUs"
-msgstr ""
+msgstr "VCPUs"
 
 msgid "VGA"
-msgstr ""
+msgstr "VGA"
 
 msgid "VLAN Tag"
 msgstr ""
 
 msgid "VLAN tag"
-msgstr "Etiquette VLAN"
+msgstr ""
 
 msgid "VM ID"
-msgstr ""
+msgstr "VM ID"
 
 msgid "VM already associated with a host"
-msgstr ""
+msgstr "MV já está associada ao host"
 
 msgid "VM associated to host %s"
-msgstr ""
+msgstr "MV já está associada ao host %s"
 
 msgid "Version"
-msgstr ""
+msgstr "Versão"
 
 msgid "X509 Certification Authorities"
-msgstr "Autorités de certification X509"
+msgstr "Autoridades de Certificação X509"
 
 msgid "add new cd-rom"
 msgstr ""
@@ -578,16 +588,16 @@ msgid "add new mount point"
 msgstr ""
 
 msgid "add new storage volume"
-msgstr "ajouter un nouveau volume de stockage"
+msgstr "adicione novo volume de armazenamento"
 
 msgid "e.g. /path/to/"
-msgstr ""
+msgstr "por exemplo, /caminho/para/"
 
 msgid "e.g. https://127.0.0.1:8006/api2/json"
-msgstr "par exemple https://127.0.0.1:8006/api2/json"
+msgstr "e.g. https://127.0.0.1:8006/api2/json"
 
 msgid "e.g. root@pam"
-msgstr "par exemple root@pam"
+msgstr ""
 
 msgid "eth[n] with n integer >= 0, e.g. eth0"
 msgstr ""
@@ -605,7 +615,7 @@ msgid "integer within [0..32]"
 msgstr ""
 
 msgid "invalid vmid=%<vmid>s"
-msgstr "vmid=%<vmid>s incorrect"
+msgstr ""
 
 msgid "net[n] with n integer >= 0, e.g. net0"
 msgstr ""
@@ -632,10 +642,10 @@ msgid "remove mount point"
 msgstr ""
 
 msgid "remove network interface"
-msgstr "retirer l'interface réseau"
+msgstr "remover a interface de rede "
 
 msgid "remove storage volume"
-msgstr "retirer le stockage de volume"
+msgstr "remover volume de armazenamento"
 
 msgid "vmid of template vm."
-msgstr "vmid de la VM modèle."
+msgstr ""

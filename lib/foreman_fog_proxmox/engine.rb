@@ -34,6 +34,8 @@ module ForemanFogProxmox
       app.reloader.to_prepare do
         Foreman::Plugin.register :foreman_fog_proxmox do
           requires_foreman '>= 3.15'
+          # localization
+          register_gettext
           # Add Global files for extending foreman-core components and routes
           register_global_js_file 'global'
           # Register Proxmox VE compute resource in foreman

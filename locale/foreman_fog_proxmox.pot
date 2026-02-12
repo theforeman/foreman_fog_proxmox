@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: foreman_fog_proxmox 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-16 17:29+0100\n"
-"PO-Revision-Date: 2022-12-16 17:29+0100\n"
+"POT-Creation-Date: 2026-02-12 07:54+0000\n"
+"PO-Revision-Date: 2026-02-12 07:54+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -65,23 +65,23 @@ msgstr ""
 msgid "Host"
 msgstr ""
 
-#: ../app/helpers/proxmox_compute_resources_vms_helper.rb:45
+#: ../app/helpers/proxmox_compute_resources_vms_helper.rb:50
 msgid "Associate VM"
 msgstr ""
 
-#: ../app/helpers/proxmox_compute_resources_vms_helper.rb:53
+#: ../app/helpers/proxmox_compute_resources_vms_helper.rb:58
 msgid "Associate VM to a Foreman host"
 msgstr ""
 
-#: ../app/helpers/proxmox_compute_resources_vms_helper.rb:64
+#: ../app/helpers/proxmox_compute_resources_vms_helper.rb:69
 msgid "Import as managed Host"
 msgstr ""
 
-#: ../app/helpers/proxmox_compute_resources_vms_helper.rb:73
+#: ../app/helpers/proxmox_compute_resources_vms_helper.rb:78
 msgid "Import as unmanaged Host"
 msgstr ""
 
-#: ../app/helpers/proxmox_compute_resources_vms_helper.rb:89
+#: ../app/helpers/proxmox_compute_resources_vms_helper.rb:94
 msgid "Console"
 msgstr ""
 
@@ -89,11 +89,15 @@ msgstr ""
 msgid "Change the password"
 msgstr ""
 
+#: ../app/helpers/proxmox_vm_efidisk_helper.rb:44
+msgid "parse_efidisk(): args=%<args>s"
+msgstr ""
+
 #: ../app/helpers/proxmox_vm_volumes_helper.rb:52
 msgid "parse_hard_disk_volume(): args=%<args>s"
 msgstr ""
 
-#: ../app/models/concerns/fog_extensions/proxmox/server.rb:62
+#: ../app/models/concerns/fog_extensions/proxmox/server.rb:66
 msgid "Type %<type>s, node %<node>s, %<cpus>s CPUs and %<memory>s MB memory"
 msgstr ""
 
@@ -121,7 +125,7 @@ msgstr ""
 msgid "Operating system family %<type>s is not consistent with %<ostype>s"
 msgstr ""
 
-#: ../app/models/foreman_fog_proxmox/proxmox_console.rb:39
+#: ../app/models/foreman_fog_proxmox/proxmox_console.rb:41
 msgid "%<s>s console is not supported at this time"
 msgstr ""
 
@@ -147,13 +151,13 @@ msgid "Unable to shrink %<id>s size. Proxmox allows only increasing size."
 msgstr ""
 
 #: ../app/views/compute_resources/form/_proxmox.html.erb:8
-#: ../app/views/compute_resources/show/_proxmox.html.erb:12
-msgid "Authentication method"
+#: ../app/views/compute_resources/form/_proxmox.html.erb:21
+msgid "Click Test connection button before changing it"
 msgstr ""
 
 #: ../app/views/compute_resources/form/_proxmox.html.erb:8
-#: ../app/views/compute_resources/form/_proxmox.html.erb:21
-msgid "Click Test connection button before changing it"
+#: ../app/views/compute_resources/show/_proxmox.html.erb:12
+msgid "Authentication method"
 msgstr ""
 
 #: ../app/views/compute_resources/form/_proxmox.html.erb:9
@@ -242,6 +246,7 @@ msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/_add_vm_type_to_volumes_edit.html.erb:16
+#: ../webpack/components/ProxmoxServer/ProxmoxServerStorage.js:317
 msgid "Add CD-ROM"
 msgstr ""
 
@@ -311,40 +316,44 @@ msgstr ""
 msgid "add new storage volume"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:5
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:19
-#: ../app/views/compute_resources_vms/index/_proxmox.html.erb:8
-msgid "Type"
+#: ../app/views/compute_resources_vms/form/proxmox/_base.html.erb:13
+#: ../app/views/compute_resources_vms/form/proxmox/_general.html.erb:22
+#: ../app/views/compute_resources_vms/form/proxmox/server/_volume_cdrom.html.erb:13
+#: ../app/views/compute_resources_vms/form/proxmox/server/_volume_cdrom.html.erb:15
+#: ../webpack/components/GeneralTabContent.js:69
+#: ../webpack/components/ProxmoxServer/components/CDRom.js:149
+#: ../webpack/components/ProxmoxServer/components/CDRom.js:159
+msgid "Image"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/_general.html.erb:5
+#: ../webpack/components/ProxmoxVmType.js:257
 msgid "General"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/_general.html.erb:6
+#: ../webpack/components/GeneralTabContent.js:58
 msgid "Create image?"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/_general.html.erb:7
+#: ../webpack/components/GeneralTabContent.js:21
 msgid "VM ID"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/_general.html.erb:8
 #: ../app/views/compute_resources_vms/index/_proxmox.html.erb:7
+#: ../webpack/components/GeneralTabContent.js:30
 msgid "Node"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_general.html.erb:9
+#: ../app/views/compute_resources_vms/form/proxmox/_general.html.erb:11
+#: ../webpack/components/GeneralTabContent.js:48
 msgid "Start after creation?"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/_general.html.erb:19
-#: ../app/views/compute_resources_vms/form/proxmox/server/_volume_cdrom.html.erb:13
-#: ../app/views/compute_resources_vms/form/proxmox/server/_volume_cdrom.html.erb:15
-msgid "Image"
-msgstr ""
-
-#: ../app/views/compute_resources_vms/form/proxmox/_general.html.erb:23
+#: ../app/views/compute_resources_vms/form/proxmox/_general.html.erb:26
+#: ../webpack/components/GeneralTabContent.js:39
 msgid "Pool"
 msgstr ""
 
@@ -354,112 +363,117 @@ msgstr ""
 msgid "Advanced"
 msgstr ""
 
-#:
-#: ../app/views/compute_resources_vms/form/proxmox/container/_advanced.html.erb:6
-#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:5
-#: ../app/views/compute_resources_vms/form/proxmox/server/_advanced.html.erb:6
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:8
+#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:6
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:7
 msgid "Main option"
 msgid_plural "Main options"
 msgstr[0] ""
 msgstr[1] ""
 
-#:
-#: ../app/views/compute_resources_vms/form/proxmox/container/_advanced.html.erb:8
-#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:9
-#: ../app/views/compute_resources_vms/form/proxmox/server/_advanced.html.erb:8
-msgid "CPU"
-msgstr ""
-
-#:
-#: ../app/views/compute_resources_vms/form/proxmox/container/_advanced.html.erb:10
-#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:15
-#: ../app/views/compute_resources_vms/form/proxmox/server/_advanced.html.erb:10
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:32
-#: ../app/views/compute_resources_vms/index/_proxmox.html.erb:10
-msgid "Memory"
-msgstr ""
-
-#:
-#: ../app/views/compute_resources_vms/form/proxmox/container/_advanced.html.erb:12
-#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:19
-msgid "DNS"
-msgstr ""
-
-#:
-#: ../app/views/compute_resources_vms/form/proxmox/container/_advanced.html.erb:14
-#: ../app/views/compute_resources_vms/form/proxmox/server/_advanced.html.erb:12
-msgid "OS"
-msgstr ""
-
-#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:6
+#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:8
 #: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:9
+#: ../webpack/components/GeneralTabContent.js:79
 msgid "Description"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:7
+#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:9
 #: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:11
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerOptions.js:124
+#: ../webpack/components/ProxmoxServer/ProxmoxServerOptions.js:50
 msgid "Start at boot"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:10
+#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:12
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerHardware.js:24
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:95
+msgid "CPU"
+msgstr ""
+
+#:
+#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:14
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerHardware.js:29
 msgid "Architecture"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:11
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:21
+#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:15
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:23
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerHardware.js:37
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:115
 msgid "Cores"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:12
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:23
+#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:16
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:25
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerHardware.js:44
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:129
 msgid "CPU limit"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:13
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:24
+#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:17
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:26
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerHardware.js:51
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:136
 msgid "CPU units"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:16
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:33
-msgid "Memory (MB)"
-msgstr ""
-
-#:
-#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:17
-msgid "Swap (MB)"
-msgstr ""
-
-#:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:20
-msgid "Hostname"
-msgstr ""
-
-#:
-#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:21
-msgid "DNS server"
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:35
+#: ../app/views/compute_resources_vms/index/_proxmox.html.erb:10
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerHardware.js:59
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:175
+msgid "Memory"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:22
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:37
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerHardware.js:64
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:180
+msgid "Memory (MB)"
+msgstr ""
+
+#:
+#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:23
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerHardware.js:71
+msgid "Swap (MB)"
+msgstr ""
+
+#:
+#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:26
+msgid "DNS"
+msgstr ""
+
+#:
+#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:28
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerOptions.js:140
+msgid "Hostname"
+msgstr ""
+
+#:
+#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:29
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerOptions.js:147
+msgid "DNS server"
+msgstr ""
+
+#:
+#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:30
 msgid "Search domain"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:24
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:37
+#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:33
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:42
 msgid "Operating System"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:25
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:38
+#: ../app/views/compute_resources_vms/form/proxmox/container/_config.html.erb:35
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:44
 msgid "OS type"
 msgstr ""
 
@@ -475,6 +489,7 @@ msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_extended.html.erb:9
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerOptions.js:102
 msgid "OS Template"
 msgstr ""
 
@@ -492,63 +507,77 @@ msgstr ""
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:7
 #: ../app/views/compute_resources_vms/form/proxmox/server/_network.html.erb:7
+#: ../webpack/components/ProxmoxContainer/components/NetworkInterface.js:82
+#: ../webpack/components/ProxmoxServer/components/NetworkInterface.js:69
 msgid "Identifier"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:7
 #: ../app/views/compute_resources_vms/form/proxmox/server/_network.html.erb:7
+#: ../webpack/components/ProxmoxContainer/components/NetworkInterface.js:83
+#: ../webpack/components/ProxmoxServer/components/NetworkInterface.js:70
 msgid "net[n] with n integer >= 0, e.g. net0"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:8
 #: ../app/views/compute_resources_vms/index/_proxmox.html.erb:6
+#: ../webpack/components/ProxmoxContainer/components/NetworkInterface.js:91
 msgid "Name"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:8
+#: ../webpack/components/ProxmoxContainer/components/NetworkInterface.js:92
 msgid "eth[n] with n integer >= 0, e.g. eth0"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:9
+#: ../webpack/components/ProxmoxContainer/components/NetworkInterface.js:108
 msgid "DHCP IPv4"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:10
+#: ../webpack/components/ProxmoxContainer/components/NetworkInterface.js:116
 msgid "CIDR IPv4"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:10
+#: ../webpack/components/ProxmoxContainer/components/NetworkInterface.js:117
 msgid "integer within [0..32]"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:11
+#: ../webpack/components/ProxmoxContainer/components/NetworkInterface.js:124
 msgid "Gateway IPv4"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:12
+#: ../webpack/components/ProxmoxContainer/components/NetworkInterface.js:131
 msgid "DHCP IPv6"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:13
+#: ../webpack/components/ProxmoxContainer/components/NetworkInterface.js:139
 msgid "CIDR IPv6"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:13
+#: ../webpack/components/ProxmoxContainer/components/NetworkInterface.js:140
 msgid "integer within [0..128]"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:14
+#: ../webpack/components/ProxmoxContainer/components/NetworkInterface.js:147
 msgid "Gateway IPv6"
 msgstr ""
 
@@ -561,18 +590,24 @@ msgstr ""
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:16
 #: ../app/views/compute_resources_vms/form/proxmox/server/_network.html.erb:11
+#: ../webpack/components/ProxmoxContainer/components/NetworkInterface.js:161
+#: ../webpack/components/ProxmoxServer/components/NetworkInterface.js:101
 msgid "Rate limit"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:17
 #: ../app/views/compute_resources_vms/form/proxmox/server/_network.html.erb:13
+#: ../webpack/components/ProxmoxContainer/components/NetworkInterface.js:168
+#: ../webpack/components/ProxmoxServer/components/NetworkInterface.js:115
 msgid "Firewall"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_network.html.erb:18
 #: ../app/views/compute_resources_vms/form/proxmox/server/_network.html.erb:9
+#: ../webpack/components/ProxmoxContainer/components/NetworkInterface.js:100
+#: ../webpack/components/ProxmoxServer/components/NetworkInterface.js:86
 msgid "Bridge"
 msgstr ""
 
@@ -587,11 +622,16 @@ msgstr ""
 #: ../app/views/compute_resources_vms/form/proxmox/server/_volume_cdrom.html.erb:16
 #: ../app/views/compute_resources_vms/form/proxmox/server/_volume_cloud_init.html.erb:11
 #: ../app/views/compute_resources_vms/form/proxmox/server/_volume_hard_disk.html.erb:12
+#: ../webpack/components/ProxmoxContainer/MountPoint.js:32
+#: ../webpack/components/ProxmoxServer/components/CDRom.js:164
+#: ../webpack/components/ProxmoxServer/components/HardDisk.js:91
+#: ../webpack/components/ProxmoxVmType.js:313
 msgid "Storage"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_volume_mp.html.erb:9
+#: ../webpack/components/ProxmoxContainer/MountPoint.js:40
 msgid "Path"
 msgstr ""
 
@@ -603,148 +643,182 @@ msgstr ""
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_volume_mp.html.erb:10
 #: ../app/views/compute_resources_vms/form/proxmox/server/_volume_cloud_init.html.erb:13
-#: ../app/views/compute_resources_vms/form/proxmox/server/_volume_hard_disk.html.erb:14
+#: ../app/views/compute_resources_vms/form/proxmox/server/_volume_hard_disk.html.erb:15
+#: ../webpack/components/ProxmoxContainer/MountPoint.js:54
+#: ../webpack/components/ProxmoxServer/components/HardDisk.js:107
 msgid "Device"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_volume_mp.html.erb:11
 #: ../app/views/compute_resources_vms/form/proxmox/container/_volume_rootfs.html.erb:8
-#: ../app/views/compute_resources_vms/form/proxmox/server/_volume_hard_disk.html.erb:16
+#: ../app/views/compute_resources_vms/form/proxmox/server/_volume_hard_disk.html.erb:19
+#: ../webpack/components/ProxmoxContainer/MountPoint.js:48
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerStorage.js:159
+#: ../webpack/components/ProxmoxServer/components/HardDisk.js:124
 msgid "Size (GB)"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/container/_volume_rootfs.html.erb:5
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerStorage.js:144
 msgid "Rootfs"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:10
+#: ../webpack/components/ProxmoxServer/ProxmoxServerOptions.js:41
 msgid "Boot device order"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:10
+#: ../webpack/components/ProxmoxServer/ProxmoxServerOptions.js:42
 msgid "Order your devices, e.g. order=net0;ide2;scsi0. Default empty (any)"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:12
+#: ../webpack/components/ProxmoxServer/ProxmoxServerOptions.js:58
 msgid "Qemu Agent"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:13
+#: ../webpack/components/ProxmoxServer/ProxmoxServerOptions.js:66
 msgid "KVM"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:13
+#: ../webpack/components/ProxmoxServer/ProxmoxServerOptions.js:67
 msgid "Enable/disable KVM hardware virtualization"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:14
+#: ../webpack/components/ProxmoxServer/ProxmoxServerOptions.js:75
 msgid "VGA"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:15
+#: ../webpack/components/ProxmoxServer/ProxmoxServerOptions.js:83
 msgid "SCSI Controller"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:16
+#: ../webpack/components/ProxmoxServer/ProxmoxServerOptions.js:91
 msgid "BIOS"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:18
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:19
 #: ../app/views/compute_resources_vms/index/_proxmox.html.erb:9
 msgid "CPUs"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:20
-msgid "Sockets"
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:21
+#: ../app/views/compute_resources_vms/index/_proxmox.html.erb:8
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:100
+#: ../webpack/components/ProxmoxVmType.js:221
+msgid "Type"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:22
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:108
+msgid "Sockets"
+msgstr ""
+
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:24
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:122
 msgid "VCPUs"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:25
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:27
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:143
 msgid "Enable NUMA"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:26
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:28
 msgid "CPU Flags"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:34
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:38
 msgid "Minimum memory (MB)"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:35
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:39
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:194
 msgid "Shares (MB)"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:40
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:47
 #: ../app/views/compute_resources_vms/form/proxmox/server/_volume_cloud_init.html.erb:8
 msgid "Cloud-init"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:41
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:48
 msgid "User"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:42
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:49
 msgid "Password"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:43
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:50
 msgid "DNS domain"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:44
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:51
 msgid "DNS servers"
 msgstr ""
 
-#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:45
+#: ../app/views/compute_resources_vms/form/proxmox/server/_config.html.erb:52
 msgid "SSH public key"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/server/_network.html.erb:8
+#: ../webpack/components/ProxmoxServer/components/NetworkInterface.js:78
 msgid "Card"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/server/_network.html.erb:12
+#: ../webpack/components/ProxmoxServer/components/NetworkInterface.js:108
 msgid "Multiqueue"
 msgstr ""
 
 #: ../app/views/compute_resources_vms/form/proxmox/server/_network.html.erb:14
+#: ../webpack/components/ProxmoxServer/components/NetworkInterface.js:123
 msgid "Disconnect"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/server/_volume_cdrom.html.erb:8
+#: ../webpack/components/ProxmoxServer/components/CDRom.js:103
 msgid "CD-ROM"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/server/_volume_cdrom.html.erb:9
+#: ../webpack/components/ProxmoxServer/components/CDRom.js:120
 msgid "Media"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/server/_volume_cdrom.html.erb:11
+#: ../webpack/components/ProxmoxServer/components/CDRom.js:131
 msgid "None"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/server/_volume_cdrom.html.erb:12
+#: ../webpack/components/ProxmoxServer/components/CDRom.js:140
 msgid "Physical"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/server/_volume_cdrom.html.erb:17
+#: ../webpack/components/ProxmoxServer/components/CDRom.js:189
 msgid "Image ISO"
 msgstr ""
 
 #:
 #: ../app/views/compute_resources_vms/form/proxmox/server/_volume_cloud_init.html.erb:12
 #: ../app/views/compute_resources_vms/form/proxmox/server/_volume_hard_disk.html.erb:13
+#: ../webpack/components/ProxmoxServer/components/HardDisk.js:99
 msgid "Controller"
 msgstr ""
 
@@ -754,7 +828,8 @@ msgid "Hard disk"
 msgstr ""
 
 #:
-#: ../app/views/compute_resources_vms/form/proxmox/server/_volume_hard_disk.html.erb:15
+#: ../app/views/compute_resources_vms/form/proxmox/server/_volume_hard_disk.html.erb:18
+#: ../webpack/components/ProxmoxServer/components/HardDisk.js:116
 msgid "Cache"
 msgstr ""
 
@@ -792,8 +867,206 @@ msgstr ""
 msgid "vmid of template vm."
 msgstr ""
 
-#: ../lib/foreman_fog_proxmox/engine.rb:47
+#: ../lib/foreman_fog_proxmox/engine.rb:45
 msgid "Foreman Fog Proxmox widget"
+msgstr ""
+
+#: ../webpack/components/ProxmoxContainer/MountPoint.js:21
+msgid "Path cannot be empty"
+msgstr ""
+
+#: ../webpack/components/ProxmoxContainer/MountPoint.js:59
+#: ../webpack/components/ProxmoxServer/components/HardDisk.js:112
+msgid "Device value is set automatically."
+msgstr ""
+
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerNetwork.js:138
+#: ../webpack/components/ProxmoxServer/ProxmoxServerNetwork.js:119
+msgid "Add Interface"
+msgstr ""
+
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerNetwork.js:151
+#: ../webpack/components/ProxmoxServer/ProxmoxServerNetwork.js:132
+msgid "Nic %(nicId)s"
+msgstr ""
+
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerOptions.js:80
+msgid "Template Storage"
+msgstr ""
+
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerOptions.js:97
+msgid "Fetching templates..."
+msgstr ""
+
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerOptions.js:109
+msgid "Failed fetching templates please try again."
+msgstr ""
+
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerOptions.js:116
+msgid "Root Password"
+msgstr ""
+
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerOptions.js:132
+#: ../webpack/components/ProxmoxServer/ProxmoxServerOptions.js:99
+msgid "OS Type"
+msgstr ""
+
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerOptions.js:153
+msgid "Search Domain"
+msgstr ""
+
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerStorage.js:189
+msgid "Add MountPoint"
+msgstr ""
+
+#: ../webpack/components/ProxmoxContainer/ProxmoxContainerStorage.js:206
+msgid "Mount Point %(mp)s"
+msgstr ""
+
+#: ../webpack/components/ProxmoxContainer/components/NetworkInterface.js:52
+#: ../webpack/components/ProxmoxServer/components/NetworkInterface.js:53
+msgid "Error: Duplicate ID found."
+msgstr ""
+
+#: ../webpack/components/ProxmoxContainer/components/NetworkInterface.js:66
+msgid "Error: Duplicate Name found."
+msgstr ""
+
+#: ../webpack/components/ProxmoxContainer/components/NetworkInterface.js:154
+#: ../webpack/components/ProxmoxServer/components/NetworkInterface.js:94
+msgid "VLAN Tag"
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:25
+msgid "Required to let the guest OS know if MDS is mitigated correctly"
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:28
+msgid "Meltdown fix cost reduction on Westmere, Sandy-, and IvyBridge Intel CPUs"
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:31
+msgid "Allows improved Spectre mitigation with Intel CPUs"
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:32
+msgid "Protection for \\\"Speculative Store Bypass\\\" for Intel models"
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:33
+msgid "Allows improved Spectre mitigation with AMD CPUs"
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:34
+msgid "Basis for \\\"Speculative Store Bypass\\\" protection for AMD models"
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:37
+msgid ""
+"Improves Spectre mitigation performance with AMD CPUs, best used with \\\"virt-s"
+"sbd\\\""
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:40
+msgid "Notifies guest OS that host is not vulnerable for Spectre on AMD CPUs"
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:43
+msgid "Allow guest OS to use 1GB size pages, if host HW supports it"
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:44
+msgid ""
+"Improve performance in overcommitted Windows guests. May lead to guest bluescr"
+"eens on old CPUs."
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:47
+msgid "Improve performance for nested virtualization. Only supported on Intel CPUs."
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:50
+msgid "Activate AES instruction set for HW accelaration."
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:155
+msgid "Extra CPU Flags"
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/ProxmoxServerHardware.js:187
+msgid "Minimum Memory (MB)"
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/ProxmoxServerStorage.js:325
+msgid "Add HardDisk"
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/ProxmoxServerStorage.js:334
+msgid "Add Efi Disk"
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/ProxmoxServerStorage.js:372
+msgid "Hard Disk %(hddId)s"
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/components/CDRom.js:184
+msgid "Fetching images ISO..."
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/components/CDRom.js:196
+msgid "Failed fetching images ISO please try again."
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/components/CPUFlagsModal.js:37
+msgid "Confirm"
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/components/CPUFlagsModal.js:45
+msgid "Reset"
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/components/EFIDisk.js:59
+msgid "EFI Disk"
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/components/EFIDisk.js:64
+msgid "The EFI Disk requires OVMF BIOS. Please switch the BIOS type to OVMF."
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/components/EFIDisk.js:101
+msgid "EFI Storage"
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/components/EFIDisk.js:113
+msgid "Pre-Enrolled Keys"
+msgstr ""
+
+#: ../webpack/components/ProxmoxServer/components/HardDisk.js:47
+msgid ""
+"Reached maximum number of devices for controller %(value)s. Please select anot"
+"her controller."
+msgstr ""
+
+#: ../webpack/components/ProxmoxStoragesUtils.js:28
+msgid "%(name)s (free: %(free)s, used: %(used)s, total: %(total)s)"
+msgstr ""
+
+#: ../webpack/components/ProxmoxVmType.js:241
+msgid ""
+"Failed to load Proxmox metadata. Please check your compute resource connection"
+"."
+msgstr ""
+
+#: ../webpack/components/ProxmoxVmType.js:275
+msgid "Advanced Options"
+msgstr ""
+
+#: ../webpack/components/ProxmoxVmType.js:287
+msgid "Hardware"
+msgstr ""
+
+#: ../webpack/components/ProxmoxVmType.js:300
+msgid "Network Interfaces"
 msgstr ""
 
 #: gemspec.rb:4

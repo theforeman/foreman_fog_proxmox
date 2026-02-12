@@ -1,0 +1,643 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the foreman_fog_proxmox package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+# Translators:
+# Temuri Doghonadze <temuri.doghonadze@gmail.com>, 2023
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: foreman_fog_proxmox 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2020-03-08 09:47+0000\n"
+"Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>, 2023\n"
+"Language-Team: Georgian (https://app.transifex.com/foreman/teams/114/ka/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ka\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+msgid "%(name)s (free: %(free)s, used: %(used)s, total: %(total)s)"
+msgstr ""
+
+msgid "%<s>s console is not supported at this time"
+msgstr "კონსოლი %<s>s ამჟამად მხარდაჭერილი არაა"
+
+msgid "%<vm>s is now %<vm_state>s"
+msgstr "%<vm>s ახლა %<vm_state>s -ია"
+
+msgid "Access ticket fields"
+msgstr "წვდომის ბილეთის ველები"
+
+msgid "Activate AES instruction set for HW accelaration."
+msgstr ""
+
+msgid "Add CD-ROM"
+msgstr "CD-ROM-ის დამატება"
+
+msgid "Add Cloud-init"
+msgstr "Cloud-init-ის დამატება"
+
+msgid "Add Efi Disk"
+msgstr ""
+
+msgid "Add Hard Disk"
+msgstr "მყარი დისკის დამატება"
+
+msgid "Add HardDisk"
+msgstr ""
+
+msgid "Add Interface"
+msgstr ""
+
+msgid "Add Mount Point"
+msgstr "მიმაგრების წერტილის დამატება"
+
+msgid "Add MountPoint"
+msgstr ""
+
+msgid "Add Volume"
+msgstr "ტომის დამატება"
+
+msgid "Advanced"
+msgstr "დამატებით"
+
+msgid "Advanced Options"
+msgstr ""
+
+msgid "Allow guest OS to use 1GB size pages, if host HW supports it"
+msgstr ""
+
+msgid "Allows improved Spectre mitigation with AMD CPUs"
+msgstr ""
+
+msgid "Allows improved Spectre mitigation with Intel CPUs"
+msgstr ""
+
+msgid "Architecture"
+msgstr "არქიტექტურა"
+
+msgid "Associate VM"
+msgstr "ვმ-ის ასოცირება"
+
+msgid "Associate VM to a Foreman host"
+msgstr "ვმ-ის Foreman-ის ჰოსტთან ასოცირებ"
+
+msgid "Authentication method"
+msgstr "ავთენტიკაციის მეთოდი"
+
+msgid "Average load (x100)"
+msgstr "საშუალო დატვირთვა (x100)"
+
+msgid "BIOS"
+msgstr "BIOS"
+
+msgid "Basis for \\\"Speculative Store Bypass\\\" protection for AMD models"
+msgstr ""
+
+msgid "Boot device order"
+msgstr "ჩატვირთვადი მოწყობილობების მიმდევრობა"
+
+msgid "Bridge"
+msgstr "ხდი"
+
+msgid "CD-ROM"
+msgstr "CD-ROM"
+
+msgid "CIDR IPv4"
+msgstr "CIDR IPv4"
+
+msgid "CIDR IPv6"
+msgstr "CIDR IPv6"
+
+msgid "CPU"
+msgstr "პროცესორი"
+
+msgid "CPU Flags"
+msgstr "CPU -ის ალმები"
+
+msgid "CPU limit"
+msgstr "CPU-ის ლიმიტი"
+
+msgid "CPU units"
+msgstr "CPU-ის ერთეული"
+
+msgid "CPUs"
+msgstr "CPU"
+
+msgid "Cache"
+msgstr "კეში"
+
+msgid "Card"
+msgstr "კარტი"
+
+msgid "Change the password"
+msgstr "პაროლის შეცვლა"
+
+msgid "Click Test connection button before changing it"
+msgstr "შეცვლამდე მიერთების დატესტვის ღილაკზე დააწკაპუნეთ"
+
+msgid "Click Test connection button to check token"
+msgstr "კოდის შესამოწმებლად მიერთების დატესტვის ღილაკზე დააწკაპუნეთ"
+
+msgid "Cloud-init"
+msgstr "Cloud-init"
+
+msgid "Cluster nodes"
+msgstr "კლასტერის კვანძები"
+
+msgid "Common fields"
+msgstr "საერთო ველები"
+
+msgid "Confirm"
+msgstr ""
+
+msgid "Console"
+msgstr "კონსოლი"
+
+msgid "Controller"
+msgstr "კონტროლერი"
+
+msgid "Cores"
+msgstr "ბირთვები"
+
+msgid "Create image?"
+msgstr "შევქმნა დისკის ასლი?"
+
+msgid "DHCP IPv4"
+msgstr "DHCP IPv4"
+
+msgid "DHCP IPv6"
+msgstr "DHCP IPv6"
+
+msgid "DNS"
+msgstr "DNS"
+
+msgid "DNS domain"
+msgstr "DNS დომენი"
+
+msgid "DNS server"
+msgstr "DNS სერვერი"
+
+msgid "DNS servers"
+msgstr "DNS სერვერები"
+
+msgid "Description"
+msgstr "აღწერა"
+
+msgid "Device"
+msgstr "მოწყობილობა"
+
+msgid "Device value is set automatically."
+msgstr ""
+
+msgid "Disconnect"
+msgstr "გათიშვა"
+
+msgid "Does this image support user data input (e.g. via cloud-init)?"
+msgstr "აქვს თუ არა ამ ასლს მომხმარებლის მონაცემების ჩაწოდების მხარდაჭერა (მაგ. cloudinit)?"
+
+msgid "EFI Disk"
+msgstr ""
+
+msgid "EFI Storage"
+msgstr ""
+
+msgid "Enable NUMA"
+msgstr "NUMA-ის ჩართვა"
+
+msgid "Enable/disable KVM hardware virtualization"
+msgstr "KVM-ის აპარატურული ვირტუალიზაციის ჩართ/გამორთ"
+
+msgid "Error - %<message>s"
+msgstr "შეცდომა - %<message>s"
+
+msgid "Error: Duplicate ID found."
+msgstr ""
+
+msgid "Error: Duplicate Name found."
+msgstr ""
+
+msgid "Extended"
+msgstr "გაფართოებული"
+
+msgid "Extra CPU Flags"
+msgstr ""
+
+msgid "Failed fetching images ISO please try again."
+msgstr ""
+
+msgid "Failed fetching templates please try again."
+msgstr ""
+
+msgid "Failed retrieving proxmox server vm by vmid=%<vmid>s"
+msgstr "Proxmox-ის სერვერის ვმ-ის მიღების შეცდომა vmid=%<vmid>s"
+
+msgid "Failed to acquire IP addresses from compute resource for %<name>s"
+msgstr "%<name>s-სთვის გამოთვლითი რესურსიდან IP მისამართის მიღების შეცდომა"
+
+msgid "Failed to load Proxmox metadata. Please check your compute resource connection."
+msgstr ""
+
+msgid "Failed to set console: %s"
+msgstr "კონსოლის დაყენების შეცდომა: %s"
+
+msgid "Failed to undo update compute %<compute_resource>s instance %<name>s: %<e>s"
+msgstr "გამოთვლითი %<compute_resource>-ის გაშვებული ასლი განახლების დაბრუნების შეცდომა %<name>s: %<e>s"
+
+msgid "Failed to update a compute %<compute_resource>s instance %<name>s: %<e>s"
+msgstr "გამოთვლითი %<compute_resource>-ის გაშვებული ასლი ვერ განახლდა %<name>s: %<e>s"
+
+msgid "Fetching images ISO..."
+msgstr ""
+
+msgid "Fetching templates..."
+msgstr ""
+
+msgid "Firewall"
+msgstr "ბრანდმაუერი"
+
+msgid "Foreman Fog Proxmox widget"
+msgstr "Foreman Fog Proxmox ვიჯეტი"
+
+msgid "ForemanFogProxmox plugin adds Proxmox VE compute resource to Foreman using fog-proxmox gem."
+msgstr "დამატება ForemanFogProxmox Foreman-ში Proxmox VE-ის გამოთვლითი რესურსების მხარდაჭერას ამატებს fox-proxmox gem-ის გამოყენებით."
+
+msgid "Gateway IPv4"
+msgstr "IPv4 ნაგულისხმები რაუტერი"
+
+msgid "Gateway IPv6"
+msgstr "IPv6 ნაგულისხმები რაუტერი"
+
+msgid "General"
+msgstr "მთავარი"
+
+msgid "Hard Disk %(hddId)s"
+msgstr ""
+
+msgid "Hard disk"
+msgstr "მყარი დისკი"
+
+msgid "Hardware"
+msgstr ""
+
+msgid "Host"
+msgstr "ჰოსტი"
+
+msgid "Hostname"
+msgstr "ჰოსტის სახელი"
+
+msgid "Identifier"
+msgstr "იდენტიფიკატორი"
+
+msgid "Image"
+msgstr "ასლი"
+
+msgid "Image ISO"
+msgstr "ასლის ISO"
+
+msgid "Image VMID"
+msgstr "ასლის VMID"
+
+msgid "Import as managed Host"
+msgstr "მართულ ჰოსტად შემოტანა"
+
+msgid "Import as unmanaged Host"
+msgstr "უმართავ ჰოსტად შემოტანა"
+
+msgid "Improve performance for nested virtualization. Only supported on Intel CPUs."
+msgstr ""
+
+msgid "Improve performance in overcommitted Windows guests. May lead to guest bluescreens on old CPUs."
+msgstr ""
+
+msgid "Improves Spectre mitigation performance with AMD CPUs, best used with \\\"virt-ssbd\\\""
+msgstr ""
+
+msgid "KVM"
+msgstr "KVM"
+
+msgid "Main option"
+msgid_plural "Main options"
+msgstr[0] "მთავარი პარამეტრი"
+msgstr[1] "მთავარი პარამეტრები"
+
+msgid "Media"
+msgstr "მედია"
+
+msgid "Meltdown fix cost reduction on Westmere, Sandy-, and IvyBridge Intel CPUs"
+msgstr ""
+
+msgid "Memory"
+msgstr "მეხსიერება"
+
+msgid "Memory (MB)"
+msgstr "მეხსიერება (მბ)"
+
+msgid "Minimum Memory (MB)"
+msgstr ""
+
+msgid "Minimum memory (MB)"
+msgstr "მინიმალური მეხსიერება(მბ)"
+
+msgid "Mount Point %(mp)s"
+msgstr ""
+
+msgid "Mount point"
+msgstr "მიმაგრების წერტილი"
+
+msgid "Multiqueue"
+msgstr "მრავალრიგიანი"
+
+msgid "Name"
+msgstr "სახელი"
+
+msgid "Network Interfaces"
+msgstr ""
+
+msgid "Nic"
+msgstr "NIC"
+
+msgid "Nic %(nicId)s"
+msgstr ""
+
+msgid "No host found to associate this VM with"
+msgstr "ეს ვმ-ი არცერთ ჰოსტთან არაა ასოცირებული"
+
+msgid "Node"
+msgstr "კვანძი"
+
+msgid "None"
+msgstr "არაფერი"
+
+msgid "Notifies guest OS that host is not vulnerable for Spectre on AMD CPUs"
+msgstr ""
+
+msgid "OS Template"
+msgstr "ოს-ის საცავი"
+
+msgid "OS Type"
+msgstr ""
+
+msgid "OS type"
+msgstr "ოს-ის ტიპი"
+
+msgid "Operating System"
+msgstr "ოპერაციული სისტემა"
+
+msgid "Operating system family %<type>s is not consistent with %<ostype>s"
+msgstr "ოპერაციული სისტემის ოჯახი %<type>s არ შეესაბამება %<ostype>s-ს"
+
+msgid "Optionally provide a CA, or a correctly ordered CA chain. If left blank, disable ssl_verify_peer."
+msgstr "არასავალდებული CA ან CA-ების სწორად დალაგებული ჯაჭვი. თუ ცარიელია, ssl_verify_peer გამორთული იქნება."
+
+msgid "Order your devices, e.g. order=net0;ide2;scsi0. Default empty (any)"
+msgstr "დაალაგეთ თქვენი მოწყობილობები. მაგ: order=net0;ide2;scsi0. ნაგულისხმებად ცარიელია (ყველა)"
+
+msgid "Password"
+msgstr "პაროლი"
+
+msgid "Password to authenticate with - used for SSH finish step."
+msgstr "პაროლი - საბოლოო ნაბიჯისთვის."
+
+msgid "Path"
+msgstr "კონტური"
+
+msgid "Path cannot be empty"
+msgstr ""
+
+msgid "Physical"
+msgstr "ფიზიკური"
+
+msgid "Pool"
+msgstr "პული"
+
+msgid "Power"
+msgstr "კვება"
+
+msgid "Pre-Enrolled Keys"
+msgstr ""
+
+msgid "Protection for \\\"Speculative Store Bypass\\\" for Intel models"
+msgstr ""
+
+msgid "Proxmox Node Statistics: %s"
+msgstr "Proxmox-ის კვანძის სტატისტიკა: %s"
+
+msgid "Proxmox version %<version>s is not semver suitable"
+msgstr "Proxmox ვერსია %<version>s შესაფერისი არაა"
+
+msgid "Qemu Agent"
+msgstr "Qemu-ის აგენტი"
+
+msgid "Rate limit"
+msgstr "სიხშირის ლიმიტი"
+
+msgid "Reached maximum number of devices for controller %(value)s. Please select another controller."
+msgstr ""
+
+msgid "Required to let the guest OS know if MDS is mitigated correctly"
+msgstr ""
+
+msgid "Reset"
+msgstr ""
+
+msgid "Root Password"
+msgstr ""
+
+msgid "Root password"
+msgstr "Root-ის პაროლი"
+
+msgid "Rootfs"
+msgstr "Rootfs"
+
+msgid "SCSI Controller"
+msgstr "SCSI კონტროლერი"
+
+msgid "SSH public key"
+msgstr "SSH საჯარო გასაღები"
+
+msgid "SSL fields"
+msgstr "SSL ველები"
+
+msgid "SSL verify peer"
+msgstr "SSL პარტნიორის შემოწმება"
+
+msgid "Search Domain"
+msgstr ""
+
+msgid "Search domain"
+msgstr "საძებნი დომენი"
+
+msgid "Shares (MB)"
+msgstr "გაზიარებულები (მბ)"
+
+msgid "Size (GB)"
+msgstr "ზომა (გბ)"
+
+msgid "Sockets"
+msgstr "სოკეტები"
+
+msgid "Start after creation?"
+msgstr "გავუშვა შექმნის შემდეგ?"
+
+msgid "Start at boot"
+msgstr "გაშვება ჩატვირთვისას"
+
+msgid "Storage"
+msgstr "საცავი"
+
+msgid "Swap (MB)"
+msgstr "სვოპი (მბ)"
+
+msgid "Template Storage"
+msgstr ""
+
+msgid "Template storage"
+msgstr "შაბლონის საცავი"
+
+msgid "The EFI Disk requires OVMF BIOS. Please switch the BIOS type to OVMF."
+msgstr ""
+
+msgid "The user that is used to ssh into the instance, normally cloud-user, ubuntu, root etc"
+msgstr "მომხმარებელი, რომელიც გაშვებულ ასლში შესასვლელად გამოიყენება. გამოიყენება cloud-user, ububtu, root, ა.შ"
+
+msgid "Time"
+msgstr "დრო"
+
+msgid "Type"
+msgstr "ტიპი"
+
+msgid "Type %<type>s, node %<node>s, %<cpus>s CPUs and %<memory>s MB memory"
+msgstr "ტიპი %<type>s, კვანძი %<node>s, %<cpus>s CPU-ები და %<memory>s მბ მეხსიერება"
+
+msgid "URL"
+msgstr "ბმული"
+
+msgid "Unable to shrink %<id>s size. Proxmox allows only increasing size."
+msgstr "%<id>s-ის ზომის დაპატარავება შეუძლია. Proxmox-ს ზომის მხოლოდ გაზრდა შეუძლია."
+
+msgid "Unable to store X509 certificates"
+msgstr "X509 სერთიფიკატების შენახვა შეუძლებელია"
+
+msgid "Uptime"
+msgstr "ჩართულია"
+
+msgid "User"
+msgstr "მომხმარებელი"
+
+msgid "User token expires"
+msgstr "მომხმარებლის კოდის ვადა"
+
+msgid "User token fields"
+msgstr "მომხმარებლის კოდის ველები"
+
+msgid "User token id"
+msgstr "მომხმარებლის კოდის id"
+
+msgid "User token value"
+msgstr "მომხმარებლის კოდის მნიშვნელობა"
+
+msgid "VCPUs"
+msgstr "VCPU-ები"
+
+msgid "VGA"
+msgstr "VGA"
+
+msgid "VLAN Tag"
+msgstr ""
+
+msgid "VLAN tag"
+msgstr "VLAN ჭდე"
+
+msgid "VM ID"
+msgstr "VM ID"
+
+msgid "VM already associated with a host"
+msgstr "ვმ-ი უკვე ასოცირებულია ჰოსტთან"
+
+msgid "VM associated to host %s"
+msgstr "ვმ-ი ასოცირდა ჰოსტთან"
+
+msgid "Version"
+msgstr "ვერსია"
+
+msgid "X509 Certification Authorities"
+msgstr "X509 CA"
+
+msgid "add new cd-rom"
+msgstr "ახალი CD-ROM-ის დამატება"
+
+msgid "add new cloud-init"
+msgstr "ახალი Cloud-init-ის დამატება"
+
+msgid "add new hard disk"
+msgstr "ახალი მყარი დისკის დამატება"
+
+msgid "add new mount point"
+msgstr "ახალი მიმაგრების წერტილის დამატება"
+
+msgid "add new storage volume"
+msgstr "საცავის ახალი ტომის დამატება"
+
+msgid "e.g. /path/to/"
+msgstr "მაგ. /path/to/"
+
+msgid "e.g. https://127.0.0.1:8006/api2/json"
+msgstr "მაგ. https://127.0.0.1:8006/api2/json"
+
+msgid "e.g. root@pam"
+msgstr "მაგ. root@pam"
+
+msgid "eth[n] with n integer >= 0, e.g. eth0"
+msgstr "eth[n] n integer-ით >= 0, მაგ: eth0"
+
+msgid "failed to %<action>s %<vm>s"
+msgstr "%<action>s -ის შეცდომა %<vm>s -ზე"
+
+msgid "failed to save %<name>s"
+msgstr "შეცდომა %<name>s -ის შენახვისას"
+
+msgid "integer within [0..128]"
+msgstr "მთელი რიცხვი დიაპაზონიდან [0..128]"
+
+msgid "integer within [0..32]"
+msgstr "მთელი რიცხვი დიაპაზონიდან [0..32]"
+
+msgid "invalid vmid=%<vmid>s"
+msgstr "არასწორი vmid=%<vmid>s"
+
+msgid "net[n] with n integer >= 0, e.g. net0"
+msgstr "net[n] n integer-ით >= 0, მაგ: net0"
+
+msgid "new_typed_vm(%<type>s) with vm_typed_instance_defaults: vm_h=%<vm_h>s"
+msgstr "new_typed_vm(%<type>s) with vm_typed_instance_defaults: vm_h=%<vm_h>s"
+
+msgid "parse_efidisk(): args=%<args>s"
+msgstr ""
+
+msgid "parse_hard_disk_volume(): args=%<args>s"
+msgstr "parse_hard_disk_volume(): args=%<args>s"
+
+msgid "remove CDROM"
+msgstr "cd-rom-ის წაშლა"
+
+msgid "remove Cloud-init"
+msgstr "cloud-init-ის წაშლა"
+
+msgid "remove Hard disk"
+msgstr "მყარი დისკის წაშლა"
+
+msgid "remove mount point"
+msgstr "მიმაგრების წერტილის წაშლა"
+
+msgid "remove network interface"
+msgstr "ქსელის ინტერფეისის წაშლა"
+
+msgid "remove storage volume"
+msgstr "საცავის ტომის წაშლა"
+
+msgid "vmid of template vm."
+msgstr "შაბლონური ვმ-ის VMID."

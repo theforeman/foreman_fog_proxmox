@@ -17,6 +17,9 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "\n"
 
+msgid "%(name)s (free: %(free)s, used: %(used)s, total: %(total)s)"
+msgstr ""
+
 msgid "%<s>s console is not supported at this time"
 msgstr ""
 
@@ -26,22 +29,49 @@ msgstr ""
 msgid "Access ticket fields"
 msgstr ""
 
+msgid "Activate AES instruction set for HW accelaration."
+msgstr ""
+
 msgid "Add CD-ROM"
 msgstr ""
 
 msgid "Add Cloud-init"
 msgstr ""
 
+msgid "Add Efi Disk"
+msgstr ""
+
 msgid "Add Hard Disk"
 msgstr ""
 
+msgid "Add HardDisk"
+msgstr ""
+
+msgid "Add Interface"
+msgstr ""
+
 msgid "Add Mount Point"
+msgstr ""
+
+msgid "Add MountPoint"
 msgstr ""
 
 msgid "Add Volume"
 msgstr ""
 
 msgid "Advanced"
+msgstr ""
+
+msgid "Advanced Options"
+msgstr ""
+
+msgid "Allow guest OS to use 1GB size pages, if host HW supports it"
+msgstr ""
+
+msgid "Allows improved Spectre mitigation with AMD CPUs"
+msgstr ""
+
+msgid "Allows improved Spectre mitigation with Intel CPUs"
 msgstr ""
 
 msgid "Architecture"
@@ -60,6 +90,9 @@ msgid "Average load (x100)"
 msgstr ""
 
 msgid "BIOS"
+msgstr ""
+
+msgid "Basis for \\\"Speculative Store Bypass\\\" protection for AMD models"
 msgstr ""
 
 msgid "Boot device order"
@@ -116,6 +149,9 @@ msgstr ""
 msgid "Common fields"
 msgstr ""
 
+msgid "Confirm"
+msgstr ""
+
 msgid "Console"
 msgstr ""
 
@@ -152,10 +188,19 @@ msgstr ""
 msgid "Device"
 msgstr ""
 
+msgid "Device value is set automatically."
+msgstr ""
+
 msgid "Disconnect"
 msgstr ""
 
 msgid "Does this image support user data input (e.g. via cloud-init)?"
+msgstr ""
+
+msgid "EFI Disk"
+msgstr ""
+
+msgid "EFI Storage"
 msgstr ""
 
 msgid "Enable NUMA"
@@ -167,13 +212,31 @@ msgstr ""
 msgid "Error - %<message>s"
 msgstr ""
 
+msgid "Error: Duplicate ID found."
+msgstr ""
+
+msgid "Error: Duplicate Name found."
+msgstr ""
+
 msgid "Extended"
+msgstr ""
+
+msgid "Extra CPU Flags"
+msgstr ""
+
+msgid "Failed fetching images ISO please try again."
+msgstr ""
+
+msgid "Failed fetching templates please try again."
 msgstr ""
 
 msgid "Failed retrieving proxmox server vm by vmid=%<vmid>s"
 msgstr ""
 
 msgid "Failed to acquire IP addresses from compute resource for %<name>s"
+msgstr ""
+
+msgid "Failed to load Proxmox metadata. Please check your compute resource connection."
 msgstr ""
 
 msgid "Failed to set console: %s"
@@ -183,6 +246,12 @@ msgid "Failed to undo update compute %<compute_resource>s instance %<name>s: %<e
 msgstr ""
 
 msgid "Failed to update a compute %<compute_resource>s instance %<name>s: %<e>s"
+msgstr ""
+
+msgid "Fetching images ISO..."
+msgstr ""
+
+msgid "Fetching templates..."
 msgstr ""
 
 msgid "Firewall"
@@ -203,7 +272,13 @@ msgstr ""
 msgid "General"
 msgstr ""
 
+msgid "Hard Disk %(hddId)s"
+msgstr ""
+
 msgid "Hard disk"
+msgstr ""
+
+msgid "Hardware"
 msgstr ""
 
 msgid "Host"
@@ -230,6 +305,15 @@ msgstr ""
 msgid "Import as unmanaged Host"
 msgstr ""
 
+msgid "Improve performance for nested virtualization. Only supported on Intel CPUs."
+msgstr ""
+
+msgid "Improve performance in overcommitted Windows guests. May lead to guest bluescreens on old CPUs."
+msgstr ""
+
+msgid "Improves Spectre mitigation performance with AMD CPUs, best used with \\\"virt-ssbd\\\""
+msgstr ""
+
 msgid "KVM"
 msgstr ""
 
@@ -241,13 +325,22 @@ msgstr[1] ""
 msgid "Media"
 msgstr ""
 
+msgid "Meltdown fix cost reduction on Westmere, Sandy-, and IvyBridge Intel CPUs"
+msgstr ""
+
 msgid "Memory"
 msgstr ""
 
 msgid "Memory (MB)"
 msgstr ""
 
+msgid "Minimum Memory (MB)"
+msgstr ""
+
 msgid "Minimum memory (MB)"
+msgstr ""
+
+msgid "Mount Point %(mp)s"
 msgstr ""
 
 msgid "Mount point"
@@ -259,7 +352,13 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
+msgid "Network Interfaces"
+msgstr ""
+
 msgid "Nic"
+msgstr ""
+
+msgid "Nic %(nicId)s"
 msgstr ""
 
 msgid "No host found to associate this VM with"
@@ -271,10 +370,13 @@ msgstr ""
 msgid "None"
 msgstr ""
 
-msgid "OS"
+msgid "Notifies guest OS that host is not vulnerable for Spectre on AMD CPUs"
 msgstr ""
 
 msgid "OS Template"
+msgstr ""
+
+msgid "OS Type"
 msgstr ""
 
 msgid "OS type"
@@ -301,6 +403,9 @@ msgstr ""
 msgid "Path"
 msgstr ""
 
+msgid "Path cannot be empty"
+msgstr ""
+
 msgid "Physical"
 msgstr ""
 
@@ -308,6 +413,12 @@ msgid "Pool"
 msgstr ""
 
 msgid "Power"
+msgstr ""
+
+msgid "Pre-Enrolled Keys"
+msgstr ""
+
+msgid "Protection for \\\"Speculative Store Bypass\\\" for Intel models"
 msgstr ""
 
 msgid "Proxmox Node Statistics: %s"
@@ -320,6 +431,18 @@ msgid "Qemu Agent"
 msgstr ""
 
 msgid "Rate limit"
+msgstr ""
+
+msgid "Reached maximum number of devices for controller %(value)s. Please select another controller."
+msgstr ""
+
+msgid "Required to let the guest OS know if MDS is mitigated correctly"
+msgstr ""
+
+msgid "Reset"
+msgstr ""
+
+msgid "Root Password"
 msgstr ""
 
 msgid "Root password"
@@ -338,6 +461,9 @@ msgid "SSL fields"
 msgstr ""
 
 msgid "SSL verify peer"
+msgstr ""
+
+msgid "Search Domain"
 msgstr ""
 
 msgid "Search domain"
@@ -364,7 +490,13 @@ msgstr ""
 msgid "Swap (MB)"
 msgstr ""
 
+msgid "Template Storage"
+msgstr ""
+
 msgid "Template storage"
+msgstr ""
+
+msgid "The EFI Disk requires OVMF BIOS. Please switch the BIOS type to OVMF."
 msgstr ""
 
 msgid "The user that is used to ssh into the instance, normally cloud-user, ubuntu, root etc"
@@ -410,6 +542,9 @@ msgid "VCPUs"
 msgstr ""
 
 msgid "VGA"
+msgstr ""
+
+msgid "VLAN Tag"
 msgstr ""
 
 msgid "VLAN tag"
@@ -476,6 +611,9 @@ msgid "net[n] with n integer >= 0, e.g. net0"
 msgstr ""
 
 msgid "new_typed_vm(%<type>s) with vm_typed_instance_defaults: vm_h=%<vm_h>s"
+msgstr ""
+
+msgid "parse_efidisk(): args=%<args>s"
 msgstr ""
 
 msgid "parse_hard_disk_volume(): args=%<args>s"

@@ -24,6 +24,40 @@ module ForemanFogProxmox
   module ProxmoxVolumes
     include ProxmoxVMHelper
 
+    def update_extra_volumes_definitions(data_in)
+      new_data = {}
+      data_in.each do |key, value|
+        if key != 'volumes_attributes'
+          new_data[key] = value
+        else
+          # Start to look into the data that needs to be updated
+          volumes_attributes = {}
+          value.each do |index, dev_specs|
+            # Only if this contains only 1 set like: {"size"=>"xxGB"}
+            if index > 0 && dev_specs.keys.count == 1
+              # Copy the data from the first entry
+              newid = "#{value['0']['controller']}#{index}"
+              newdev = {
+                'storage_type' => value['0']['storage_type'],
+                'storage' => value['0']['storage'],
+                'controller' => value['0']['controller'],
+                'cache' => value['0']['cache'],
+                'device' => index,
+                'id' => newid,
+                'size' => dev_specs['size'],
+              }
+              volumes_attributes[index] = newdev
+            else
+              volumes_attributes[index] = dev_specs
+            end
+          end
+          # Now add the (reworked) data back
+          new_data['volumes_attributes'] = volumes_attributes
+        end
+      end
+      new_data
+    end
+
     def delete_volume(vm, id, volume_attributes)
       logger.info("vm #{vm.identity} delete volume #{id}")
       vm.detach(id)

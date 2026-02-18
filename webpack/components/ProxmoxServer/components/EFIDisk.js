@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Title,
@@ -21,6 +21,26 @@ const EFIDisk = ({ onRemove, data, storages, nodeId, vmId }) => {
   const { bios } = useBios();
   const isBiosOvmf = bios === 'ovmf';
 
+  useEffect(() => {
+    if (storagesMap?.length > 0 && !efidisk?.volid?.value) {
+      const firstStorage = storagesMap[0].value;
+
+      const newVolId = setEfiDiskVolId(null, firstStorage, vmId);
+
+      setEfiDisk(prev => ({
+        ...prev,
+        storage: {
+          ...prev.storage,
+          value: firstStorage,
+        },
+        volid: {
+          ...prev.volid,
+          value: newVolId,
+        },
+      }));
+    }
+  }, [storagesMap, efidisk, vmId]);
+
   const handleChange = e => {
     const { name, type, checked, value: targetValue } = e.target;
     let value;
@@ -33,17 +53,24 @@ const EFIDisk = ({ onRemove, data, storages, nodeId, vmId }) => {
     const updatedKey = Object.keys(efidisk).find(
       key => efidisk[key].name === name
     );
-    const updatedData = {
+    let updatedData = {
       ...efidisk,
       [updatedKey]: { ...efidisk[updatedKey], value },
     };
-    setEfiDisk(updatedData);
 
     // If storage is changed, update volid accordingly
     if (name === efidisk?.storage?.name) {
       const newVolId = setEfiDiskVolId(null, value, vmId);
-      efidisk.volid.value = newVolId;
+      updatedData = {
+        ...updatedData,
+        volid: {
+          ...updatedData.volid,
+          value: newVolId,
+        },
+      };
     }
+
+    setEfiDisk(updatedData);
   };
 
   return (

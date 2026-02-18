@@ -14,7 +14,6 @@ import { sprintf, translate as __ } from 'foremanReact/common/I18n';
 import HardDisk from './components/HardDisk';
 import CDRom from './components/CDRom';
 import EFIDisk from './components/EFIDisk';
-import { setEfiDiskVolId } from '../ProxmoxVmUtils';
 
 const ProxmoxServerStorage = ({
   storage,
@@ -149,7 +148,7 @@ const ProxmoxServerStorage = ({
         },
         storage: {
           name: `${paramScope}[volumes_attributes][${nextId}][storage]`,
-          value: 'local',
+          value: '',
         },
         cache: {
           name: `${paramScope}[volumes_attributes][${nextId}][cache]`,
@@ -223,7 +222,7 @@ const ProxmoxServerStorage = ({
         },
         storage: {
           name: `${paramScope}[volumes_attributes][${nextId}][storage]`,
-          value: 'local',
+          value: '',
         },
         cdrom: {
           name: `${paramScope}[volumes_attributes][${nextId}][cdrom]`,
@@ -255,7 +254,7 @@ const ProxmoxServerStorage = ({
         },
         storage: {
           name: `${paramScope}[efidisk_attributes][storage]`,
-          value: 'local',
+          value: '',
         },
         format: {
           name: `${paramScope}[efidisk_attributes][format]`,
@@ -267,15 +266,6 @@ const ProxmoxServerStorage = ({
         },
       };
 
-      if (!isPreExisting) {
-        const initialVolId = setEfiDiskVolId(
-          null,
-          initEfiDisk.storage.value,
-          vmId
-        );
-        initEfiDisk.volid.value = initialVolId;
-      }
-
       // Handle pre_enrolled_keys naming difference
       if (initEfiDisk.hasOwnProperty('pre_enrolled_keys')) {
         initEfiDisk.preEnrolledKeys = initEfiDisk.pre_enrolled_keys;
@@ -286,7 +276,7 @@ const ProxmoxServerStorage = ({
       setEfiDisk(true);
       setEfiDiskData(initEfiDisk);
     },
-    [efiDisk, paramScope, vmId]
+    [efiDisk, paramScope]
   );
 
   const removeEfiDisk = () => {

@@ -60,10 +60,27 @@ module ProxmoxVMInterfacesHelper
   end
 
   def compute_dhcps(interface_attributes_h)
-    interface_attributes_h[:dhcp] = (interface_attributes_h[:ip] == 'dhcp') ? '1' : '0'
-    interface_attributes_h[:ip] = '' if interface_attributes_h[:dhcp] == '1'
-    interface_attributes_h[:dhcp6] = (interface_attributes_h[:ip6] == 'dhcp') ? '1' : '0'
-    interface_attributes_h[:ip6] = '' if interface_attributes_h[:dhcp6] == '1'
+    return if interface_attributes_h.nil?
+
+    sync_dhcp_for_ip(interface_attributes_h, 'ip', 'dhcp')
+    sync_dhcp_for_ip(interface_attributes_h, 'ip6', 'dhcp6')
+  end
+
+  def sync_dhcp_for_ip(attrs, ip_key, dhcp_key)
+    dhcp_value = attrs[dhcp_key] || attrs[dhcp_key.to_sym]
+    if dhcp_value.nil?
+      ip_value = attrs[ip_key] || attrs[ip_key.to_sym]
+      attrs[dhcp_key.to_sym] = (ip_value == 'dhcp') ? '1' : '0'
+      attrs[ip_key.to_sym] = '' if attrs[dhcp_key.to_sym] == '1'
+      return
+    end
+
+    ip_value = attrs[ip_key] || attrs[ip_key.to_sym]
+    if dhcp_value.to_s == '1'
+      attrs[ip_key.to_sym] = 'dhcp' if ip_value.to_s.empty?
+    elsif ip_value.to_s == 'dhcp'
+      attrs[ip_key.to_sym] = ''
+    end
   end
 
   def add_or_delete_typed_interface(interface_attributes, interfaces_to_delete, interfaces_to_add, type)

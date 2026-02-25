@@ -15,13 +15,22 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% if @host.compute_resource.class == ForemanFogProxmox::Proxmox %>
-<% compute_attributes = f.object.compute_attributes %>
-<% logger.debug("_add_vm_type_to_nic_provider_specific_form.html compute_attributes=#{compute_attributes}") %>
-<% node_id = f.object.respond_to?('node_id') ? f.object.node_id : nil %>
+<% compute_attributes = f.object.compute_attributes || {} %>
+<% compute_vm_type = compute_attributes['type'] || compute_attributes[:type] if compute_attributes.respond_to?(:[]) %>
+<% compute_node_id = compute_attributes['node_id'] || compute_attributes[:node_id] if compute_attributes.respond_to?(:[]) %>
+<% object_node_id = f.object.respond_to?(:node_id) ? f.object.node_id : nil %>
+<% host_compute_attrs = @host.respond_to?(:compute_attributes) ? (@host.compute_attributes || {}) : {} %>
+<% host_vm_type = host_compute_attrs['type'] || host_compute_attrs[:type] if host_compute_attrs.respond_to?(:[]) %>
+<% host_node_id = host_compute_attrs['node_id'] || host_compute_attrs[:node_id] if host_compute_attrs.respond_to?(:[]) %>
+<% inherited_profile_id = @host.respond_to?(:hostgroup) ? @host.hostgroup&.inherited_compute_profile_id : nil %>
+<% profile_id = @host.compute_profile_id || inherited_profile_id %>
+<% profile_attrs = profile_id.present? ? (@host.compute_resource.compute_profile_attributes_for(profile_id) || {}) : {} %>
+<% profile_vm_type = profile_attrs['type'] || profile_attrs[:type] if profile_attrs.respond_to?(:[]) %>
+<% profile_node_id = profile_attrs['node_id'] || profile_attrs[:node_id] if profile_attrs.respond_to?(:[]) %>
+<% vm_type = params.dig(:host, :compute_attributes, :type).presence || params.dig(:compute_attribute, :vm_attrs, :type).presence || compute_vm_type.presence || host_vm_type.presence || profile_vm_type.presence || 'qemu' %>
+<% node_id = params.dig(:host, :compute_attributes, :node_id).presence || params.dig(:compute_attribute, :vm_attrs, :node_id).presence || object_node_id.presence || compute_node_id.presence || host_node_id.presence || profile_node_id %>
 
-<%= f.fields_for 'compute_attributes', OpenStruct.new(f.object.compute_attributes) do |f| %>
-    <% vm_type = compute_attributes.respond_to?('type') ? compute_attributes.type : 'qemu' %>
-    <% logger.debug("_add_vm_type_to_nic_provider_specific_form.html vm_type=#{vm_type}") %>
+<%= f.fields_for 'compute_attributes', OpenStruct.new(compute_attributes) do |f| %>
     <%= render provider_partial(@host.compute_resource, 'network'), :f => f, :vm_type => vm_type, :node_id => node_id, :disabled => f.object.persisted?, :compute_resource => @host.compute_resource, :new_host => new_vm, :new_vm => new_vm %>
 <% end %>
 <% else %>

@@ -16,17 +16,19 @@ You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <% container = vm_type == 'lxc' %>
-<% index = f.index ? f.index.present? : 0 %>
+<% index = f.index.present? ? f.index : 0 %>
 
-<%= field_set_tag _("Nic"), :id => "container_network_#{index}", :style => ('display: none;' unless container), :disabled => !container do %>  
-    <%= text_f f, :id, :label => _('Identifier'), :label_size => "col-md-2", :required => true, :label_help => _("net[n] with n integer >= 0, e.g. net0") %>
-    <%= text_f f, :name, :label => _('Name'), :label_size => "col-md-2", :required => true, :label_help => _("eth[n] with n integer >= 0, e.g. eth0") %>
-    <%= checkbox_f f, :dhcp, :label => _('DHCP IPv4') %>
-    <%= text_f f, :cidr, :label => _('CIDR IPv4'), :label_size => "col-md-2", :label_help => _("integer within [0..32]") %>
-    <%= text_f f, :gw, :label => _('Gateway IPv4'), :label_size => "col-md-2" %>
-    <%= checkbox_f f, :dhcp6, :label => _('DHCP IPv6') %>
-    <%= text_f f, :cidr6, :label => _('CIDR IPv6'), :label_size => "col-md-2", :label_help => _("integer within [0..128]")%>
-    <%= text_f f, :gw6, :label => _('Gateway IPv6'), :label_size => "col-md-2" %>
+<%= javascript_include_tag 'foreman_fog_proxmox/proxmox_vm_container', "data-turbolinks-track" => true %>
+
+<%= field_set_tag _("Nic"), :id => "container_network_#{index}", :style => ('display: none;' unless container) do %>  
+    <% dhcp_enabled = ActiveModel::Type::Boolean.new.cast(f.object.dhcp) %>
+    <% dhcp6_enabled = ActiveModel::Type::Boolean.new.cast(f.object.dhcp6) %>
+    <%= checkbox_f f, :dhcp, :label => _('DHCP IPv4'), :class => 'proxmox-dhcp-ipv4', :onchange => 'dhcpIPv4Selected(this)' %>
+    <%= text_f f, :cidr, :label => _('CIDR IPv4'), :label_size => "col-md-2", :label_help => _("integer within [0..32]"), :disabled => !dhcp_enabled, :class => 'proxmox-cidr-ipv4' %>
+    <%= text_f f, :gw, :label => _('Gateway IPv4'), :label_size => "col-md-2", :disabled => !dhcp_enabled, :class => 'proxmox-gw-ipv4' %>
+    <%= checkbox_f f, :dhcp6, :label => _('DHCP IPv6'), :class => 'proxmox-dhcp-ipv6', :onchange => 'dhcpIPv6Selected(this)' %>
+    <%= text_f f, :cidr6, :label => _('CIDR IPv6'), :label_size => "col-md-2", :label_help => _("integer within [0..128]"), :disabled => !dhcp6_enabled, :class => 'proxmox-cidr-ipv6' %>
+    <%= text_f f, :gw6, :label => _('Gateway IPv6'), :label_size => "col-md-2", :disabled => !dhcp6_enabled, :class => 'proxmox-gw-ipv6' %>
     <%= text_f f, :tag, :class => "input-mini", :label => _('VLAN tag'), :label_size => "col-md-2" %>
     <%= text_f f, :rate, :class => "input-mini", :label => _('Rate limit'), :label_size => "col-md-2" %>
     <%= checkbox_f f, :firewall, :label => _('Firewall') %>

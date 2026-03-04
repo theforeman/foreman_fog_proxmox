@@ -32,7 +32,37 @@ module ForemanFogProxmox
       node ||= default_node
       storages = node.storages.list_by_content_type type
       logger.debug("storages(): node_id #{node_id} type #{type}")
-      storages.sort_by(&:storage)
+      storages.select { |s| storage_active?(s) }.sort_by(&:storage)
+    end
+
+    def storage_active?(storage)
+      active = storage.respond_to?(:active) ? storage.active.to_i == 1 : true
+      enabled = storage.respond_to?(:enabled) ? storage.enabled.to_i == 1 : true
+      unless active && enabled
+        logger.debug("Filtering out inactive/disabled storage #{storage.storage} (active=#{storage.respond_to?(:active) ? storage.active : 'N/A'}, enabled=#{storage.respond_to?(:enabled) ? storage.enabled : 'N/A'})")
+      end
+      active && enabled
+    end
+
+    def storage_for_node(node_id)
+      storage_mapping = attrs.fetch(:storage_mapping, {})
+      mapped = storage_mapping[node_id]
+      if mapped
+        logger.info("storage_for_node(): using mapped storage '#{mapped}' for node '#{node_id}'")
+        return mapped
+      end
+
+      # Auto-select first available storage on the node
+      available = storages(node_id)
+      if available.any?
+        selected = available.first.storage
+        logger.info("storage_for_node(): auto-selected storage '#{selected}' for node '#{node_id}'")
+        selected
+      else
+        default = attrs.fetch(:storage, 'local-lvm')
+        logger.warn("storage_for_node(): no active storage found on node '#{node_id}', falling back to '#{default}'")
+        default
+      end
     end
 
     def bridges(node_id = default_node_id)

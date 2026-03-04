@@ -34,8 +34,15 @@ module ForemanFogProxmox
 
     def create_vm(args = {})
       type = args[:type]
-      node = client.nodes.get(args[:node_id])
+      node_id = args[:node_id]
+      node = client.nodes.get(node_id)
       vmid = args[:vmid] = assign_vmid(args[:vmid].to_i, node)
+
+      # Auto-select storage for node if not explicitly provided
+      if node_id.present? && args[:storage].blank?
+        args[:storage] = storage_for_node(node_id)
+        logger.info("create_vm(): auto-selected storage '#{args[:storage]}' for node '#{node_id}'")
+      end
       raise ::Foreman::Exception, format(N_('invalid vmid=%<vmid>s'), vmid: vmid) unless node.servers.id_valid?(vmid)
 
       image_id = args[:image_id]

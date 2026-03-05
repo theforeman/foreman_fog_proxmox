@@ -42,7 +42,10 @@ module ForemanFogProxmox
       active = storage.respond_to?(:active) ? storage.active.to_i == 1 : true
       enabled = storage.respond_to?(:enabled) ? storage.enabled.to_i == 1 : true
       unless active && enabled
-        logger.debug("Filtering out inactive/disabled storage #{storage.storage} (active=#{storage.respond_to?(:active) ? storage.active : 'N/A'}, enabled=#{storage.respond_to?(:enabled) ? storage.enabled : 'N/A'})")
+        active_val = storage.respond_to?(:active) ? storage.active : 'N/A'
+        enabled_val = storage.respond_to?(:enabled) ? storage.enabled : 'N/A'
+        logger.debug("Filtering out inactive/disabled storage #{storage.storage} " \
+                      "(active=#{active_val}, enabled=#{enabled_val})")
       end
       active && enabled
     end

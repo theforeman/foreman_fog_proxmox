@@ -71,7 +71,6 @@ module ForemanFogProxmox
       end
     end
 
-
     def default_storage_id
       storage_for_node(default_node_id)
     rescue StandardError => e

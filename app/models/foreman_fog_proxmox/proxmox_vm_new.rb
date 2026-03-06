@@ -25,22 +25,6 @@ require 'foreman_fog_proxmox/hash_collection'
 module ForemanFogProxmox
   module ProxmoxVMNew
     include ProxmoxVMHelper
-
-    def default_storage_id
-      storage_for_node(default_node_id)
-    rescue StandardError => e
-      logger.warn("default_storage_id(): failed to resolve storage: #{e.message}")
-      'local-lvm'
-    end
-
-    def default_bridge_id
-      br = bridges.first
-      br ? br.identity.to_s : 'vmbr0'
-    rescue StandardError => e
-      logger.warn("default_bridge_id(): failed to resolve bridge: #{e.message}")
-      'vmbr0'
-    end
-
     def cdrom_defaults
       { storage_type: 'cdrom', id: 'ide2', volid: 'none', media: 'cdrom' }
     end

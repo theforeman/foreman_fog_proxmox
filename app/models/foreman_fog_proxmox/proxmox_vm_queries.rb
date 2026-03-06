@@ -71,6 +71,22 @@ module ForemanFogProxmox
       end
     end
 
+
+    def default_storage_id
+      storage_for_node(default_node_id)
+    rescue StandardError => e
+      logger.warn("default_storage_id(): failed to resolve storage: #{e.message}")
+      'local-lvm'
+    end
+
+    def default_bridge_id
+      br = bridges.first
+      br ? br.identity.to_s : 'vmbr0'
+    rescue StandardError => e
+      logger.warn("default_bridge_id(): failed to resolve bridge: #{e.message}")
+      'vmbr0'
+    end
+
     def bridges(node_id = default_node_id)
       node = network_client.nodes.get node_id
       node ||= network_client.nodes.first

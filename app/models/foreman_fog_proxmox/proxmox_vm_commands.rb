@@ -56,7 +56,24 @@ module ForemanFogProxmox
     end
 
     def assign_vmid(vmid, node)
-      (vmid < 1) ? node.servers.next_id : vmid
+      vmid = node.servers.next_id if vmid < 1
+      max_retries = 5
+      retries = 0
+      while vmid_exists?(vmid) && retries < max_retries
+        logger.warn("assign_vmid: VMID #{vmid} already exists, requesting new one (attempt #{retries + 1})")
+        vmid = node.servers.next_id
+        retries += 1
+      end
+      raise ::Foreman::Exception, N_('Unable to find a free VMID after %s attempts') % max_retries if vmid_exists?(vmid)
+      vmid
+    end
+
+    def vmid_exists?(vmid)
+      nodes.any? do |search_node|
+        search_node.servers.get(vmid) || search_node.containers.get(vmid)
+      end
+    rescue Fog::Errors::NotFound
+      false
     end
 
     def compute_clone_attributes(args, container, type)

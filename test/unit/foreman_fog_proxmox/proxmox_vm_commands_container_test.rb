@@ -256,7 +256,9 @@ module ForemanFogProxmox
         args = { vmid: '100', type: 'lxc', node_id: 'proxmox', start_after_create: '0' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
+        servers.stubs(:get).returns(nil)
         containers = mock('containers')
+        containers.stubs(:get).returns(nil)
         containers.stubs(:create).with(args)
         cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
         cr.stubs(:parse_typed_vm).with(args, 'lxc').returns(args)
@@ -269,7 +271,9 @@ module ForemanFogProxmox
         args = { vmid: '100', type: 'lxc', node_id: 'proxmox', start_after_create: '1' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
+        servers.stubs(:get).returns(nil)
         containers = mock('containers')
+        containers.stubs(:get).returns(nil)
         vm = mock('vm')
         containers.stubs(:create).with(args).returns(vm)
         cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
@@ -283,7 +287,9 @@ module ForemanFogProxmox
         args = { vmid: '100', type: 'lxc', node_id: 'proxmox', start_after_create: '0', pool: 'pool1' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
+        servers.stubs(:get).returns(nil)
         containers = mock('containers')
+        containers.stubs(:get).returns(nil)
         vm = mock('vm')
         containers.stubs(:create).with(args).returns(vm)
         cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
@@ -296,7 +302,9 @@ module ForemanFogProxmox
         args = { vmid: '100', type: 'lxc', image_id: '999', name: 'name' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
+        servers.stubs(:get).returns(nil)
         containers = mock('containers')
+        containers.stubs(:get).returns(nil)
         cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
         vm = mock('vm')
         cr.expects(:clone_from_image).with('999', 100).returns(vm)

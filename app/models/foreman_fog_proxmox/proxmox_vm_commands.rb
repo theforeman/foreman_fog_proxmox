@@ -71,9 +71,9 @@ module ForemanFogProxmox
     def vmid_exists?(vmid)
       nodes.any? do |search_node|
         search_node.servers.get(vmid) || search_node.containers.get(vmid)
+      rescue Fog::Errors::NotFound
+        false
       end
-    rescue Fog::Errors::NotFound
-      false
     end
 
     def compute_clone_attributes(args, container, type)

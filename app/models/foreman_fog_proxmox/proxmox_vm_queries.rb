@@ -32,7 +32,58 @@ module ForemanFogProxmox
       node ||= default_node
       storages = node.storages.list_by_content_type type
       logger.debug("storages(): node_id #{node_id} type #{type}")
-      storages.sort_by(&:storage)
+      storages.select { |s| storage_active?(s) }.sort_by(&:storage)
+    rescue StandardError => e
+      logger.warn("storages(): failed to list storages on node #{node_id}: #{e.message}")
+      []
+    end
+
+    def storage_active?(storage)
+      active = storage.respond_to?(:active) ? storage.active.to_i == 1 : true
+      enabled = storage.respond_to?(:enabled) ? storage.enabled.to_i == 1 : true
+      unless active && enabled
+        active_val = storage.respond_to?(:active) ? storage.active : 'N/A'
+        enabled_val = storage.respond_to?(:enabled) ? storage.enabled : 'N/A'
+        logger.debug("Filtering out inactive/disabled storage #{storage.storage} " \
+                      "(active=#{active_val}, enabled=#{enabled_val})")
+      end
+      active && enabled
+    end
+
+    def storage_for_node(node_id)
+      storage_mapping = attrs.fetch(:storage_mapping, {})
+      mapped = storage_mapping[node_id]
+      if mapped
+        logger.info("storage_for_node(): using mapped storage '#{mapped}' for node '#{node_id}'")
+        return mapped
+      end
+
+      # Auto-select first available storage on the node
+      available = storages(node_id)
+      if available.any?
+        selected = available.first.storage
+        logger.info("storage_for_node(): auto-selected storage '#{selected}' for node '#{node_id}'")
+        selected
+      else
+        default = attrs.fetch(:storage, 'local-lvm')
+        logger.warn("storage_for_node(): no active storage found on node '#{node_id}', falling back to '#{default}'")
+        default
+      end
+    end
+
+    def default_storage_id
+      storage_for_node(default_node_id)
+    rescue StandardError => e
+      logger.warn("default_storage_id(): failed to resolve storage: #{e.message}")
+      'local-lvm'
+    end
+
+    def default_bridge_id
+      br = bridges.first
+      br ? br.identity.to_s : 'vmbr0'
+    rescue StandardError => e
+      logger.warn("default_bridge_id(): failed to resolve bridge: #{e.message}")
+      'vmbr0'
     end
 
     def bridges(node_id = default_node_id)

@@ -74,6 +74,9 @@ const NetworkInterface = ({
     label: bridge.iface,
   }));
 
+  const dhcpEnabled = network.dhcp.value === '1';
+  const dhcp6Enabled = network.dhcp6.value === '1';
+
   return (
     <div style={{ position: 'relative' }}>
       <Divider component="li" style={{ marginBottom: '2rem' }} />
@@ -108,7 +111,7 @@ const NetworkInterface = ({
         label={__('DHCP IPv4')}
         type="checkbox"
         value={network?.dhcp?.value}
-        checked={String(network?.dhcp?.value) === '1'}
+        checked={dhcpEnabled}
         onChange={handleChange}
       />
       <InputField
@@ -118,6 +121,7 @@ const NetworkInterface = ({
         type="text"
         value={network?.cidr?.value}
         onChange={handleChange}
+        disabled={!dhcpEnabled}
       />
       <InputField
         name={network?.gw?.name}
@@ -125,13 +129,14 @@ const NetworkInterface = ({
         type="text"
         value={network?.gw?.value}
         onChange={handleChange}
+        disabled={!dhcpEnabled}
       />
       <InputField
         name={network?.dhcp6?.name}
         label={__('DHCP IPv6')}
         type="checkbox"
         value={network?.dhcp6?.value}
-        checked={String(network?.dhcp6?.value) === '1'}
+        checked={dhcp6Enabled}
         onChange={handleChange}
       />
       <InputField
@@ -141,6 +146,7 @@ const NetworkInterface = ({
         type="text"
         value={network?.cidr6?.value}
         onChange={handleChange}
+        disabled={!dhcp6Enabled}
       />
       <InputField
         name={network?.gw6?.name}
@@ -148,6 +154,7 @@ const NetworkInterface = ({
         type="text"
         value={network?.gw6?.value}
         onChange={handleChange}
+        disabled={!dhcp6Enabled}
       />
       <InputField
         name={network?.tag?.name}

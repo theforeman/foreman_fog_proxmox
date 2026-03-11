@@ -154,8 +154,10 @@ const ProxmoxVmType = ({
           storage={vmAttrs?.disks || []}
           efidisk={vmAttrs?.efidisk || []}
           storages={metaStorages}
+          fromProfile={fromProfile}
           nodeId={general?.nodeId?.value}
           vmId={general?.vmid?.value}
+          bootOrder={vmAttrs?.boot?.value || ''}
           paramScope={paramScope}
           isLoading={!metaLoaded}
           isTabActive={activeTabKey === 4}

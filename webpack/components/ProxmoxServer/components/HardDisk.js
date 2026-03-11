@@ -10,15 +10,18 @@ const HardDisk = ({
   id,
   data,
   storages,
-  disks,
   updateHardDiskData,
   createUniqueDevice,
   hidden,
   nodeId,
+  fromProfile,
+  isNew,
+  isPersistedDisk,
 }) => {
   const [hdd, setHdd] = useState(data);
   const [error, setError] = useState(null);
   const storagesMap = createStoragesMap(storages, null, nodeId);
+  const lockController = isPersistedDisk && !isNew && !fromProfile;
   useEffect(() => {
     const currentHddData = JSON.stringify(hdd);
     const parentHddData = JSON.stringify(data);
@@ -102,6 +105,12 @@ const HardDisk = ({
         options={ProxmoxComputeSelectors.proxmoxControllersHDDMap}
         onChange={handleChange}
         error={error}
+        disabled={lockController}
+        tooltip={
+          lockController
+            ? __('Controller cannot be changed for existing disks.')
+            : undefined
+        }
       />
       <InputField
         label={__('Device')}
@@ -135,21 +144,25 @@ HardDisk.propTypes = {
   id: PropTypes.number.isRequired,
   data: PropTypes.object,
   storages: PropTypes.array,
-  disks: PropTypes.array,
   hidden: PropTypes.bool,
   updateHardDiskData: PropTypes.func,
   createUniqueDevice: PropTypes.func,
   nodeId: PropTypes.string,
+  fromProfile: PropTypes.bool,
+  isNew: PropTypes.bool,
+  isPersistedDisk: PropTypes.bool,
 };
 
 HardDisk.defaultProps = {
   data: {},
   storages: [],
-  disks: [],
   nodeId: '',
   hidden: 'false',
   updateHardDiskData: Function.prototype,
   createUniqueDevice: Function.prototype,
+  fromProfile: false,
+  isNew: false,
+  isPersistedDisk: false,
 };
 
 export default HardDisk;

@@ -5,6 +5,7 @@ import {
   Title,
   PageSection,
   Button,
+  Label,
   Spinner,
   Bullseye,
   Divider,
@@ -19,13 +20,26 @@ const ProxmoxServerStorage = ({
   storage,
   efidisk,
   storages,
+  fromProfile,
   nodeId,
   vmId,
+  bootOrder,
   paramScope,
   isLoading,
   computeResourceId,
   isTabActive,
 }) => {
+  const bootDiskId = React.useMemo(() => {
+    if (!bootOrder) return null;
+    const match = bootOrder.match(/order=([^;][\w;]*)/);
+    if (!match) return null;
+    const entries = match[1]
+      .split(';')
+      .map(s => s.trim())
+      .filter(Boolean);
+    return entries.find(entry => !entry.startsWith('net')) || null;
+  }, [bootOrder]);
+
   const [hardDisks, setHardDisks] = useState([]);
   const [nextId, setNextId] = useState(0);
   const [cdRom, setCdRom] = useState(false);
@@ -38,6 +52,7 @@ const ProxmoxServerStorage = ({
     scsi: 0,
     virtio: 0,
   });
+
   const initializedRef = useRef(false);
 
   const controllerRanges = {
@@ -342,41 +357,73 @@ const ProxmoxServerStorage = ({
             vmId={vmId}
           />
         )}
-        {hardDisks.map(hardDisk => (
-          <div
-            key={hardDisk.id}
-            style={{
-              position: 'relative',
-              display: hardDisk.hidden ? 'none' : 'block',
-            }}
-          >
+        {hardDisks.map(hardDisk => {
+          const diskId = hardDisk.data?.id?.value;
+          const isPersistedDisk = !!hardDisk.data?.volid?.value;
+          const isBootDisk =
+            isPersistedDisk && !!diskId && diskId === bootDiskId;
+          return (
             <div
+              key={hardDisk.id}
               style={{
-                marginTop: '10px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                position: 'relative',
+                display: hardDisk.hidden ? 'none' : 'block',
               }}
             >
-              <Title ouiaId="proxmox-server-storage-harddisk" headingLevel="h4">
-                {sprintf(__('Hard Disk %(hddId)s'), { hddId: hardDisk.id })}
-              </Title>
-              <button onClick={() => removeHardDisk(hardDisk.id)} type="button">
-                <TimesIcon />
-              </button>
-            </div>
+              <div
+                style={{
+                  marginTop: '10px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <div
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                >
+                  <Title
+                    ouiaId="proxmox-server-storage-harddisk"
+                    headingLevel="h4"
+                  >
+                    {sprintf(__('Hard Disk %(hddId)s'), { hddId: hardDisk.id })}
+                  </Title>
+                  {isBootDisk && (
+                    <Label color="blue" isCompact>
+                      {__('Boot Disk')}
+                    </Label>
+                  )}
+                </div>
+                <button
+                  onClick={() => removeHardDisk(hardDisk.id)}
+                  type="button"
+                  disabled={isBootDisk}
+                  title={
+                    isBootDisk ? __('Boot disk cannot be removed.') : undefined
+                  }
+                  style={
+                    isBootDisk
+                      ? { opacity: 0.4, cursor: 'not-allowed' }
+                      : undefined
+                  }
+                >
+                  <TimesIcon />
+                </button>
+              </div>
 
-            <HardDisk
-              id={hardDisk.id}
-              data={hardDisk.data}
-              storages={storages}
-              disks={hardDisk.disks}
-              updateHardDiskData={updateHardDiskData}
-              createUniqueDevice={createUniqueDevice}
-              hidden={!!hardDisk.hidden}
-            />
-          </div>
-        ))}
+              <HardDisk
+                id={hardDisk.id}
+                data={hardDisk.data}
+                storages={storages}
+                fromProfile={fromProfile}
+                updateHardDiskData={updateHardDiskData}
+                createUniqueDevice={createUniqueDevice}
+                hidden={!!hardDisk.hidden}
+                isNew={!!hardDisk.isNew}
+                isPersistedDisk={isPersistedDisk}
+              />
+            </div>
+          );
+        })}
       </PageSection>
     </div>
   );
@@ -386,8 +433,10 @@ ProxmoxServerStorage.propTypes = {
   storage: PropTypes.array,
   efidisk: PropTypes.array,
   storages: PropTypes.array,
+  fromProfile: PropTypes.bool,
   nodeId: PropTypes.string,
   vmId: PropTypes.string,
+  bootOrder: PropTypes.string,
   paramScope: PropTypes.string,
   isLoading: PropTypes.bool,
   computeResourceId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
@@ -398,8 +447,10 @@ ProxmoxServerStorage.defaultProps = {
   storage: [],
   efidisk: [],
   storages: [],
+  fromProfile: false,
   nodeId: '',
   vmId: '',
+  bootOrder: '',
   paramScope: '',
   isLoading: false,
   computeResourceId: null,

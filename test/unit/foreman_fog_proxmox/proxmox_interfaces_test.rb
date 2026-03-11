@@ -129,7 +129,7 @@ module ForemanFogProxmox
         assert_equal ip6, nic_attr['gw6']
       end
 
-      it 'sets container compute ip DHCP, mac adress and firewall' do
+      it 'sets container compute ip DHCP, mac address and firewall' do
         ip = '192.168.56.100'
         mac_address = '36:25:8C:53:0C:50'
         ip6 = '2001:0:1234::c1c0:abcd:876'

@@ -49,7 +49,7 @@ module ProxmoxVMAttrsHelper
 
   def cpu_flags_attrs(param_scope, config)
     flag_attrs = ActiveSupport::HashWithIndifferentAccess.new
-    Fog::Proxmox::CpuHelper.flags.each do |key, _val|
+    Fog::Proxmox::CpuHelper.flags.each_key do |key|
       flag_attrs.merge!({ key => { :name => "#{param_scope}[config_attributes][#{key}]", :value => config.public_send(key) } })
     end
     flag_attrs
@@ -73,7 +73,7 @@ module ProxmoxVMAttrsHelper
         keys = ['id', 'volid', 'storage', 'size', 'storage_type']
         type = 'rootfs'
       elsif vol.hard_disk?
-        keys = ['id', 'volid', 'storage_type', 'storage', 'controller', 'device', 'cache', 'size', '_delete']
+        keys = ['id', 'volid', 'storage_type', 'storage', 'controller', 'device', 'cache', 'size', '_delete', 'backup']
         type = 'hard_disk'
       elsif  vol.cdrom?
         keys = ['id', 'storage_type', 'cdrom', 'storage', 'volid']
@@ -82,7 +82,7 @@ module ProxmoxVMAttrsHelper
         keys = ['id', 'volid', 'storage_type', 'storage', 'controller', 'device']
         type = 'cloud_init'
       elsif vol.mount_point?
-        keys = ['id', 'volid', 'storage_type', 'storage', 'device', 'mp', 'size']
+        keys = ['id', 'volid', 'storage_type', 'storage', 'device', 'mp', 'size', 'backup']
         type = 'mount_point'
       end
       vol_attrs << { :name => type, :value => vol_keys(param_scope, keys, vol, id) }

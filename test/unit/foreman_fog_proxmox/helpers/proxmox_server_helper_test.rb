@@ -120,8 +120,8 @@ module ForemanFogProxmox
             'cpu' => 'cputype=kvm64,flags=+spec-ctrl',
             'net0' => 'model=virtio,bridge=vmbr0,firewall=0,link_down=0',
             'net1' => 'model=e1000,bridge=vmbr0,firewall=0,link_down=0',
-            'scsi0' => 'local-lvm:10,cache=none',
-            'virtio0' => 'local-lvm:10,cache=none',
+            'scsi0' => 'local-lvm:10,cache=none,backup=1',
+            'virtio0' => 'local-lvm:10,cache=none,backup=1',
             'ide2' => 'none,media=cdrom',
           }
         )
@@ -134,7 +134,7 @@ module ForemanFogProxmox
         assert_not volumes.empty?
         assert volumes.size, 3
         scsi0 = (volumes.select { |volume| volume.key?(:scsi0) }).first
-        assert_equal 'local-lvm:10,cache=none', scsi0[:scsi0]
+        assert_equal 'local-lvm:10,cache=none,backup=1', scsi0[:scsi0]
       end
 
       test '#volume with virtio 10Gb' do
@@ -142,7 +142,7 @@ module ForemanFogProxmox
         assert_not volumes.empty?
         assert volumes.size, 3
         virtio0 = (volumes.select { |volume| volume.key?(:virtio0) }).first
-        assert_equal 'local-lvm:10,cache=none', virtio0[:virtio0]
+        assert_equal 'local-lvm:10,cache=none,backup=1', virtio0[:virtio0]
       end
 
       test '#interface with model virtio and bridge' do

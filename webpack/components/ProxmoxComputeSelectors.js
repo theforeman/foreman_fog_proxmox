@@ -74,6 +74,11 @@ const ProxmoxComputeSelectors = {
     { value: 'none', label: 'No cache' },
   ],
 
+  proxmoxBackupsMap: [
+    { value: '1', label: 'Yes' },
+    { value: '0', label: 'No' },
+  ],
+
   proxmoxCpusMap: [
     { value: 'athlon', label: 'athlon' },
     { value: 'EPYC', label: 'EPYC' },

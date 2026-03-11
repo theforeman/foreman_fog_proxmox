@@ -35,8 +35,12 @@ module ForemanFogProxmox
 
     def volume_options(vm, id, volume_attributes)
       options = {}
+      backup = volume_attributes['backup'].to_s
+      cache = volume_attributes['cache'].to_s
+      backup = '1' if backup.empty? && (!vm.container? || id != 'rootfs')
       options.store(:mp, volume_attributes['mp']) if vm.container? && id != 'rootfs'
-      options.store(:cache, volume_attributes['cache']) unless vm.container? || volume_attributes['cache'].empty?
+      options.store(:cache, cache) unless vm.container? || cache.empty?
+      options.store(:backup, backup) unless backup.empty? || (vm.container? && id == 'rootfs')
       options
     end
 
@@ -87,19 +91,24 @@ module ForemanFogProxmox
           raise ::Foreman::Exception,
             format(_('Unable to shrink %<id>s size. Proxmox allows only increasing size.'), id: id)
         end
-        diff_size = volume_attributes['size'].to_i - disk.size.to_i if volume_attributes['size'] && disk.size
-        raise ::Foreman::Exception, format(_('Unable to shrink %<id>s size. Proxmox allows only increasing size.'), id: id) unless diff_size >= 0
 
-        new_storage = volume_attributes['storage']
+        new_storage = volume_attributes['storage'].presence || disk.storage
 
         if diff_size > 0
           extend_volume(vm, id, diff_size)
-        elsif disk.storage != new_storage
+        elsif new_storage.present? && disk.storage != new_storage
           move_volume(id, vm, new_storage)
         else
           update_options(disk, vm, volume_attributes)
         end
       end
+    end
+
+    def normalize_existing_volume_attributes(disk, volume_attributes)
+      return volume_attributes unless disk.hard_disk?
+      return volume_attributes if volume_attributes['storage'].present?
+
+      volume_attributes.merge('storage' => disk.storage)
     end
 
     def volume_exists?(vm, volume_attributes)
@@ -154,7 +163,8 @@ module ForemanFogProxmox
           delete_volume(vm, id, volume_attributes)
         else
           disk = vm.config.disks.get(id)
-          update_volume(vm, disk, volume_attributes) if update_volume_required?(disk.attributes, volume_attributes)
+          normalized_volume_attributes = normalize_existing_volume_attributes(disk, volume_attributes)
+          update_volume(vm, disk, normalized_volume_attributes) if update_volume_required?(disk.attributes, normalized_volume_attributes)
         end
       else
         add_volume(vm, id, volume_attributes)

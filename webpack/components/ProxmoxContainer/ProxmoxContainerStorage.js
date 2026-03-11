@@ -102,6 +102,10 @@ const ProxmoxContainerStorage = ({
           name: `${paramScope}[volumes_attributes][${nextId}][mp]`,
           value: '',
         },
+        backup: {
+          name: `${paramScope}[volumes_attributes][${nextId}][backup]`,
+          value: '1',
+        },
         volid: {
           name: `${paramScope}[volumes_attributes][${nextId}][volid]`,
           value: '',

@@ -65,7 +65,7 @@ module ForemanFogProxmox
         logger.info("storage_for_node(): auto-selected storage '#{selected}' for node '#{node_id}'")
         selected
       else
-        default = attrs.fetch(:storage, 'local-lvm')
+        default = attrs[:storage]
         logger.warn("storage_for_node(): no active storage found on node '#{node_id}', falling back to '#{default}'")
         default
       end
@@ -75,15 +75,15 @@ module ForemanFogProxmox
       storage_for_node(default_node_id)
     rescue StandardError => e
       logger.warn("default_storage_id(): failed to resolve storage: #{e.message}")
-      'local-lvm'
+      nil
     end
 
     def default_bridge_id
       br = bridges.first
-      br ? br.identity.to_s : 'vmbr0'
+      br ? br.identity.to_s : nil
     rescue StandardError => e
       logger.warn("default_bridge_id(): failed to resolve bridge: #{e.message}")
-      'vmbr0'
+      nil
     end
 
     def bridges(node_id = default_node_id)

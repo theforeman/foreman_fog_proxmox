@@ -22,3 +22,38 @@ function storageOstemplateSelected(item) {
   if (node_id == undefined) node_id = $("#compute_attribute_vm_attrs_node_id").val();
   updateOptions('ostemplates', 'compute_attributes_ostemplate', 'file', undefined, undefined, 'volid', node_id, storage);
 }
+
+function setDisabled($el, disabled) {
+  if (!$el || !$el.length) return;
+  $el.prop('disabled', disabled);
+  $el.toggleClass('disabled', disabled);
+}
+
+function syncDhcpIP(item, suffix) {
+  var $dhcp = $(item);
+  var checked = $dhcp.is(':checked');
+  var $fieldset = $dhcp.closest('fieldset');
+  var $cidr = $fieldset.find('input.proxmox-cidr-' + suffix).first();
+  var $gw = $fieldset.find('input.proxmox-gw-' + suffix).first();
+
+  setDisabled($cidr, !checked);
+  setDisabled($gw, !checked);
+}
+
+function dhcpIPSelected(item, suffix) {
+  syncDhcpIP(item, suffix);
+}
+
+function syncAllProxmoxDhcpFields() {
+  $('input.proxmox-dhcp-ipv4').each(function() {
+    syncDhcpIP(this, 'ipv4');
+  });
+
+  $('input.proxmox-dhcp-ipv6').each(function() {
+    syncDhcpIP(this, 'ipv6');
+  });
+}
+
+$(document).on('turbolinks:load', function() {
+  syncAllProxmoxDhcpFields();
+});

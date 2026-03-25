@@ -107,6 +107,14 @@ module ProxmoxVMAttrsHelper
         camel_key = key.to_s.include?('_') ? snake_to_camel(key.to_s).to_sym : key
         attrs[camel_key] = { :name => "#{param_scope}[interfaces_attributes][#{id}][#{key}]", :value => value }
       end
+      if interface.respond_to?(:dhcp)
+        attrs[:dhcp] = { :name => "#{param_scope}[interfaces_attributes][#{id}][dhcp]",
+                         :value => interface.dhcp ? '1' : '0' }
+      end
+      if interface.respond_to?(:dhcp6)
+        attrs[:dhcp6] = { :name => "#{param_scope}[interfaces_attributes][#{id}][dhcp6]",
+                          :value => interface.dhcp6 ? '1' : '0' }
+      end
       networks_attrs << { :name => 'interface', :value => attrs }
     end
     networks_attrs

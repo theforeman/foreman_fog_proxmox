@@ -18,6 +18,45 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 module ProxmoxFormHelper
+  def proxmox_vm_type_and_node_id(host, form_object, params)
+    compute_attributes = form_object.compute_attributes || {}
+    compute_vm_type = extract_attr(compute_attributes, :type)
+    compute_node_id = extract_attr(compute_attributes, :node_id)
+    object_node_id = form_object.respond_to?(:node_id) ? form_object.node_id : nil
+
+    host_compute_attrs = host.respond_to?(:compute_attributes) ? (host.compute_attributes || {}) : {}
+    host_vm_type = extract_attr(host_compute_attrs, :type)
+    host_node_id = extract_attr(host_compute_attrs, :node_id)
+
+    profile_attrs = profile_compute_attributes(host)
+    profile_vm_type = extract_attr(profile_attrs, :type)
+    profile_node_id = extract_attr(profile_attrs, :node_id)
+
+    vm_type = [
+      params.dig(:host, :compute_attributes, :type).presence,
+      params.dig(:compute_attribute, :vm_attrs, :type).presence,
+      compute_vm_type,
+      host_vm_type,
+      profile_vm_type,
+      'qemu',
+    ].find(&:present?)
+
+    node_id = [
+      params.dig(:host, :compute_attributes, :node_id).presence,
+      params.dig(:compute_attribute, :vm_attrs, :node_id).presence,
+      object_node_id,
+      compute_node_id,
+      host_node_id,
+      profile_node_id,
+    ].find(&:present?)
+
+    {
+      compute_attributes: compute_attributes,
+      vm_type: vm_type,
+      node_id: node_id,
+    }
+  end
+
   def password_proxmox_f(f, attr, options = {})
     unset_button = options.delete(:unset)
     value = f.object[attr] if options.delete(:keep_value)
@@ -78,5 +117,22 @@ module ProxmoxFormHelper
     hide = ''
     hide += '$("[data-association=' + type + '_volumes]").show();' unless ['hard_disk', 'mp'].include?(type)
     f.hidden_field(opts[:method] || :_destroy) + link_to_function(name, 'remove_child_node(this);' + hide, opts)
+  end
+
+  private
+
+  def extract_attr(attrs, key)
+    return unless attrs.respond_to?(:[])
+
+    attrs[key.to_s] || attrs[key.to_sym]
+  end
+
+  def profile_compute_attributes(host)
+    inherited_profile_id = host.respond_to?(:hostgroup) ? host.hostgroup&.inherited_compute_profile_id : nil
+    profile_id = host.compute_profile_id || inherited_profile_id
+
+    return {} if profile_id.blank?
+
+    host.compute_resource.compute_profile_attributes_for(profile_id) || {}
   end
 end

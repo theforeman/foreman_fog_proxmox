@@ -23,7 +23,7 @@ const ProxmoxContainerNetwork = ({ network, bridges, paramScope }) => {
     (event, initialData = null) => {
       if (event) event.preventDefault();
       const netId = getLowestAvailableId();
-      const initData = initialData || {
+      const defaultData = {
         id: {
           name: `${paramScope}[interfaces_attributes][${nextId}][id]`,
           value: `net${netId}`,
@@ -72,6 +72,10 @@ const ProxmoxContainerNetwork = ({ network, bridges, paramScope }) => {
           name: `${paramScope}[interfaces_attributes][${nextId}][firewall]`,
           value: '0',
         },
+      };
+      const initData = {
+        ...defaultData,
+        ...(initialData || {}),
       };
       setNextId(prevId => {
         if (availableIds.length > 0) {

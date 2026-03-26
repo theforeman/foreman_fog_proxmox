@@ -9,6 +9,9 @@ import {
   Spinner,
   Bullseye,
   Divider,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
 } from '@patternfly/react-core';
 import { TimesIcon } from '@patternfly/react-icons';
 import { sprintf, translate as __ } from 'foremanReact/common/I18n';
@@ -28,6 +31,8 @@ const ProxmoxServerStorage = ({
   isLoading,
   computeResourceId,
   isTabActive,
+  selectedImage,
+  provisionMethodState,
 }) => {
   const bootDiskId = React.useMemo(() => {
     if (!bootOrder) return null;
@@ -39,6 +44,27 @@ const ProxmoxServerStorage = ({
       .filter(Boolean);
     return entries.find(entry => !entry.startsWith('net')) || null;
   }, [bootOrder]);
+
+  const templateDiskSlots = React.useMemo(() => {
+    const slots = new Set();
+    if (provisionMethodState !== 'image') return slots;
+    const disks = selectedImage?.disks;
+    if (!Array.isArray(disks)) return slots;
+    disks.forEach(diskEntry => {
+      if (diskEntry.includes('media=cdrom')) return;
+      const match = diskEntry.match(/^([a-z]+)(\d+):/i);
+      if (!match) return;
+      const [, rawController, deviceStr] = match;
+      const controller = rawController.toLowerCase();
+      const device = parseInt(deviceStr, 10);
+      if (Number.isNaN(device)) return;
+      slots.add(`${controller}${device}`);
+    });
+
+    return slots;
+  }, [provisionMethodState, selectedImage]);
+
+  const templateDiskSlotList = Array.from(templateDiskSlots).sort();
 
   const [hardDisks, setHardDisks] = useState([]);
   const [nextId, setNextId] = useState(0);
@@ -99,11 +125,13 @@ const ProxmoxServerStorage = ({
         i++
       ) {
         if (!(isDevice2Reserved && i === 2)) {
+          const slotId = `${controller}${i}`;
           if (
+            !templateDiskSlots.has(slotId) &&
             !hardDisks.some(
               disk =>
                 disk.data.controller.value === controller &&
-                disk.data.device.value === i
+                parseInt(disk.data.device.value, 10) === i
             )
           ) {
             return i;
@@ -112,7 +140,7 @@ const ProxmoxServerStorage = ({
       }
       return null;
     },
-    [hardDisks, controllerRanges]
+    [hardDisks, controllerRanges, templateDiskSlots]
   );
 
   const createUniqueDevice = useCallback(
@@ -134,6 +162,51 @@ const ProxmoxServerStorage = ({
       return null;
     },
     [getNextDevice]
+  );
+
+  const validateHardDiskDevice = useCallback(
+    (controller, device, currentDiskId) => {
+      const range = controllerRanges[controller];
+      if (!range) {
+        return __('Invalid device value.');
+      }
+
+      if (!/^\d+$/.test(String(device))) {
+        return __('Invalid device value.');
+      }
+
+      const parsedDevice = parseInt(device, 10);
+
+      if (parsedDevice < range.min || parsedDevice > range.max) {
+        return sprintf(
+          __('Device must be between %(min)s and %(max)s for %(controller)s.'),
+          { min: range.min, max: range.max, controller }
+        );
+      }
+
+      if (controller === 'ide' && parsedDevice === 2) {
+        return __('Device ide2 is reserved for CD-ROM.');
+      }
+
+      if (templateDiskSlots.has(`${controller}${parsedDevice}`)) {
+        return __('This device is reserved by the selected image template.');
+      }
+
+      if (
+        hardDisks.some(
+          disk =>
+            disk.id !== currentDiskId &&
+            !disk.hidden &&
+            disk.data.controller.value === controller &&
+            parseInt(disk.data.device.value, 10) === parsedDevice
+        )
+      ) {
+        return __('This device is already in use.');
+      }
+
+      return null;
+    },
+    [controllerRanges, hardDisks, templateDiskSlots]
   );
 
   const addHardDisk = useCallback(
@@ -342,6 +415,22 @@ const ProxmoxServerStorage = ({
         >
           {__('Add Efi Disk')}
         </Button>
+        {templateDiskSlotList.length > 0 && (
+          <FormHelperText>
+            <HelperText id="helper-template-reserved-slots">
+              <HelperTextItem
+                variant="warning"
+                style={{ fontSize: '1rem', fontWeight: 350, lineHeight: 1.5 }}
+              >
+                {`${
+                  templateDiskSlotList.length === 1
+                    ? __('Image template reserved slot')
+                    : __('Image template reserved slots')
+                }: ${templateDiskSlotList.join(', ')}`}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
+        )}
         {cdRom && cdRomData && (
           <CDRom
             onRemove={removeCDRom}
@@ -421,6 +510,7 @@ const ProxmoxServerStorage = ({
                 fromProfile={fromProfile}
                 updateHardDiskData={updateHardDiskData}
                 createUniqueDevice={createUniqueDevice}
+                validateDevice={validateHardDiskDevice}
                 hidden={!!hardDisk.hidden}
                 isNew={!!hardDisk.isNew}
                 isPersistedDisk={isPersistedDisk}
@@ -445,6 +535,8 @@ ProxmoxServerStorage.propTypes = {
   isLoading: PropTypes.bool,
   computeResourceId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   isTabActive: PropTypes.bool,
+  selectedImage: PropTypes.object,
+  provisionMethodState: PropTypes.string,
 };
 
 ProxmoxServerStorage.defaultProps = {
@@ -459,6 +551,8 @@ ProxmoxServerStorage.defaultProps = {
   isLoading: false,
   computeResourceId: null,
   isTabActive: false,
+  selectedImage: null,
+  provisionMethodState: '',
 };
 
 export default ProxmoxServerStorage;

@@ -12,24 +12,39 @@ const HardDisk = ({
   storages,
   updateHardDiskData,
   createUniqueDevice,
+  validateDevice,
   hidden,
   nodeId,
   fromProfile,
   isNew,
   isPersistedDisk,
 }) => {
-  const [hdd, setHdd] = useState(data);
-  const [error, setError] = useState(null);
+  const normalizeDeviceValue = value =>
+    value === null || value === undefined ? '' : String(value);
+
+  const [hdd, setHdd] = useState(() =>
+    data?.device
+      ? {
+          ...data,
+          device: {
+            ...data.device,
+            value: normalizeDeviceValue(data.device.value),
+          },
+        }
+      : data
+  );
+  const [controllerError, setControllerError] = useState(null);
+  const [deviceError, setDeviceError] = useState(null);
   const storagesMap = createStoragesMap(storages, null, nodeId);
   const lockController = isPersistedDisk && !isNew && !fromProfile;
   useEffect(() => {
     const currentHddData = JSON.stringify(hdd);
     const parentHddData = JSON.stringify(data);
 
-    if (currentHddData !== parentHddData) {
+    if (!controllerError && !deviceError && currentHddData !== parentHddData) {
       updateHardDiskData(id, hdd);
     }
-  }, [hdd, id, data, updateHardDiskData]);
+  }, [hdd, id, data, updateHardDiskData, controllerError, deviceError]);
   const handleChange = e => {
     const { name, value } = e.target;
     const updatedKey = Object.keys(hdd).find(key => hdd[key].name === name);
@@ -39,12 +54,16 @@ const HardDisk = ({
         setHdd({
           ...hdd,
           controller: { ...hdd.controller, value },
-          device: { ...hdd.device, value: updatedDeviceInfo.device },
+          device: {
+            ...hdd.device,
+            value: normalizeDeviceValue(updatedDeviceInfo.device),
+          },
           id: { ...hdd.id, value: updatedDeviceInfo.id },
         });
-        setError(null);
+        setControllerError(null);
+        setDeviceError(null);
       } else {
-        setError(
+        setControllerError(
           sprintf(
             __(
               'Reached maximum number of devices for controller %(value)s. Please select another controller.'
@@ -58,12 +77,36 @@ const HardDisk = ({
           device: { ...hdd.device, value: '' },
           id: { ...hdd.id, value: '' },
         });
+        setDeviceError(null);
       }
     } else {
+      const updatedValue =
+        updatedKey === 'device' ? normalizeDeviceValue(value) : value;
+
+      if (updatedKey === 'device') {
+        const validationError = validateDevice(
+          hdd?.controller?.value,
+          updatedValue,
+          id
+        );
+        setDeviceError(validationError);
+      }
+
       const updatedData = {
         ...hdd,
-        [updatedKey]: { ...hdd[updatedKey], value },
+        [updatedKey]: { ...hdd[updatedKey], value: updatedValue },
       };
+
+      if (
+        updatedKey === 'device' &&
+        !validateDevice(hdd?.controller?.value, updatedValue, id)
+      ) {
+        updatedData.id = {
+          ...hdd.id,
+          value: `${hdd?.controller?.value}${updatedValue}`,
+        };
+      }
+
       setHdd(updatedData);
     }
   };
@@ -103,7 +146,7 @@ const HardDisk = ({
         value={hdd?.controller?.value}
         options={ProxmoxComputeSelectors.proxmoxControllersHDDMap}
         onChange={handleChange}
-        error={error}
+        error={controllerError}
         disabled={lockController}
         tooltip={
           lockController
@@ -116,8 +159,7 @@ const HardDisk = ({
         name={hdd?.device?.name}
         value={hdd?.device?.value}
         onChange={handleChange}
-        readOnly
-        tooltip={__('Device value is set automatically.')}
+        error={deviceError}
       />
       <InputField
         name={hdd?.cache?.name}
@@ -155,6 +197,7 @@ HardDisk.propTypes = {
   hidden: PropTypes.bool,
   updateHardDiskData: PropTypes.func,
   createUniqueDevice: PropTypes.func,
+  validateDevice: PropTypes.func,
   nodeId: PropTypes.string,
   fromProfile: PropTypes.bool,
   isNew: PropTypes.bool,
@@ -168,6 +211,7 @@ HardDisk.defaultProps = {
   hidden: 'false',
   updateHardDiskData: Function.prototype,
   createUniqueDevice: Function.prototype,
+  validateDevice: Function.prototype,
   fromProfile: false,
   isNew: false,
   isPersistedDisk: false,

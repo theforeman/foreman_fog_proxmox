@@ -47,13 +47,17 @@ module ForemanFogProxmox
       vm_attrs
     end
 
+    def volume_compute_attributes(volume_attributes)
+      volume_attributes.merge(_delete: '0')
+    end
+
     def vm_compute_attributes(vm)
       vm_attrs = {}
       vm_attrs = vm_attrs.merge(vmid: vm.identity, node_id: vm.node_id, type: vm.type)
       if vm.respond_to?(:config)
         if vm.config.respond_to?(:disks)
           vm_attrs[:volumes_attributes] = Hash[vm.config.disks.each_with_index.map do |disk, idx|
-                                                 [idx.to_s, disk.attributes]
+                                                 [idx.to_s, volume_compute_attributes(disk.attributes)]
                                                end ]
         end
         if vm.config.respond_to?(:interfaces)

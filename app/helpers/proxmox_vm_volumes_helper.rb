@@ -93,6 +93,7 @@ module ProxmoxVMVolumesHelper
   end
 
   def parse_typed_volume(args, type)
+    return if Foreman::Cast.to_bool(args['_delete'])
     logger.debug("parse_typed_volume(#{type}): args=#{args}")
     disk = parse_hard_disk_volume(args) if volume_type?(args,
       'hard_disk') || volume_type?(args, 'mp') || volume_type?(args, 'rootfs')
@@ -116,6 +117,9 @@ module ProxmoxVMVolumesHelper
 
   def remove_volume_keys(args)
     if args.key?('volumes_attributes')
+      args['volumes_attributes'].delete_if do |_index, volume_attributes|
+        Foreman::Cast.to_bool(volume_attributes['_delete'])
+      end
       args['volumes_attributes'].each_value do |volume_attributes|
         ForemanFogProxmox::HashCollection.remove_keys(volume_attributes, ['_delete'])
       end

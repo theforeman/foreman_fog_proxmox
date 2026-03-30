@@ -185,7 +185,11 @@ const HardDisk = ({
         value={hdd?.size?.value}
         onChange={handleChange}
       />
-      <input name={hdd?._delete?.name} type="hidden" value={hidden} />
+      <input
+        name={hdd?._delete?.name}
+        type="hidden"
+        value={hidden ? '1' : '0'}
+      />
     </div>
   );
 };
@@ -208,7 +212,7 @@ HardDisk.defaultProps = {
   data: {},
   storages: [],
   nodeId: '',
-  hidden: 'false',
+  hidden: false,
   updateHardDiskData: Function.prototype,
   createUniqueDevice: Function.prototype,
   validateDevice: Function.prototype,

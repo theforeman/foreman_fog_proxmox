@@ -173,6 +173,8 @@ const ProxmoxVmType = ({
           paramScope={paramScope}
           nodeId={general?.nodeId?.value}
           computeResourceId={computeResourceId}
+          newVm={newVm}
+          fromProfile={fromProfile}
         />
       ),
       hardware: <ProxmoxContainerHardware hardware={vmAttrs} />,

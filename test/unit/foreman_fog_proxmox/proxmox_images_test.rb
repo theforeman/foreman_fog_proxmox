@@ -33,16 +33,34 @@ module ForemanFogProxmox
         @image.expects(:clone)
         @cr.stubs(:find_vm_by_uuid).with(@image_id).returns(@image)
         @clone = mock('vm')
+        @image_vmid = @cr.id.to_s + '_' + @vmid.to_s
       end
       it 'clones server from image' do
         @clone.stubs(:container?).returns(false)
-        @cr.stubs(:find_vm_by_uuid).with(@cr.id.to_s + '_' + @vmid.to_s).returns(@clone)
+        @cr.stubs(:find_vm_by_uuid).with(@image_vmid).returns(@clone)
         @cr.clone_from_image(@image_id, @vmid)
       end
       it 'clones container from image' do
         @clone.stubs(:container?).returns(true)
-        @cr.stubs(:find_vm_by_uuid).with(@cr.id.to_s + '_' + @vmid.to_s).returns(@clone)
+        @cr.stubs(:find_vm_by_uuid).with(@image_vmid).returns(@clone)
         @cr.clone_from_image(@image_id, @vmid)
+      end
+    end
+
+    describe 'update_boot_order' do
+      before do
+        @cr = FactoryBot.build_stubbed(:proxmox_cr)
+        @image_vmid = @cr.id.to_s + '_' + 101.to_s
+      end
+
+      it 'returns the boot order for image template with multiple disks' do
+        image = mock('vm')
+        image.stubs(:disks).returns(['scsi0:local-lvm:vm-100-disk-0,size=8G',
+                                     'virtio1:local-lvm:vm-100-disk-1,size=16G',
+                                     'ide2:local:cloudinit,media=cdrom'])
+        @cr.stubs(:find_vm_by_uuid).with(@image_vmid).returns(image)
+
+        assert_equal({ boot: 'order=scsi0;virtio1;ide2' }, @cr.update_boot_order(@image_vmid))
       end
     end
   end

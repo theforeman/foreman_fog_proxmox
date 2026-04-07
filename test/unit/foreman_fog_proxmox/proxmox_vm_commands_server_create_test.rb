@@ -108,6 +108,30 @@ module ForemanFogProxmox
         cr.create_vm(args)
       end
 
+      it 'applies boot order when cloning without user_data' do
+        args = { vmid: '100', type: 'qemu', image_id: '999', name: 'name', config_attributes: { onboot: '0' } }
+        servers = mock('servers')
+        containers = mock('containers')
+        servers.stubs(:id_valid?).returns(true)
+        cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
+        vm = mock('vm')
+        cr.expects(:clone_from_image).with('999', 100).returns(vm)
+        vm.expects(:container?).returns(false)
+        cr.expects(:parse_cloudinit_config).never
+        cr.expects(:update_boot_order).with('999').returns(boot: 'order=scsi0;virtio1')
+
+        expected_args = { vmid: '100', type: 'qemu', name: 'name', config_attributes: { onboot: '0', boot: 'order=scsi0;virtio1' } }
+
+        cr.expects(:parse_typed_vm).with do |parsed_args, parsed_type|
+          assert_equal 'qemu', parsed_type
+          assert_equal expected_args[:config_attributes], parsed_args[:config_attributes]
+          true
+        end.returns(expected_args)
+
+        vm.expects(:update).with(expected_args)
+        cr.create_vm(args)
+      end
+
       it 'attaches generated cloud-init ISO from a later ISO storage' do
         cr = ForemanFogProxmox::Proxmox.new
         first_storage = mock('first_storage')

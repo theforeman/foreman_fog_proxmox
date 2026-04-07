@@ -89,5 +89,13 @@ module ForemanFogProxmox
       image.clone(vmid)
       find_vm_by_uuid(id.to_s + '_' + vmid.to_s)
     end
+
+    def update_boot_order(image_id)
+      vm = find_vm_by_uuid(image_id)
+      return {} unless vm&.disks&.any?
+      disks = vm.disks.map { |disk| disk.split(":").first }.join(";")
+      return {} if disks.blank?
+      { boot: "order=" + disks }
+    end
   end
 end

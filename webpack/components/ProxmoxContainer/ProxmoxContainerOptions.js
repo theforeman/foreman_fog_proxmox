@@ -12,11 +12,14 @@ const ProxmoxContainerOptions = ({
   storages,
   nodeId,
   computeResourceId,
+  newVm,
+  fromProfile,
 }) => {
   const [opts, setOpts] = useState(options);
   const storagesMap = createStoragesMap(storages, 'vztmpl', nodeId);
 
   const storageValue = opts?.ostemplateStorage?.value || 'local';
+  const isEditMode = !newVm && !fromProfile;
 
   const fromStorages = useMemo(
     () => imagesByStorage(storages, nodeId, storageValue, 'vztmpl'),
@@ -24,7 +27,11 @@ const ProxmoxContainerOptions = ({
   );
 
   const shouldFetchFromAPI =
-    fromStorages.length === 0 && computeResourceId && nodeId && storageValue;
+    !isEditMode &&
+    fromStorages.length === 0 &&
+    computeResourceId &&
+    nodeId &&
+    storageValue;
   const { volumes, loadingVolumes, volumeError } = useVolumes(
     shouldFetchFromAPI ? computeResourceId : null,
     shouldFetchFromAPI ? nodeId : null,
@@ -104,6 +111,7 @@ const ProxmoxContainerOptions = ({
           options={volumesMap}
           value={opts?.ostemplateFile?.value}
           type="select"
+          disabled={isEditMode}
           onChange={handleChange}
           error={
             volumeError ? __('Failed fetching templates please try again.') : ''
@@ -163,6 +171,8 @@ ProxmoxContainerOptions.propTypes = {
   storages: PropTypes.array,
   nodeId: PropTypes.string,
   computeResourceId: PropTypes.number,
+  newVm: PropTypes.bool,
+  fromProfile: PropTypes.bool,
 };
 
 ProxmoxContainerOptions.defaultProps = {
@@ -170,6 +180,8 @@ ProxmoxContainerOptions.defaultProps = {
   storages: [],
   nodeId: '',
   computeResourceId: null,
+  newVm: false,
+  fromProfile: false,
 };
 
 export default ProxmoxContainerOptions;

@@ -36,8 +36,8 @@ function syncDhcpIP(item, suffix) {
   var $cidr = $fieldset.find('input.proxmox-cidr-' + suffix).first();
   var $gw = $fieldset.find('input.proxmox-gw-' + suffix).first();
 
-  setDisabled($cidr, !checked);
-  setDisabled($gw, !checked);
+  setDisabled($cidr, checked);
+  setDisabled($gw, checked);
 }
 
 function dhcpIPSelected(item, suffix) {

@@ -101,6 +101,7 @@ module ForemanFogProxmox
         pools: extract_pools(cr),
         storages: extract_storages(cr),
         bridges: extract_bridges(cr),
+        images: extract_images(cr),
       }
     end
 
@@ -139,6 +140,39 @@ module ForemanFogProxmox
           iface: (h[:iface] || h['iface']),
         }
       end
+    end
+
+    def extract_images(compute_resource)
+      images = compute_resource.images
+      images = images.order(:name) if images.respond_to?(:order)
+
+      Array(images).map do |image|
+        data = image.respond_to?(:as_json) ? image.as_json : image
+        uuid = image_value(image, data, :uuid, :id)
+
+        {
+          uuid: uuid,
+          name: image_value(image, data, :name),
+          disks: image_disks(compute_resource, uuid),
+        }
+      end
+    end
+
+    def image_disks(compute_resource, uuid)
+      return nil unless uuid && compute_resource.respond_to?(:find_vm_by_uuid)
+
+      compute_resource.find_vm_by_uuid(uuid)&.disks
+    rescue ActiveRecord::RecordNotFound, StandardError
+      nil
+    end
+
+    def image_value(image, data, *keys)
+      keys.each do |key|
+        value = [image.try(key), data.try(:[], key), data.try(:[], key.to_s)].find(&:present?)
+        return value if value.present?
+      end
+
+      nil
     end
 
     def load_compute_resource(compute_resource_id)

@@ -41,7 +41,10 @@ const ProxmoxVmType = ({
   const handleTabClick = (event, tabIndex) => setActiveTabKey(tabIndex);
 
   const [general, setGeneral] = useState(vmAttrs);
-
+  const [provisionMethodState, setProvisionMethodState] = useState(
+    document.querySelector('input[name="host[provision_method]"]:checked')
+      ?.value || 'build'
+  );
   const paramScope = fromProfile
     ? 'compute_attribute[vm_attrs]'
     : 'host[compute_attributes]';
@@ -53,6 +56,43 @@ const ProxmoxVmType = ({
   const [metaStorages, setMetaStorages] = useState([]);
   const [metaBridges, setMetaBridges] = useState([]);
   const [metaImages, setMetaImages] = useState(images || []);
+  const [selectedImageId, setSelectedImageId] = useState(
+    provisionMethodState === 'image'
+      ? (document.querySelector('#image_selection select')
+          ? document.querySelector('#image_selection select')?.value
+          : document.querySelector('[name$="[image_id]"]')?.value) ?? null
+      : null
+  );
+  const selectedImage =
+    provisionMethodState === 'image'
+      ? metaImages.find(image => image.uuid === selectedImageId)
+      : null;
+
+  useEffect(() => {
+    if (provisionMethodState !== 'image') {
+      if (selectedImageId !== null) {
+        setSelectedImageId(null);
+      }
+      return;
+    }
+
+    if (selectedImageId !== null) return;
+
+    const imageSelect = document.querySelector('#image_selection select');
+    const domValue =
+      (imageSelect ? imageSelect.value : null) ??
+      document.querySelector('[name$="[image_id]"]')?.value ??
+      null;
+
+    if (domValue !== null) {
+      setSelectedImageId(domValue || null);
+      return;
+    }
+
+    if (metaImages.length === 1 && provisionMethodState === 'image') {
+      setSelectedImageId(metaImages[0].uuid);
+    }
+  }, [metaImages, selectedImageId, provisionMethodState]);
 
   useEffect(() => {
     if (registerComp) return undefined;
@@ -134,6 +174,37 @@ const ProxmoxVmType = ({
     setFilteredBridges(filtered);
   }, [nodeIdValue, metaBridges, registerComp]);
 
+  useEffect(() => {
+    const handler = event => {
+      if (event.target?.name !== 'host[provision_method]') return;
+      setProvisionMethodState(event.target.value);
+    };
+    document.addEventListener('change', handler);
+    return () => {
+      document.removeEventListener('change', handler);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handler = event => {
+      if (provisionMethodState !== 'image') return;
+      const { target } = event;
+      if (!target) return;
+      const { value: targetValue } = target;
+      if (
+        target.closest('#image_selection') ||
+        target.name?.endsWith('[image_id]')
+      ) {
+        setSelectedImageId(targetValue || null);
+      }
+    };
+
+    document.addEventListener('change', handler);
+    return () => {
+      document.removeEventListener('change', handler);
+    };
+  }, [provisionMethodState]);
+
   if (registerComp) {
     return null;
   }
@@ -162,6 +233,8 @@ const ProxmoxVmType = ({
           isLoading={!metaLoaded}
           isTabActive={activeTabKey === 4}
           computeResourceId={computeResourceId}
+          selectedImage={selectedImage}
+          provisionMethodState={provisionMethodState}
         />
       ),
     },
@@ -207,6 +280,12 @@ const ProxmoxVmType = ({
     } else {
       value = targetValue;
     }
+
+    if (name?.endsWith('[image_id]') && fromProfile) {
+      setSelectedImageId(value || null);
+      setProvisionMethodState('image');
+    }
+
     const updatedKey = Object.keys(general).find(
       key => general[key].name === name
     );

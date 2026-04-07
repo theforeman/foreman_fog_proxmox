@@ -25,18 +25,17 @@ require 'foreman_fog_proxmox/hash_collection'
 module ForemanFogProxmox
   module ProxmoxVMNew
     include ProxmoxVMHelper
-
     def cdrom_defaults
       { storage_type: 'cdrom', id: 'ide2', volid: 'none', media: 'cdrom' }
     end
 
     def cloudinit_defaults
-      { storage_type: 'cloud_init', id: 'ide0', storage: storages.first.identity.to_s, media: 'cdrom' }
+      { storage_type: 'cloud_init', id: 'ide0', storage: default_storage_id, media: 'cdrom' }
     end
 
     def hard_disk_typed_defaults(vm_type)
       options = {}
-      volume_attributes_h = { storage: storages.first.identity.to_s, size: '8' }
+      volume_attributes_h = { storage: default_storage_id, size: '8' }
       case vm_type
       when 'qemu'
         controller = 'virtio'
@@ -69,18 +68,18 @@ module ForemanFogProxmox
     end
 
     def interface_defaults(id = 'net0')
-      { id: id, compute_attributes: { model: 'virtio', name: 'eth0', bridge: bridges.first.identity.to_s } }
+      { id: id, compute_attributes: { model: 'virtio', name: 'eth0', bridge: default_bridge_id } }
     end
 
     def interface_typed_defaults(type)
       interface_attributes_h = { id: 'net0', compute_attributes: {} }
       if type == 'qemu'
         interface_attributes_h[:compute_attributes] =
-          { model: 'virtio', bridge: bridges.first.identity.to_s }
+          { model: 'virtio', bridge: default_bridge_id }
       end
       if type == 'lxc'
         interface_attributes_h[:compute_attributes] =
-          { name: 'eth0', bridge: bridges.first.identity.to_s, dhcp: 1, dhcp6: 1 }
+          { name: 'eth0', bridge: default_bridge_id, dhcp: 1, dhcp6: 1 }
       end
       interface_attributes_h
     end

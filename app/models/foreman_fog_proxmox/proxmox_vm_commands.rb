@@ -61,6 +61,8 @@ module ForemanFogProxmox
 
     def compute_clone_attributes(args, container, type)
       args = parse_cloudinit_config(args) if args[:user_data]
+      image_id = args[:image_id]
+      args[:config_attributes]&.merge!(update_boot_order(image_id)) if image_id
       parsed_args = parse_typed_vm(args, type)
       if container
         options = { :hostname => args[:name] }

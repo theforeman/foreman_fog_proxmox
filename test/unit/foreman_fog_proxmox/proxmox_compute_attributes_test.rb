@@ -97,7 +97,7 @@ module ForemanFogProxmox
                      }, vm_attrs[:config_attributes]
         assert_not vm_attrs[:config_attributes].key?(:disks)
         assert vm_attrs.key?(:volumes_attributes)
-        assert_equal volume_attributes, vm_attrs[:volumes_attributes]['0']
+        assert_equal volume_attributes.merge(_delete: '0'), vm_attrs[:volumes_attributes]['0']
         assert_not vm_attrs[:config_attributes].key?(:interfaces)
         assert vm_attrs.key?(:interfaces_attributes)
         assert_equal interface_attributes[:id], vm_attrs[:interfaces_attributes]['0'][:id]
@@ -118,7 +118,7 @@ module ForemanFogProxmox
                      }, vm_attrs[:config_attributes]
         assert_not vm_attrs[:config_attributes].key?(:disks)
         assert vm_attrs.key?(:volumes_attributes)
-        assert_equal volume_attributes, vm_attrs[:volumes_attributes]['0']
+        assert_equal volume_attributes.merge(_delete: '0'), vm_attrs[:volumes_attributes]['0']
         assert vm_attrs.key?(:interfaces_attributes)
         assert_equal interface_attributes[:id], vm_attrs[:interfaces_attributes]['0'][:id]
         assert_equal interface_attributes[:compute_attributes][:name],

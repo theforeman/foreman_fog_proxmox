@@ -17,7 +17,7 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% if @host.compute_resource.class == ForemanFogProxmox::Proxmox %>
 <% vm_type_and_node_id = proxmox_vm_type_and_node_id(@host, f.object, params) %>
 <% compute_attributes = vm_type_and_node_id[:compute_attributes] %>
-<% vm_type = vm_type_and_node_id[:vm_type] %>
+<% vm_type = vm_type_and_node_id[:vm_type].presence || 'qemu' %>
 <% node_id = vm_type_and_node_id[:node_id] %>
 
 <%= f.fields_for 'compute_attributes', OpenStruct.new(compute_attributes) do |f| %>

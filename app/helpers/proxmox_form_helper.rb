@@ -18,28 +18,30 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 module ProxmoxFormHelper
+  include ProxmoxVMInterfacesHelper
+
   def proxmox_vm_type_and_node_id(host, form_object, params)
     compute_attributes = form_object.compute_attributes || {}
-    compute_vm_type = extract_attr(compute_attributes, :type)
-    compute_node_id = extract_attr(compute_attributes, :node_id)
-    object_node_id = form_object.respond_to?(:node_id) ? form_object.node_id : nil
-
     host_compute_attrs = host.respond_to?(:compute_attributes) ? (host.compute_attributes || {}) : {}
     host_vm_type = extract_attr(host_compute_attrs, :type)
-    host_node_id = extract_attr(host_compute_attrs, :node_id)
 
     profile_attrs = profile_compute_attributes(host)
     profile_vm_type = extract_attr(profile_attrs, :type)
-    profile_node_id = extract_attr(profile_attrs, :node_id)
 
     vm_type = [
       params.dig(:host, :compute_attributes, :type).presence,
       params.dig(:compute_attribute, :vm_attrs, :type).presence,
-      compute_vm_type,
       host_vm_type,
       profile_vm_type,
       'qemu',
     ].find(&:present?)
+
+    compute_attributes = proxmox_default_interface_compute_attributes(host, vm_type) unless proxmox_valid_interface_compute_attributes?(compute_attributes, vm_type)
+
+    compute_node_id = extract_attr(compute_attributes, :node_id)
+    object_node_id = form_object.respond_to?(:node_id) ? form_object.node_id : nil
+    host_node_id = extract_attr(host_compute_attrs, :node_id)
+    profile_node_id = extract_attr(profile_attrs, :node_id)
 
     node_id = [
       params.dig(:host, :compute_attributes, :node_id).presence,
@@ -120,6 +122,17 @@ module ProxmoxFormHelper
   end
 
   private
+
+  def proxmox_default_interface_compute_attributes(host, vm_type)
+    host.compute_resource.interface_typed_defaults(vm_type).fetch(:compute_attributes).deep_dup
+  end
+
+  def proxmox_valid_interface_compute_attributes?(compute_attributes, vm_type)
+    return false unless compute_attributes.respond_to?(:keys)
+
+    valid_keys = interface_compute_attributes_typed_keys(vm_type)
+    compute_attributes.keys.map(&:to_s).all? { |key| valid_keys.include?(key) }
+  end
 
   def extract_attr(attrs, key)
     return unless attrs.respond_to?(:[])

@@ -35,6 +35,7 @@ module ForemanFogProxmox
         args = { vmid: '100' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(false)
+        servers.stubs(:get).returns(nil)
         cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
         err = assert_raises Foreman::Exception do
           cr.create_vm(args)
@@ -47,6 +48,7 @@ module ForemanFogProxmox
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         servers.stubs(:next_id).returns('101')
+        servers.stubs(:get).returns(nil)
         cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
         cr.stubs(:parse_typed_vm).with(args, 'qemu').returns(args)
         servers.stubs(:create).with(args)
@@ -59,6 +61,7 @@ module ForemanFogProxmox
         args = { vmid: '100', type: 'qemu', node_id: 'proxmox', start_after_create: '0' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
+        servers.stubs(:get).returns(nil)
         cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
         cr.stubs(:parse_typed_vm).with(args, 'qemu').returns(args)
         servers.stubs(:create).with(args)
@@ -71,6 +74,7 @@ module ForemanFogProxmox
         args = { vmid: '100', type: 'qemu', node_id: 'proxmox', start_after_create: '1' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
+        servers.stubs(:get).returns(nil)
         cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
         cr.stubs(:parse_typed_vm).with(args, 'qemu').returns(args)
         vm = mock('vm')
@@ -84,6 +88,7 @@ module ForemanFogProxmox
         args = { vmid: '100', type: 'qemu', node_id: 'proxmox', start_after_create: '0', pool: 'pool1' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
+        servers.stubs(:get).returns(nil)
         cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
         cr.stubs(:parse_typed_vm).with(args, 'qemu').returns(args)
         vm = mock('vm')
@@ -98,6 +103,8 @@ module ForemanFogProxmox
         servers = mock('servers')
         containers = mock('containers')
         servers.stubs(:id_valid?).returns(true)
+        servers.stubs(:get).returns(nil)
+        containers.stubs(:get).returns(nil)
         cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
         vm = mock('vm')
         cr.expects(:clone_from_image).with('999', 100).returns(vm)

@@ -28,7 +28,12 @@ module ForemanFogProxmox
       node ||= default_node
       storage = node.storages.get storage_id if storage_id
       logger.debug("images_by_storage(): node_id #{node_id} storage_id #{storage_id} type #{type}")
-      storage.volumes.list_by_content_type(type).sort_by(&:volid) if storage
+      return [] unless storage && storage_active?(storage)
+
+      storage.volumes.list_by_content_type(type).sort_by(&:volid)
+    rescue StandardError => e
+      logger.error("images_by_storage(): failed to list volumes for storage #{storage_id} on node #{node_id}: #{e.class}: #{e.message}")
+      []
     end
 
     def template_name(template)
@@ -48,9 +53,9 @@ module ForemanFogProxmox
       volumes = []
       nodes.each do |node|
         storages(node.node).each do |storage|
-          # Skip disabled storages (enabled == 0 or nil)
-          unless storage.enabled.to_i == 1
-            logger.warn("Skipping disabled storage #{storage.identity} on #{node.node}")
+          # Skip inactive or disabled storages
+          unless storage_active?(storage)
+            logger.warn("Skipping inactive/disabled storage #{storage.identity} on #{node.node}")
             next
           end
 

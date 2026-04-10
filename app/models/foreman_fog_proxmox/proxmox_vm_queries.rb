@@ -32,7 +32,65 @@ module ForemanFogProxmox
       node ||= default_node
       storages = node.storages.list_by_content_type type
       logger.debug("storages(): node_id #{node_id} type #{type}")
-      storages.sort_by(&:storage)
+      storages.select { |s| storage_active?(s) }.sort_by(&:storage)
+    rescue StandardError => e
+      logger.error("storages(): failed to list storages on node #{node_id}: #{e.class}: #{e.message}")
+      []
+    end
+
+    def storage_active?(storage)
+      # Default to true when attributes are missing - older Proxmox API versions
+      # may not expose :active/:enabled, and we treat unknown state as usable.
+      active = storage.respond_to?(:active) ? storage.active.to_i == 1 : true
+      enabled = storage.respond_to?(:enabled) ? storage.enabled.to_i == 1 : true
+      unless active && enabled
+        active_val = storage.respond_to?(:active) ? storage.active : 'N/A'
+        enabled_val = storage.respond_to?(:enabled) ? storage.enabled : 'N/A'
+        logger.debug("Filtering out inactive/disabled storage #{storage.storage} " \
+                      "(active=#{active_val}, enabled=#{enabled_val})")
+      end
+      active && enabled
+    end
+
+    def storage_for_node(node_id)
+      storage_mapping = attrs.fetch(:storage_mapping, {})
+      mapped = storage_mapping[node_id]
+      if mapped
+        # Verify mapped storage is actually active on the node
+        available = storages(node_id)
+        if available.any? { |s| s.storage == mapped }
+          logger.info("storage_for_node(): using mapped storage '#{mapped}' for node '#{node_id}'")
+          return mapped
+        end
+        logger.warn("storage_for_node(): mapped storage '#{mapped}' not active on node '#{node_id}', falling back to auto-select")
+      end
+
+      # Auto-select first available storage on the node
+      available = storages(node_id)
+      if available.any?
+        selected = available.first&.storage
+        logger.info("storage_for_node(): auto-selected storage '#{selected}' for node '#{node_id}'")
+        selected
+      else
+        default = attrs[:storage]
+        logger.warn("storage_for_node(): no active storage found on node '#{node_id}', falling back to '#{default}'")
+        default
+      end
+    end
+
+    def default_storage_id
+      storage_for_node(default_node_id)
+    rescue StandardError => e
+      logger.warn("default_storage_id(): failed to resolve storage: #{e.message}")
+      nil
+    end
+
+    def default_bridge_id
+      br = bridges.first
+      br ? br.identity.to_s : nil
+    rescue StandardError => e
+      logger.warn("default_bridge_id(): failed to resolve bridge: #{e.message}")
+      nil
     end
 
     def bridges(node_id = default_node_id)

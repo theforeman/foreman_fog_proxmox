@@ -106,7 +106,6 @@ module ProxmoxVMCloudinitHelper
     configs = filenames.zip(config_data).to_h
 
     iso = create_cloudinit_iso(args[:name], configs, ssh)
-    args[:config_attributes]&.merge!(update_boot_order(args[:image_id]))
     args.merge!(attach_cloudinit_iso(args[:node_id], iso))
   end
 
@@ -118,13 +117,6 @@ module ProxmoxVMCloudinitHelper
 
   def default_iso_path
     "/var/lib/vz/template/iso"
-  end
-
-  def update_boot_order(image_id)
-    vm = find_vm_by_uuid(image_id)
-    return if vm.disks.nil?
-    disks = vm.disks.map { |disk| disk.split(":")[0] }.join(";")
-    { boot: "order=" + disks }
   end
 
   def vm_ssh

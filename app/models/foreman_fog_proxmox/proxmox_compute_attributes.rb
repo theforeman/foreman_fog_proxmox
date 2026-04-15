@@ -19,8 +19,13 @@
 
 module ForemanFogProxmox
   module ProxmoxComputeAttributes
+    FOREMAN_INTERFACE_ATTRIBUTES = [:id, :mac, :ip, :ip6].freeze
+    PROXMOX_MAC_ATTRIBUTES = [:macaddr, :hwaddr].freeze
+    PROXMOX_INTERFACE_METADATA = [:identifier, :compute_attributes].freeze
+
     def host_compute_attrs(host)
-      ostype = host.compute_attributes['config_attributes']['ostype']
+      config = host.compute_attributes['config_attributes'] || {}
+      ostype = config['ostype']
       type = host.compute_attributes['type']
       case type
       when 'lxc'
@@ -41,9 +46,21 @@ module ForemanFogProxmox
     end
 
     def interface_compute_attributes(interface_attributes)
-      vm_attrs = ForemanFogProxmox::HashCollection.new_hash_reject_keys(interface_attributes, [:identifier, :macaddr, :hwaddr])
-      vm_attrs[:dhcp] = (interface_attributes[:ip] == 'dhcp') ? '1' : '0'
-      vm_attrs[:dhcp6] = (interface_attributes[:ip6] == 'dhcp') ? '1' : '0'
+      attrs = interface_attributes.with_indifferent_access
+      provider_attrs = attrs[:compute_attributes].present? ? attrs[:compute_attributes].with_indifferent_access : ActiveSupport::HashWithIndifferentAccess.new
+
+      vm_attrs = FOREMAN_INTERFACE_ATTRIBUTES.index_with do |key|
+        attrs[key] || provider_attrs.delete(key)
+      end.compact
+      vm_attrs[:mac] ||= attrs[:macaddr] || attrs[:hwaddr] || provider_attrs.delete(:macaddr) || provider_attrs.delete(:hwaddr)
+
+      attrs.except(*FOREMAN_INTERFACE_ATTRIBUTES, *PROXMOX_MAC_ATTRIBUTES, *PROXMOX_INTERFACE_METADATA).each do |key, value|
+        provider_attrs[key] = value
+      end
+
+      provider_attrs[:dhcp] = (vm_attrs[:ip] == 'dhcp') ? '1' : '0'
+      provider_attrs[:dhcp6] = (vm_attrs[:ip6] == 'dhcp') ? '1' : '0'
+      vm_attrs[:compute_attributes] = provider_attrs
       vm_attrs
     end
 

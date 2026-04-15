@@ -46,9 +46,10 @@ module ForemanFogProxmox
     def vms(opts = {})
       vms = []
       nodes.each { |node| vms += node.servers.all + node.containers.all }
+      vms.each { |vm| attach_compute_resource_id(vm) }
       if opts.key?(:eager_loading) && opts[:eager_loading]
         vms_eager = []
-        vms.each { |vm| vms_eager << vm.collection.get(vm.identity) }
+        vms.each { |vm| vms_eager << attach_compute_resource_id(vm.collection.get(vm.identity)) }
         vms = vms_eager
       end
       ForemanFogProxmox::Vms.new(vms)
@@ -71,12 +72,21 @@ module ForemanFogProxmox
     def find_vm_in_servers_by_vmid(servers, vmid)
       vm = servers.get(vmid) unless ForemanFogProxmox::Value.empty?(vmid)
       pool_owner(vm) if vm
-      vm
+      attach_compute_resource_id(vm)
     rescue Fog::Errors::NotFound
       nil
     rescue StandardError => e
       Foreman::Logging.exception(format(_('Failed retrieving proxmox server vm by vmid=%<vmid>s'), vmid: vmid), e)
       raise(ActiveRecord::RecordNotFound, e)
+    end
+
+    private
+
+    def attach_compute_resource_id(virtual_machine)
+      return virtual_machine if virtual_machine.nil?
+
+      virtual_machine.compute_resource_id = id if virtual_machine.respond_to?(:compute_resource_id=)
+      virtual_machine
     end
   end
 end

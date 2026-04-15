@@ -87,6 +87,23 @@ module ForemanFogProxmox
       end
       excluded_keys = [:vmid, :disks, :interfaces]
 
+      it 'maps flat interface attributes into foreman nic structure' do
+        vm_attrs = @cr.interface_compute_attributes(
+          id: 'net0',
+          macaddr: '36:25:8C:53:0C:50',
+          model: 'virtio',
+          bridge: 'vmbr0'
+        )
+
+        assert_equal 'net0', vm_attrs[:id]
+        assert_equal '36:25:8C:53:0C:50', vm_attrs[:mac]
+        assert_equal 'virtio', vm_attrs[:compute_attributes][:model]
+        assert_equal 'vmbr0', vm_attrs[:compute_attributes][:bridge]
+        assert_equal '0', vm_attrs[:compute_attributes][:dhcp]
+        assert_equal '0', vm_attrs[:compute_attributes][:dhcp6]
+        assert_not vm_attrs[:compute_attributes].key?(:macaddr)
+      end
+
       it 'converts a server to hash' do
         vm, config_attributes, volume_attributes, interface_attributes = mock_server_vm
         vm_attrs = @cr.vm_compute_attributes(vm)
@@ -101,11 +118,13 @@ module ForemanFogProxmox
         assert_not vm_attrs[:config_attributes].key?(:interfaces)
         assert vm_attrs.key?(:interfaces_attributes)
         assert_equal interface_attributes[:id], vm_attrs[:interfaces_attributes]['0'][:id]
-        assert_equal interface_attributes[:mac], vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:macaddr]
+        assert_equal interface_attributes[:mac], vm_attrs[:interfaces_attributes]['0'][:mac]
         assert_equal interface_attributes[:compute_attributes][:model],
           vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:model]
         assert_equal interface_attributes[:compute_attributes][:bridge],
           vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:bridge]
+        assert_equal '0', vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:dhcp]
+        assert_equal '0', vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:dhcp6]
       end
 
       it 'converts a container to hash' do
@@ -121,11 +140,13 @@ module ForemanFogProxmox
         assert_equal volume_attributes.merge(_delete: '0'), vm_attrs[:volumes_attributes]['0']
         assert vm_attrs.key?(:interfaces_attributes)
         assert_equal interface_attributes[:id], vm_attrs[:interfaces_attributes]['0'][:id]
+        assert_equal interface_attributes[:mac], vm_attrs[:interfaces_attributes]['0'][:mac]
         assert_equal interface_attributes[:compute_attributes][:name],
           vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:name]
-        assert_equal interface_attributes[:mac], vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:hwaddr]
         assert_equal interface_attributes[:compute_attributes][:bridge],
           vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:bridge]
+        assert_equal '0', vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:dhcp]
+        assert_equal '0', vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:dhcp6]
       end
     end
   end

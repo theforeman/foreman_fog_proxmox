@@ -45,6 +45,7 @@ module ForemanFogProxmox
 
     def provided_attributes
       super.merge(
+        :uuid => :foreman_uuid,
         :mac => :mac
       )
     end
@@ -62,10 +63,11 @@ module ForemanFogProxmox
     end
 
     def associated_host(vm)
-      associate_by('mac', vm.mac)
+      associate_by('mac', vm&.mac)
     end
 
     def associate_by(name, attributes)
+      return nil if attributes.blank?
       Host.authorized(:view_hosts,
         Host).joins(:primary_interface).where(:nics => { :primary => true }).where("nics.#{name}".downcase => attributes.downcase).readonly(false).first
     end

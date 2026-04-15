@@ -21,10 +21,16 @@ module FogExtensions
   module Proxmox
     module Server
       extend ActiveSupport::Concern
-      attr_accessor :image_id, :templated, :ostemplate_storage, :ostemplate_file, :password, :start_after_create
+      attr_accessor :image_id, :templated, :ostemplate_storage, :ostemplate_file, :password, :start_after_create, :compute_resource_id
 
       def unique_cluster_identity(compute_resource)
         compute_resource.id.to_s + '_' + identity.to_s
+      end
+
+      def foreman_uuid
+        return identity.to_s if compute_resource_id.nil?
+
+        compute_resource_id.to_s + '_' + identity.to_s
       end
 
       def start

@@ -23,6 +23,7 @@ require 'factories/foreman_fog_proxmox/proxmox_node_mock_factory'
 require 'factories/foreman_fog_proxmox/proxmox_server_mock_factory'
 require 'factories/foreman_fog_proxmox/proxmox_container_mock_factory'
 require 'active_support/core_ext/hash/indifferent_access'
+require 'ostruct'
 
 module ForemanFogProxmox
   class ProxmoxVMQueriesTest < ActiveSupport::TestCase
@@ -31,6 +32,72 @@ module ForemanFogProxmox
     include ProxmoxServerMockFactory
     include ProxmoxContainerMockFactory
     include ProxmoxVMHelper
+
+    describe 'storages' do
+      before do
+        @cr = ForemanFogProxmox::Proxmox.new
+        @storages_collection = mock('storages_collection')
+        @node = mock('node')
+        @node.stubs(:storages).returns(@storages_collection)
+        nodes = mock('nodes')
+        nodes.stubs(:get).with('proxmox').returns(@node)
+        client = mock('client')
+        client.stubs(:nodes).returns(nodes)
+        @cr.stubs(:client).returns(client)
+      end
+
+      it 'returns only active and enabled storages' do
+        active_storage = OpenStruct.new(storage: 'local', enabled: 1, active: 1)
+        @storages_collection.stubs(:list_by_content_type).with('images').returns([active_storage])
+
+        assert_equal [active_storage], @cr.storages('proxmox')
+      end
+
+      it 'returns active storages sorted by storage name' do
+        storage_zfs = OpenStruct.new(storage: 'local-zfs', enabled: 1, active: 1)
+        storage_lvm = OpenStruct.new(storage: 'local-lvm', enabled: 1, active: 1)
+        @storages_collection.stubs(:list_by_content_type).with('images').returns([storage_zfs, storage_lvm])
+
+        assert_equal %w[local-lvm local-zfs], @cr.storages('proxmox').map(&:storage)
+      end
+
+      it 'filters invalid storages and keeps valid ones' do
+        valid = OpenStruct.new(storage: 'good', enabled: 1, active: 1)
+        invalid = OpenStruct.new(storage: 'bad', enabled: 0, active: 1)
+
+        @storages_collection.stubs(:list_by_content_type).with('images').returns([valid, invalid])
+
+        assert_equal [valid], @cr.storages('proxmox')
+      end
+
+      it 'excludes disabled storages (enabled=0)' do
+        disabled_storage = OpenStruct.new(storage: 'disabled-store', enabled: 0, active: 1)
+        @storages_collection.stubs(:list_by_content_type).with('images').returns([disabled_storage])
+
+        assert_empty @cr.storages('proxmox')
+      end
+
+      it 'excludes inactive storages (active=0)' do
+        inactive_storage = OpenStruct.new(storage: 'inactive-store', enabled: 1, active: 0)
+        @storages_collection.stubs(:list_by_content_type).with('images').returns([inactive_storage])
+
+        assert_empty @cr.storages('proxmox')
+      end
+
+      it 'treats nil enabled as inactive and excludes it' do
+        nil_enabled_storage = OpenStruct.new(storage: 'nil-enabled', enabled: nil, active: 1)
+        @storages_collection.stubs(:list_by_content_type).with('images').returns([nil_enabled_storage])
+
+        assert_empty @cr.storages('proxmox')
+      end
+
+      it 'treats nil active as inactive and excludes it' do
+        nil_active_storage = OpenStruct.new(storage: 'nil-active', enabled: 1, active: nil)
+        @storages_collection.stubs(:list_by_content_type).with('images').returns([nil_active_storage])
+
+        assert_empty @cr.storages('proxmox')
+      end
+    end
 
     describe 'find_vm_by_uuid' do
       it 'returns nil when the uuid does not match' do

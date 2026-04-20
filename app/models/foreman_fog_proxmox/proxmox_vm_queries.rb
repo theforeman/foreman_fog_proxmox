@@ -32,7 +32,7 @@ module ForemanFogProxmox
       node ||= default_node
       storages = node.storages.list_by_content_type type
       logger.debug("storages(): node_id #{node_id} type #{type}")
-      storages.sort_by(&:storage)
+      storages.reject { |s| s.enabled.to_i.zero? || s.active.to_i.zero? }.sort_by(&:storage)
     end
 
     def bridges(node_id = default_node_id)

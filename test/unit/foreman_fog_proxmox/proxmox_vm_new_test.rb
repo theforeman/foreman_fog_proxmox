@@ -32,6 +32,50 @@ module ForemanFogProxmox
     include ProxmoxContainerMockFactory
     include ProxmoxVMHelper
 
+    describe 'defaults with empty storages or bridges' do
+      before do
+        @cr = FactoryBot.build_stubbed(:proxmox_cr)
+        @cr.stubs(:storages).returns([])
+        @cr.stubs(:bridges).returns([])
+      end
+
+      it 'does not crash for cloudinit_defaults when storages are empty' do
+        defaults = @cr.cloudinit_defaults
+
+        assert_equal '', defaults[:storage]
+      end
+
+      it 'does not crash for qemu hard_disk_typed_defaults when storages are empty' do
+        defaults = @cr.hard_disk_typed_defaults('qemu')
+
+        assert_equal '', defaults[:storage]
+      end
+
+      it 'does not crash for lxc hard_disk_typed_defaults when storages are empty' do
+        defaults = @cr.hard_disk_typed_defaults('lxc')
+
+        assert_equal '', defaults[:storage]
+      end
+
+      it 'does not crash for interface_defaults when bridges are empty' do
+        defaults = @cr.interface_defaults
+
+        assert_equal '', defaults[:compute_attributes][:bridge]
+      end
+
+      it 'does not crash for qemu interface_typed_defaults when bridges are empty' do
+        defaults = @cr.interface_typed_defaults('qemu')
+
+        assert_equal '', defaults[:compute_attributes][:bridge]
+      end
+
+      it 'does not crash for lxc interface_typed_defaults when bridges are empty' do
+        defaults = @cr.interface_typed_defaults('lxc')
+
+        assert_equal '', defaults[:compute_attributes][:bridge]
+      end
+    end
+
     describe 'new_vm' do
       before do
         @cr = FactoryBot.build_stubbed(:proxmox_cr)

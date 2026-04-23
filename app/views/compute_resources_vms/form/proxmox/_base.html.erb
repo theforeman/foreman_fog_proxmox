@@ -44,6 +44,7 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   props = {
     vmAttrs: vm_attrs,
     computeResourceId: compute_resource.id,
+    canAttachCdromImage: User.current.can?(:attach_cdrom_image, compute_resource),
     propsLoaded: false,
     fromProfile: from_profile,
     newVm: new_vm,

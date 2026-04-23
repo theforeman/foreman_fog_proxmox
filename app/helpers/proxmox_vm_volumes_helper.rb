@@ -86,15 +86,29 @@ module ProxmoxVMVolumesHelper
     if args.key?('storage_type')
       args['storage_type'] == type
     else
+      return true if type == 'cdrom' && args.key?('cdrom')
+
       Fog::Proxmox::DiskHelper.cloud_init?(args['volid']) if type == 'cloud_init'
       Fog::Proxmox::DiskHelper.cdrom?(args['volid']) if type == 'cdrom'
       Fog::Proxmox::DiskHelper.disk?(args['id']) if ['hard_disk', 'rootfs', 'mp'].include?(type)
     end
   end
 
+  def validate_cdrom_image_permission!(volume_attributes)
+    volume_attributes = volume_attributes.with_indifferent_access
+
+    return unless volume_type?(volume_attributes, 'cdrom')
+    return unless volume_attributes[:cdrom].to_s == 'image'
+    return if User.current&.can?(:attach_cdrom_image, self)
+
+    raise ::Foreman::Exception,
+      _('You are not authorized to attach or change CD-ROM ISO images.')
+  end
+
   def parse_typed_volume(args, type)
     return if Foreman::Cast.to_bool(args['_delete'])
     logger.debug("parse_typed_volume(#{type}): args=#{args}")
+    validate_cdrom_image_permission!(args)
     disk = parse_hard_disk_volume(args) if volume_type?(args,
       'hard_disk') || volume_type?(args, 'mp') || volume_type?(args, 'rootfs')
     disk = parse_server_cloudinit(args) if volume_type?(args, 'cloud_init')

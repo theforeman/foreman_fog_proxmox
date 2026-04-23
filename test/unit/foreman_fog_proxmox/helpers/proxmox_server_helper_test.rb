@@ -107,6 +107,16 @@ module ForemanFogProxmox
         assert_equal 'cdrom', cdrom[:media]
       end
 
+      test '#cdrom physical' do
+        cdrom = parse_server_cdrom('cdrom' => 'physical')
+        assert cdrom.key?(:id)
+        assert_equal 'ide2', cdrom[:id]
+        assert cdrom.key?(:volid)
+        assert_equal 'cdrom', cdrom[:volid]
+        assert cdrom.key?(:media)
+        assert_equal 'cdrom', cdrom[:media]
+      end
+
       test '#vm' do
         expected_vm = ActiveSupport::HashWithIndifferentAccess.new(
           {

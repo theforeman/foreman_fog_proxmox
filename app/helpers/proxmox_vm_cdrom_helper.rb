@@ -26,8 +26,15 @@ require 'foreman_fog_proxmox/hash_collection'
 module ProxmoxVMCdromHelper
   def parse_server_cdrom(args)
     cdrom_media = args['cdrom'] if args.key?('cdrom')
-    cdrom_image = args['volid'] if args.key?('volid')
-    volid = cdrom_image.empty? ? cdrom_media : cdrom_image
+    return {} unless cdrom_media
+    cdrom_image = args['volid'] if args.key?('volid') && cdrom_media == 'image'
+    volid = if cdrom_image.present?
+              cdrom_image
+            elsif cdrom_media == 'none'
+              'none'
+            elsif ['physical', 'cdrom'].include?(cdrom_media)
+              'cdrom'
+            end
     return {} unless volid
 
     { id: 'ide2', volid: volid, media: 'cdrom' }

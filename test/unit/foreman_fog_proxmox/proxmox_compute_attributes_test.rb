@@ -104,6 +104,13 @@ module ForemanFogProxmox
         assert_not vm_attrs[:compute_attributes].key?(:macaddr)
       end
 
+      it 'normalizes cdrom volume attributes to form shape' do
+        assert_equal({ cdrom: 'none' }, @cr.volume_compute_attributes({ storage_type: 'cdrom', volid: 'none', media: 'cdrom' }))
+        assert_equal({ cdrom: 'physical' }, @cr.volume_compute_attributes({ storage_type: 'cdrom', volid: 'cdrom', media: 'cdrom' }))
+        assert_equal({ cdrom: 'local-lvm:iso/debian-netinst.iso' },
+          @cr.volume_compute_attributes({ storage_type: 'cdrom', volid: 'local-lvm:iso/debian-netinst.iso', media: 'cdrom' }))
+      end
+
       it 'converts a server to hash' do
         vm, config_attributes, volume_attributes, interface_attributes = mock_server_vm
         vm_attrs = @cr.vm_compute_attributes(vm)

@@ -64,8 +64,24 @@ module ForemanFogProxmox
       vm_attrs
     end
 
+    def cdrom_compute_attributes(attrs)
+      return unless attrs[:storage_type].to_s == 'cdrom' || attrs[:media].to_s == 'cdrom'
+
+      cdrom_val = case attrs[:volid].to_s
+                  when 'none' then 'none'
+                  when 'cdrom' then 'physical'
+                  else attrs[:volid].to_s
+                  end
+      { cdrom: cdrom_val }
+    end
+
     def volume_compute_attributes(volume_attributes)
-      volume_attributes.merge(_delete: '0')
+      attrs = volume_attributes.merge(_delete: '0')
+      cdrom_attrs = cdrom_compute_attributes(attrs)
+
+      return cdrom_attrs if cdrom_attrs
+
+      attrs
     end
 
     def vm_compute_attributes(vm)

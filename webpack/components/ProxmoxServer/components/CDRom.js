@@ -6,6 +6,9 @@ import {
   PageSection,
   Radio,
   Spinner,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
 } from '@patternfly/react-core';
 import { TimesIcon } from '@patternfly/react-icons';
 import { translate as __ } from 'foremanReact/common/I18n';
@@ -13,7 +16,14 @@ import { createStoragesMap } from '../../ProxmoxStoragesUtils';
 import InputField from '../../common/FormInputs';
 import useVolumes from '../../hooks/useVolumes';
 
-const CDRom = ({ onRemove, data, storages, nodeId, computeResourceId }) => {
+const CDRom = ({
+  onRemove,
+  data,
+  storages,
+  nodeId,
+  computeResourceId,
+  canAttachCdromImage,
+}) => {
   const [cdrom, setCdrom] = useState(data);
 
   const storagesMap = useMemo(
@@ -22,10 +32,14 @@ const CDRom = ({ onRemove, data, storages, nodeId, computeResourceId }) => {
   );
 
   const mediaValue = cdrom?.cdrom?.value;
+  const normalizedMediaValue = mediaValue === 'cdrom' ? 'physical' : mediaValue;
   const storageValue = cdrom?.storage?.value || '';
 
   const shouldFetch =
-    mediaValue === 'image' && computeResourceId && nodeId && storageValue;
+    normalizedMediaValue === 'image' &&
+    computeResourceId &&
+    nodeId &&
+    storageValue;
   const { volumes, loadingVolumes, volumeError } = useVolumes(
     shouldFetch ? computeResourceId : null,
     shouldFetch ? nodeId : null,
@@ -68,7 +82,7 @@ const CDRom = ({ onRemove, data, storages, nodeId, computeResourceId }) => {
   };
 
   useEffect(() => {
-    if (mediaValue !== 'image') return;
+    if (normalizedMediaValue !== 'image') return;
     if (storageValue) return;
     if (!storagesMap?.length) return;
 
@@ -80,12 +94,14 @@ const CDRom = ({ onRemove, data, storages, nodeId, computeResourceId }) => {
       storage: { ...prev.storage, value: first },
       volid: { ...prev.volid, value: '' },
     }));
-  }, [mediaValue, storageValue, storagesMap]);
+  }, [normalizedMediaValue, storageValue, storagesMap]);
 
   const imagesMap = useMemo(
     () => [
       { value: '', label: '' },
-      ...volumes.map(v => ({ value: v.volid, label: v.volid })),
+      ...volumes
+        .filter(v => v.content === 'iso')
+        .map(v => ({ value: v.volid, label: v.volid })),
     ],
     [volumes]
   );
@@ -130,7 +146,7 @@ const CDRom = ({ onRemove, data, storages, nodeId, computeResourceId }) => {
           name={cdrom?.cdrom?.name}
           label={__('None')}
           value="none"
-          isChecked={cdrom?.cdrom?.value === 'none'}
+          isChecked={normalizedMediaValue === 'none'}
           onChange={(e, _) => handleMediaChange(_, e)}
         />
         <Radio
@@ -139,7 +155,7 @@ const CDRom = ({ onRemove, data, storages, nodeId, computeResourceId }) => {
           name={cdrom?.cdrom?.name}
           label={__('Physical')}
           value="physical"
-          isChecked={cdrom?.cdrom?.value === 'physical'}
+          isChecked={normalizedMediaValue === 'physical'}
           onChange={(e, _) => handleMediaChange(_, e)}
         />
         <Radio
@@ -148,12 +164,25 @@ const CDRom = ({ onRemove, data, storages, nodeId, computeResourceId }) => {
           name={cdrom?.cdrom?.name}
           label={__('Image')}
           value="image"
-          isChecked={cdrom?.cdrom?.value === 'image'}
+          isChecked={normalizedMediaValue === 'image'}
           onChange={(e, _) => handleMediaChange(_, e)}
+          isDisabled={!canAttachCdromImage}
         />
       </div>
 
-      {cdrom?.cdrom?.value === 'image' && (
+      {!canAttachCdromImage && (
+        <FormHelperText>
+          <HelperText id="helper-cdrom-image-permission">
+            <HelperTextItem variant="warning">
+              {__(
+                'You are not authorized to attach or change CD-ROM ISO images'
+              )}
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
+      )}
+
+      {normalizedMediaValue === 'image' && (
         <PageSection padding={{ default: 'noPadding' }}>
           <Title ouiaId="proxmox-server-cdrom-image-title" headingLevel="h5">
             {__('Image')}
@@ -170,6 +199,7 @@ const CDRom = ({ onRemove, data, storages, nodeId, computeResourceId }) => {
             }
             options={storagesMap}
             onChange={handleChange}
+            disabled={!canAttachCdromImage}
           />
 
           {loadingVolumes ? (
@@ -191,6 +221,7 @@ const CDRom = ({ onRemove, data, storages, nodeId, computeResourceId }) => {
               value={cdrom?.volid?.value}
               options={imagesMap}
               onChange={handleChange}
+              disabled={!canAttachCdromImage}
               error={
                 volumeError
                   ? __('Failed fetching images ISO please try again.')
@@ -198,8 +229,6 @@ const CDRom = ({ onRemove, data, storages, nodeId, computeResourceId }) => {
               }
             />
           )}
-
-          <input name={cdrom?.storageType?.name} type="hidden" value="cdrom" />
         </PageSection>
       )}
     </div>
@@ -228,6 +257,7 @@ CDRom.propTypes = {
   storages: PropTypes.array.isRequired,
   nodeId: PropTypes.string.isRequired,
   computeResourceId: PropTypes.number.isRequired,
+  canAttachCdromImage: PropTypes.bool.isRequired,
 };
 
 export default CDRom;

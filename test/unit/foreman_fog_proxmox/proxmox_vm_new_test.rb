@@ -111,5 +111,31 @@ module ForemanFogProxmox
         assert_equal vm, @cr.new_vm(attr)
       end
     end
+
+    describe 'vm_typed_instance_defaults' do
+      before do
+        @cr = FactoryBot.build_stubbed(:proxmox_cr)
+        @cr.stubs(:vm_instance_defaults).returns(vmid: '101', node_id: 'proxmox', type: 'qemu')
+        @cr.stubs(:config_attributes).with('qemu').returns(memory: '1024')
+        @cr.stubs(:hard_disk_typed_defaults).with('qemu').returns(id: 'virtio0')
+        @cr.stubs(:hard_disk_typed_defaults).with('lxc').returns(id: 'rootfs')
+        @cr.stubs(:interface_typed_defaults).with('qemu').returns(id: 'net0')
+      end
+
+      it 'adds default volumes for non-image provisioning' do
+        defaults = @cr.vm_typed_instance_defaults('qemu')
+
+        assert defaults.key?(:volumes_attributes)
+        assert_equal({ id: 'virtio0' }, defaults[:volumes_attributes][0])
+        assert_equal({ id: 'rootfs' }, defaults[:volumes_attributes][1])
+      end
+
+      it 'does not add default volumes for image provisioning' do
+        defaults = @cr.vm_typed_instance_defaults('qemu', 'provision_method' => 'image')
+
+        assert_not defaults.key?(:volumes_attributes)
+        assert defaults.key?(:interfaces_attributes)
+      end
+    end
   end
 end

@@ -129,10 +129,11 @@ module ForemanFogProxmox
       super.merge(vmid: next_vmid, node_id: default_node_id, type: 'qemu')
     end
 
-    def vm_typed_instance_defaults(type)
+    def vm_typed_instance_defaults(type, new_attr = {})
       defaults = vm_instance_defaults
       defaults = defaults.merge(config_attributes: config_attributes(type))
-      defaults = add_default_typed_volume(defaults)
+      # Image-based provisioning uses storage from the selected image, so no default volumes are needed.
+      defaults = add_default_typed_volume(defaults) unless new_attr['provision_method'] == 'image'
       add_default_typed_interface(type, defaults)
     end
 
@@ -191,11 +192,11 @@ module ForemanFogProxmox
       new_attr_type ||= type
       logger.debug("new_typed_vm(#{type}): new_attr_type=#{new_attr_type}")
       logger.debug("new_typed_vm(#{type}): new_attr=#{new_attr}'")
-      options = (!new_attr.key?('vmid') || ForemanFogProxmox::Value.empty?(new_attr['vmid'])) ? vm_typed_instance_defaults(type).merge(new_attr).merge(type: type) : new_attr
+      options = (!new_attr.key?('vmid') || ForemanFogProxmox::Value.empty?(new_attr['vmid'])) ? vm_typed_instance_defaults(type, new_attr).merge(new_attr).merge(type: type) : new_attr
       logger.debug("new_typed_vm(#{type}): options=#{options}")
       vm_h = parse_typed_vm(options, type).deep_symbolize_keys
       logger.debug("new_typed_vm(#{type}): vm_h=#{vm_h}")
-      vm_h = vm_h.merge(vm_typed_instance_defaults(type)) if vm_h.empty?
+      vm_h = vm_h.merge(vm_typed_instance_defaults(type, new_attr)) if vm_h.empty?
       logger.debug(format(_('new_typed_vm(%<type>s) with vm_typed_instance_defaults: vm_h=%<vm_h>s'), type: type, vm_h: vm_h))
       node.send(vm_collection(type)).new(vm_h)
     end

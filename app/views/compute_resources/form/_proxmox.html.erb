@@ -37,6 +37,8 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= textarea_f f, :ssl_certs, :label => _("X509 Certification Authorities"), :size => "col-md-4",
     :placeholder => _("Optionally provide a CA, or a correctly ordered CA chain. If left blank, disable ssl_verify_peer.") %>
 <% end %>
+<%= checkbox_f f, :caching_enabled, :label => _("Enable Caching"),
+  :help_inline => _("Cache Proxmox resources.") %>
 <div class="col-md-offset-2">
   <%= test_connection_button_f(f, (f.object.nodes rescue true)) %>
 </div>

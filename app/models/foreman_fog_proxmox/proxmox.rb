@@ -35,6 +35,8 @@ module ForemanFogProxmox
     include ProxmoxOperatingSystems
     include ProxmoxVersion
     include ProxmoxConsole
+    include ComputeResourceCaching
+
     validates :url, :format => { :with => URI::DEFAULT_PARSER.make_regexp }, :presence => true
     validates :auth_method, :presence => true, :inclusion => { in: ['access_ticket', 'user_token'],
       message: ->(value) do format('%<value>s is not a valid authentication method', { value: value }) end }

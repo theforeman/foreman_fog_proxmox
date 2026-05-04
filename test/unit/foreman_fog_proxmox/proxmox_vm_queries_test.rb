@@ -33,6 +33,22 @@ module ForemanFogProxmox
     include ProxmoxContainerMockFactory
     include ProxmoxVMHelper
 
+    describe 'nodes' do
+      it 'caches nodes for persisted compute resources' do
+        cr = FactoryBot.build_stubbed(:proxmox_cr, :caching_enabled => true)
+        node_z = OpenStruct.new(node: 'z-proxmox')
+        node_a = OpenStruct.new(node: 'a-proxmox')
+        nodes = mock('nodes')
+        nodes.expects(:all).once.returns([node_z, node_a])
+        client = mock('client')
+        client.stubs(:nodes).returns(nodes)
+        cr.stubs(:client).returns(client)
+
+        assert_equal %w[a-proxmox z-proxmox], cr.nodes.map(&:node)
+        assert_equal %w[a-proxmox z-proxmox], cr.nodes.map(&:node)
+      end
+    end
+
     describe 'storages' do
       before do
         @cr = ForemanFogProxmox::Proxmox.new
@@ -50,7 +66,11 @@ module ForemanFogProxmox
         active_storage = OpenStruct.new(storage: 'local', enabled: 1, active: 1)
         @storages_collection.stubs(:list_by_content_type).with('images').returns([active_storage])
 
-        assert_equal [active_storage], @cr.storages('proxmox')
+        storage = @cr.storages('proxmox').first
+        assert_equal 'local', storage.storage
+        assert_equal 1, storage.enabled
+        assert_equal 1, storage.active
+        assert_equal 'local', storage.identity
       end
 
       it 'returns active storages sorted by storage name' do
@@ -67,7 +87,7 @@ module ForemanFogProxmox
 
         @storages_collection.stubs(:list_by_content_type).with('images').returns([valid, invalid])
 
-        assert_equal [valid], @cr.storages('proxmox')
+        assert_equal ['good'], @cr.storages('proxmox').map(&:storage)
       end
 
       it 'excludes disabled storages (enabled=0)' do
@@ -96,6 +116,45 @@ module ForemanFogProxmox
         @storages_collection.stubs(:list_by_content_type).with('images').returns([nil_active_storage])
 
         assert_empty @cr.storages('proxmox')
+      end
+
+      it 'caches storages by node and content type for persisted compute resources' do
+        cr = FactoryBot.build_stubbed(:proxmox_cr, :caching_enabled => true)
+        active_storage = OpenStruct.new(storage: 'local', enabled: 1, active: 1)
+        storages_collection = mock('storages_collection')
+        storages_collection.expects(:list_by_content_type).with('images').once.returns([active_storage])
+        node = mock('node')
+        node.stubs(:storages).returns(storages_collection)
+        nodes = mock('nodes')
+        nodes.stubs(:get).with('proxmox').returns(node)
+        client = mock('client')
+        client.stubs(:nodes).returns(nodes)
+        cr.stubs(:client).returns(client)
+
+        assert_equal [active_storage.storage], cr.storages('proxmox').map(&:storage)
+        assert_equal [active_storage.storage], cr.storages('proxmox').map(&:storage)
+      end
+
+      it 'restores cached storages with normalized attributes' do
+        cr = FactoryBot.build_stubbed(:proxmox_cr, :caching_enabled => true)
+        active_storage = OpenStruct.new(storage: 'local', enabled: 1, active: 1)
+        storages_collection = mock('storages_collection')
+        storages_collection.expects(:list_by_content_type).with('images').once.returns([active_storage])
+        node = mock('node')
+        node.stubs(:storages).returns(storages_collection)
+        nodes = mock('nodes')
+        nodes.stubs(:get).with('proxmox').returns(node)
+        client = mock('client')
+        client.stubs(:nodes).returns(nodes)
+        cr.stubs(:client).returns(client)
+
+        cr.storages('proxmox')
+        cached_storage = cr.storages('proxmox').first
+
+        assert_equal 'local', cached_storage.storage
+        assert_equal 'local', cached_storage.identity
+        assert_equal [:active, :avail, :content, :enabled, :identity, :node_id, :storage, :total, :used],
+          cached_storage.to_h.keys.sort
       end
     end
 

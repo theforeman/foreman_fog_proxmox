@@ -19,11 +19,18 @@
 
 module ForemanFogProxmox
   module ProxmoxNodeMockFactory
+    def mock_empty_collection
+      col = mock('collection')
+      col.stubs(:get).returns(nil)
+      col
+    end
+
     def mock_node_servers(cr, servers)
       node = mock('node')
       nodes = mock('nodes')
       node.stubs(:node).returns('proxmox')
       node.stubs(:servers).returns(servers)
+      node.stubs(:containers).returns(mock_empty_collection)
       nodes.stubs(:get).returns(node)
       nodes.stubs(:all).returns([node])
       client = mock('client')
@@ -37,6 +44,7 @@ module ForemanFogProxmox
       nodes = mock('nodes')
       node.stubs(:node).returns('proxmox')
       node.stubs(:containers).returns(containers)
+      node.stubs(:servers).returns(mock_empty_collection)
       nodes.stubs(:get).returns(node)
       nodes.stubs(:all).returns([node])
       client = mock('client')

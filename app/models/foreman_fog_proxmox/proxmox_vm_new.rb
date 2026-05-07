@@ -161,7 +161,7 @@ module ForemanFogProxmox
     end
 
     def new_vm(new_attr = {})
-      new_attr = ActiveSupport::HashWithIndifferentAccess.new(new_attr)
+      new_attr = ActiveSupport::HashWithIndifferentAccess.new(update_extra_volumes_definitions(new_attr))
       type = new_attr['type']
       type ||= 'qemu'
       new_typed_vm(new_attr, type)

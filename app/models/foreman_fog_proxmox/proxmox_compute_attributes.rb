@@ -32,10 +32,12 @@ module ForemanFogProxmox
         host.compute_attributes['config_attributes'].store('hostname', host.name)
       when 'qemu'
         host.compute_attributes['config_attributes'].store('name', host.name)
-        unless compute_os_types(host).include?(ostype)
-          raise ::Foreman::Exception,
-            format(_('Operating system family %<type>s is not consistent with %<ostype>s'), type: host.operatingsystem.type,
-              ostype: ostype)
+        unless  host.operatingsystem.type == 'Freebsd' && ostype == 'other'
+          unless compute_os_types(host).include?(ostype)
+            raise ::Foreman::Exception,
+              format(_('Operating system family %<type>s is not consistent with %<ostype>s'), type: host.operatingsystem.type,
+                ostype: ostype)
+          end
         end
       end
       super

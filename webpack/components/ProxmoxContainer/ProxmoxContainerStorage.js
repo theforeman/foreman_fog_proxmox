@@ -117,13 +117,12 @@ const ProxmoxContainerStorage = ({
         const newMountPoint = {
           id: newNextId,
           data: initMP,
-          storagesMap,
         };
         setMountPoints(prev => [...prev, newMountPoint]);
         return newNextId;
       });
     },
-    [nextId, paramScope, storagesMap]
+    [nextId, paramScope]
   );
 
   const removeMountPoint = idToRemove => {
@@ -221,7 +220,7 @@ const ProxmoxContainerStorage = ({
               key={mountPoint.id}
               id={mountPoint.id}
               data={mountPoint.data}
-              storagesMap={mountPoint.storagesMap}
+              storagesMap={storagesMap}
             />
           </div>
         ))}

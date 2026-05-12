@@ -54,6 +54,12 @@ module ForemanFogProxmox
       assert_equal :foreman_uuid, cr.provided_attributes[:uuid]
     end
 
+    test 'supports compute resource cache refreshing' do
+      cr = FactoryBot.build_stubbed(:proxmox_cr)
+
+      assert_respond_to cr, :refresh_cache
+    end
+
     test '#setComputeDetails uses proxmox uuid without adding another prefix' do
       cr = FactoryBot.build_stubbed(:proxmox_cr)
       host = FactoryBot.build_stubbed(:host, :compute_resource => cr)

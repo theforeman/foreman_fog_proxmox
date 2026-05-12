@@ -20,8 +20,28 @@
 module ForemanFogProxmox
   module ProxmoxPools
     def pools
-      pools = identity_client.pools.all
-      pools.sort_by(&:poolid)
+      cached_pools = cache.cache(:pools) do
+        pools = identity_client.pools.all
+        pools.sort_by(&:poolid).map do |pool|
+          {
+            poolid: pool.poolid,
+            comment: pool.try(:comment),
+            members: Array(pool.try(:members)).map do |member|
+              {
+                vmid: member.try(:vmid) || member.try(:[], :vmid) || member.try(:[], 'vmid'),
+              }
+            end,
+          }
+        end
+      end
+
+      Array(cached_pools).map do |pool|
+        OpenStruct.new(pool).tap do |pool_object|
+          pool_object.define_singleton_method(:has_server?) do |vmid|
+            Array(members).any? { |member| member[:vmid].to_s == vmid.to_s || member['vmid'].to_s == vmid.to_s }
+          end
+        end
+      end
     end
 
     def pool_owner(vm)

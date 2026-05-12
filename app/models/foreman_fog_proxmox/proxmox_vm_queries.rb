@@ -23,29 +23,68 @@ module ForemanFogProxmox
     include ProxmoxVMUuidHelper
 
     def nodes
-      nodes = client.nodes.all if client
-      nodes&.sort_by(&:node)
+      cached_nodes = cache.cache(:nodes) do
+        nodes = client.nodes.all if client
+        nodes&.sort_by(&:node)&.map do |node|
+          { node: node.node }
+        end
+      end
+
+      Array(cached_nodes).map { |node| OpenStruct.new(node) }
     end
 
     def storages(node_id = default_node_id, type = 'images')
-      node = client.nodes.get node_id
-      node ||= default_node
-      storages = node.storages.list_by_content_type type
-      logger.debug("storages(): node_id #{node_id} type #{type}")
-      storages.reject { |s| s.enabled.to_i.zero? || s.active.to_i.zero? }.sort_by(&:storage)
+      cached_storages = cache.cache(:"storages-#{node_id}-#{type}") do
+        node = client.nodes.get node_id
+        node ||= default_node
+        storages = node.storages.list_by_content_type type
+        logger.debug("storages(): node_id #{node_id} type #{type}")
+        storages.reject { |s| s.enabled.to_i.zero? || s.active.to_i.zero? }.sort_by(&:storage).map do |storage|
+          {
+            storage: storage.storage,
+            identity: storage.storage,
+            enabled: storage.enabled,
+            active: storage.active,
+            type: storage.try(:type),
+            content: storage.try(:content),
+            node_id: storage.try(:node_id),
+            avail: storage.try(:avail),
+            used: storage.try(:used),
+            total: storage.try(:total),
+          }
+        end
+      end
+
+      Array(cached_storages).map { |storage| OpenStruct.new(storage) }
     end
 
     def bridges(node_id = default_node_id)
-      node = network_client.nodes.get node_id
-      node ||= network_client.nodes.first
-      bridges = node.networks.all(type: 'any_bridge')
-      bridges.sort_by(&:iface)
+      cached_bridges = cache.cache(:"bridges-#{node_id}") do
+        node = network_client.nodes.get node_id
+        node ||= network_client.nodes.first
+        bridges = node.networks.all(type: 'any_bridge')
+        bridges.sort_by(&:iface).map do |bridge|
+          {
+            iface: bridge.iface,
+            identity: bridge.iface,
+            node_id: bridge.try(:node_id),
+            type: bridge.try(:type),
+            active: bridge.try(:active),
+            autostart: bridge.try(:autostart),
+            method: bridge.try(:method),
+            bridge_ports: bridge.try(:bridge_ports),
+            comments: bridge.try(:comments),
+          }
+        end
+      end
+
+      Array(cached_bridges).map { |bridge| OpenStruct.new(bridge) }
     end
 
     # TODO: Pagination with filters
     def vms(opts = {})
       vms = []
-      nodes.each { |node| vms += node.servers.all + node.containers.all }
+      fog_nodes.each { |node| vms += node.servers.all + node.containers.all }
       vms.each { |vm| attach_compute_resource_id(vm) }
       if opts.key?(:eager_loading) && opts[:eager_loading]
         vms_eager = []
@@ -59,7 +98,7 @@ module ForemanFogProxmox
       # look for the uuid on all known nodes
       vm = nil
       vmid = extract_vmid(uuid)
-      nodes.each do |node|
+      fog_nodes.each do |node|
         vm = find_vm_in_servers_by_vmid(node.servers, vmid)
         vm ||= find_vm_in_servers_by_vmid(node.containers, vmid)
         next if vm.nil?
@@ -81,6 +120,11 @@ module ForemanFogProxmox
     end
 
     private
+
+    def fog_nodes
+      nodes = client.nodes.all if client
+      nodes&.sort_by(&:node) || []
+    end
 
     def attach_compute_resource_id(virtual_machine)
       return virtual_machine if virtual_machine.nil?

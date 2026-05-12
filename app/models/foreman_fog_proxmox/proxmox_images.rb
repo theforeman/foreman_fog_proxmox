@@ -24,11 +24,25 @@ module ForemanFogProxmox
     end
 
     def images_by_storage(node_id, storage_id, type = 'iso')
-      node = client.nodes.get node_id
-      node ||= default_node
-      storage = node.storages.get storage_id if storage_id
-      logger.debug("images_by_storage(): node_id #{node_id} storage_id #{storage_id} type #{type}")
-      storage.volumes.list_by_content_type(type).sort_by(&:volid) if storage
+      cached_images = cache.cache(:"images_by_storage-#{node_id}-#{storage_id}-#{type}") do
+        node = client.nodes.get node_id
+        node ||= default_node
+        storage = node.storages.get storage_id if storage_id
+        logger.debug("images_by_storage(): node_id #{node_id} storage_id #{storage_id} type #{type}")
+        if storage
+          storage.volumes.list_by_content_type(type).sort_by(&:volid).map do |volume|
+            {
+              volid: volume.volid,
+              content: volume.try(:content),
+              format: volume.try(:format),
+              size: volume.try(:size),
+              used: volume.try(:used),
+            }
+          end
+        end
+      end
+
+      Array(cached_images).map { |image| OpenStruct.new(image) }
     end
 
     def template_name(template)
@@ -45,25 +59,37 @@ module ForemanFogProxmox
     end
 
     def templates
-      volumes = []
-      nodes.each do |node|
-        storages(node.node).each do |storage|
-          # Skip disabled storages (enabled == 0 or nil)
-          unless storage.enabled.to_i == 1
-            logger.warn("Skipping disabled storage #{storage.identity} on #{node.node}")
-            next
-          end
+      cached_templates = cache.cache(:templates) do
+        volumes = fog_nodes.flat_map do |node|
+          storages = node.storages.list_by_content_type 'images'
+          logger.debug("storages(): node_id #{node.node} type images")
+          storages.reject { |storage| storage.active.to_i.zero? }.sort_by(&:storage).flat_map do |storage|
+            # Skip disabled storages (enabled == 0 or nil)
+            unless storage.enabled.to_i == 1
+              logger.warn("Skipping disabled storage #{storage.identity} on #{node.node}")
+              next []
+            end
 
-          # Fetch QEMU and LXC template images
-          volumes += storage.volumes.list_by_content_type('images')
-          volumes += storage.volumes.list_by_content_type('rootdir')
-        rescue StandardError => e
-          logger.error("Failed to fetch volumes for storage #{storage.identity} on #{node.node}: #{e.message}")
-          next
+            # Fetch QEMU and LXC template images
+            storage.volumes.list_by_content_type('images') + storage.volumes.list_by_content_type('rootdir')
+          rescue StandardError => e
+            logger.error("Failed to fetch volumes for storage #{storage.identity} on #{node.node}: #{e.message}")
+            []
+          end
+        end
+
+        volumes.select(&:template?).map do |volume|
+          {
+            vmid: volume.try(:vmid),
+            name: volume.try(:name),
+            volid: volume.try(:volid),
+            node_id: volume.try(:node_id),
+            template: true,
+          }
         end
       end
-      # for creating image, only list volumes which are templated
-      volumes.select(&:template?)
+
+      Array(cached_templates).map { |template| OpenStruct.new(template) }
     end
 
     def template(uuid)

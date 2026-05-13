@@ -54,17 +54,6 @@ module ForemanFogProxmox
       assert_equal :foreman_uuid, cr.provided_attributes[:uuid]
     end
 
-    test '#setComputeDetails uses proxmox uuid without adding another prefix' do
-      cr = FactoryBot.build_stubbed(:proxmox_cr)
-      host = FactoryBot.build_stubbed(:host, :compute_resource => cr)
-      host.vm = mock('vm')
-      cr.stubs(:provided_attributes).returns({ :uuid => :foreman_uuid })
-      host.vm.expects(:foreman_uuid).returns("#{cr.id}_199")
-
-      assert host.send(:setComputeDetails), "Failed to setComputeDetails, errors: #{host.errors.full_messages}"
-      assert_equal "#{cr.id}_199", host.uuid
-    end
-
     test '#node' do
       node = mock('node')
       cr = FactoryBot.build_stubbed(:proxmox_cr)

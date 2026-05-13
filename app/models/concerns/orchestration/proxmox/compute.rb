@@ -61,8 +61,11 @@ module Orchestration
         vm.send(fog_attr) || find_address(foreman_attr)
       end
 
-      def computeValue(_foreman_attr, fog_attr)
-        vm.send(fog_attr).to_s
+      def computeValue(foreman_attr, fog_attr)
+        value = ''
+        value += compute_resource.id.to_s + '_' if foreman_attr == :uuid
+        value += vm.send(fog_attr).to_s
+        value
       end
 
       def setVmDetails

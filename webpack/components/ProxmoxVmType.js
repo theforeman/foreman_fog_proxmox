@@ -35,6 +35,7 @@ const ProxmoxVmType = ({
   registerComp,
   untemplatable,
   computeResourceId,
+  canAttachCdromImage,
   propsLoaded,
 }) => {
   const [activeTabKey, setActiveTabKey] = useState(0);
@@ -233,6 +234,7 @@ const ProxmoxVmType = ({
           isLoading={!metaLoaded}
           isTabActive={activeTabKey === 4}
           computeResourceId={computeResourceId}
+          canAttachCdromImage={canAttachCdromImage}
           selectedImage={selectedImage}
           provisionMethodState={provisionMethodState}
         />
@@ -415,6 +417,7 @@ ProxmoxVmType.propTypes = {
   registerComp: PropTypes.bool,
   untemplatable: PropTypes.bool,
   computeResourceId: PropTypes.number,
+  canAttachCdromImage: PropTypes.bool,
   propsLoaded: PropTypes.bool,
 };
 
@@ -426,6 +429,7 @@ ProxmoxVmType.defaultProps = {
   registerComp: false,
   untemplatable: false,
   computeResourceId: null,
+  canAttachCdromImage: false,
   propsLoaded: false,
 };
 

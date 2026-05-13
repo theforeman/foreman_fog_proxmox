@@ -54,6 +54,8 @@ module ForemanFogProxmox
                :bridges_by_id_and_node,
                :volumes_by_node_and_storage,
                :metadata] }
+            permission :attach_cdrom_image, {},
+              :resource_type => 'ComputeResource'
           end
         end
       end

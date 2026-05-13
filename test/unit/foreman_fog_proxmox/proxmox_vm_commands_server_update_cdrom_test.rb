@@ -35,7 +35,8 @@ module ForemanFogProxmox
         @cr = FactoryBot.build_stubbed(:proxmox_cr)
       end
 
-      it 'saves modified server config with added cdrom' do
+      it 'saves modified server config with added cdrom image when user has permission' do
+        User.current = users(:admin)
         uuid = '100'
         config = mock('config')
         disks = mock('disks')
@@ -58,6 +59,7 @@ module ForemanFogProxmox
         vm.stubs(:type).returns('qemu')
         vm.stubs(:node_id).returns('proxmox')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
+        User.current.stubs(:can?).with(:attach_cdrom_image, @cr).returns(true)
         new_attributes = {
           'templated' => '0',
           'node_id' => 'proxmox',
@@ -86,6 +88,54 @@ module ForemanFogProxmox
         vm.expects(:attach, expected_volume_attr)
         vm.expects(:update, expected_config_attr)
         @cr.save_vm(uuid, new_attributes)
+      end
+
+      it 'rejects added cdrom image when user has no permission' do
+        User.current = users(:admin)
+        uuid = '100'
+        config = mock('config')
+        disks = mock('disks')
+        disks.stubs(:get).returns
+        config.stubs(:disks).returns(disks)
+        config.stubs(:efidisk).returns(nil)
+        config.stubs(:attributes).returns(:cores => '')
+        vm = mock('vm')
+        vm.stubs(:identity).returns(uuid)
+        vm.stubs(:attributes).returns('' => '')
+        vm.stubs(:config).returns(config)
+        vm.stubs(:container?).returns(false)
+        vm.stubs(:type).returns('qemu')
+        vm.stubs(:node_id).returns('proxmox')
+        @cr.stubs(:find_vm_by_uuid).returns(vm)
+        User.current.stubs(:can?).with(:attach_cdrom_image, @cr).returns(false)
+        new_attributes = {
+          'templated' => '0',
+          'node_id' => 'proxmox',
+          'config_attributes' => {
+            'cores' => '1',
+            'cpulimit' => '1',
+          },
+          'volumes_attributes' => {
+            '0' => {
+              'id' => 'ide2',
+              '_delete' => '',
+              'device' => '2',
+              'controller' => 'ide',
+              'storage_type' => 'cdrom',
+              'storage' => 'local-lvm',
+              'cdrom' => 'image',
+              'volid' => 'local-lvm:iso/ubuntu-20_4.iso',
+            },
+          },
+        }.with_indifferent_access
+        @cr.stubs(:parse_server_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'qemu', 'cores' => '1',
+          'cpulimit' => '1', 'onboot' => '0')
+        vm.expects(:attach).never
+        vm.expects(:update).never
+
+        assert_raises(::Foreman::Exception) do
+          @cr.save_vm(uuid, new_attributes)
+        end
       end
 
       it 'saves modified server config with removed cdrom' do

@@ -33,6 +33,7 @@ const ProxmoxServerStorage = ({
   isTabActive,
   selectedImage,
   provisionMethodState,
+  canAttachCdromImage,
 }) => {
   const bootDiskId = React.useMemo(() => {
     if (!bootOrder) return null;
@@ -309,7 +310,7 @@ const ProxmoxServerStorage = ({
           value: '',
         },
         storageType: {
-          name: `${paramScope}[volumes_attributes][${nextId}][storageType]`,
+          name: `${paramScope}[volumes_attributes][${nextId}][storage_type]`,
           value: 'cdrom',
         },
         storage: {
@@ -439,6 +440,7 @@ const ProxmoxServerStorage = ({
             nodeId={nodeId}
             computeResourceId={computeResourceId}
             isTabActive={isTabActive}
+            canAttachCdromImage={canAttachCdromImage}
           />
         )}
         {efiDisk && efiDiskData && (
@@ -537,6 +539,7 @@ ProxmoxServerStorage.propTypes = {
   isTabActive: PropTypes.bool,
   selectedImage: PropTypes.object,
   provisionMethodState: PropTypes.string,
+  canAttachCdromImage: PropTypes.bool,
 };
 
 ProxmoxServerStorage.defaultProps = {
@@ -553,6 +556,7 @@ ProxmoxServerStorage.defaultProps = {
   isTabActive: false,
   selectedImage: null,
   provisionMethodState: '',
+  canAttachCdromImage: false,
 };
 
 export default ProxmoxServerStorage;

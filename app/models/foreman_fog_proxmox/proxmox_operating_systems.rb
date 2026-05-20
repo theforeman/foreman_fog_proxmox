@@ -20,14 +20,18 @@
 module ForemanFogProxmox
   module ProxmoxOperatingSystems
     def compute_os_types(host)
-      os_linux_types_mapping(host).empty? ? os_windows_types_mapping(host) : os_linux_types_mapping(host)
+      [os_linux_types_mapping(host), os_windows_types_mapping(host), os_other_types_mapping(host)].find(&:any?) || []
     end
 
     def available_operating_systems
-      operating_systems = ['other', 'solaris']
+      operating_systems = available_other_operating_systems
       operating_systems += available_linux_operating_systems
       operating_systems += available_windows_operating_systems
       operating_systems
+    end
+
+    def available_other_operating_systems
+      ['other', 'solaris']
     end
 
     def available_linux_operating_systems
@@ -49,6 +53,13 @@ module ForemanFogProxmox
 
     def os_windows_types_mapping(host)
       ['Windows'].include?(host.operatingsystem.type) ? available_windows_operating_systems : []
+    end
+
+    def os_other_types_mapping(host)
+      {
+        'Freebsd' => ['other'],
+        'Solaris' => ['solaris'],
+      }.fetch(host.operatingsystem.type, [])
     end
   end
 end

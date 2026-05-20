@@ -60,6 +60,52 @@ module ForemanFogProxmox
         assert err.message.end_with?('Operating system family Solaris is not consistent with l26')
       end
 
+      it 'accepts proxmox linux ostype for linux servers' do
+        operatingsystem = FactoryBot.build(:debian7_1)
+        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :primary => true)
+        host = FactoryBot.build(
+          :host_empty,
+          :interfaces => [physical_nic],
+          :operatingsystem => operatingsystem,
+          :compute_attributes => {
+            'type' => 'qemu',
+            'config_attributes' => {
+              'ostype' => 'l26',
+            },
+            'interfaces_attributes' => {
+              '0' => physical_nic,
+            },
+          }
+        )
+
+        @cr.host_compute_attrs(host)
+
+        assert_equal host.name, host.compute_attributes['config_attributes']['name']
+      end
+
+      it 'accepts proxmox other ostype for FreeBSD servers' do
+        operatingsystem = FactoryBot.build(:freebsd)
+        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :primary => true)
+        host = FactoryBot.build(
+          :host_empty,
+          :interfaces => [physical_nic],
+          :operatingsystem => operatingsystem,
+          :compute_attributes => {
+            'type' => 'qemu',
+            'config_attributes' => {
+              'ostype' => 'other',
+            },
+            'interfaces_attributes' => {
+              '0' => physical_nic,
+            },
+          }
+        )
+
+        @cr.host_compute_attrs(host)
+
+        assert_equal host.name, host.compute_attributes['config_attributes']['name']
+      end
+
       it 'sets container hostname with host name' do
         physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :primary => true,
           :compute_attributes => { 'dhcp' => '1', 'dhcp6' => '1' })

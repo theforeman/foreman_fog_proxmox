@@ -54,11 +54,86 @@ module ForemanFogProxmox
       assert_equal :foreman_uuid, cr.provided_attributes[:uuid]
     end
 
+    test '#update_required? detects added HDD attributes' do
+      cr = FactoryBot.build_stubbed(:proxmox_cr)
+      old_attrs = hdd_compute_attrs(hdd_attrs('0'))
+      new_attrs = hdd_compute_attrs(hdd_attrs('0').merge('1' => hdd_attributes('virtio1', 'virtio', '1')))
+
+      assert cr.update_required?(old_attrs, new_attrs)
+    end
+
+    test '#update_required? detects removed HDD attributes' do
+      cr = FactoryBot.build_stubbed(:proxmox_cr)
+
+      old_attrs = hdd_compute_attrs(
+        hdd_attrs('0').merge('1' => hdd_attributes('virtio1', 'virtio', '1'))
+      )
+
+      new_attrs = hdd_compute_attrs(
+        hdd_attrs('0').merge('1' => { '_delete' => '1' })
+      )
+
+      assert cr.update_required?(old_attrs, new_attrs)
+    end
+
+    test '#update_required? detects modified existing HDD attributes' do
+      cr = FactoryBot.build_stubbed(:proxmox_cr)
+      old_attrs = hdd_compute_attrs(hdd_attrs('0'))
+      new_attrs = hdd_compute_attrs(hdd_attrs('0').deep_merge('0' => { 'size' => '20' }))
+
+      assert cr.update_required?(old_attrs, new_attrs)
+    end
+
+    test '#update_required? detects modified CPU flag' do
+      cr = FactoryBot.build_stubbed(:proxmox_cr)
+      old_attrs = { 'config_attributes' => { 'spectre' => '0' } }
+      new_attrs = { 'config_attributes' => { 'spectre' => '+1' } }
+
+      assert cr.update_required?(old_attrs, new_attrs)
+    end
+
+    test '#update_required? detects modified network interface' do
+      cr = FactoryBot.build_stubbed(:proxmox_cr)
+      old_attrs = { 'interfaces_attributes' => { '0' => { 'id' => 'net0', 'bridge' => 'vmbr0' } } }
+      new_attrs = { 'interfaces_attributes' => { '0' => { 'id' => 'net0', 'bridge' => 'vmbr1' } } }
+
+      assert cr.update_required?(old_attrs, new_attrs)
+    end
+
+    test '#update_required? detects added network interface' do
+      cr = FactoryBot.build_stubbed(:proxmox_cr)
+      old_attrs = { 'interfaces_attributes' => { '0' => { 'id' => 'net0' } } }
+      new_attrs = { 'interfaces_attributes' => { '0' => { 'id' => 'net0' }, '1' => { 'id' => 'net1' } } }
+
+      assert cr.update_required?(old_attrs, new_attrs)
+    end
+
     test '#node' do
       node = mock('node')
       cr = FactoryBot.build_stubbed(:proxmox_cr)
       cr.stubs(:node).returns(node)
       assert_equal node, (as_admin { cr.node })
+    end
+
+    private
+
+    def hdd_compute_attrs(volumes_attrs)
+      { 'volumes_attributes' => volumes_attrs }
+    end
+
+    def hdd_attrs(index)
+      { index => hdd_attributes('scsi0', 'scsi', '0') }
+    end
+
+    def hdd_attributes(id, controller, device)
+      {
+        'id' => id,
+        'storage_type' => 'hard_disk',
+        'controller' => controller,
+        'device' => device,
+        'storage' => 'local-lvm',
+        'size' => '10',
+      }
     end
   end
 end

@@ -23,11 +23,14 @@ $(document).ready(function () {
 function sslVerifyPeerSelected() {
   var selected = $("#compute_resource_ssl_verify_peer").is(':checked');
   var ssl_certs_block = $('#compute_resource_ssl_certs').parents('.clearfix');
+  var ssl_certs_group = $('#compute_resource_ssl_certs').parents('.form-group');
   var ssl_certs_textarea = $('#compute_resource_ssl_certs');
   if (selected) {
+    ssl_certs_group.removeClass('hide');
     ssl_certs_block.show();
     ssl_certs_textarea.show();
   } else {
+    ssl_certs_group.addClass('hide');
     ssl_certs_block.hide();
     ssl_certs_textarea.text('');
     ssl_certs_textarea.hide();
@@ -63,3 +66,10 @@ function authMethodSelected() {
     toggleFieldset(method, selected);
   });
 }
+
+window.tfm = window.tfm || {};
+window.tfm.computeResource = window.tfm.computeResource || {};
+window.tfm.computeResource.proxmox = {
+  authMethodSelected: authMethodSelected,
+  sslVerifyPeerSelected: sslVerifyPeerSelected,
+};

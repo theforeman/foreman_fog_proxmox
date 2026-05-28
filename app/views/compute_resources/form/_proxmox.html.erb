@@ -15,12 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
-<%= javascript_include_tag 'foreman_fog_proxmox/proxmox_compute_resource', "data-turbolinks-track" => true %>
-
 <% user_token = f.object.auth_method == 'user_token' %>
 <% access_ticket = f.object.auth_method == 'access_ticket' %>
-<% ssl_verify_peer = f.object.ssl_verify_peer == '1' %>
-<%= select_f f, :auth_method, proxmox_auth_methods_map, :id, :name, { }, :label_help => _("Click Test connection button before changing it"), :label => _('Authentication method'), :label_size => "col-md-2", :required => true, :onchange => 'authMethodSelected();' %>
+<% ssl_verify_peer = f.object.ssl_verify_peer %>
+<%= select_f f, :auth_method, proxmox_auth_methods_map, :id, :name, { }, :label_help => _("Click Test connection button before changing it"), :label => _('Authentication method'), :label_size => "col-md-2", :required => true, :onchange => 'tfm.computeResource.proxmox.authMethodSelected();' %>
 <%= field_set_tag _("Common fields"), :id => "compute_ressource_common_field_set" do %>
   <%= text_f f, :url, :help_block => _("e.g. https://127.0.0.1:8006/api2/json") %>
   <%= text_f f, :user , :help_block => _("e.g. root@pam") %>
@@ -33,8 +31,9 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= password_f f, :password, :keep_value => true, :unset => unset_password?, :required => access_ticket %>
 <% end %>
 <%= field_set_tag _("SSL fields"), :id => "compute_ressource_ssl_field_set" do %>  
-  <%= checkbox_f f, :ssl_verify_peer, :label => _("SSL verify peer"), :label_help => _("Click Test connection button before changing it"), :checked_value => '1', :onchange => 'sslVerifyPeerSelected();' %>
+  <%= checkbox_f f, :ssl_verify_peer, :label => _("SSL verify peer"), :label_help => _("Click Test connection button before changing it"), :checked_value => '1', :onchange => 'tfm.computeResource.proxmox.sslVerifyPeerSelected();' %>
   <%= textarea_f f, :ssl_certs, :label => _("X509 Certification Authorities"), :size => "col-md-4",
+    :wrapper_class => "form-group #{'hide' unless ssl_verify_peer}",
     :placeholder => _("Optionally provide a CA, or a correctly ordered CA chain. If left blank, disable ssl_verify_peer.") %>
 <% end %>
 <div class="col-md-offset-2">

@@ -1,3 +1,5 @@
+import '../app/assets/javascripts/foreman_fog_proxmox/proxmox_compute_resource';
+
 // Placeholder to initialize routes (compare foreman_ansible)
 
 /*

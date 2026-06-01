@@ -130,8 +130,11 @@ module ProxmoxFormHelper
   def proxmox_valid_interface_compute_attributes?(compute_attributes, vm_type)
     return false unless compute_attributes.respond_to?(:keys)
 
-    valid_keys = interface_compute_attributes_typed_keys(vm_type)
-    compute_attributes.keys.map(&:to_s).all? { |key| valid_keys.include?(key) }
+    compute_attribute_keys = compute_attributes.keys.map(&:to_s)
+    required_keys = interface_compute_attributes_required_typed_keys(vm_type)
+    missing_keys = required_keys - compute_attribute_keys
+
+    required_keys.any? && missing_keys.empty?
   end
 
   def extract_attr(attrs, key)

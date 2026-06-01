@@ -55,6 +55,17 @@ module ProxmoxVMInterfacesHelper
     keys
   end
 
+  def interface_compute_attributes_required_typed_keys(type)
+    case type
+    when 'qemu'
+      ['model']
+    when 'lxc'
+      ['name']
+    else
+      []
+    end
+  end
+
   def interface_common_typed_keys(type)
     ['id', (type == 'qemu') ? 'macaddr' : 'hwaddr']
   end

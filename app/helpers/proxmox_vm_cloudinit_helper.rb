@@ -111,7 +111,8 @@ module ProxmoxVMCloudinitHelper
   end
 
   def attach_cloudinit_iso(node, iso)
-    storage = storages(node, 'iso')[0]
+    iso_storages = storages(node, 'iso')
+    storage = iso_storages.detect { |entry| entry.storage == 'local' } || iso_storages[0]
     volume = storage.volumes.detect { |v| v.volid.include? File.basename(iso) }
     { ide2: "#{volume.volid},media=cdrom" }
   end

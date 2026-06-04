@@ -26,6 +26,11 @@ module Orchestration
         if compute_resource.class != ForemanFogProxmox::Proxmox
           super
         else
+          unless managed?
+            logger.info(format("Skipping Proxmox compute update for %s - host is not managed", name))
+            return true
+          end
+
           logger.info "Update Proxmox Compute instance for #{name}"
           final_compute_attributes = compute_attributes.merge(compute_resource.host_compute_attrs(self))
           logger.debug("setComputeUpdate: final_compute_attributes=#{final_compute_attributes}")
@@ -40,6 +45,11 @@ module Orchestration
         if compute_resource.class != ForemanFogProxmox::Proxmox
           super
         else
+          unless managed?
+            logger.info(format("Skipping Proxmox compute update rollback for %s - host is not managed", name))
+            return true
+          end
+
           logger.info "Undo Update Proxmox Compute instance for #{name}"
           final_compute_attributes = old.compute_attributes.merge(compute_resource.host_compute_attrs(old))
           compute_resource.save_vm uuid, final_compute_attributes
@@ -97,6 +107,9 @@ module Orchestration
       def setComputeDetails
         if compute_resource.class != ForemanFogProxmox::Proxmox
           super
+        elsif !managed?
+          logger.info(format("Skipping Proxmox compute details for %s - host is not managed", name))
+          true
         elsif vm
           setVmDetails
         else

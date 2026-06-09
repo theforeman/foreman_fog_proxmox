@@ -111,8 +111,14 @@ module ProxmoxVMCloudinitHelper
   end
 
   def attach_cloudinit_iso(node, iso)
-    storage = storages(node, 'iso')[0]
-    volume = storage.volumes.detect { |v| v.volid.include? File.basename(iso) }
+    volume = nil
+    storages(node, 'iso').each do |storage|
+      volume = storage.volumes.detect { |v| v.volid.include? File.basename(iso) }
+      break if volume
+    end
+
+    raise ::Foreman::Exception, "Could not find generated cloud-init ISO #{File.basename(iso)} on any ISO storage for node #{node}" unless volume
+
     { ide2: "#{volume.volid},media=cdrom" }
   end
 

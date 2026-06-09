@@ -107,6 +107,37 @@ module ForemanFogProxmox
         vm.expects(:update).with(expected_args)
         cr.create_vm(args)
       end
+
+      it 'attaches generated cloud-init ISO from a later ISO storage' do
+        cr = ForemanFogProxmox::Proxmox.new
+        first_storage = mock('first_storage')
+        second_storage = mock('second_storage')
+        volume = mock('volume')
+
+        first_storage.stubs(:volumes).returns([])
+        volume.stubs(:volid).returns('local:iso/name_cloudinit.iso')
+        second_storage.stubs(:volumes).returns([volume])
+        cr.stubs(:storages).with('proxmox', 'iso').returns([first_storage, second_storage])
+
+        assert_equal({ ide2: 'local:iso/name_cloudinit.iso,media=cdrom' },
+          cr.attach_cloudinit_iso('proxmox', '/var/lib/vz/template/iso/name_cloudinit.iso'))
+      end
+
+      it 'raises Foreman::Exception when generated cloud-init ISO is not on any ISO storage' do
+        cr = ForemanFogProxmox::Proxmox.new
+        storage = mock('storage')
+        other_volume = mock('other_volume')
+
+        other_volume.stubs(:volid).returns('local:iso/other.iso')
+        storage.stubs(:volumes).returns([other_volume])
+        cr.stubs(:storages).with('proxmox', 'iso').returns([storage])
+
+        err = assert_raises Foreman::Exception do
+          cr.attach_cloudinit_iso('proxmox', '/var/lib/vz/template/iso/name_cloudinit.iso')
+        end
+
+        assert err.message.end_with?('Could not find generated cloud-init ISO name_cloudinit.iso on any ISO storage for node proxmox')
+      end
     end
   end
 end

@@ -108,11 +108,38 @@ module ForemanFogProxmox
       assert cr.update_required?(old_attrs, new_attrs)
     end
 
+    test 'supports compute resource cache refreshing' do
+      cr = FactoryBot.build_stubbed(:proxmox_cr)
+
+      assert_respond_to cr, :refresh_cache
+    end
+
     test '#node' do
       node = mock('node')
       cr = FactoryBot.build_stubbed(:proxmox_cr)
       cr.stubs(:node).returns(node)
       assert_equal node, (as_admin { cr.node })
+    end
+
+    test '#extract_attributes returns selected resource attributes' do
+      cr = FactoryBot.build_stubbed(:proxmox_cr)
+
+      resource = OpenStruct.new(
+        vmid: 101,
+        name: 'template-101',
+        ignored: 'ignored'
+      )
+
+      attributes = cr.send(:extract_attributes, resource, [:vmid, :name, :missing])
+
+      assert_equal(
+        {
+          vmid: 101,
+          name: 'template-101',
+          missing: nil,
+        },
+        attributes
+      )
     end
 
     private

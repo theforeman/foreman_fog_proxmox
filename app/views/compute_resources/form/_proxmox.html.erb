@@ -36,6 +36,8 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     :wrapper_class => "form-group #{'hide' unless ssl_verify_peer}",
     :placeholder => _("Optionally provide a CA, or a correctly ordered CA chain. If left blank, disable ssl_verify_peer.") %>
 <% end %>
+<%= checkbox_f f, :caching_enabled, :label => _("Enable Caching"),
+  :help_inline => _("Cache Proxmox resources.") %>
 <div class="col-md-offset-2">
   <%= test_connection_button_f(f, (f.object.nodes rescue true)) %>
 </div>

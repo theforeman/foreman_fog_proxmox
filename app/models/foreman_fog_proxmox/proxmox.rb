@@ -36,6 +36,8 @@ module ForemanFogProxmox
     include ProxmoxVersion
     include ProxmoxConsole
     include ComputeAttributesUpdateDetector
+    include ComputeResourceCaching
+
     validates :url, :format => { :with => URI::DEFAULT_PARSER.make_regexp }, :presence => true
     validates :auth_method, :presence => true, :inclusion => { in: ['access_ticket', 'user_token'],
       message: ->(value) do format('%<value>s is not a valid authentication method', { value: value }) end }
@@ -128,6 +130,14 @@ module ForemanFogProxmox
     end
 
     private
+
+    def structs_from_cache(items)
+      Array(items).map { |item| OpenStruct.new(item) }
+    end
+
+    def extract_attributes(resource, fields)
+      slice_vm_attributes(fields.index_with { |field| resource.try(field) }, fields)
+    end
 
     def fog_credentials
       hash = {

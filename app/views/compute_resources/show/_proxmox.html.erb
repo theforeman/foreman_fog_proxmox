@@ -28,6 +28,10 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <td><%= @compute_resource.auth_method %></td>
 </tr>
 <tr>
+  <td><%= _("Caching") %></td>
+  <td><%= @compute_resource.caching_enabled ? _("Enabled") : _("Disabled") %></td>
+</tr>
+<tr>
   <td><%= _("User token expires") %></td>
   <td><%= user_token_expiration_date(@compute_resource) %></td>
 </tr>

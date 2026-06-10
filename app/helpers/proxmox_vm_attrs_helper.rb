@@ -76,7 +76,7 @@ module ProxmoxVMAttrsHelper
         keys = ['id', 'volid', 'storage_type', 'storage', 'controller', 'device', 'cache', 'size', '_delete', 'backup']
         type = 'hard_disk'
       elsif  vol.cdrom?
-        keys = ['id', 'storage_type', 'cdrom', 'storage', 'volid']
+        keys = ['id', 'storage_type', 'cdrom', 'storage', 'volid', '_delete']
         type = 'cdrom'
       elsif vol.cloud_init?
         keys = ['id', 'volid', 'storage_type', 'storage', 'controller', 'device']

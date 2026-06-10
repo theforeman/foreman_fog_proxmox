@@ -33,6 +33,7 @@ const ProxmoxServerStorage = ({
   isTabActive,
   selectedImage,
   provisionMethodState,
+  canAttachCdromImage,
 }) => {
   const bootDiskId = React.useMemo(() => {
     if (!bootOrder) return null;
@@ -70,6 +71,8 @@ const ProxmoxServerStorage = ({
   const [nextId, setNextId] = useState(0);
   const [cdRom, setCdRom] = useState(false);
   const [cdRomData, setCdRomData] = useState(null);
+  const [cdRomHidden, setCdRomHidden] = useState(false);
+  const [cdRomIsNew, setCdRomIsNew] = useState(false);
   const [efiDisk, setEfiDisk] = useState(false);
   const [efiDiskData, setEfiDiskData] = useState(null);
   const [nextDeviceNumbers, setNextDeviceNumbers] = useState({
@@ -309,7 +312,7 @@ const ProxmoxServerStorage = ({
           value: '',
         },
         storageType: {
-          name: `${paramScope}[volumes_attributes][${nextId}][storageType]`,
+          name: `${paramScope}[volumes_attributes][${nextId}][storage_type]`,
           value: 'cdrom',
         },
         storage: {
@@ -318,17 +321,29 @@ const ProxmoxServerStorage = ({
         },
         cdrom: {
           name: `${paramScope}[volumes_attributes][${nextId}][cdrom]`,
-          value: '',
+          value: 'none',
+        },
+        _delete: {
+          name: `${paramScope}[volumes_attributes][${nextId}][_delete]`,
         },
       };
 
       setCdRom(true);
       setCdRomData(initCDRom);
+      setCdRomHidden(false);
+      setCdRomIsNew(!isPreExisting);
     },
     [cdRom, nextId, paramScope, createUniqueDevice]
   );
 
-  const removeCDRom = () => setCdRom(false);
+  const removeCDRom = () => {
+    if (cdRomIsNew) {
+      setCdRom(false);
+      setCdRomData(null);
+    } else {
+      setCdRomHidden(true);
+    }
+  };
 
   const addEfiDisk = useCallback(
     (event, initialData = null, isPreExisting = false) => {
@@ -432,14 +447,18 @@ const ProxmoxServerStorage = ({
           </FormHelperText>
         )}
         {cdRom && cdRomData && (
-          <CDRom
-            onRemove={removeCDRom}
-            data={cdRomData}
-            storages={storages}
-            nodeId={nodeId}
-            computeResourceId={computeResourceId}
-            isTabActive={isTabActive}
-          />
+          <div style={{ display: cdRomHidden ? 'none' : 'block' }}>
+            <CDRom
+              onRemove={removeCDRom}
+              data={cdRomData}
+              storages={storages}
+              nodeId={nodeId}
+              computeResourceId={computeResourceId}
+              isTabActive={isTabActive}
+              canAttachCdromImage={canAttachCdromImage}
+              hidden={cdRomHidden}
+            />
+          </div>
         )}
         {efiDisk && efiDiskData && (
           <EFIDisk
@@ -537,6 +556,7 @@ ProxmoxServerStorage.propTypes = {
   isTabActive: PropTypes.bool,
   selectedImage: PropTypes.object,
   provisionMethodState: PropTypes.string,
+  canAttachCdromImage: PropTypes.bool,
 };
 
 ProxmoxServerStorage.defaultProps = {
@@ -553,6 +573,7 @@ ProxmoxServerStorage.defaultProps = {
   isTabActive: false,
   selectedImage: null,
   provisionMethodState: '',
+  canAttachCdromImage: false,
 };
 
 export default ProxmoxServerStorage;

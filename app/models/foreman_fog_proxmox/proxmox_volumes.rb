@@ -47,7 +47,7 @@ module ForemanFogProxmox
     def update_volume_required?(old_volume_attributes, new_volume_attributes)
       old_h = ForemanFogProxmox::HashCollection.new_hash_reject_empty_values(old_volume_attributes)
       new_h = ForemanFogProxmox::HashCollection.new_hash_reject_empty_values(new_volume_attributes)
-      new_h = ForemanFogProxmox::HashCollection.new_hash_reject_keys(new_h, ['cdrom', 'cloudinit', 'storage_type'])
+      new_h = ForemanFogProxmox::HashCollection.new_hash_reject_keys(new_h, ['cloudinit', 'storage_type'])
       !ForemanFogProxmox::HashCollection.equals?(old_h.with_indifferent_access, new_h.with_indifferent_access)
     end
 
@@ -112,6 +112,8 @@ module ForemanFogProxmox
     end
 
     def volume_exists?(vm, volume_attributes)
+      return vm.config.disks.get('ide2').present? if volume_type?(volume_attributes, 'cdrom')
+
       disk = vm.config.disks.get(volume_attributes['id'])
       return false unless disk
 
@@ -128,14 +130,14 @@ module ForemanFogProxmox
     end
 
     def extract_id(vm, volume_attributes)
-      id = ''
+      return 'ide2' if volume_type?(volume_attributes, 'cdrom')
+
       if volume_exists?(vm, volume_attributes)
-        id = volume_attributes['id']
+        volume_attributes['id']
       else
         device = vm.container? ? 'mp' : volume_attributes['controller']
-        id = volume_type?(volume_attributes, 'cdrom') ? 'ide2' : device + volume_attributes['device']
+        device + volume_attributes['device']
       end
-      id
     end
 
     def add_volume(vm, id, volume_attributes)
@@ -145,7 +147,10 @@ module ForemanFogProxmox
         disk_attributes[:storage] = volume_attributes['storage']
         disk_attributes[:size] = volume_attributes['size']
       elsif volume_type?(volume_attributes, 'cdrom')
-        disk_attributes[:volid] = volume_attributes[:iso]
+        cdrom_attributes = parse_server_cdrom(volume_attributes)
+        return if cdrom_attributes.empty?
+
+        disk_attributes.merge!(cdrom_attributes)
       elsif volume_type?(volume_attributes, 'cloud_init')
         disk_attributes[:storage] = volume_attributes['storage']
         disk_attributes[:volid] = "#{volume_attributes['storage']}:cloudinit"
@@ -164,7 +169,11 @@ module ForemanFogProxmox
         else
           disk = vm.config.disks.get(id)
           normalized_volume_attributes = normalize_existing_volume_attributes(disk, volume_attributes)
-          update_volume(vm, disk, normalized_volume_attributes) if update_volume_required?(disk.attributes, normalized_volume_attributes)
+          if volume_type?(volume_attributes, 'cdrom')
+            update_volume(vm, disk, normalized_volume_attributes)
+          elsif update_volume_required?(disk.attributes, normalized_volume_attributes)
+            update_volume(vm, disk, normalized_volume_attributes)
+          end
         end
       else
         add_volume(vm, id, volume_attributes)

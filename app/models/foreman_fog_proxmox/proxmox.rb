@@ -23,6 +23,8 @@ require 'foreman_fog_proxmox/value'
 
 module ForemanFogProxmox
   class Proxmox < ComputeResource
+    PROXMOX_SSH_KEY_BITS = 4096
+
     include ProxmoxVMHelper
     include ProxmoxConnection
     include ProxmoxVMNew
@@ -37,6 +39,10 @@ module ForemanFogProxmox
     include ProxmoxConsole
     include ComputeAttributesUpdateDetector
     include ComputeResourceCaching
+
+    has_one :key_pair, :foreign_key => :compute_resource_id, :dependent => :destroy, :inverse_of => :compute_resource
+    after_create :setup_key_pair
+    after_destroy :destroy_key_pair
 
     validates :url, :format => { :with => URI::DEFAULT_PARSER.make_regexp }, :presence => true
     validates :auth_method, :presence => true, :inclusion => { in: ['access_ticket', 'user_token'],
@@ -129,6 +135,23 @@ module ForemanFogProxmox
       attrs[:token] = value
     end
 
+    def ssh_username
+      attrs[:ssh_username]
+    end
+
+    def ssh_username=(value)
+      attrs[:ssh_username] = value
+    end
+
+    def enable_ssh
+      value = attrs.with_indifferent_access[:enable_ssh]
+      value.nil? ? key_pair.present? : Foreman::Cast.to_bool(value)
+    end
+
+    def enable_ssh=(value)
+      attrs[:enable_ssh] = value
+    end
+
     private
 
     def structs_from_cache(items)
@@ -137,6 +160,38 @@ module ForemanFogProxmox
 
     def extract_attributes(resource, fields)
       slice_vm_attributes(fields.index_with { |field| resource.try(field) }, fields)
+    end
+
+    def setup_key_pair
+      return true unless enable_ssh
+
+      key = OpenSSL::PKey::RSA.generate(PROXMOX_SSH_KEY_BITS)
+      KeyPair.create!(
+        name: "foreman-#{id}#{Foreman.uuid}",
+        compute_resource_id: id,
+        secret: key.private_to_pem,
+        public: "#{key.ssh_type} #{[key.to_blob].pack('m0')}"
+      )
+    rescue StandardError => e
+      Foreman::Logging.exception('Failed to generate key pair', e)
+      destroy_key_pair
+      raise
+    end
+
+    def destroy_key_pair
+      return true if key_pair.blank?
+
+      key_pair.delete
+
+      true
+    rescue StandardError => e
+      Foreman::Logging.exception(
+        "Failed to delete local key pair for #{provider_friendly_name}: #{name}",
+        e,
+        level: :warn
+      )
+
+      true
     end
 
     def fog_credentials

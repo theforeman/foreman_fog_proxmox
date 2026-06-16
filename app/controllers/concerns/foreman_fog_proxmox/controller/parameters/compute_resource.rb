@@ -28,7 +28,7 @@ module ForemanFogProxmox
             super.tap do |filter|
               filter.permit :ssl_verify_peer,
                 :ssl_certs, :disable_proxy, :auth_method, :token_id, :token,
-                :caching_enabled
+                :caching_enabled, :enable_ssh, :ssh_username
             end
           end
 

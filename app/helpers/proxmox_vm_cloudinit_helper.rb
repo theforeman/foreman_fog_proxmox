@@ -112,8 +112,10 @@ module ProxmoxVMCloudinitHelper
 
   def attach_cloudinit_iso(node, iso)
     volume = nil
+    node_obj = client.nodes.get(node)
     storages(node, 'iso').each do |storage|
-      volume = storage.volumes.detect { |v| v.volid.include? File.basename(iso) }
+      volumes = node_obj&.storages&.get(storage.storage)&.volumes
+      volume = Array(volumes).detect { |v| v.volid.include? File.basename(iso) }
       break if volume
     end
 
@@ -134,11 +136,21 @@ module ProxmoxVMCloudinitHelper
   end
 
   def vm_ssh
-    ssh = Fog::SSH.new(URI.parse(fog_credentials[:proxmox_url]).host, fog_credentials[:proxmox_username].split('@')[0], { password: fog_credentials[:proxmox_password] })
+    username, options = ssh_credentials
+    host = URI.parse(fog_credentials[:proxmox_url]).host
+    ssh = Fog::SSH.new(host, username, options)
     ssh.run('ls') # test if ssh is successful
     ssh
   rescue StandardError => e
     raise ::Foreman::Exception, "Unable to ssh into proxmox server: #{e}"
+  end
+
+  def ssh_credentials
+    if enable_ssh && ssh_username.present? && key_pair&.secret.present?
+      [ssh_username, { key_data: [key_pair.secret] }]
+    else
+      [fog_credentials[:proxmox_username].split('@')[0], { password: fog_credentials[:proxmox_password] }]
+    end
   end
 
   def check_template_format(user_data)

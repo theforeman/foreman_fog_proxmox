@@ -28,6 +28,16 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <td><%= @compute_resource.auth_method %></td>
 </tr>
 <tr>
+  <td><%= _("SSH Authentication") %></td>
+  <td><%= @compute_resource.enable_ssh ? _("Enabled") : _("Disabled") %></td>
+</tr>
+<% if @compute_resource.enable_ssh %>
+  <tr>
+    <td><%= _("SSH Username") %></td>
+    <td><%= @compute_resource.ssh_username %></td>
+  </tr>
+<% end %>
+<tr>
   <td><%= _("Caching") %></td>
   <td><%= @compute_resource.caching_enabled ? _("Enabled") : _("Disabled") %></td>
 </tr>

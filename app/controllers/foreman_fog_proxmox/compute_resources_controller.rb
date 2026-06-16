@@ -106,6 +106,17 @@ module ForemanFogProxmox
       }
     end
 
+    # GET foreman_fog_proxmox/compute_resources/:compute_resource_id/ssh_configuration
+    def ssh_configuration
+      cr = ComputeResource.authorized(:view_compute_resources).find(params[:compute_resource_id])
+
+      render json: {
+        enabled: cr.enable_ssh,
+        username: cr.ssh_username,
+        public_key: cr.key_pair&.public,
+      }
+    end
+
     private
 
     def extract_nodes(compute_resource)

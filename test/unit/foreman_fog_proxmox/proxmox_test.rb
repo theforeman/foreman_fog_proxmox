@@ -39,6 +39,44 @@ module ForemanFogProxmox
     should_not allow_value('root').for(:user)
     should_not allow_value('a').for(:url)
     should allow_values('http://foo.com', 'http://bar.com/baz').for(:url)
+    should have_one(:key_pair).with_foreign_key('compute_resource_id').dependent(:destroy)
+
+    test 'does not advertise remote key_pair capability' do
+      cr = FactoryBot.build_stubbed(:proxmox_cr)
+
+      assert_not_includes cr.capabilities, :key_pair
+    end
+
+    test 'does not create a local KeyPair when SSH is disabled' do
+      assert_no_difference('KeyPair.count') do
+        @compute_resource = FactoryBot.create(:proxmox_cr)
+      end
+
+      assert_nil @compute_resource.key_pair
+    end
+
+    test 'creates a local KeyPair with private and public keys when SSH is enabled' do
+      assert_difference('KeyPair.count') do
+        @compute_resource = FactoryBot.create(:proxmox_cr, enable_ssh: true)
+      end
+
+      key_pair = @compute_resource.key_pair
+
+      assert_not_nil key_pair
+      assert key_pair.secret.starts_with?('-----BEGIN')
+      assert key_pair.public.starts_with?('ssh-rsa ')
+    end
+
+    test 'removes the key pair when the compute resource is deleted' do
+      compute_resource = FactoryBot.create(:proxmox_cr, enable_ssh: true)
+      key_pair = compute_resource.key_pair
+
+      assert_difference('KeyPair.count', -1) do
+        compute_resource.destroy!
+      end
+
+      assert_not KeyPair.exists?(key_pair.id)
+    end
 
     test '#associated_host matches any NIC' do
       mac = 'ca:d0:e6:32:16:97'
@@ -52,6 +90,138 @@ module ForemanFogProxmox
       cr = FactoryBot.build_stubbed(:proxmox_cr)
 
       assert_equal :foreman_uuid, cr.provided_attributes[:uuid]
+    end
+
+    test 'uses key authentication when ssh is enabled' do
+      cr = FactoryBot.build_stubbed(:proxmox_cr, enable_ssh: true, ssh_username: 'foreman')
+      cr.stubs(:key_pair).returns(stub(secret: 'PRIVATE KEY'))
+      node = stub(node: 'proxmox-node-1')
+      nodes = stub
+      nodes.stubs(:get).with('proxmox-node-1').returns(node)
+      client = stub(nodes: nodes)
+      client.stubs(:cluster_status).returns(
+        [{ 'name' => 'proxmox-node-1', 'ip' => '192.168.56.101', 'type' => 'node' }]
+      )
+      cr.stubs(:client).returns(client)
+      ssh = mock('ssh')
+
+      Fog::SSH.expects(:new).with(
+        '192.168.56.101',
+        'foreman',
+        { key_data: ['PRIVATE KEY'] }
+      ).returns(ssh)
+      ssh.expects(:run).with('ls')
+
+      assert_equal ssh, cr.vm_ssh('proxmox-node-1')
+    end
+
+    test 'uses the matching node IP from cluster status' do
+      cr = FactoryBot.build_stubbed(:proxmox_cr, enable_ssh: true, ssh_username: 'foreman')
+      cr.stubs(:key_pair).returns(stub(secret: 'PRIVATE KEY'))
+      node = stub(node: 'proxmox-noris')
+      nodes = stub
+      nodes.stubs(:get).with('proxmox-noris').returns(node)
+      client = stub(nodes: nodes)
+      client.expects(:cluster_status).returns(
+        [{ 'id' => 'node/proxmox-noris', 'name' => 'proxmox-noris', 'ip' => '192.168.56.102', 'type' => 'node' }]
+      )
+      cr.stubs(:client).returns(client)
+      ssh = mock('ssh')
+
+      Fog::SSH.expects(:new).with(
+        '192.168.56.102',
+        'foreman',
+        { key_data: ['PRIVATE KEY'] }
+      ).returns(ssh)
+      ssh.expects(:run).with('ls')
+
+      assert_equal ssh, cr.vm_ssh('proxmox-noris')
+    end
+
+    test 'reports an actionable error when the node has no cluster status IP' do
+      cr = FactoryBot.build_stubbed(:proxmox_cr, enable_ssh: true, ssh_username: 'foreman')
+      cr.stubs(:key_pair).returns(stub(secret: 'PRIVATE KEY'))
+      node = stub(node: 'proxmox-noris')
+      nodes = stub
+      nodes.stubs(:get).with('proxmox-noris').returns(node)
+      client = stub(nodes: nodes)
+      client.expects(:cluster_status).returns(
+        [{ 'name' => 'proxmox-noris', 'type' => 'node' }]
+      )
+      cr.stubs(:client).returns(client)
+
+      error = assert_raises(::Foreman::Exception) do
+        cr.vm_ssh('proxmox-noris')
+      end
+
+      assert_equal(
+        'Unable to determine an SSH address for Proxmox node proxmox-noris. ' \
+        'Ensure /cluster/status reports its IP address.',
+        error.bare_message
+      )
+    end
+
+    test 'uses the VM node for SSH in a multi-node cluster' do
+      cr = FactoryBot.build_stubbed(:proxmox_cr, enable_ssh: true, ssh_username: 'foreman')
+      cr.stubs(:key_pair).returns(stub(secret: 'PRIVATE KEY'))
+      vm = stub(node_id: 'proxmox-node-3')
+      node3 = stub(node: 'proxmox-node-3')
+      nodes = stub
+      nodes.expects(:get).with(vm.node_id).returns(node3)
+      client = stub(nodes: nodes)
+      client.expects(:cluster_status).returns(
+        (1..5).map do |index|
+          { 'id' => "node/proxmox-node-#{index}", 'name' => "proxmox-node-#{index}",
+            'ip' => "192.168.56.10#{index}", 'type' => 'node' }
+        end
+      )
+      cr.stubs(:client).returns(client)
+      ssh = mock('ssh')
+
+      Fog::SSH.expects(:new).with(
+        '192.168.56.103',
+        'foreman',
+        { key_data: ['PRIVATE KEY'] }
+      ).returns(ssh)
+      ssh.expects(:run).with('ls')
+
+      assert_equal ssh, cr.vm_ssh(vm.node_id)
+    end
+
+    test 'raises an exception when the VM node is not found' do
+      cr = FactoryBot.build_stubbed(:proxmox_cr, enable_ssh: true, ssh_username: 'foreman')
+      cr.stubs(:key_pair).returns(stub(secret: 'PRIVATE KEY'))
+      nodes = stub
+      nodes.expects(:get).with('missing-node').returns(nil)
+      cr.stubs(:client).returns(stub(nodes: nodes))
+
+      error = assert_raises(::Foreman::Exception) do
+        cr.vm_ssh('missing-node')
+      end
+
+      assert_equal 'Proxmox node missing-node was not found', error.bare_message
+    end
+
+    test 'uses password authentication when ssh is disabled' do
+      cr = FactoryBot.build_stubbed(:proxmox_cr, enable_ssh: false)
+      node = stub(node: 'proxmox-node-1')
+      nodes = stub
+      nodes.stubs(:get).with('proxmox-node-1').returns(node)
+      client = stub(nodes: nodes)
+      client.stubs(:cluster_status).returns(
+        [{ 'name' => 'proxmox-node-1', 'ip' => '192.168.56.101', 'type' => 'node' }]
+      )
+      cr.stubs(:client).returns(client)
+      ssh = mock('ssh')
+
+      Fog::SSH.expects(:new).with(
+        '192.168.56.101',
+        'root',
+        { password: 'proxmox01' }
+      ).returns(ssh)
+      ssh.expects(:run).with('ls')
+
+      assert_equal ssh, cr.vm_ssh('proxmox-node-1')
     end
 
     test '#update_required? detects added HDD attributes' do

@@ -36,5 +36,8 @@ Rails.application.routes.draw do
     match 'metadata/:compute_resource_id',
       :to => 'compute_resources#metadata',
       :via => 'get'
+    match 'compute_resources/:compute_resource_id/ssh_configuration',
+      :to => 'compute_resources#ssh_configuration',
+      :via => 'get'
   end
 end

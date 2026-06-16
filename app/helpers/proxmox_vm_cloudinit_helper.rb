@@ -89,7 +89,7 @@ module ProxmoxVMCloudinitHelper
     user_data = args.delete(:user_data)
     return args if user_data == ''
     check_template_format(user_data)
-    ssh = vm_ssh
+    ssh = vm_ssh(args[:node_id])
 
     if user_data.include?('#network-config') && user_data.include?('#cloud-config')
       config_data.concat(user_data.split('#network-config'))
@@ -112,7 +112,11 @@ module ProxmoxVMCloudinitHelper
 
   def attach_cloudinit_iso(node, iso)
     volume = nil
-    storages(node, 'iso').each do |storage|
+    iso_storages = storages(node, 'iso')
+
+    raise ::Foreman::Exception, "No storage supporting ISO content was found for node #{node}" if iso_storages.empty?
+
+    iso_storages.each do |storage|
       volume = storage.volumes.detect { |v| v.volid.include? File.basename(iso) }
       break if volume
     end
@@ -133,12 +137,48 @@ module ProxmoxVMCloudinitHelper
     { boot: "order=" + disks }
   end
 
-  def vm_ssh
-    ssh = Fog::SSH.new(URI.parse(fog_credentials[:proxmox_url]).host, fog_credentials[:proxmox_username].split('@')[0], { password: fog_credentials[:proxmox_password] })
+  def vm_ssh(node_id)
+    username, options = ssh_credentials
+    node = client.nodes.get(node_id)
+    raise ::Foreman::Exception, "Proxmox node #{node_id} was not found" unless node
+
+    host = proxmox_ssh_host(node)
+    ssh = Fog::SSH.new(host, username, options)
     ssh.run('ls') # test if ssh is successful
     ssh
+  rescue ::Foreman::Exception
+    raise
   rescue StandardError => e
     raise ::Foreman::Exception, "Unable to ssh into proxmox server: #{e}"
+  end
+
+  def proxmox_ssh_host(node)
+    cluster_ip = proxmox_cluster_node_ip(node.node)
+    return cluster_ip if cluster_ip.present?
+
+    raise ::Foreman::Exception,
+      "Unable to determine an SSH address for Proxmox node #{node.node}. " \
+      "Ensure /cluster/status reports its IP address."
+  end
+
+  def proxmox_cluster_node_ip(node_name)
+    cluster_node = Array(client.cluster_status).find do |entry|
+      type = entry['type'] || entry[:type]
+      name = entry['name'] || entry[:name]
+      type == 'node' && name == node_name
+    end
+    cluster_node && (cluster_node['ip'] || cluster_node[:ip])
+  rescue StandardError => e
+    logger.warn("Could not retrieve Proxmox cluster status while resolving node #{node_name}: #{e}")
+    nil
+  end
+
+  def ssh_credentials
+    if enable_ssh && ssh_username.present? && key_pair&.secret.present?
+      [ssh_username, { key_data: [key_pair.secret] }]
+    else
+      [fog_credentials[:proxmox_username].split('@')[0], { password: fog_credentials[:proxmox_password] }]
+    end
   end
 
   def check_template_format(user_data)

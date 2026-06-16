@@ -18,6 +18,7 @@
 $(document).ready(function () {
   sslVerifyPeerSelected();
   authMethodSelected();
+  sshSelected();
 });
 
 function sslVerifyPeerSelected() {
@@ -56,15 +57,25 @@ function authMethods(){
 }
 
 function authMethodFieldsetId(method){
-  return '#compute_ressource_' + method + '_field_set';
+  return '#compute_resource_' + method + '_field_set';
 }
 
 function authMethodSelected() {
   var selected = $("#compute_resource_auth_method").val();
-  console.log("auth_method="+selected);
   authMethods().forEach(function(method){
     toggleFieldset(method, selected);
   });
+}
+
+function sshSelected() {
+  var checkbox = $('#compute_resource_enable_ssh');
+  if (!checkbox.length) return;
+
+  var selected = checkbox.is(':checked');
+  var sshFields = $('#compute_resource_ssh_field_set .proxmox-ssh-field');
+
+  sshFields.toggleClass('hide', !selected).toggle(selected);
+  sshFields.find('input, textarea').prop('disabled', !selected);
 }
 
 window.tfm = window.tfm || {};
@@ -72,4 +83,5 @@ window.tfm.computeResource = window.tfm.computeResource || {};
 window.tfm.computeResource.proxmox = {
   authMethodSelected: authMethodSelected,
   sslVerifyPeerSelected: sslVerifyPeerSelected,
+  sshSelected: sshSelected,
 };

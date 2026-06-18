@@ -41,7 +41,7 @@ module ProxmoxVMConfigHelper
 
   def general_a(type)
     general_a = ['node_id', 'type', 'config_attributes', 'efidisk_attributes', 'volumes_attributes', 'interfaces_attributes', 'image_id']
-    general_a += ['firmware_type', 'provision_method', 'container_volumes', 'server_volumes', 'start_after_create']
+    general_a += ['firmware_type', 'provision_method', 'container_volumes', 'server_volumes', 'start_after_create', 'full_clone']
     general_a += ['name'] if type == 'lxc'
     general_a
   end

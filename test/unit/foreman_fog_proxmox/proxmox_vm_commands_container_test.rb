@@ -299,7 +299,8 @@ module ForemanFogProxmox
         containers = mock('containers')
         cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
         vm = mock('vm')
-        cr.expects(:clone_from_image).with('999', 100).returns(vm)
+        cr.expects(:clone_from_image).with('999', 100, full_clone: false).returns(vm)
+        vm.expects(:full_clone=).with('0')
         vm.expects(:container?).returns(true)
         expected_args = { :vmid => "100", :type => "lxc" }
         cr.stubs(:parse_typed_vm).with(args, 'lxc').returns(expected_args)

@@ -13,6 +13,7 @@ const GeneralTabContent = ({
   imagesMap,
   handleChange,
   untemplatable,
+  provisionMethodState,
 }) => (
   <PageSection padding={{ default: 'noPadding' }}>
     <Divider component="li" style={{ marginBottom: '2rem' }} />
@@ -75,6 +76,18 @@ const GeneralTabContent = ({
       />
     )}
     <InputField
+      name={general?.fullClone?.name}
+      label={__('Full clone')}
+      info={__(
+        'Clone the full disk instead of a linked clone. Required during image-based provisioning for storages that do not support linked clones, e.g. LVM.'
+      )}
+      type="checkbox"
+      value={general?.fullClone?.value}
+      checked={String(general?.fullClone?.value) === '1'}
+      disabled={!fromProfile && (!newVm || provisionMethodState !== 'image')}
+      onChange={handleChange}
+    />
+    <InputField
       name={general?.description?.name}
       label={__('Description')}
       type="textarea"
@@ -93,6 +106,7 @@ GeneralTabContent.propTypes = {
   imagesMap: PropTypes.array,
   handleChange: PropTypes.func.isRequired,
   untemplatable: PropTypes.bool,
+  provisionMethodState: PropTypes.string,
 };
 
 GeneralTabContent.defaultProps = {
@@ -102,6 +116,7 @@ GeneralTabContent.defaultProps = {
   poolsMap: [],
   imagesMap: [],
   untemplatable: false,
+  provisionMethodState: 'build',
 };
 
 export default GeneralTabContent;

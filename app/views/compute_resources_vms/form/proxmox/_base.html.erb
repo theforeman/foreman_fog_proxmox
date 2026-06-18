@@ -38,6 +38,11 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= webpacked_plugins_js_for :foreman_fog_proxmox %>
 <% end %>
 
+<% if from_profile && defined?(@set) && @set&.vm_attrs
+     profile_fc = @set.vm_attrs['full_clone'] || @set.vm_attrs[:full_clone]
+     f.object.full_clone = profile_fc unless profile_fc.nil?
+   end %>
+
 <%
   vm_attrs = object_to_attributes_hash(f.object, from_profile, checked)
 

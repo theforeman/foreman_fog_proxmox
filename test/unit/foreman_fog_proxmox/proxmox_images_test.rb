@@ -30,19 +30,26 @@ module ForemanFogProxmox
         @image_id = @cr.id.to_s + '_' + 100.to_s
         @vmid = 101
         @image = mock('vm')
-        @image.expects(:clone)
         @cr.stubs(:find_vm_by_uuid).with(@image_id).returns(@image)
         @clone = mock('vm')
       end
       it 'clones server from image' do
+        @image.expects(:clone).with(@vmid, {})
         @clone.stubs(:container?).returns(false)
         @cr.stubs(:find_vm_by_uuid).with(@cr.id.to_s + '_' + @vmid.to_s).returns(@clone)
         @cr.clone_from_image(@image_id, @vmid)
       end
       it 'clones container from image' do
+        @image.expects(:clone).with(@vmid, {})
         @clone.stubs(:container?).returns(true)
         @cr.stubs(:find_vm_by_uuid).with(@cr.id.to_s + '_' + @vmid.to_s).returns(@clone)
         @cr.clone_from_image(@image_id, @vmid)
+      end
+      it 'full clones server from image' do
+        @image.expects(:clone).with(@vmid, { full: 1 })
+        @clone.stubs(:container?).returns(false)
+        @cr.stubs(:find_vm_by_uuid).with(@cr.id.to_s + '_' + @vmid.to_s).returns(@clone)
+        @cr.clone_from_image(@image_id, @vmid, full_clone: true)
       end
     end
   end

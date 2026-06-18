@@ -70,9 +70,10 @@ module ForemanFogProxmox
       find_vm_by_uuid(uuid)
     end
 
-    def clone_from_image(image, vmid)
-      logger.debug("create_vm(): clone #{image.identity} in #{vmid}")
-      image.clone(vmid)
+    def clone_from_image(image, vmid, full_clone: false)
+      logger.debug("create_vm(): clone #{image.identity} in #{vmid} full_clone=#{full_clone}")
+      clone_options = full_clone ? { full: 1 } : {}
+      image.clone(vmid, clone_options)
       find_vm_by_uuid(id.to_s + '_' + vmid.to_s)
     end
   end

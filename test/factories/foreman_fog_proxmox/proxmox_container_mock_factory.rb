@@ -44,11 +44,8 @@ module ForemanFogProxmox
       }
     end
 
-    def mock_container_vm
-      interface = mock('interface')
-      interface.stubs(:attributes).returns(mock_container_interface_attributes)
-      interfaces = [interface]
-      volume_attributes = {
+    def mock_container_volume_attributes
+      {
         id: 'rootfs',
         volid: 'local-lvm:vm-100-disk-1',
         size: 8,
@@ -63,6 +60,13 @@ module ForemanFogProxmox
         backup: nil,
         aio: nil,
       }
+    end
+
+    def mock_container_vm
+      interface = mock('interface')
+      interface.stubs(:attributes).returns(mock_container_interface_attributes)
+      interfaces = [interface]
+      volume_attributes = mock_container_volume_attributes
       volume = mock('volume')
       volume.stubs(:attributes).returns(volume_attributes)
       volumes = [volume]
@@ -142,6 +146,7 @@ module ForemanFogProxmox
       }
       vm.stubs(:attributes).returns(vm_attributes)
       vm.stubs(:container?).returns(true)
+      vm.stubs(:full_clone).returns(nil)
       [vm, config_attributes, volume_attributes, mock_container_interface_attributes]
     end
   end

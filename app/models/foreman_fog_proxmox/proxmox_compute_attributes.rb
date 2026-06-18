@@ -86,6 +86,8 @@ module ForemanFogProxmox
     def vm_compute_attributes(vm)
       vm_attrs = {}
       vm_attrs = vm_attrs.merge(vmid: vm.identity, node_id: vm.node_id, type: vm.type)
+      full_clone = vm.try(:full_clone)
+      vm_attrs[:full_clone] = full_clone unless full_clone.nil?
       if vm.respond_to?(:config)
         if vm.config.respond_to?(:disks)
           vm_attrs[:volumes_attributes] = Hash[vm.config.disks.each_with_index.map do |disk, idx|

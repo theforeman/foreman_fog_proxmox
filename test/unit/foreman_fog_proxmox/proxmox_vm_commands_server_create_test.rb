@@ -31,15 +31,18 @@ module ForemanFogProxmox
     include ProxmoxVMHelper
 
     describe 'create_vm' do
-      it 'raises Foreman::Exception when vmid <= 100 and vmid > 0' do
-        args = { vmid: '100' }
+      it 'uses next vmid when requested vmid is occupied or out of range' do
+        args = { vmid: '100', type: 'qemu', node_id: 'proxmox', start_after_create: '0' }
         servers = mock('servers')
-        servers.stubs(:id_valid?).returns(false)
+        servers.expects(:id_valid?).with(100).returns(false)
+        servers.expects(:next_id).returns('101')
         cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
-        err = assert_raises Foreman::Exception do
-          cr.create_vm(args)
-        end
-        assert err.message.end_with?('invalid vmid=100')
+        cr.stubs(:parse_typed_vm).with(args, 'qemu').returns(args)
+        vm = mock('vm')
+        servers.expects(:create).with(args).returns(vm)
+        cr.create_vm(args)
+
+        assert_equal '101', args[:vmid]
       end
 
       it 'computes next vmid when vmid == 0 and creates server' do

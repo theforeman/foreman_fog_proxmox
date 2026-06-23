@@ -111,5 +111,51 @@ module ForemanFogProxmox
         assert_equal vm, @cr.new_vm(attr)
       end
     end
+
+    describe 'assign_available_vmid' do
+      before do
+        @cr = FactoryBot.build_stubbed(:proxmox_cr)
+      end
+
+      it 'uses next vmid when requested vmid is already occupied' do
+        attr = { 'vmid' => '100', 'node_id' => 'proxmox' }.with_indifferent_access
+        servers = mock('servers')
+        node = mock('node')
+        node.stubs(:servers).returns(servers)
+        servers.expects(:id_valid?).with(100).returns(false)
+        servers.expects(:next_id).returns('101')
+        @cr.logger.expects(:warn).never
+
+        @cr.assign_available_vmid(attr, node)
+
+        assert_equal '101', attr['vmid']
+      end
+
+      it 'keeps requested vmid when it is available' do
+        attr = { 'vmid' => '100', 'node_id' => 'proxmox' }.with_indifferent_access
+        servers = mock('servers')
+        node = mock('node')
+        node.stubs(:servers).returns(servers)
+        servers.expects(:id_valid?).with(100).returns(true)
+        servers.expects(:next_id).never
+
+        @cr.assign_available_vmid(attr, node)
+
+        assert_equal 100, attr['vmid']
+      end
+
+      it 'does not assign vmid when requested vmid is blank' do
+        attr = { 'vmid' => '', 'node_id' => 'proxmox' }.with_indifferent_access
+        servers = mock('servers')
+        node = mock('node')
+        node.stubs(:servers).returns(servers)
+        servers.expects(:id_valid?).never
+        servers.expects(:next_id).never
+
+        @cr.assign_available_vmid(attr, node)
+
+        assert_equal '', attr['vmid']
+      end
+    end
   end
 end

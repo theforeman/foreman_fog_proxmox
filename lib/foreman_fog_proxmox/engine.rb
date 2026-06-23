@@ -43,17 +43,20 @@ module ForemanFogProxmox
           parameter_filter(ComputeResource, :uuid)
           # add dashboard widget
           widget 'foreman_fog_proxmox_widget', name: N_('Foreman Fog Proxmox widget'), sizex: 8, sizey: 1
+
+          p = Foreman::AccessControl.permission(:view_compute_resources)
+          p.actions.concat(%w[foreman_fog_proxmox/compute_resources/ostemplates_by_id_and_node_and_storage
+                              foreman_fog_proxmox/compute_resources/isos_by_id_and_node_and_storage
+                              foreman_fog_proxmox/compute_resources/ostemplates_by_id_and_node
+                              foreman_fog_proxmox/compute_resources/isos_by_id_and_node
+                              foreman_fog_proxmox/compute_resources/storages_by_id_and_node
+                              foreman_fog_proxmox/compute_resources/iso_storages_by_id_and_node
+                              foreman_fog_proxmox/compute_resources/bridges_by_id_and_node
+                              foreman_fog_proxmox/compute_resources/volumes_by_node_and_storage
+                              foreman_fog_proxmox/compute_resources/metadata])
+          p.actions.uniq!
+
           security_block :foreman_fog_proxmox do
-            permission :view_compute_resources, { :'foreman_fog_proxmox/compute_resources' =>
-              [:ostemplates_by_id_and_node_and_storage,
-               :isos_by_id_and_node_and_storage,
-               :ostemplates_by_id_and_node,
-               :isos_by_id_and_node,
-               :storages_by_id_and_node,
-               :iso_storages_by_id_and_node,
-               :bridges_by_id_and_node,
-               :volumes_by_node_and_storage,
-               :metadata] }
             permission :attach_cdrom_image, {},
               :resource_type => 'ComputeResource'
           end

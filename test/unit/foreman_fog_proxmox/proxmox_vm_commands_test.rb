@@ -39,5 +39,30 @@ module ForemanFogProxmox
         assert cr.destroy_vm('abc')
       end
     end
+
+    describe 'assign_vmid' do
+      it 'uses next vmid when requested vmid is already occupied' do
+        cr = ForemanFogProxmox::Proxmox.new
+        servers = mock('servers')
+        node = mock('node')
+        node.stubs(:servers).returns(servers)
+        servers.expects(:id_valid?).with(100).returns(false)
+        servers.expects(:next_id).returns('101')
+
+        assert_equal '101', cr.assign_vmid(100, node)
+      end
+
+      it 'does not log when logging is disabled' do
+        cr = ForemanFogProxmox::Proxmox.new
+        servers = mock('servers')
+        node = mock('node')
+        node.stubs(:servers).returns(servers)
+        servers.expects(:id_valid?).with(100).returns(false)
+        servers.expects(:next_id).returns('101')
+        cr.logger.expects(:warn).never
+
+        assert_equal '101', cr.assign_vmid(100, node, log: false)
+      end
+    end
   end
 end

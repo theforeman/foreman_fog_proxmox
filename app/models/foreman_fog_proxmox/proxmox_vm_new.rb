@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ModuleLength
+
 # Copyright 2019 Tristan Robert
 
 # This file is part of ForemanFogProxmox.
@@ -182,10 +184,17 @@ module ForemanFogProxmox
       config_attributes.delete_if { |key, _value| ['disks', 'interfaces'].include?(key) }
     end
 
+    def assign_available_vmid(new_attr, node)
+      return if new_attr['vmid'].blank? || new_attr['node_id'].blank?
+
+      new_attr['vmid'] = assign_vmid(new_attr['vmid'].to_i, node, log: false)
+    end
+
     def new_typed_vm(new_attr, type)
       convert_config_attributes(new_attr) if new_attr.key?(:config_attributes)
       node_id = new_attr['node_id']
       node = node_id ? client.nodes.get(node_id) : default_node
+      assign_available_vmid(new_attr, node)
       new_attr_type = new_attr['type']
       new_attr_type ||= new_attr['config_attributes']['type'] if new_attr.key?('config_attributes')
       new_attr_type ||= type
@@ -201,3 +210,5 @@ module ForemanFogProxmox
     end
   end
 end
+
+# rubocop:enable Metrics/ModuleLength

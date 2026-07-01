@@ -36,8 +36,6 @@ module ForemanFogProxmox
       type = args[:type]
       node = client.nodes.get(args[:node_id])
       vmid = args[:vmid] = assign_vmid(args[:vmid].to_i, node)
-      raise ::Foreman::Exception, format(N_('invalid vmid=%<vmid>s'), vmid: vmid) unless node.servers.id_valid?(vmid)
-
       image_id = args[:image_id]
       remove_volume_keys(args)
       if image_id
@@ -55,8 +53,15 @@ module ForemanFogProxmox
       raise e
     end
 
-    def assign_vmid(vmid, node)
-      (vmid < 1) ? node.servers.next_id : vmid
+    def assign_vmid(vmid, node, log: true)
+      vmid = node.servers.next_id if vmid < 1
+
+      unless node.servers.id_valid?(vmid)
+        logger.warn("Requested VMID #{vmid} is occupied or out of range, requesting a new VMID") if log
+        vmid = node.servers.next_id
+      end
+
+      vmid
     end
 
     def compute_clone_attributes(args, container, type)

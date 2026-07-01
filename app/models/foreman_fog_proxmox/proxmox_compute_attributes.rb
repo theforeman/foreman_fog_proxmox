@@ -76,24 +76,35 @@ module ForemanFogProxmox
     end
 
     def vm_compute_attributes(vm)
-      vm_attrs = {}
-      vm_attrs = vm_attrs.merge(vmid: vm.identity, node_id: vm.node_id, type: vm.type)
-      if vm.respond_to?(:config)
-        if vm.config.respond_to?(:disks)
-          vm_attrs[:volumes_attributes] = Hash[vm.config.disks.each_with_index.map do |disk, idx|
-                                                 [idx.to_s, volume_compute_attributes(disk.attributes)]
-                                               end ]
-        end
-        if vm.config.respond_to?(:interfaces)
-          vm_attrs[:interfaces_attributes] = Hash[vm.config.interfaces.each_with_index.map do |interface, idx|
-                                                    [idx.to_s, interface_compute_attributes(interface.attributes)]
-                                                  end ]
-        end
-        vm_attrs[:config_attributes] = vm.config.attributes.reject do |key, value|
-          not_config_key?(vm, key) || ForemanFogProxmox::Value.empty?(value.to_s) || Fog::Proxmox::DiskHelper.disk?(key.to_s) || Fog::Proxmox::NicHelper.nic?(key.to_s)
-        end
+      vm_attrs = { vmid: vm.identity, node_id: vm.node_id, type: vm.type }
+      vm_attrs[:full_clone] = vm.try(:full_clone) if vm.try(:full_clone).present?
+      return vm_attrs unless vm.respond_to?(:config)
+
+      vm_attrs.merge(vm_config_compute_attributes(vm))
+    end
+
+    private
+
+    def vm_config_compute_attributes(vm)
+      attrs = { config_attributes: vm_raw_config_attributes(vm) }
+      attrs[:volumes_attributes] = vm_volumes_compute_attributes(vm) if vm.config.respond_to?(:disks)
+      attrs[:interfaces_attributes] = vm_interfaces_compute_attributes(vm) if vm.config.respond_to?(:interfaces)
+      attrs
+    end
+
+    def vm_volumes_compute_attributes(vm)
+      Hash[vm.config.disks.each_with_index.map { |disk, idx| [idx.to_s, volume_compute_attributes(disk.attributes)] }]
+    end
+
+    def vm_interfaces_compute_attributes(vm)
+      Hash[vm.config.interfaces.each_with_index.map { |iface, idx| [idx.to_s, interface_compute_attributes(iface.attributes)] }]
+    end
+
+    def vm_raw_config_attributes(vm)
+      vm.config.attributes.reject do |key, value|
+        not_config_key?(vm, key) || ForemanFogProxmox::Value.empty?(value.to_s) ||
+          Fog::Proxmox::DiskHelper.disk?(key.to_s) || Fog::Proxmox::NicHelper.nic?(key.to_s)
       end
-      vm_attrs
     end
   end
 end

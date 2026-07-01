@@ -131,6 +131,7 @@ module ProxmoxVMAttrsHelper
       ostemplate_storage: vms.ostemplate_storage,
       ostemplate_file: vms.ostemplate_file,
       start_after_create: vms.start_after_create,
+      full_clone: vms.full_clone,
       templated: vms.templated,
     }
     vms_keys = [:cpu_type, :nameserver, :searchdomain, :hostname]

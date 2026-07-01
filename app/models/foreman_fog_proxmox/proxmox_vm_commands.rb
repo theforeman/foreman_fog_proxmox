@@ -39,7 +39,9 @@ module ForemanFogProxmox
       image_id = args[:image_id]
       remove_volume_keys(args)
       if image_id
-        vm = clone_from_image(image_id, vmid)
+        is_full_clone = full_clone?(args)
+        vm = clone_from_image(image_id, vmid, full_clone: is_full_clone)
+        vm.full_clone = is_full_clone ? '1' : '0'
         vm.update(compute_clone_attributes(args, vm.container?, type))
         update_pool(vm, args[:pool]) if args[:pool]
       else
@@ -51,6 +53,10 @@ module ForemanFogProxmox
       logger.warn("failed to create vm: #{e}")
       destroy_vm id.to_s + '_' + vm.vmid.to_s if vm
       raise e
+    end
+
+    def full_clone?(args)
+      args[:full_clone].blank? ? false : Foreman::Cast.to_bool(args[:full_clone])
     end
 
     def assign_vmid(vmid, node, log: true)
@@ -71,7 +77,8 @@ module ForemanFogProxmox
         options = { :hostname => args[:name] }
         parsed_args.merge(options)
       end
-      parsed_args.reject { |k| k == 'pool' }
+      excluded_keys = ['pool', 'full_clone']
+      parsed_args.reject { |k| excluded_keys.include?(k) }
     end
 
     def destroy_vm(uuid)
@@ -94,7 +101,7 @@ module ForemanFogProxmox
 
     def compute_config_attributes(parsed_attr)
       excluded_keys = [:vmid, :templated, :ostemplate, :ostemplate_file, :ostemplate_storage, :volumes_attributes,
-                       :pool]
+                       :pool, :full_clone]
       config_attributes = parsed_attr.reject { |key, _value| excluded_keys.include? key.to_sym }
       ForemanFogProxmox::HashCollection.remove_empty_values(config_attributes)
       config_attributes = config_attributes.reject { |key, _value| Fog::Proxmox::DiskHelper.disk?(key) }

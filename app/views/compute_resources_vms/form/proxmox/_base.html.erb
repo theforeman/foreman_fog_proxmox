@@ -38,6 +38,15 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= webpacked_plugins_js_for :foreman_fog_proxmox %>
 <% end %>
 
+<% unless new_vm
+     stored_fc = host&.compute_attributes && (host.compute_attributes['full_clone'] || host.compute_attributes[:full_clone])
+     if stored_fc.nil? && host&.compute_profile_id && host&.compute_resource
+       profile_attrs = host.compute_resource.compute_profile_attributes_for(host.compute_profile_id) rescue nil
+       stored_fc = profile_attrs && (profile_attrs['full_clone'] || profile_attrs[:full_clone]) if profile_attrs
+     end
+     f.object.full_clone = stored_fc unless stored_fc.nil?
+   end %>
+
 <%
   vm_attrs = object_to_attributes_hash(f.object, from_profile, checked)
 

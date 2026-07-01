@@ -18,19 +18,35 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% user_token = f.object.auth_method == 'user_token' %>
 <% access_ticket = f.object.auth_method == 'access_ticket' %>
 <% ssl_verify_peer = f.object.ssl_verify_peer %>
+<% enable_ssh = f.object.enable_ssh %>
+<% show_ssh_fields = f.object.new_record? || enable_ssh %>
+<% ssh_public_key = f.object.key_pair.try(:public) if f.object.persisted? %>
 <%= select_f f, :auth_method, proxmox_auth_methods_map, :id, :name, { }, :label_help => _("Click Test connection button before changing it"), :label => _('Authentication method'), :label_size => "col-md-2", :required => true, :onchange => 'tfm.computeResource.proxmox.authMethodSelected();' %>
-<%= field_set_tag _("Common fields"), :id => "compute_ressource_common_field_set" do %>
+<%= field_set_tag _("Common fields"), :id => "compute_resource_common_field_set" do %>
   <%= text_f f, :url, :help_block => _("e.g. https://127.0.0.1:8006/api2/json") %>
   <%= text_f f, :user , :help_block => _("e.g. root@pam") %>
 <% end %>
-<%= field_set_tag _("User token fields"), :id => "compute_ressource_user_token_field_set", :class => ('hide' unless user_token), :disabled => !user_token do %>
+<% if show_ssh_fields %>
+  <%= field_set_tag _("SSH fields"), :id => "compute_resource_ssh_field_set" do %>
+    <% if f.object.new_record? %>
+      <%= checkbox_f f, :enable_ssh, :label => _("Enable SSH"), :label_help => _("Used by Foreman for SSH operations on the Proxmox host during image-based deployment."), :checked_value => '1', :onchange => 'tfm.computeResource.proxmox.sshSelected();' %>
+    <% end %>
+    <%= text_f f, :ssh_username, :label => _('SSH username'), :readonly => f.object.persisted?, :wrapper_class => "form-group proxmox-ssh-field #{'hide' unless enable_ssh}" %>
+    <% if enable_ssh && ssh_public_key.present? %>
+      <%= field(f, :ssh_public_key, :label => _('SSH public key'), :label_help => _('Copy this public key to ~/.ssh/authorized_keys of the configured SSH user on the Proxmox server to enable SSH key authentication.'), :size => "col-md-8", :wrapper_class => "form-group proxmox-ssh-field") do %>
+        <%= content_tag(:textarea, ssh_public_key, :class => "form-control", :rows => 4, :readonly => true) %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>
+<%= field_set_tag _("User token fields"), :id => "compute_resource_user_token_field_set", :class => ('hide' unless user_token), :disabled => !user_token do %>
   <%= text_f f, :token_id, :label => _('User token id'), :required => user_token %>
   <%= text_f f, :token, :label => _('User token value'), :required => user_token, :label_help => _("Click Test connection button to check token") %>
 <% end %>
-<%= field_set_tag _("Access ticket fields"), :id => "compute_ressource_access_ticket_field_set", :class => ('hide' unless access_ticket), :disabled => !access_ticket do %>
+<%= field_set_tag _("Access ticket fields"), :id => "compute_resource_access_ticket_field_set", :class => ('hide' unless access_ticket), :disabled => !access_ticket do %>
   <%= password_f f, :password, :keep_value => true, :unset => unset_password?, :required => access_ticket %>
 <% end %>
-<%= field_set_tag _("SSL fields"), :id => "compute_ressource_ssl_field_set" do %>  
+<%= field_set_tag _("SSL fields"), :id => "compute_resource_ssl_field_set" do %>  
   <%= checkbox_f f, :ssl_verify_peer, :label => _("SSL verify peer"), :label_help => _("Click Test connection button before changing it"), :checked_value => '1', :onchange => 'tfm.computeResource.proxmox.sslVerifyPeerSelected();' %>
   <%= textarea_f f, :ssl_certs, :label => _("X509 Certification Authorities"), :size => "col-md-4",
     :wrapper_class => "form-group #{'hide' unless ssl_verify_peer}",

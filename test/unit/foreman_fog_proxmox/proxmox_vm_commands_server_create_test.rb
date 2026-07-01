@@ -115,11 +115,25 @@ module ForemanFogProxmox
         cr = ForemanFogProxmox::Proxmox.new
         first_storage = mock('first_storage')
         second_storage = mock('second_storage')
+        first_node_storage = mock('first_node_storage')
+        second_node_storage = mock('second_node_storage')
         volume = mock('volume')
+        client = mock('client')
+        nodes = mock('nodes')
+        node = mock('node')
+        node_storages = mock('node_storages')
 
-        first_storage.stubs(:volumes).returns([])
+        first_storage.stubs(:storage).returns('first')
+        second_storage.stubs(:storage).returns('local')
+        first_node_storage.stubs(:volumes).returns([])
         volume.stubs(:volid).returns('local:iso/name_cloudinit.iso')
-        second_storage.stubs(:volumes).returns([volume])
+        second_node_storage.stubs(:volumes).returns([volume])
+        node_storages.stubs(:get).with('first').returns(first_node_storage)
+        node_storages.stubs(:get).with('local').returns(second_node_storage)
+        node.stubs(:storages).returns(node_storages)
+        nodes.stubs(:get).with('proxmox').returns(node)
+        client.stubs(:nodes).returns(nodes)
+        cr.stubs(:client).returns(client)
         cr.stubs(:storages).with('proxmox', 'iso').returns([first_storage, second_storage])
 
         assert_equal({ ide2: 'local:iso/name_cloudinit.iso,media=cdrom' },
@@ -129,10 +143,21 @@ module ForemanFogProxmox
       it 'raises Foreman::Exception when generated cloud-init ISO is not on any ISO storage' do
         cr = ForemanFogProxmox::Proxmox.new
         storage = mock('storage')
+        node_storage = mock('node_storage')
         other_volume = mock('other_volume')
+        client = mock('client')
+        nodes = mock('nodes')
+        node = mock('node')
+        node_storages = mock('node_storages')
 
         other_volume.stubs(:volid).returns('local:iso/other.iso')
-        storage.stubs(:volumes).returns([other_volume])
+        storage.stubs(:storage).returns('local')
+        node_storage.stubs(:volumes).returns([other_volume])
+        node_storages.stubs(:get).with('local').returns(node_storage)
+        node.stubs(:storages).returns(node_storages)
+        nodes.stubs(:get).with('proxmox').returns(node)
+        client.stubs(:nodes).returns(nodes)
+        cr.stubs(:client).returns(client)
         cr.stubs(:storages).with('proxmox', 'iso').returns([storage])
 
         err = assert_raises Foreman::Exception do

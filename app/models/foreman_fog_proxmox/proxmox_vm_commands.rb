@@ -110,10 +110,9 @@ module ForemanFogProxmox
       elsif vm.node_id != node_id
         vm.migrate(node_id)
       else
-        parsed_attr = parse_typed_vm(
-          ForemanFogProxmox::HashCollection.new_hash_reject_keys(new_attributes,
-            ['volumes_attributes']).merge(type: vm.type), vm.type
-        )
+        processed_attributes = process_firmware_attributes(new_attributes, vm.type)
+        update_attributes = parse_vm_update_attributes(processed_attributes, vm.type)
+        parsed_attr = parse_typed_vm(update_attributes, vm.type)
         config_attributes = compute_config_attributes(parsed_attr)
 
         volumes_attributes = new_attributes['volumes_attributes']
@@ -123,11 +122,7 @@ module ForemanFogProxmox
           save_volume(vm, volume_attributes)
         end
 
-        efidisk_attributes = new_attributes['efidisk_attributes']
-        if vm.config.efidisk.present? && efidisk_attributes.empty?
-          logger.debug("Removing efidisk from VM #{vm}")
-          delete_efidisk(vm)
-        end
+        process_efidisk_removal(vm, processed_attributes)
 
         vm.update(config_attributes[:config_attributes])
         poolid = new_attributes['pool'] if new_attributes.key?('pool')

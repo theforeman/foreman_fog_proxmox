@@ -110,6 +110,36 @@ module ForemanFogProxmox
         @cr.stubs(:new_typed_vm).with(attr, 'lxc').returns(vm)
         assert_equal vm, @cr.new_vm(attr)
       end
+
+      it 'processes secure boot firmware attributes before building profile VM' do
+        attr = {
+          'vmid' => '100',
+          'node_id' => 'proxmox',
+          'type' => 'qemu',
+          'config_attributes' => {
+            'bios' => 'uefi_secure_boot',
+          },
+          'volumes_attributes' => {
+            '0' => { 'storage' => 'local-lvm' },
+          },
+        }.with_indifferent_access
+        servers = mock('servers')
+        vm = mock('vm')
+        mock_node_servers(@cr, servers)
+        servers.stubs(:id_valid?).with(100).returns(true)
+        @cr.expects(:parse_typed_vm).with do |options, type|
+          assert_equal 'qemu', type
+          assert_equal 'ovmf', options['config_attributes']['bios']
+          assert_equal 'local-lvm:0', options['efidisk_attributes']['volid']
+        end.returns('bios' => 'ovmf', 'efidisk0' => 'local-lvm:0,efitype=4m,pre-enrolled-keys=1')
+        servers.expects(:new).with({
+          bios: 'ovmf',
+          efidisk0: 'local-lvm:0,efitype=4m,pre-enrolled-keys=1',
+          is_secure_boot: '1',
+        }).returns(vm)
+
+        assert_equal vm, @cr.new_typed_vm(attr, 'qemu')
+      end
     end
 
     describe 'assign_available_vmid' do

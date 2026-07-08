@@ -44,6 +44,15 @@ module FogExtensions
       def cloud_init?
         disks.any?(&:cloud_init?)
       end
+
+      def secure_boot?
+        attrs = attributes.with_indifferent_access
+        secure_boot = attrs[:is_secure_boot]
+        return Foreman::Cast.to_bool(secure_boot) ? '1' : '0' if attrs.key?(:is_secure_boot)
+
+        secure_boot = bios == 'ovmf' && Foreman::Cast.to_bool(efidisk&.pre_enrolled_keys)
+        Foreman::Cast.to_bool(secure_boot) ? '1' : '0'
+      end
     end
   end
 end

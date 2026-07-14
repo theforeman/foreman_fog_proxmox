@@ -121,7 +121,7 @@ module ForemanFogProxmox
 
     def extract_storages(compute_resource)
       Array(compute_resource.storages).map do |s|
-        h = s.respond_to?(:as_json) ? s.as_json : s
+        h = s.respond_to?(:to_h) ? s.to_h : s
         {
           storage: (h[:storage] || h['storage']),
           node_id: (h[:node_id] || h['node_id']),
@@ -135,7 +135,7 @@ module ForemanFogProxmox
 
     def extract_bridges(compute_resource)
       Array(compute_resource.bridges).map do |b|
-        h = b.respond_to?(:as_json) ? b.as_json : b
+        h = b.respond_to?(:to_h) ? b.to_h : b
         {
           node_id: (h[:node_id] || h['node_id']),
           iface: (h[:iface] || h['iface']),

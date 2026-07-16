@@ -1,3 +1,4 @@
+/* eslint-disable no-magic-numbers */
 import { sprintf, translate as __ } from 'foremanReact/common/I18n';
 
 const humanSize = size => {

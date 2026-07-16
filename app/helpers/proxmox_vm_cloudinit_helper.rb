@@ -112,8 +112,10 @@ module ProxmoxVMCloudinitHelper
 
   def attach_cloudinit_iso(node, iso)
     volume = nil
-    storages(node, 'iso').each do |storage|
-      volume = storage.volumes.detect { |v| v.volid.include? File.basename(iso) }
+    node_obj = client.nodes.get(node)
+    node_obj&.storages&.list_by_content_type('iso')&.each do |storage|
+      volumes = storage.volumes
+      volume = Array(volumes).detect { |v| v.volid.include? File.basename(iso) }
       break if volume
     end
 

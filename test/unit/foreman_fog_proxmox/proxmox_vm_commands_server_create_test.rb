@@ -120,7 +120,15 @@ module ForemanFogProxmox
         first_storage.stubs(:volumes).returns([])
         volume.stubs(:volid).returns('local:iso/name_cloudinit.iso')
         second_storage.stubs(:volumes).returns([volume])
-        cr.stubs(:storages).with('proxmox', 'iso').returns([first_storage, second_storage])
+        storages = mock('storages')
+        storages.stubs(:list_by_content_type).with('iso').returns([first_storage, second_storage])
+        node = mock('node')
+        node.stubs(:storages).returns(storages)
+        nodes = mock('nodes')
+        nodes.stubs(:get).with('proxmox').returns(node)
+        client = mock('client')
+        client.stubs(:nodes).returns(nodes)
+        cr.stubs(:client).returns(client)
 
         assert_equal({ ide2: 'local:iso/name_cloudinit.iso,media=cdrom' },
           cr.attach_cloudinit_iso('proxmox', '/var/lib/vz/template/iso/name_cloudinit.iso'))
@@ -133,7 +141,15 @@ module ForemanFogProxmox
 
         other_volume.stubs(:volid).returns('local:iso/other.iso')
         storage.stubs(:volumes).returns([other_volume])
-        cr.stubs(:storages).with('proxmox', 'iso').returns([storage])
+        storages = mock('storages')
+        storages.stubs(:list_by_content_type).with('iso').returns([storage])
+        node = mock('node')
+        node.stubs(:storages).returns(storages)
+        nodes = mock('nodes')
+        nodes.stubs(:get).with('proxmox').returns(node)
+        client = mock('client')
+        client.stubs(:nodes).returns(nodes)
+        cr.stubs(:client).returns(client)
 
         err = assert_raises Foreman::Exception do
           cr.attach_cloudinit_iso('proxmox', '/var/lib/vz/template/iso/name_cloudinit.iso')

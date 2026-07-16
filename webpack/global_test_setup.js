@@ -8,4 +8,5 @@ global.console.error = (error, stack) => {
 };
 
 // Increase jest timeout as some tests using multiple http mocks can time out on CI systems.
+/* eslint-disable-next-line no-magic-numbers */
 jest.setTimeout(10000);

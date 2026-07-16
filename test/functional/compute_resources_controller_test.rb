@@ -106,5 +106,41 @@ module ForemanFogProxmox
       assert_instance_of Array, json_response['storages']
       assert_instance_of Array, json_response['bridges']
     end
+    test 'should serialize OpenStruct-wrapped storages in metadata' do
+      # Simulates structs_from_cache output which wraps items in OpenStruct.
+      # OpenStruct#as_json returns { "table" => {...} } on Ruby 3.x, so using
+      # as_json here would produce null fields — the bug fixed by this PR.
+      cached_storage = OpenStruct.new(
+        storage: 'local-lvm',
+        node_id: 'proxmox',
+        content: 'images',
+        avail: 100_000_000_000,
+        used: 40_000_000_000,
+        total: 140_000_000_000
+      )
+      @compute_resource.stubs(:storages).returns([cached_storage])
+
+      get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
+      assert_response :success
+      json_response = JSON.parse(@response.body)
+      storage = json_response['storages'].first
+      assert_equal 'local-lvm', storage['storage']
+      assert_equal 'proxmox', storage['node_id']
+      assert_equal 'images', storage['content']
+      assert_equal 100_000_000_000, storage['avail']
+      assert_equal 40_000_000_000, storage['used']
+      assert_equal 140_000_000_000, storage['total']
+    end
+    test 'should serialize OpenStruct-wrapped bridges in metadata' do
+      cached_bridge = OpenStruct.new(node_id: 'proxmox', iface: 'vmbr0')
+      @compute_resource.stubs(:bridges).returns([cached_bridge])
+
+      get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
+      assert_response :success
+      json_response = JSON.parse(@response.body)
+      bridge = json_response['bridges'].first
+      assert_equal 'proxmox', bridge['node_id']
+      assert_equal 'vmbr0', bridge['iface']
+    end
   end
 end

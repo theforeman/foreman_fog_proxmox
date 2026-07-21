@@ -157,6 +157,7 @@ module ForemanFogProxmox
         config_attributes = {
           memory: '1024',
           templated: '0',
+          unprivileged: '1',
         }
       end
       config_attributes

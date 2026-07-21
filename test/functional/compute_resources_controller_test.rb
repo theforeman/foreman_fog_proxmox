@@ -106,5 +106,52 @@ module ForemanFogProxmox
       assert_instance_of Array, json_response['storages']
       assert_instance_of Array, json_response['bridges']
     end
+
+    test 'should get SSH configuration without exposing private key' do
+      authorized_resources = mock('authorized_resources')
+      ComputeResource.expects(:authorized).with(:view_compute_resources).returns(authorized_resources)
+      authorized_resources.expects(:find).with(@compute_resource.id.to_s).returns(@compute_resource)
+      @compute_resource.stubs(:enable_ssh).returns(true)
+      @compute_resource.stubs(:ssh_username).returns('foreman')
+      @compute_resource.stubs(:key_pair).returns(stub(public: 'ssh-rsa PUBLIC KEY', secret: 'PRIVATE KEY'))
+
+      get :ssh_configuration,
+        params: { :compute_resource_id => @compute_resource.id },
+        session: set_session_user
+
+      assert_response :success
+      assert_equal(
+        {
+          'enabled' => true,
+          'username' => 'foreman',
+          'public_key' => 'ssh-rsa PUBLIC KEY',
+        },
+        JSON.parse(@response.body)
+      )
+      assert_not_includes @response.body, 'PRIVATE KEY'
+    end
+
+    test 'should return empty SSH details when SSH is disabled' do
+      authorized_resources = mock('authorized_resources')
+      ComputeResource.expects(:authorized).with(:view_compute_resources).returns(authorized_resources)
+      authorized_resources.expects(:find).with(@compute_resource.id.to_s).returns(@compute_resource)
+      @compute_resource.stubs(:enable_ssh).returns(false)
+      @compute_resource.stubs(:ssh_username).returns(nil)
+      @compute_resource.stubs(:key_pair).returns(nil)
+
+      get :ssh_configuration,
+        params: { :compute_resource_id => @compute_resource.id },
+        session: set_session_user
+
+      assert_response :success
+      assert_equal(
+        {
+          'enabled' => false,
+          'username' => nil,
+          'public_key' => nil,
+        },
+        JSON.parse(@response.body)
+      )
+    end
   end
 end

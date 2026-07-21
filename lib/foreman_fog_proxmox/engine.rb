@@ -53,7 +53,8 @@ module ForemanFogProxmox
                               foreman_fog_proxmox/compute_resources/iso_storages_by_id_and_node
                               foreman_fog_proxmox/compute_resources/bridges_by_id_and_node
                               foreman_fog_proxmox/compute_resources/volumes_by_node_and_storage
-                              foreman_fog_proxmox/compute_resources/metadata])
+                              foreman_fog_proxmox/compute_resources/metadata
+                              foreman_fog_proxmox/compute_resources/ssh_configuration])
           p.actions.uniq!
 
           security_block :foreman_fog_proxmox do

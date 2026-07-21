@@ -1,8 +1,12 @@
 import { sprintf, translate as __ } from 'foremanReact/common/I18n';
 
+// Unit selection uses a 1024 step (binary); the value is scaled by 1000 (decimal).
+const BYTE_UNIT_STEP = 1024;
+const BYTE_UNIT_DIVISOR = 1000;
+
 const humanSize = size => {
-  const i = Math.floor(Math.log(size) / Math.log(1024));
-  return `${(size / 1000 ** i).toFixed(2) * 1} ${
+  const i = Math.floor(Math.log(size) / Math.log(BYTE_UNIT_STEP));
+  return `${(size / BYTE_UNIT_DIVISOR ** i).toFixed(2) * 1} ${
     ['B', 'kB', 'MB', 'GB', 'TB'][i]
   }`;
 };

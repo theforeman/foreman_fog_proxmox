@@ -50,3 +50,8 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= select_f f, :ostype, proxmox_ostypes_map, :id, :name, { }, :label => _('OS type'), :label_size => "col-md-2" %>
   </div>
 <% end %>
+<%= field_set_tag _("SSH"), :id => "container_config_ssh", :class => 'accordion-section', :disabled => !container do %>
+  <div class="accordion-content">
+  <%= textarea_f f, :sshkeys, :label => _("SSH public keys"), :size => "col-md-4" %>
+  </div>
+<% end %>

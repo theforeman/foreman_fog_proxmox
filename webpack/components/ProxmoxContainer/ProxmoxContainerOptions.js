@@ -122,9 +122,15 @@ const ProxmoxContainerOptions = ({
       <InputField
         name={opts?.password?.name}
         label={__('Root Password')}
-        required
         type="password"
         value={opts?.password?.value}
+        onChange={handleChange}
+      />
+      <InputField
+        name={opts?.sshkeys?.name}
+        label={__('SSH public keys')}
+        type="textarea"
+        value={opts?.sshkeys?.value}
         onChange={handleChange}
       />
       <InputField

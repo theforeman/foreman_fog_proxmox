@@ -46,7 +46,7 @@ module ForemanFogProxmox
         vm.update(compute_clone_attributes(cloudinit_args, vm.container?, type, image: image))
         update_pool(vm, args[:pool]) if args[:pool]
       else
-        logger.warn("create vm: args=#{args}")
+        log_vm_creation(type, args, vmid)
         vm = node.send(vm_collection(type)).create(parse_typed_vm(args, type))
         if type == 'qemu' && vm
           boot_order = update_boot_order(vm, exclude_cdrom: true, include_network: true)
@@ -58,6 +58,12 @@ module ForemanFogProxmox
       logger.warn("failed to create vm: #{e}")
       destroy_vm id.to_s + '_' + vm.vmid.to_s if vm
       raise e
+    end
+
+    # Create attributes can contain passwords, cloud-init credentials, and SSH
+    # keys. Keep their logging outside create_vm and expose identifiers only.
+    def log_vm_creation(type, args, vmid)
+      logger.debug("create vm: type=#{type} node=#{args[:node_id]} vmid=#{vmid}")
     end
 
     def assign_vmid(vmid, node, log: true)
@@ -78,7 +84,11 @@ module ForemanFogProxmox
         options = { :hostname => args[:name] }
         parsed_args.merge(options)
       end
-      parsed_args.reject { |k| k == 'pool' }
+      # The root 'password' and 'ssh-public-keys' (raw 'sshkeys') are create-only
+      # container params: PVE rejects them on PUT .../lxc/{vmid}/config, so they must be
+      # kept out of the clone/update body (mirrors how 'pool' is excluded here).
+      excluded_keys = ['pool', 'password', 'sshkeys', 'ssh-public-keys']
+      parsed_args.reject { |k| excluded_keys.include?(k.to_s) }
     end
 
     def destroy_vm(uuid)
@@ -100,8 +110,10 @@ module ForemanFogProxmox
     end
 
     def compute_config_attributes(parsed_attr)
+      # The root 'password' and 'ssh-public-keys' (raw 'sshkeys') are create-only, like
+      # 'ostemplate': PVE rejects them on PUT .../config, so exclude them from updates.
       excluded_keys = [:vmid, :templated, :ostemplate, :ostemplate_file, :ostemplate_storage, :volumes_attributes,
-                       :pool]
+                       :pool, :password, :sshkeys, :'ssh-public-keys']
       config_attributes = parsed_attr.reject { |key, _value| excluded_keys.include? key.to_sym }
       ForemanFogProxmox::HashCollection.remove_empty_values(config_attributes)
       config_attributes = config_attributes.reject { |key, _value| Fog::Proxmox::DiskHelper.disk?(key) }

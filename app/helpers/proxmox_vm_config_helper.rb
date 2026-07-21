@@ -119,7 +119,20 @@ module ProxmoxVMConfigHelper
     parsed_vm = args.reject { |key, value| args_a(type).include?(key) || ForemanFogProxmox::Value.empty?(value) }
     parsed_vm = parsed_vm.merge(config_options(config, args, type))
     parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory)
+    parsed_vm = parse_container_sshkeys(parsed_vm) if type == 'lxc'
     logger.debug("parsed_typed_config(#{type}): parsed_vm=#{parsed_vm}")
+    parsed_vm
+  end
+
+  # LXC does not use cloud-init: it takes SSH public keys via the pct
+  # 'ssh-public-keys' config key (note the hyphens). The form and config use
+  # the 'sshkeys' key (mirroring qemu), so rename it to the hyphenated pct key
+  # before it is passed to fog create. This key is write-only/create-only.
+  def parse_container_sshkeys(parsed_vm)
+    return parsed_vm unless parsed_vm.key?('sshkeys')
+
+    sshkeys = parsed_vm.delete('sshkeys')
+    parsed_vm.store('ssh-public-keys', sshkeys) unless ForemanFogProxmox::Value.empty?(sshkeys)
     parsed_vm
   end
 

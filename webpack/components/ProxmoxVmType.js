@@ -250,6 +250,9 @@ const ProxmoxVmType = ({
           computeResourceId={computeResourceId}
           newVm={newVm}
           fromProfile={fromProfile}
+          imageBased={
+            provisionMethodState === 'image' || Boolean(general?.imageId?.value)
+          }
         />
       ),
       hardware: <ProxmoxContainerHardware hardware={vmAttrs} />,

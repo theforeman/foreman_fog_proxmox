@@ -14,6 +14,7 @@ const ProxmoxContainerOptions = ({
   computeResourceId,
   newVm,
   fromProfile,
+  imageBased,
 }) => {
   const [opts, setOpts] = useState(options);
   const storagesMap = createStoragesMap(storages, 'vztmpl', nodeId);
@@ -136,6 +137,22 @@ const ProxmoxContainerOptions = ({
         onChange={handleChange}
       />
       <InputField
+        name={opts?.unprivileged?.name}
+        label={__('Unprivileged container')}
+        info={
+          imageBased
+            ? __(
+                'Image-based deployments inherit this setting from the selected template.'
+              )
+            : undefined
+        }
+        type="checkbox"
+        value={opts?.unprivileged?.value}
+        checked={String(opts?.unprivileged?.value) === '1'}
+        disabled={isEditMode || imageBased}
+        onChange={handleChange}
+      />
+      <InputField
         name={opts?.ostype?.name}
         label={__('OS Type')}
         type="select"
@@ -173,6 +190,7 @@ ProxmoxContainerOptions.propTypes = {
   computeResourceId: PropTypes.number,
   newVm: PropTypes.bool,
   fromProfile: PropTypes.bool,
+  imageBased: PropTypes.bool,
 };
 
 ProxmoxContainerOptions.defaultProps = {
@@ -182,6 +200,7 @@ ProxmoxContainerOptions.defaultProps = {
   computeResourceId: null,
   newVm: false,
   fromProfile: false,
+  imageBased: false,
 };
 
 export default ProxmoxContainerOptions;

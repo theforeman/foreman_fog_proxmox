@@ -78,7 +78,9 @@ module ForemanFogProxmox
         options = { :hostname => args[:name] }
         parsed_args.merge(options)
       end
-      parsed_args.reject { |k| k == 'pool' }
+      # LXC clones inherit the privilege mode from the source template.
+      excluded_keys = [:pool, :unprivileged]
+      parsed_args.reject { |key, _value| excluded_keys.include?(key.to_sym) }
     end
 
     def destroy_vm(uuid)
@@ -101,7 +103,7 @@ module ForemanFogProxmox
 
     def compute_config_attributes(parsed_attr)
       excluded_keys = [:vmid, :templated, :ostemplate, :ostemplate_file, :ostemplate_storage, :volumes_attributes,
-                       :pool]
+                       :pool, :unprivileged]
       config_attributes = parsed_attr.reject { |key, _value| excluded_keys.include? key.to_sym }
       ForemanFogProxmox::HashCollection.remove_empty_values(config_attributes)
       config_attributes = config_attributes.reject { |key, _value| Fog::Proxmox::DiskHelper.disk?(key) }

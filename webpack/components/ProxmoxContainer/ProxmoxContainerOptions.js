@@ -162,6 +162,33 @@ const ProxmoxContainerOptions = ({
         value={opts?.searchdomain?.value}
         onChange={handleChange}
       />
+      <InputField
+        name={opts?.timezone?.name}
+        label={__('Time zone')}
+        info={__(
+          'Container time zone, e.g. Europe/Prague or "host" to use the host setting.'
+        )}
+        value={opts?.timezone?.value}
+        onChange={handleChange}
+      />
+      <InputField
+        name={opts?.tags?.name}
+        label={__('Tags')}
+        info={__('Semicolon-separated list of tags, e.g. web;prod.')}
+        value={opts?.tags?.value}
+        onChange={handleChange}
+      />
+      <InputField
+        name={opts?.protection?.name}
+        label={__('Protection')}
+        info={__(
+          'Prevent the container from being removed or its disks deleted.'
+        )}
+        type="checkbox"
+        value={opts?.protection?.value}
+        checked={String(opts?.protection?.value) === '1'}
+        onChange={handleChange}
+      />
     </div>
   );
 };

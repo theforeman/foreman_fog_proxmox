@@ -115,14 +115,28 @@ module ProxmoxVMConfigHelper
     logger.debug("parsed_typed_config(#{type}): config_cpu=#{config_cpu}")
     cpu = parse_typed_cpu(config_cpu, type)
     memory = parse_typed_memory(config.select { |key, _value| config_typed_keys(type)[:memory].include? key }, type)
+    startup = parse_typed_startup(config)
     parsed_config = config.reject do |key, value|
-      config_a(type).include?(key) || ForemanFogProxmox::Value.empty?(value)
+      config_a(type).include?(key) || startup_keys.include?(key) || ForemanFogProxmox::Value.empty?(value)
     end
     parsed_vm = args.reject { |key, value| args_a(type).include?(key) || ForemanFogProxmox::Value.empty?(value) }
     parsed_vm = parsed_vm.merge(config_options(config, args, type))
-    parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory)
+    parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory).merge(startup)
     logger.debug("parsed_typed_config(#{type}): parsed_vm=#{parsed_vm}")
     parsed_vm
+  end
+
+  def startup_keys
+    ['startup_order', 'startup_up', 'startup_down']
+  end
+
+  # Serialise the order/up/down form fields into a single Proxmox 'startup'
+  # config value of the form 'order=1,up=30,down=30' (empty sub-parts omitted).
+  def parse_typed_startup(config)
+    parts = { order: config['startup_order'], up: config['startup_up'], down: config['startup_down'] }
+    startup = parts.reject { |_key, value| ForemanFogProxmox::Value.empty?(value) }
+                   .map { |key, value| "#{key}=#{value}" }.join(',')
+    ForemanFogProxmox::Value.empty?(startup) ? {} : { startup: startup }
   end
 
   def parse_typed_memory(args, type)

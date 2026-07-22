@@ -136,6 +136,30 @@ const ProxmoxContainerOptions = ({
         onChange={handleChange}
       />
       <InputField
+        name={opts?.startupOrder?.name}
+        label={__('Startup order')}
+        info={__('Guest order used during cluster startup and shutdown.')}
+        type="number"
+        value={opts?.startupOrder?.value}
+        onChange={handleChange}
+      />
+      <InputField
+        name={opts?.startupUp?.name}
+        label={__('Startup delay')}
+        info={__('Seconds to wait after starting this guest.')}
+        type="number"
+        value={opts?.startupUp?.value}
+        onChange={handleChange}
+      />
+      <InputField
+        name={opts?.startupDown?.name}
+        label={__('Shutdown delay')}
+        info={__('Seconds to wait after stopping this guest.')}
+        type="number"
+        value={opts?.startupDown?.value}
+        onChange={handleChange}
+      />
+      <InputField
         name={opts?.ostype?.name}
         label={__('OS Type')}
         type="select"

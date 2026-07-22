@@ -43,6 +43,9 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <%= text_f f, :hostname, :label => _('Hostname'), :label_size => "col-md-2", :disabled => true %>
   <%= text_f f, :nameserver, :label => _('DNS server'), :label_size => "col-md-2" %>
   <%= text_f f, :searchdomain, :label => _('Search domain'), :label_size => "col-md-2" %>
+  <%= text_f f, :timezone, :label => _('Time zone'), :label_size => "col-md-2", :help_inline => _('e.g. Europe/Prague or host') %>
+  <%= text_f f, :tags, :label => _('Tags'), :label_size => "col-md-2", :help_inline => _('Semicolon-separated, e.g. web;prod') %>
+  <%= checkbox_f f, :protection, :label => _('Protection') %>
   </div>
 <% end %>
 <%= field_set_tag _("Operating System"), :id => "container_config_os", :class => 'accordion-section', :disabled => !container do %>

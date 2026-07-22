@@ -61,6 +61,8 @@ The container form slightly differs from the server one:
 
 * OS template is required
 * advanced options are slightly different
+* tags use Proxmox's semicolon-separated format; time zone and deletion
+  protection can also be configured
 
 Container VM Proxmox config tab:
 

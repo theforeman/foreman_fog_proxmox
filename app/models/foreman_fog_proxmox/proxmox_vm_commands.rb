@@ -126,6 +126,7 @@ module ForemanFogProxmox
 
         process_efidisk_removal(vm, processed_attributes)
 
+        reconcile_container_features(vm, config_attributes[:config_attributes])
         vm.update(config_attributes[:config_attributes])
         poolid = new_attributes['pool'] if new_attributes.key?('pool')
         update_pool(vm, poolid) if poolid

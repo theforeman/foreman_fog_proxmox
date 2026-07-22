@@ -24,4 +24,11 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     <%= text_f f, :mp, :label => _('Path'), :label_size => "col-md-2", :required => true, :help_inline => _("e.g. /path/to/") %>
     <%= text_f f, :device, :label => _('Device'), :label_size => "col-md-2", :class => ('hide' if f.object.rootfs?), :disabled => (!new_volume || f.object.rootfs?), :'data-soft-max' => 10 %>
     <%= text_f f, :size, :class => "input-mini", :label => _("Size (GB)"), :label_size => "col-md-2" %>
+    <%= text_f f, :volid, :label => _('Host path (bind mount)'), :label_size => "col-md-2", :help_inline => _('e.g. /host/dir; leave storage empty for a bind mount') %>
+    <%= checkbox_f f, :ro, :label => _('Read-only') %>
+    <%= checkbox_f f, :acl, :label => _('ACL') %>
+    <%= checkbox_f f, :quota, :label => _('Quota') %>
+    <%= checkbox_f f, :replicate, :label => _('Replicate') %>
+    <%= checkbox_f f, :shared, :label => _('Shared') %>
+    <%= text_f f, :mountoptions, :label => _('Mount options'), :label_size => "col-md-2", :help_inline => _('Semicolon-separated, e.g. noatime;nodev') %>
 <% end %>

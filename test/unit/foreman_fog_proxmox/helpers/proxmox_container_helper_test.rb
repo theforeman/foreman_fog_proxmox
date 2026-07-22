@@ -161,6 +161,16 @@ module ForemanFogProxmox
         assert_equal expected_vm, vm
       end
 
+      test '#tags, protection and timezone pass through to the config' do
+        form = host_form.deep_merge(
+          'config_attributes' => { 'tags' => 'web;prod', 'protection' => '1', 'timezone' => 'Europe/Prague' }
+        )
+        vm = parse_typed_vm(form, type)
+        assert_equal 'web;prod', vm[:tags]
+        assert_equal '1', vm[:protection]
+        assert_equal 'Europe/Prague', vm[:timezone]
+      end
+
       test '#volume with rootfs 1Gb' do
         volumes = parse_typed_volumes(host_form['volumes_attributes'], type)
         assert_not volumes.empty?

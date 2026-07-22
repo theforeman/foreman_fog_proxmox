@@ -106,6 +106,30 @@ const ProxmoxContainerStorage = ({
           name: `${paramScope}[volumes_attributes][${nextId}][backup]`,
           value: '1',
         },
+        ro: {
+          name: `${paramScope}[volumes_attributes][${nextId}][ro]`,
+          value: '0',
+        },
+        acl: {
+          name: `${paramScope}[volumes_attributes][${nextId}][acl]`,
+          value: '0',
+        },
+        quota: {
+          name: `${paramScope}[volumes_attributes][${nextId}][quota]`,
+          value: '0',
+        },
+        replicate: {
+          name: `${paramScope}[volumes_attributes][${nextId}][replicate]`,
+          value: '1',
+        },
+        shared: {
+          name: `${paramScope}[volumes_attributes][${nextId}][shared]`,
+          value: '0',
+        },
+        mountoptions: {
+          name: `${paramScope}[volumes_attributes][${nextId}][mountoptions]`,
+          value: '',
+        },
         volid: {
           name: `${paramScope}[volumes_attributes][${nextId}][volid]`,
           value: '',

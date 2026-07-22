@@ -25,6 +25,10 @@ require 'foreman_fog_proxmox/hash_collection'
 
 # Convert a foreman form server hash into a fog-proxmox server attributes hash
 module ProxmoxVMAttrsHelper
+  # Mount-point options that only round-trip on read once fog-proxmox declares
+  # them (see fog/fog-proxmox#137); surfaced conditionally via respond_to?.
+  MOUNT_POINT_FOG_OPTION_KEYS = %w[ro mountoptions acl quota].freeze
+
   def object_to_attributes_hash(vms, from_profile, start_checked)
     param_scope = from_profile ? "compute_attribute[vm_attrs]" : "host[compute_attributes]"
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
@@ -82,7 +86,8 @@ module ProxmoxVMAttrsHelper
         keys = ['id', 'volid', 'storage_type', 'storage', 'controller', 'device']
         type = 'cloud_init'
       elsif vol.mount_point?
-        keys = ['id', 'volid', 'storage_type', 'storage', 'device', 'mp', 'size', 'backup']
+        keys = ['id', 'volid', 'storage_type', 'storage', 'device', 'mp', 'size', 'backup', 'replicate', 'shared']
+        keys += MOUNT_POINT_FOG_OPTION_KEYS.select { |key| vol.respond_to?(key) }
         type = 'mount_point'
       end
       vol_attrs << { :name => type, :value => vol_keys(param_scope, keys, vol, id) }

@@ -22,6 +22,9 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
   <div class="accordion-content">
   <%= textarea_f f, :description, :label => _('Description'), :label_size => "col-md-2" %>
   <%= checkbox_f f, :onboot, :label => _('Start at boot') %>
+  <%= text_f f, :startup_order, :class => "input-mini", :label => _('Startup order'), :label_size => "col-md-2", :help_inline => _('Boot/shutdown ordering, e.g. order=1,up=30,down=30. Leave empty to ignore.') %>
+  <%= text_f f, :startup_up, :class => "input-mini", :label => _('Startup up delay'), :label_size => "col-md-2" %>
+  <%= text_f f, :startup_down, :class => "input-mini", :label => _('Startup down delay'), :label_size => "col-md-2" %>
   </div>
 <% end %>
 <%= field_set_tag _("CPU"), :id => "container_config_cpu", :class => 'accordion-section', :disabled => !container do %>

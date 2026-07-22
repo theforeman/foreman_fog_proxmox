@@ -133,6 +133,9 @@ module ProxmoxVMAttrsHelper
       start_after_create: vms.start_after_create,
       templated: vms.templated,
       is_secure_boot: vms.config.secure_boot?,
+      ha_managed: (vms.respond_to?(:ha) ? vms.ha&.dig('managed') : nil),
+      ha_group: (vms.respond_to?(:ha) ? vms.ha&.dig('group') : nil),
+      ha_state: (vms.respond_to?(:ha) ? vms.ha&.dig('state') : nil),
     }
     vms_keys = [:cpu_type, :nameserver, :searchdomain, :hostname, :is_secure_boot]
     extra_attrs = ActiveSupport::HashWithIndifferentAccess.new

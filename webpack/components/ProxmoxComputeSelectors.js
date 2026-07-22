@@ -24,6 +24,12 @@ const ProxmoxComputeSelectors = {
     { value: 'i386', label: '32 bits' },
   ],
 
+  proxmoxCmodesMap: [
+    { value: 'tty', label: 'tty' },
+    { value: 'console', label: 'console' },
+    { value: 'shell', label: 'shell' },
+  ],
+
   proxmoxOstypesMap: [
     { value: 'debian', label: 'Debian' },
     { value: 'ubuntu', label: 'Ubuntu' },

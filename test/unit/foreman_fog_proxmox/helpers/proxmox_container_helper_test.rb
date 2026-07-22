@@ -161,6 +161,80 @@ module ForemanFogProxmox
         assert_equal expected_vm, vm
       end
 
+      test '#features serialises nesting, keyctl, fuse and mount' do
+        features = parse_typed_features(
+          'feature_nesting' => '1', 'feature_keyctl' => '1', 'feature_fuse' => '0', 'feature_mount' => 'nfs;cifs'
+        )
+        assert_equal 'nesting=1,keyctl=1,mount=nfs;cifs', features[:features]
+      end
+
+      test '#features omits unset flags' do
+        features = parse_typed_features('feature_nesting' => '1', 'feature_keyctl' => '0', 'feature_fuse' => '0', 'feature_mount' => '')
+        assert_equal 'nesting=1', features[:features]
+      end
+
+      test '#features empty when nothing enabled' do
+        features = parse_typed_features('feature_nesting' => '0', 'feature_keyctl' => '0', 'feature_fuse' => '0', 'feature_mount' => '')
+        assert_empty features
+      end
+
+      def mock_container(features_value)
+        config = mock('config')
+        config.stubs(:features).returns(features_value)
+        vm = mock('vm')
+        vm.stubs(:config).returns(config)
+        vm
+      end
+
+      test '#reconcile clears last feature on edit through the delete list' do
+        # container had features=nesting=1, user unchecked every toggle
+        vm = mock_container('nesting=1')
+        config_attributes = ActiveSupport::HashWithIndifferentAccess.new
+        reconcile_container_features(vm, config_attributes)
+        assert_equal 'features', config_attributes[:delete]
+        assert_not config_attributes.key?(:features)
+      end
+
+      test '#reconcile keeps setting features on edit' do
+        vm = mock_container('nesting=1')
+        config_attributes = ActiveSupport::HashWithIndifferentAccess.new(features: 'nesting=1,keyctl=1')
+        reconcile_container_features(vm, config_attributes)
+        assert_equal 'nesting=1,keyctl=1', config_attributes[:features]
+        assert_not config_attributes.key?(:delete)
+      end
+
+      test '#reconcile preserves unknown sub-flags set out-of-band' do
+        # nesting disabled, keyctl enabled, mknod was set out-of-band
+        vm = mock_container('nesting=1,mknod=1')
+        config_attributes = ActiveSupport::HashWithIndifferentAccess.new(features: 'keyctl=1')
+        reconcile_container_features(vm, config_attributes)
+        assert_equal 'keyctl=1,mknod=1', config_attributes[:features]
+        assert_not config_attributes.key?(:delete)
+      end
+
+      test '#reconcile keeps unknown sub-flags when all toggles are cleared' do
+        vm = mock_container('nesting=1,mknod=1')
+        config_attributes = ActiveSupport::HashWithIndifferentAccess.new
+        reconcile_container_features(vm, config_attributes)
+        assert_equal 'mknod=1', config_attributes[:features]
+        assert_not config_attributes.key?(:delete)
+      end
+
+      test '#reconcile does not clear features when there was no prior value' do
+        vm = mock_container('')
+        config_attributes = ActiveSupport::HashWithIndifferentAccess.new
+        reconcile_container_features(vm, config_attributes)
+        assert_not config_attributes.key?(:delete)
+        assert_not config_attributes.key?(:features)
+      end
+
+      test '#reconcile appends features to an existing delete list' do
+        vm = mock_container('nesting=1')
+        config_attributes = ActiveSupport::HashWithIndifferentAccess.new(delete: 'net0')
+        reconcile_container_features(vm, config_attributes)
+        assert_equal 'net0,features', config_attributes[:delete]
+      end
+
       test '#volume with rootfs 1Gb' do
         volumes = parse_typed_volumes(host_form['volumes_attributes'], type)
         assert_not volumes.empty?

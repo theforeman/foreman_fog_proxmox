@@ -61,6 +61,8 @@ The container form slightly differs from the server one:
 
 * OS template is required
 * advanced options are slightly different
+* nesting, keyctl, FUSE, and permitted mount file systems can be configured as
+  LXC features; feature flags not managed by Foreman are preserved on update
 
 Container VM Proxmox config tab:
 

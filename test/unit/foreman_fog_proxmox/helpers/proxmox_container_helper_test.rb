@@ -161,6 +161,15 @@ module ForemanFogProxmox
         assert_equal expected_vm, vm
       end
 
+      test '#HA provisioning attributes are not sent as guest config' do
+        form = host_form.merge('ha_managed' => '1', 'ha_group' => 'prod', 'ha_state' => 'started')
+        vm = parse_typed_vm(form, type)
+        assert_not vm.key?(:ha_managed)
+        assert_not vm.key?(:ha_group)
+        assert_not vm.key?(:ha_state)
+        assert_includes args_a(type), 'ha_managed'
+      end
+
       test '#volume with rootfs 1Gb' do
         volumes = parse_typed_volumes(host_form['volumes_attributes'], type)
         assert_not volumes.empty?

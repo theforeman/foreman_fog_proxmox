@@ -28,6 +28,13 @@ module ProxmoxComputeSelectorsHelper
      OpenStruct.new(id: 'i386', name: '32 bits')]
   end
 
+  def proxmox_ha_states_map
+    [OpenStruct.new(id: 'started', name: 'started'),
+     OpenStruct.new(id: 'stopped', name: 'stopped'),
+     OpenStruct.new(id: 'ignored', name: 'ignored'),
+     OpenStruct.new(id: 'disabled', name: 'disabled')]
+  end
+
   def proxmox_ostypes_map
     [OpenStruct.new(id: 'debian', name: 'Debian'),
      OpenStruct.new(id: 'ubuntu', name: 'Ubuntu'),

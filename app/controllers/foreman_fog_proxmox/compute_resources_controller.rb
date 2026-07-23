@@ -84,8 +84,7 @@ module ForemanFogProxmox
       node_id = params[:node_id]
       storage = params[:storage]
 
-      node = cr.send(:client).nodes.get(node_id)
-      vols = node&.storages&.get(storage)&.volumes || []
+      vols = cr.storages(node_id).find { |s| s.storage == storage }&.volumes || []
 
       render json: Array(vols).map { |v|
         h = v.respond_to?(:as_json) ? v.as_json : v
@@ -95,86 +94,10 @@ module ForemanFogProxmox
 
     # GET foreman_fog_proxmox/metadata/:compute_resource_id
     def metadata
-      cr = ComputeResource.find(params[:compute_resource_id])
-
-      render json: {
-        nodes: extract_nodes(cr),
-        pools: extract_pools(cr),
-        storages: extract_storages(cr),
-        bridges: extract_bridges(cr),
-        images: extract_images(cr),
-      }
+      render json: load_compute_resource(params[:compute_resource_id]).metadata
     end
 
     private
-
-    def extract_nodes(compute_resource)
-      Array(compute_resource.nodes).map { |n| { node: n.node } }
-    end
-
-    def extract_pools(compute_resource)
-      Array(compute_resource.pools).map do |p|
-        poolid = p.respond_to?(:poolid) ? p.poolid : (p[:poolid] || p['poolid'])
-        { poolid: poolid }
-      end
-    end
-
-    def extract_storages(compute_resource)
-      Array(compute_resource.storages).map do |s|
-        h = s.respond_to?(:as_json) ? s.as_json : s
-        {
-          storage: (h[:storage] || h['storage']),
-          node_id: (h[:node_id] || h['node_id']),
-          content: (h[:content] || h['content']),
-          avail: (h[:avail] || h['avail']),
-          used: (h[:used] || h['used']),
-          total: (h[:total] || h['total']),
-        }
-      end
-    end
-
-    def extract_bridges(compute_resource)
-      Array(compute_resource.bridges).map do |b|
-        h = b.respond_to?(:as_json) ? b.as_json : b
-        {
-          node_id: (h[:node_id] || h['node_id']),
-          iface: (h[:iface] || h['iface']),
-        }
-      end
-    end
-
-    def extract_images(compute_resource)
-      images = compute_resource.images
-      images = images.order(:name) if images.respond_to?(:order)
-
-      Array(images).map do |image|
-        data = image.respond_to?(:as_json) ? image.as_json : image
-        uuid = image_value(image, data, :uuid, :id)
-
-        {
-          uuid: uuid,
-          name: image_value(image, data, :name),
-          disks: image_disks(compute_resource, uuid),
-        }
-      end
-    end
-
-    def image_disks(compute_resource, uuid)
-      return nil unless uuid && compute_resource.respond_to?(:find_vm_by_uuid)
-
-      compute_resource.find_vm_by_uuid(uuid)&.disks
-    rescue ActiveRecord::RecordNotFound, StandardError
-      nil
-    end
-
-    def image_value(image, data, *keys)
-      keys.each do |key|
-        value = [image.try(key), data.try(:[], key), data.try(:[], key.to_s)].find(&:present?)
-        return value if value.present?
-      end
-
-      nil
-    end
 
     def load_compute_resource(compute_resource_id)
       ComputeResource.find(compute_resource_id)

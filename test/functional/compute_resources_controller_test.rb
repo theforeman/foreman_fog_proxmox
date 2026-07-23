@@ -69,18 +69,6 @@ module ForemanFogProxmox
       assert_not show_response.empty?
     end
     test 'should get volumes by node and storage' do
-      mock_storage = mock('storage')
-      mock_storage.stubs(:volumes).returns([])
-      mock_storages = mock('storages')
-      mock_storages.stubs(:get).with('local').returns(mock_storage)
-      mock_node = mock('node')
-      mock_node.stubs(:storages).returns(mock_storages)
-      mock_nodes = mock('nodes')
-      mock_nodes.stubs(:get).with('proxmox').returns(mock_node)
-      mock_client = mock('client')
-      mock_client.stubs(:nodes).returns(mock_nodes)
-      @compute_resource.stubs(:client).returns(mock_client)
-
       get :volumes_by_node_and_storage,
         params: { :compute_resource_id => @compute_resource.id, :node_id => 'proxmox', :storage => 'local' },
         session: set_session_user
@@ -105,6 +93,19 @@ module ForemanFogProxmox
       assert_instance_of Array, json_response['pools']
       assert_instance_of Array, json_response['storages']
       assert_instance_of Array, json_response['bridges']
+    end
+
+    test 'should cache metadata in the compute resource cache' do
+      @compute_resource.expects(:nodes).once.returns([])
+      @compute_resource.expects(:pools).once.returns([])
+      @compute_resource.expects(:storages).never
+      @compute_resource.expects(:bridges).never
+      @compute_resource.expects(:images).once.returns([])
+
+      2.times do
+        get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
+        assert_response :success
+      end
     end
   end
 end

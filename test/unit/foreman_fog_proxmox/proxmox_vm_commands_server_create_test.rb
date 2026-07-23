@@ -38,6 +38,7 @@ module ForemanFogProxmox
         servers.expects(:next_id).returns('101')
         cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
         cr.stubs(:parse_typed_vm).with(args, 'qemu').returns(args)
+        cr.stubs(:update_boot_order).returns(nil)
         vm = mock('vm')
         servers.expects(:create).with(args).returns(vm)
         cr.create_vm(args)
@@ -70,12 +71,27 @@ module ForemanFogProxmox
         cr.create_vm(args)
       end
 
+      it 'updates the boot order after creating a network-provisioned server' do
+        args = { vmid: '100', type: 'qemu', node_id: 'proxmox', start_after_create: '0' }
+        servers = mock('servers')
+        servers.stubs(:id_valid?).returns(true)
+        vm = mock('vm')
+        servers.expects(:create).with(args).returns(vm)
+        cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
+        cr.stubs(:parse_typed_vm).with(args, 'qemu').returns(args)
+        cr.expects(:update_boot_order).with(vm, exclude_cdrom: true, include_network: true).returns(boot: 'order=net0;scsi0;virtio1')
+        vm.expects(:update).with({ boot: 'order=net0;scsi0;virtio1' })
+
+        cr.create_vm(args)
+      end
+
       it 'creates server with bootstart' do
         args = { vmid: '100', type: 'qemu', node_id: 'proxmox', start_after_create: '1' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
         cr.stubs(:parse_typed_vm).with(args, 'qemu').returns(args)
+        cr.stubs(:update_boot_order).returns(nil)
         vm = mock('vm')
         servers.stubs(:create).with(args).returns(vm)
         cr.stubs(:find_vm_by_uuid).with((args[:vmid]).to_s).returns(vm)
@@ -89,6 +105,7 @@ module ForemanFogProxmox
         servers.stubs(:id_valid?).returns(true)
         cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
         cr.stubs(:parse_typed_vm).with(args, 'qemu').returns(args)
+        cr.stubs(:update_boot_order).returns(nil)
         vm = mock('vm')
         servers.stubs(:create).with(args).returns(vm)
         cr.stubs(:find_vm_by_uuid).with((args[:vmid]).to_s).returns(vm)
@@ -110,6 +127,26 @@ module ForemanFogProxmox
         expected_args = { :vmid => "100", :type => "qemu", :name => "name" }
         cr.stubs(:parse_typed_vm).with(args, 'qemu').returns(expected_args)
         vm.expects(:update).with(expected_args)
+        cr.create_vm(args)
+      end
+
+      it 'updates the boot order when cloning without user data' do
+        args = { vmid: '100', type: 'qemu', image_id: '999', name: 'name', config_attributes: { onboot: '0' } }
+        servers = mock('servers')
+        containers = mock('containers')
+        servers.stubs(:id_valid?).returns(true)
+        cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
+        image = mock('image', config: mock('config', disks: []))
+        vm = mock('vm')
+        cr.expects(:clone_from_image).with(image, 100).returns(vm)
+        vm.expects(:container?).returns(false)
+        cr.expects(:parse_cloudinit_config).never
+        cr.expects(:find_vm_by_uuid).with('999').once.returns(image)
+        cr.expects(:update_boot_order).with(image).returns(boot: 'order=scsi0;virtio1')
+        expected_args = { vmid: '100', type: 'qemu', name: 'name', config_attributes: { onboot: '0', boot: 'order=scsi0;virtio1' } }
+        cr.expects(:parse_typed_vm).with(args, 'qemu').returns(expected_args)
+        vm.expects(:update).with(expected_args)
+
         cr.create_vm(args)
       end
 

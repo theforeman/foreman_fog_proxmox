@@ -25,6 +25,7 @@ require 'foreman_fog_proxmox/value'
 module ProxmoxVMHelper
   include ProxmoxVMInterfacesHelper
   include ProxmoxVMVolumesHelper
+  include ProxmoxVMImageTemplateHelper
   include ProxmoxVMConfigHelper
   include ProxmoxVMOsTemplateHelper
   include ProxmoxVMEfidiskHelper

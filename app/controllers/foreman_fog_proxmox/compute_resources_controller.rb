@@ -84,8 +84,7 @@ module ForemanFogProxmox
       node_id = params[:node_id]
       storage = params[:storage]
 
-      node = cr.send(:client).nodes.get(node_id)
-      vols = node&.storages&.get(storage)&.volumes || []
+      vols = cr.storages(node_id).find { |s| s.storage == storage }&.volumes || []
 
       render json: Array(vols).map { |v|
         h = v.respond_to?(:as_json) ? v.as_json : v

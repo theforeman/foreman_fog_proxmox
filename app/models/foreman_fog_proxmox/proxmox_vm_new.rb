@@ -99,7 +99,7 @@ module ForemanFogProxmox
     end
 
     def default_node
-      fog_nodes.first
+      nodes.first
     end
 
     def default_node_id

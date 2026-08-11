@@ -103,7 +103,9 @@ module ForemanFogProxmox
         servers.stubs(:id_valid?).returns(true)
         cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
         vm = mock('vm')
-        cr.expects(:clone_from_image).with('999', 100).returns(vm)
+        image = mock('image', config: mock('config', disks: []))
+        cr.stubs(:find_vm_by_uuid).with('999').returns(image)
+        cr.expects(:clone_from_image).with(image, 100).returns(vm)
         vm.expects(:container?).returns(false)
         expected_args = { :vmid => "100", :type => "qemu", :name => "name" }
         cr.stubs(:parse_typed_vm).with(args, 'qemu').returns(expected_args)
@@ -140,6 +142,69 @@ module ForemanFogProxmox
         end
 
         assert err.message.end_with?('Could not find generated cloud-init ISO name_cloudinit.iso on any ISO storage for node proxmox')
+      end
+    end
+
+    describe 'validate_image_template_disk_slots!' do
+      it 'moves a disk that conflicts with an image template disk to the next free slot' do
+        cr = ForemanFogProxmox::Proxmox.new
+        disk = mock('disk', hard_disk?: true, id: 'scsi0')
+        image = mock('image', config: mock('config', disks: [disk]))
+        args = {
+          'volumes_attributes' => {
+            '0' => { 'storage_type' => 'hard_disk', 'controller' => 'scsi', 'device' => '0', 'id' => 'scsi0' },
+          },
+        }
+        cr.validate_image_template_disk_slots!(image, args)
+
+        assert_equal '1', args['volumes_attributes']['0']['device']
+        assert_equal 'scsi1', args['volumes_attributes']['0']['id']
+      end
+
+      it 'uses a free slot before the conflicting slot' do
+        cr = ForemanFogProxmox::Proxmox.new
+        disk = mock('disk', hard_disk?: true, id: 'scsi1')
+        image = mock('image', config: mock('config', disks: [disk]))
+        args = {
+          'volumes_attributes' => {
+            '0' => { 'storage_type' => 'hard_disk', 'controller' => 'scsi', 'device' => '1', 'id' => 'scsi1' },
+          },
+        }
+        cr.validate_image_template_disk_slots!(image, args)
+
+        assert_equal '0', args['volumes_attributes']['0']['device']
+        assert_equal 'scsi0', args['volumes_attributes']['0']['id']
+      end
+
+      it 'leaves a disk unchanged when its slot does not conflict with an image template disk' do
+        cr = ForemanFogProxmox::Proxmox.new
+        disk = mock('disk', hard_disk?: true, id: 'scsi0')
+        image = mock('image', config: mock('config', disks: [disk]))
+        args = {
+          'volumes_attributes' => {
+            '0' => { 'storage_type' => 'hard_disk', 'controller' => 'scsi', 'device' => '1', 'id' => 'scsi1' },
+          },
+        }
+        original_args = args.deep_dup
+        cr.validate_image_template_disk_slots!(image, args)
+
+        assert_equal original_args, args
+      end
+
+      it 'raises when no free disk slot is available for the controller' do
+        cr = ForemanFogProxmox::Proxmox.new
+        disks = (0..3).map { |device| mock("disk#{device}", hard_disk?: true, id: "ide#{device}") }
+        image = mock('image', config: mock('config', disks: disks))
+        args = {
+          'volumes_attributes' => {
+            '0' => { 'storage_type' => 'hard_disk', 'controller' => 'ide', 'device' => '3', 'id' => 'ide3' },
+          },
+        }
+        error = assert_raises Foreman::Exception do
+          cr.validate_image_template_disk_slots!(image, args)
+        end
+
+        assert_equal 'No free disk device is available for the ide controller.', error.bare_message
       end
     end
   end

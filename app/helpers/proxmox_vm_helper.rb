@@ -19,6 +19,7 @@
 
 require 'fog/proxmox/helpers/disk_helper'
 require 'fog/proxmox/helpers/nic_helper'
+require 'foreman_fog_proxmox/hash_collection'
 require 'foreman_fog_proxmox/value'
 
 module ProxmoxVMHelper
@@ -34,8 +35,15 @@ module ProxmoxVMHelper
     collection
   end
 
+  def parse_vm_update_attributes(attributes, type)
+    ForemanFogProxmox::HashCollection.new_hash_reject_keys(
+      attributes, ['volumes_attributes']
+    ).merge(type: type)
+  end
+
   # Convert a foreman form server/container vm hash into a fog-proxmox server/container attributes hash
   def parse_typed_vm(args, type)
+    args = process_firmware_attributes(args, type)
     args = ActiveSupport::HashWithIndifferentAccess.new(args)
     return {} unless args
     return {} if args.empty?

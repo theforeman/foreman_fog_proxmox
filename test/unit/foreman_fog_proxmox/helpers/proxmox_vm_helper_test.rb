@@ -137,6 +137,72 @@ module ForemanFogProxmox
         } }
     end
 
+    describe '#parse_vm_update_attributes' do
+      it 'removes volume attributes and adds the VM type without parsing' do
+        attributes = parse_vm_update_attributes(host_server, 'qemu')
+
+        assert_not attributes.key?('volumes_attributes')
+        assert_equal 'qemu', attributes['type']
+        assert_equal host_server['config_attributes'], attributes['config_attributes']
+      end
+    end
+
+    describe '#parse_typed_vm firmware attributes' do
+      it 'maps secure boot to OVMF and adds a default EFI disk' do
+        host_server['config_attributes']['bios'] = 'uefi_secure_boot'
+
+        parsed_vm = parse_typed_vm(host_server, 'qemu')
+
+        assert_equal 'ovmf', parsed_vm['bios']
+        assert_equal 'local-lvm:0,efitype=4m,pre-enrolled-keys=1', parsed_vm['efidisk0']
+      end
+
+      it 'enables secure boot on an explicitly configured EFI disk' do
+        host_server['config_attributes']['bios'] = 'uefi_secure_boot'
+        host_server['efidisk_attributes'] = {
+          'id' => '0',
+          'volid' => 'fast-storage:0',
+          'efitype' => '2m',
+          'pre_enrolled_keys' => '0',
+        }
+
+        parsed_vm = parse_typed_vm(host_server, 'qemu')
+
+        assert_equal 'ovmf', parsed_vm['bios']
+        assert_equal 'fast-storage:0,efitype=4m,pre-enrolled-keys=1', parsed_vm['efidisk0']
+      end
+
+      it 'disables pre-enrolled keys on an existing OVMF EFI disk' do
+        host_server['config_attributes']['bios'] = 'ovmf'
+        host_server['efidisk_attributes'] = {
+          'id' => '0',
+          'volid' => 'fast-storage:0',
+          'efitype' => '4m',
+          'pre_enrolled_keys' => '1',
+        }
+
+        parsed_vm = parse_typed_vm(host_server, 'qemu')
+
+        assert_equal 'ovmf', parsed_vm['bios']
+        assert_equal 'fast-storage:0,efitype=4m,pre-enrolled-keys=0', parsed_vm['efidisk0']
+      end
+
+      it 'disables pre-enrolled keys for another BIOS' do
+        host_server['config_attributes']['bios'] = 'seabios'
+        host_server['efidisk_attributes'] = {
+          'id' => '0',
+          'volid' => 'fast-storage:0',
+          'efitype' => '4m',
+          'pre_enrolled_keys' => '1',
+        }
+
+        parsed_vm = parse_typed_vm(host_server, 'qemu')
+
+        assert_equal 'seabios', parsed_vm['bios']
+        assert_equal 'fast-storage:0,efitype=4m,pre-enrolled-keys=0', parsed_vm['efidisk0']
+      end
+    end
+
     describe 'object_to_config_hash' do
       setup { Fog.mock! }
       teardown { Fog.unmock! }

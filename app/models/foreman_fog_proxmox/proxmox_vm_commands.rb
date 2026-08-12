@@ -41,7 +41,7 @@ module ForemanFogProxmox
       if image_id
         image = find_vm_by_uuid(image_id)
         validate_image_template_disk_slots!(image, args) if type == 'qemu'
-        vm = clone_from_image(image, vmid)
+        vm = clone_from_image(image, vmid, target_node: node.node)
         vm.update(compute_clone_attributes(args, vm.container?, type, image: image))
         update_pool(vm, args[:pool]) if args[:pool]
       else

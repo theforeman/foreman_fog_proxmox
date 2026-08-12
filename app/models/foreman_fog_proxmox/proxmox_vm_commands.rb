@@ -41,7 +41,7 @@ module ForemanFogProxmox
       if image_id
         image = find_vm_by_uuid(image_id)
         validate_image_template_disk_slots!(image, args) if type == 'qemu'
-        vm = clone_from_image(image, vmid)
+        vm = clone_from_image_on_node(image, vmid, node)
         cloudinit_args = cloudinit_clone_args(args, vm)
         vm.update(compute_clone_attributes(cloudinit_args, vm.container?, type, image: image))
         update_pool(vm, args[:pool]) if args[:pool]
@@ -58,6 +58,10 @@ module ForemanFogProxmox
       logger.warn("failed to create vm: #{e}")
       destroy_vm id.to_s + '_' + vm.vmid.to_s if vm
       raise e
+    end
+
+    def clone_from_image_on_node(image, vmid, node)
+      clone_from_image(image, vmid, target_node: node.node)
     end
 
     def assign_vmid(vmid, node, log: true)

@@ -42,11 +42,15 @@ module ForemanFogProxmox
         image = find_vm_by_uuid(image_id)
         validate_image_template_disk_slots!(image, args) if type == 'qemu'
         vm = clone_from_image(image, vmid)
-        vm.update(compute_clone_attributes(args, vm.container?, type))
+        vm.update(compute_clone_attributes(args, vm.container?, type, image: image))
         update_pool(vm, args[:pool]) if args[:pool]
       else
         logger.warn("create vm: args=#{args}")
         vm = node.send(vm_collection(type)).create(parse_typed_vm(args, type))
+        if type == 'qemu' && vm
+          boot_order = update_boot_order(vm, exclude_cdrom: true, include_network: true)
+          vm.update(boot_order) if boot_order
+        end
       end
       start_on_boot(vm, args)
     rescue StandardError => e
@@ -66,8 +70,9 @@ module ForemanFogProxmox
       vmid
     end
 
-    def compute_clone_attributes(args, container, type)
+    def compute_clone_attributes(args, container, type, image: nil)
       args = parse_cloudinit_config(args) if args[:user_data]
+      args[:config_attributes].merge!(update_boot_order(image)) if image && args[:config_attributes]
       parsed_args = parse_typed_vm(args, type)
       if container
         options = { :hostname => args[:name] }

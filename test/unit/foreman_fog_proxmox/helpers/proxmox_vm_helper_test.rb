@@ -203,6 +203,40 @@ module ForemanFogProxmox
       end
     end
 
+    describe 'update_boot_order' do
+      let(:vm) do
+        vm = mock('vm')
+        vm.stubs(:disks).returns(['scsi0: local-lvm:vm-100-disk-0', 'ide2: none,media=cdrom', 'virtio1: local-lvm:vm-100-disk-1'])
+        net0 = mock('net0')
+        net1 = mock('net1')
+        net0.stubs(:id).returns('net0')
+        net1.stubs(:id).returns('net1')
+        vm.stubs(:interfaces).returns([net0, net1])
+        vm
+      end
+
+      it 'generates the image provisioning boot order from all disks' do
+        assert_equal({ boot: 'order=scsi0;ide2;virtio1' }, update_boot_order(vm))
+      end
+
+      it 'includes network interfaces and excludes the default CD-ROM for network provisioning' do
+        expected_boot_order = { boot: 'order=net0;net1;scsi0;virtio1' }
+
+        assert_equal expected_boot_order, update_boot_order(vm, exclude_cdrom: true, include_network: true)
+      end
+
+      it 'returns an empty hash when the VM is missing' do
+        assert_empty(update_boot_order(nil))
+      end
+
+      it 'returns an empty hash when the VM has no disks' do
+        vm = mock('vm')
+        vm.stubs(:disks).returns(nil)
+
+        assert_empty(update_boot_order(vm))
+      end
+    end
+
     describe 'object_to_config_hash' do
       setup { Fog.mock! }
       teardown { Fog.unmock! }

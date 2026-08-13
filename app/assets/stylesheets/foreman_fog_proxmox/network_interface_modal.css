@@ -1,0 +1,17 @@
+#interfaceModal.proxmox-interface-modal {
+  overflow-y: hidden;
+}
+
+#interfaceModal.proxmox-interface-modal .modal-content {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+#interfaceModal.proxmox-interface-modal .modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}

@@ -24,8 +24,10 @@ module ProxmoxComputeSelectorsHelper
   end
 
   def proxmox_archs_map
-    [OpenStruct.new(id: 'amd64', name: '64 bits'),
-     OpenStruct.new(id: 'i386', name: '32 bits')]
+    [OpenStruct.new(id: 'amd64', name: 'amd64 (64-bit x86)'),
+     OpenStruct.new(id: 'i386', name: 'i386 (32-bit x86)'),
+     OpenStruct.new(id: 'arm64', name: 'arm64 (64-bit ARM)'),
+     OpenStruct.new(id: 'armhf', name: 'armhf (32-bit ARM)')]
   end
 
   def proxmox_ostypes_map

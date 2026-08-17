@@ -94,5 +94,50 @@ module ForemanFogProxmox
       assert_instance_of Array, json_response['storages']
       assert_instance_of Array, json_response['bridges']
     end
+    test 'should return storages from all nodes in metadata' do
+      nodes = [OpenStruct.new(node: 'proxmox1'), OpenStruct.new(node: 'proxmox2')]
+      ceph1 = OpenStruct.new(storage: 'ceph', content: 'images', avail: 5_000, used: 1_000, total: 6_000)
+      ceph2 = OpenStruct.new(storage: 'ceph', content: 'images', avail: 5_000, used: 1_000, total: 6_000)
+      @compute_resource.stubs(:nodes).returns(nodes)
+      @compute_resource.stubs(:storages).with('proxmox1').returns([ceph1])
+      @compute_resource.stubs(:storages).with('proxmox2').returns([ceph2])
+      @compute_resource.stubs(:bridges).with('proxmox1').returns([])
+      @compute_resource.stubs(:bridges).with('proxmox2').returns([])
+
+      get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
+      assert_response :success
+
+      storages = JSON.parse(@response.body)['storages']
+      storage_nodes = storages.map { |storage| [storage['storage'], storage['node_id']] }
+      assert_equal [['ceph', 'proxmox1'], ['ceph', 'proxmox2']], storage_nodes
+    end
+    test 'should return bridges from all nodes in metadata' do
+      nodes = [OpenStruct.new(node: 'proxmox1'), OpenStruct.new(node: 'proxmox2')]
+      vmbr1 = OpenStruct.new(iface: 'vmbr0')
+      vmbr2 = OpenStruct.new(iface: 'vmbr0')
+      @compute_resource.stubs(:nodes).returns(nodes)
+      @compute_resource.stubs(:storages).with('proxmox1').returns([])
+      @compute_resource.stubs(:storages).with('proxmox2').returns([])
+      @compute_resource.stubs(:bridges).with('proxmox1').returns([vmbr1])
+      @compute_resource.stubs(:bridges).with('proxmox2').returns([vmbr2])
+
+      get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
+      assert_response :success
+
+      bridges = JSON.parse(@response.body)['bridges']
+      bridge_nodes = bridges.map { |bridge| [bridge['iface'], bridge['node_id']] }
+      assert_equal [['vmbr0', 'proxmox1'], ['vmbr0', 'proxmox2']], bridge_nodes
+    end
+    test 'should fetch nodes once while building metadata' do
+      nodes = [OpenStruct.new(node: 'proxmox1'), OpenStruct.new(node: 'proxmox2')]
+      @compute_resource.expects(:nodes).once.returns(nodes)
+      @compute_resource.stubs(:storages).with('proxmox1').returns([])
+      @compute_resource.stubs(:storages).with('proxmox2').returns([])
+      @compute_resource.stubs(:bridges).with('proxmox1').returns([])
+      @compute_resource.stubs(:bridges).with('proxmox2').returns([])
+
+      get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
+      assert_response :success
+    end
   end
 end

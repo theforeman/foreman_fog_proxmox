@@ -19,11 +19,13 @@
 
 require 'fog/proxmox/helpers/disk_helper'
 require 'fog/proxmox/helpers/nic_helper'
+require 'foreman_fog_proxmox/hash_collection'
 require 'foreman_fog_proxmox/value'
 
 module ProxmoxVMHelper
   include ProxmoxVMInterfacesHelper
   include ProxmoxVMVolumesHelper
+  include ProxmoxVMImageTemplateHelper
   include ProxmoxVMConfigHelper
   include ProxmoxVMOsTemplateHelper
   include ProxmoxVMEfidiskHelper
@@ -34,8 +36,28 @@ module ProxmoxVMHelper
     collection
   end
 
+  def parse_vm_update_attributes(attributes, type)
+    ForemanFogProxmox::HashCollection.new_hash_reject_keys(
+      attributes, ['volumes_attributes']
+    ).merge(type: type)
+  end
+
+  def update_boot_order(instance, exclude_cdrom: false, include_network: false)
+    return {} unless instance
+
+    disks = Array(instance.disks).map { |disk| disk.split(":")[0] }
+    disks.delete("ide2") if exclude_cdrom
+    network_interfaces = include_network ? Array(instance.interfaces).map(&:id) : []
+    boot_devices = network_interfaces + disks
+
+    return {} if boot_devices.empty?
+
+    { boot: "order=" + boot_devices.join(";") }
+  end
+
   # Convert a foreman form server/container vm hash into a fog-proxmox server/container attributes hash
   def parse_typed_vm(args, type)
+    args = process_firmware_attributes(args, type)
     args = ActiveSupport::HashWithIndifferentAccess.new(args)
     return {} unless args
     return {} if args.empty?

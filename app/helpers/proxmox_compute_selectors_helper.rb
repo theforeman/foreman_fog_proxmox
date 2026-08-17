@@ -141,6 +141,7 @@ module ProxmoxComputeSelectorsHelper
 
   def proxmox_bios_map
     [OpenStruct.new(id: 'seabios', name: '(Default) Seabios'),
-     OpenStruct.new(id: 'ovmf', name: 'OVMF (UEFI)')]
+     OpenStruct.new(id: 'ovmf', name: 'OVMF (UEFI)'),
+     OpenStruct.new(id: 'uefi_secure_boot', name: 'OVMF (UEFI Secure Boot)')]
   end
 end

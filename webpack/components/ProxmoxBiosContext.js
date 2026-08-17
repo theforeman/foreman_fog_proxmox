@@ -3,11 +3,20 @@ import PropTypes from 'prop-types';
 
 const ProxmoxBiosContext = createContext(null);
 
-export function ProxmoxBiosProvider({ children, initialBios = null }) {
+export function ProxmoxBiosProvider({
+  children,
+  initialBios = null,
+  initialEfiDiskSelected = false,
+}) {
   const [bios, setBios] = useState(initialBios);
+  const [efiDiskSelected, setEfiDiskSelected] = useState(
+    initialEfiDiskSelected
+  );
 
-  // memoize so the provider value object changes only when bios changes
-  const value = useMemo(() => ({ bios, setBios }), [bios]);
+  const value = useMemo(
+    () => ({ bios, setBios, efiDiskSelected, setEfiDiskSelected }),
+    [bios, efiDiskSelected]
+  );
 
   return (
     <ProxmoxBiosContext.Provider value={value}>
@@ -26,8 +35,10 @@ export function useBios() {
 ProxmoxBiosProvider.propTypes = {
   children: PropTypes.object.isRequired,
   initialBios: PropTypes.string,
+  initialEfiDiskSelected: PropTypes.bool,
 };
 
 ProxmoxBiosProvider.defaultProps = {
   initialBios: null,
+  initialEfiDiskSelected: false,
 };

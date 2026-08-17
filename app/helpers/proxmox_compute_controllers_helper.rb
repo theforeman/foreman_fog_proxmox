@@ -18,15 +18,17 @@
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 
 module ProxmoxComputeControllersHelper
+  CONTROLLER_LIMITS = { 'ide' => 3, 'sata' => 5, 'scsi' => 30, 'virtio' => 15 }.freeze
+
   def proxmox_controllers_map
     proxmox_controllers_cloudinit_map << ForemanFogProxmox::OptionsSelect.new(name: 'VirtIO Block', id: 'virtio',
-      range: 15)
+      range: CONTROLLER_LIMITS['virtio'])
   end
 
   def proxmox_controllers_cloudinit_map
-    [ForemanFogProxmox::OptionsSelect.new(id: 'ide', name: 'IDE', range: 3),
-     ForemanFogProxmox::OptionsSelect.new(id: 'sata', name: 'SATA', range: 5),
-     ForemanFogProxmox::OptionsSelect.new(id: 'scsi', name: 'SCSI', range: 13)]
+    [ForemanFogProxmox::OptionsSelect.new(id: 'ide', name: 'IDE', range: CONTROLLER_LIMITS['ide']),
+     ForemanFogProxmox::OptionsSelect.new(id: 'sata', name: 'SATA', range: CONTROLLER_LIMITS['sata']),
+     ForemanFogProxmox::OptionsSelect.new(id: 'scsi', name: 'SCSI', range: CONTROLLER_LIMITS['scsi'])]
   end
 
   def proxmox_scsi_controllers_map

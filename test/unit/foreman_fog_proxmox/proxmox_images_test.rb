@@ -27,7 +27,6 @@ module ForemanFogProxmox
     describe 'clone_from_image' do
       before do
         @cr = FactoryBot.build_stubbed(:proxmox_cr)
-        @image_id = @cr.id.to_s + '_' + 100.to_s
         @vmid = 101
         @image = mock('vm')
         @cr.stubs(:find_vm_by_uuid).with(@image_id).returns(@image)
@@ -37,13 +36,13 @@ module ForemanFogProxmox
         @image.expects(:clone).with(@vmid, {})
         @clone.stubs(:container?).returns(false)
         @cr.stubs(:find_vm_by_uuid).with(@cr.id.to_s + '_' + @vmid.to_s).returns(@clone)
-        @cr.clone_from_image(@image_id, @vmid)
+        @cr.clone_from_image(@image, @vmid)
       end
       it 'clones container from image' do
         @image.expects(:clone).with(@vmid, {})
         @clone.stubs(:container?).returns(true)
         @cr.stubs(:find_vm_by_uuid).with(@cr.id.to_s + '_' + @vmid.to_s).returns(@clone)
-        @cr.clone_from_image(@image_id, @vmid)
+        @cr.clone_from_image(@image, @vmid)
       end
       it 'full clones server from image' do
         @image.expects(:clone).with(@vmid, { full: 1 })

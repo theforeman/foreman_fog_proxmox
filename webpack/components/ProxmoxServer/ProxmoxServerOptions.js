@@ -4,10 +4,11 @@ import { translate as __ } from 'foremanReact/common/I18n';
 import InputField from '../common/FormInputs';
 import ProxmoxComputeSelectors from '../ProxmoxComputeSelectors';
 import { useBios } from '../ProxmoxBiosContext';
+import SecureBoot, { normalizeFirmwareOptions } from './components/SecureBoot';
 
 const ProxmoxServerOptions = ({ options }) => {
-  const [opts, setOpts] = useState(options);
-  const { setBios } = useBios();
+  const [opts, setOpts] = useState(normalizeFirmwareOptions(options));
+  const { efiDiskSelected, setBios } = useBios();
 
   const handleChange = e => {
     const { name, type, checked, value: targetValue } = e.target;
@@ -18,14 +19,21 @@ const ProxmoxServerOptions = ({ options }) => {
       value = targetValue;
     }
 
+    const updatedKey = Object.keys(opts).find(key => opts[key].name === name);
+    const updates = {
+      [updatedKey]: { ...opts[updatedKey], value },
+    };
     if (name === opts?.bios?.name) {
+      updates.isSecureBoot = {
+        ...opts.isSecureBoot,
+        value: value === 'uefi_secure_boot' ? '1' : '0',
+      };
       setBios(value);
     }
 
-    const updatedKey = Object.keys(opts).find(key => opts[key].name === name);
     setOpts(prevOpts => ({
       ...prevOpts,
-      [updatedKey]: { ...prevOpts[updatedKey], value },
+      ...updates,
     }));
   };
 
@@ -93,6 +101,11 @@ const ProxmoxServerOptions = ({ options }) => {
         options={ProxmoxComputeSelectors.proxmoxBiosMap}
         value={opts?.bios?.value}
         onChange={handleChange}
+      />
+      <SecureBoot
+        bios={opts?.bios}
+        isSecureBoot={opts?.isSecureBoot}
+        efiDiskSelected={efiDiskSelected}
       />
       <InputField
         name={opts?.ostype?.name}

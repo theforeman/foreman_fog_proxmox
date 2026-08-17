@@ -299,7 +299,11 @@ const ProxmoxVmType = ({
   };
 
   return (
-    <ProxmoxBiosProvider>
+    <ProxmoxBiosProvider
+      initialEfiDiskSelected={
+        !!(vmAttrs?.efidisk && Object.keys(vmAttrs.efidisk).length > 0)
+      }
+    >
       <div>
         <InputField
           name={general?.type?.name}

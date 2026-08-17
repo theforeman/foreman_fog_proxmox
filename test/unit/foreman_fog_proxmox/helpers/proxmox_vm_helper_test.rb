@@ -137,6 +137,106 @@ module ForemanFogProxmox
         } }
     end
 
+    describe '#parse_vm_update_attributes' do
+      it 'removes volume attributes and adds the VM type without parsing' do
+        attributes = parse_vm_update_attributes(host_server, 'qemu')
+
+        assert_not attributes.key?('volumes_attributes')
+        assert_equal 'qemu', attributes['type']
+        assert_equal host_server['config_attributes'], attributes['config_attributes']
+      end
+    end
+
+    describe '#parse_typed_vm firmware attributes' do
+      it 'maps secure boot to OVMF and adds a default EFI disk' do
+        host_server['config_attributes']['bios'] = 'uefi_secure_boot'
+
+        parsed_vm = parse_typed_vm(host_server, 'qemu')
+
+        assert_equal 'ovmf', parsed_vm['bios']
+        assert_equal 'local-lvm:0,efitype=4m,pre-enrolled-keys=1', parsed_vm['efidisk0']
+      end
+
+      it 'enables secure boot on an explicitly configured EFI disk' do
+        host_server['config_attributes']['bios'] = 'uefi_secure_boot'
+        host_server['efidisk_attributes'] = {
+          'id' => '0',
+          'volid' => 'fast-storage:0',
+          'efitype' => '2m',
+          'pre_enrolled_keys' => '0',
+        }
+
+        parsed_vm = parse_typed_vm(host_server, 'qemu')
+
+        assert_equal 'ovmf', parsed_vm['bios']
+        assert_equal 'fast-storage:0,efitype=4m,pre-enrolled-keys=1', parsed_vm['efidisk0']
+      end
+
+      it 'disables pre-enrolled keys on an existing OVMF EFI disk' do
+        host_server['config_attributes']['bios'] = 'ovmf'
+        host_server['efidisk_attributes'] = {
+          'id' => '0',
+          'volid' => 'fast-storage:0',
+          'efitype' => '4m',
+          'pre_enrolled_keys' => '1',
+        }
+
+        parsed_vm = parse_typed_vm(host_server, 'qemu')
+
+        assert_equal 'ovmf', parsed_vm['bios']
+        assert_equal 'fast-storage:0,efitype=4m,pre-enrolled-keys=0', parsed_vm['efidisk0']
+      end
+
+      it 'disables pre-enrolled keys for another BIOS' do
+        host_server['config_attributes']['bios'] = 'seabios'
+        host_server['efidisk_attributes'] = {
+          'id' => '0',
+          'volid' => 'fast-storage:0',
+          'efitype' => '4m',
+          'pre_enrolled_keys' => '1',
+        }
+
+        parsed_vm = parse_typed_vm(host_server, 'qemu')
+
+        assert_equal 'seabios', parsed_vm['bios']
+        assert_equal 'fast-storage:0,efitype=4m,pre-enrolled-keys=0', parsed_vm['efidisk0']
+      end
+    end
+
+    describe 'update_boot_order' do
+      let(:vm) do
+        vm = mock('vm')
+        vm.stubs(:disks).returns(['scsi0: local-lvm:vm-100-disk-0', 'ide2: none,media=cdrom', 'virtio1: local-lvm:vm-100-disk-1'])
+        net0 = mock('net0')
+        net1 = mock('net1')
+        net0.stubs(:id).returns('net0')
+        net1.stubs(:id).returns('net1')
+        vm.stubs(:interfaces).returns([net0, net1])
+        vm
+      end
+
+      it 'generates the image provisioning boot order from all disks' do
+        assert_equal({ boot: 'order=scsi0;ide2;virtio1' }, update_boot_order(vm))
+      end
+
+      it 'includes network interfaces and excludes the default CD-ROM for network provisioning' do
+        expected_boot_order = { boot: 'order=net0;net1;scsi0;virtio1' }
+
+        assert_equal expected_boot_order, update_boot_order(vm, exclude_cdrom: true, include_network: true)
+      end
+
+      it 'returns an empty hash when the VM is missing' do
+        assert_empty(update_boot_order(nil))
+      end
+
+      it 'returns an empty hash when the VM has no disks' do
+        vm = mock('vm')
+        vm.stubs(:disks).returns(nil)
+
+        assert_empty(update_boot_order(vm))
+      end
+    end
+
     describe 'object_to_config_hash' do
       setup { Fog.mock! }
       teardown { Fog.unmock! }

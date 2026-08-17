@@ -179,6 +179,7 @@ const ProxmoxComputeSelectors = {
   proxmoxBiosMap: [
     { value: 'seabios', label: '(Default) Seabios' },
     { value: 'ovmf', label: 'OVMF (UEFI)' },
+    { value: 'uefi_secure_boot', label: 'OVMF (UEFI Secure Boot)' },
   ],
 };
 

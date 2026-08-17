@@ -21,9 +21,17 @@ module ForemanFogProxmox
   module ProxmoxEfidisks
     include ProxmoxVMHelper
 
-    def delete_efidisk(vmobj)
-      logger.info("vm #{vmobj.identity} delete efidisk0")
-      vmobj.detach('efidisk0')
+    def delete_efidisk(vm_obj)
+      logger.info("vm #{vm_obj.identity} delete efidisk0")
+      vm_obj.detach('efidisk0')
+    end
+
+    def process_efidisk_removal(vm_obj, attributes)
+      return if vm_obj.config.efidisk.blank?
+      return if attributes['efidisk_attributes'].present?
+
+      logger.debug("Removing efidisk from VM #{vm_obj}")
+      delete_efidisk(vm_obj)
     end
   end
 end

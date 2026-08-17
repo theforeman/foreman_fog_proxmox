@@ -18,6 +18,7 @@ import { sprintf, translate as __ } from 'foremanReact/common/I18n';
 import HardDisk from './components/HardDisk';
 import CDRom from './components/CDRom';
 import EFIDisk from './components/EFIDisk';
+import { useBios } from '../ProxmoxBiosContext';
 
 const ProxmoxServerStorage = ({
   storage,
@@ -75,6 +76,7 @@ const ProxmoxServerStorage = ({
   const [cdRomIsNew, setCdRomIsNew] = useState(false);
   const [efiDisk, setEfiDisk] = useState(false);
   const [efiDiskData, setEfiDiskData] = useState(null);
+  const { setEfiDiskSelected } = useBios();
   const [nextDeviceNumbers, setNextDeviceNumbers] = useState({
     ide: 0,
     sata: 0,
@@ -381,13 +383,15 @@ const ProxmoxServerStorage = ({
       }
 
       setEfiDisk(true);
+      setEfiDiskSelected(true);
       setEfiDiskData(initEfiDisk);
     },
-    [efiDisk, paramScope]
+    [efiDisk, paramScope, setEfiDiskSelected]
   );
 
   const removeEfiDisk = () => {
     setEfiDisk(false);
+    setEfiDiskSelected(false);
   };
 
   if (isLoading) {

@@ -60,7 +60,9 @@ module ProxmoxVMConfigHelper
       cpu_a += ForemanFogProxmox::HashCollection.stringify_keys(Fog::Proxmox::CpuHelper.flags).keys
       memory_a = ['memory', 'balloon', 'shares']
       cloud_init_a = ['ciuser', 'cipassword', 'searchdomain', 'nameserver']
+      firmware_a = ['is_secure_boot']
       keys.store(:cloud_init, cloud_init_a)
+      keys.store(:firmware, firmware_a)
     end
     keys.store(:main, main_a)
     keys.store(:cpu, cpu_a)
@@ -76,7 +78,7 @@ module ProxmoxVMConfigHelper
     config_a = []
     case type
     when 'qemu'
-      [:cpu, :memory, :general, :cloud_init].each { |key| config_a += config_typed_keys(type)[key] }
+      [:cpu, :memory, :general, :cloud_init, :firmware].each { |key| config_a += config_typed_keys(type)[key] }
     when 'lxc'
       [:main].each { |key| config_a += config_typed_keys(type)[key] }
     end

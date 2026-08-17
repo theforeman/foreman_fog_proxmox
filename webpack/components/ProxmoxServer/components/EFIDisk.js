@@ -19,7 +19,8 @@ const EFIDisk = ({ onRemove, data, storages, nodeId, vmId }) => {
   const [efidisk, setEfiDisk] = useState(data);
   const storagesMap = createStoragesMap(storages, null, nodeId);
   const { bios } = useBios();
-  const isBiosOvmf = bios === 'ovmf';
+  const isBiosOvmf = ['ovmf', 'uefi_secure_boot'].includes(bios);
+  const secureBootEnabled = bios === 'uefi_secure_boot';
 
   useEffect(() => {
     if (storagesMap?.length > 0 && !efidisk?.volid?.value) {
@@ -136,12 +137,20 @@ const EFIDisk = ({ onRemove, data, storages, nodeId, vmId }) => {
           onChange={handleChange}
         />
         <InputField
-          name={efidisk?.preEnrolledKeys?.name}
           label={__('Pre-Enrolled Keys')}
+          info={__(
+            'This checkbox is read-only and automatically checked when UEFI Secure Boot is selected'
+          )}
           type="checkbox"
-          value={efidisk?.preEnrolledKeys?.value}
-          checked={String(efidisk?.preEnrolledKeys?.value) === '1'}
+          value={secureBootEnabled ? '1' : '0'}
+          checked={secureBootEnabled}
           onChange={handleChange}
+          disabled
+        />
+        <input
+          name={efidisk?.preEnrolledKeys?.name}
+          type="hidden"
+          value={secureBootEnabled ? '1' : '0'}
         />
       </PageSection>
     </div>

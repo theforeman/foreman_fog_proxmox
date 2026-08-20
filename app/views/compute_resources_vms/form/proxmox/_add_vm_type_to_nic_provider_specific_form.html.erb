@@ -20,12 +20,13 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% vm_type = vm_type_and_node_id[:vm_type] %>
 <% node_id = vm_type_and_node_id[:node_id] %>
 
-<%= f.fields_for 'compute_attributes', OpenStruct.new(compute_attributes) do |f| %>
-    <%= render provider_partial(@host.compute_resource, 'network'), :f => f, :vm_type => vm_type, :node_id => node_id, :disabled => f.object.persisted?, :compute_resource => @host.compute_resource, :new_host => new_vm, :new_vm => new_vm %>
-<% end %>
+<div class="proxmox-interface-form">
+  <%= f.fields_for 'compute_attributes', OpenStruct.new(compute_attributes) do |f| %>
+      <%= render provider_partial(@host.compute_resource, 'network'), :f => f, :vm_type => vm_type, :node_id => node_id, :disabled => f.object.persisted?, :compute_resource => @host.compute_resource, :new_host => new_vm, :new_vm => new_vm %>
+  <% end %>
+</div>
 <% else %>
 <%= f.fields_for 'compute_attributes', OpenStruct.new(f.object.compute_attributes) do |f| %>
     <%= render provider_partial(@host.compute_resource, 'network'), :f => f, :disabled => f.object.persisted?, :compute_resource => @host.compute_resource, :new_host => new_vm, :new_vm => new_vm %>
 <% end %>
 <% end %>
-

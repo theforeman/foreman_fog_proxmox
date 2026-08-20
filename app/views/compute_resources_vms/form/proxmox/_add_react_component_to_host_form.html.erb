@@ -1,4 +1,9 @@
+<% content_for(:stylesheets) do %>
+  <%= stylesheet_link_tag 'foreman_fog_proxmox/network_interface_modal' %>
+<% end %>
+
 <% content_for(:javascripts) do %>
+  <%= javascript_include_tag 'foreman_fog_proxmox/proxmox_network_interface_modal' %>
   <%= webpacked_plugins_js_for :foreman_fog_proxmox %>
 <% end %>
 <%= react_component('ProxmoxVmType', { registerComp: true }) unless @host.managed %>

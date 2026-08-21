@@ -23,6 +23,8 @@ require 'foreman_fog_proxmox/value'
 
 module ForemanFogProxmox
   class Proxmox < ComputeResource
+    include ComputeResourceCaching
+    include ProxmoxMetadata
     include ProxmoxVMHelper
     include ProxmoxConnection
     include ProxmoxVMNew

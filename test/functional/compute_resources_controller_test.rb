@@ -94,5 +94,18 @@ module ForemanFogProxmox
       assert_instance_of Array, json_response['storages']
       assert_instance_of Array, json_response['bridges']
     end
+
+    test 'should cache metadata in the compute resource cache' do
+      @compute_resource.expects(:nodes).once.returns([])
+      @compute_resource.expects(:pools).once.returns([])
+      @compute_resource.expects(:storages).never
+      @compute_resource.expects(:bridges).never
+      @compute_resource.expects(:images).once.returns([])
+
+      2.times do
+        get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
+        assert_response :success
+      end
+    end
   end
 end

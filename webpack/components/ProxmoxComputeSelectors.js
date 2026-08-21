@@ -24,6 +24,13 @@ const ProxmoxComputeSelectors = {
     { value: 'i386', label: '32 bits' },
   ],
 
+  proxmoxHaStatesMap: [
+    { value: 'started', label: 'started' },
+    { value: 'stopped', label: 'stopped' },
+    { value: 'ignored', label: 'ignored' },
+    { value: 'disabled', label: 'disabled' },
+  ],
+
   proxmoxOstypesMap: [
     { value: 'debian', label: 'Debian' },
     { value: 'ubuntu', label: 'Ubuntu' },

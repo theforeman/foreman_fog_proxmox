@@ -40,7 +40,14 @@ module ForemanFogProxmox
           register_global_js_file 'global'
           # Register Proxmox VE compute resource in foreman
           compute_resource ForemanFogProxmox::Proxmox
-          parameter_filter(ComputeResource, :uuid)
+          parameter_filter ComputeResource,
+            :uuid,
+            :ssl_verify_peer,
+            :ssl_certs,
+            :disable_proxy,
+            :auth_method,
+            :token_id,
+            :token
           # add dashboard widget
           widget 'foreman_fog_proxmox_widget', name: N_('Foreman Fog Proxmox widget'), sizex: 8, sizey: 1
 
@@ -111,7 +118,6 @@ module ForemanFogProxmox
       Fog::Proxmox::Compute::Interface.include FogExtensions::Proxmox::Interface
       Fog::Proxmox::Compute::Disk.include FogExtensions::Proxmox::Disk
       Fog::Proxmox::Compute::Node.include FogExtensions::Proxmox::Node
-      ::ComputeResourcesController.include ForemanFogProxmox::Controller::Parameters::ComputeResource
       ::ComputeResourcesVmsController.include ForemanFogProxmox::ComputeResourcesVmsController
       ::HostsController.include ForemanFogProxmox::HostsController
       ::Host::Managed.include Orchestration::Proxmox::Compute

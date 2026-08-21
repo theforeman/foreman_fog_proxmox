@@ -128,13 +128,16 @@ module ProxmoxVMAttrsHelper
       nameserver: vms.config.nameserver,
       searchdomain: vms.config.searchdomain,
       hostname: vms.config.hostname,
+      tags: (vms.config.respond_to?(:tags) ? vms.config.tags : nil),
+      protection: (vms.config.respond_to?(:protection) ? vms.config.protection : nil),
+      timezone: (vms.config.respond_to?(:timezone) ? vms.config.timezone : nil),
       ostemplate_storage: vms.ostemplate_storage,
       ostemplate_file: vms.ostemplate_file,
       start_after_create: vms.start_after_create,
       templated: vms.templated,
       is_secure_boot: vms.config.secure_boot?,
     }
-    vms_keys = [:cpu_type, :nameserver, :searchdomain, :hostname, :is_secure_boot]
+    vms_keys = [:cpu_type, :nameserver, :searchdomain, :hostname, :is_secure_boot, :tags, :protection, :timezone]
     extra_attrs = ActiveSupport::HashWithIndifferentAccess.new
     attributes.each do |key, value|
       camel_key = key.to_s.include?('_') ? snake_to_camel(key.to_s).to_sym : key

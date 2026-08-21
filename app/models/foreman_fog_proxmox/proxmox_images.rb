@@ -41,7 +41,7 @@ module ForemanFogProxmox
     end
 
     def available_images
-      templates.collect { |template| OpenStruct.new(id: template_uuid(template), name: template_name(template)) }
+      templates.collect { |template| OpenStruct.new(id: template_uuid(template), name: template_name(template)) }.uniq
     end
 
     def templates

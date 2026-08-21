@@ -43,5 +43,18 @@ module ForemanFogProxmox
         @cr.clone_from_image(@image, @vmid)
       end
     end
+
+    describe 'available_images' do
+      it 'removes duplicates' do
+        @cr = FactoryBot.build_stubbed(:proxmox_cr)
+        clone = mock('vm')
+        clone.stubs(:name).returns('vm-1')
+        @cr.stubs(:find_vm_by_uuid).returns(clone)
+        template = mock('template')
+        template.stubs(:vmid).returns(100).at_least(2)
+        @cr.stubs(:templates).returns([template, template])
+        assert_equal 1, @cr.available_images.length
+      end
+    end
   end
 end

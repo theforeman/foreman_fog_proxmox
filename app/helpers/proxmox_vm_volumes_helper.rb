@@ -27,10 +27,17 @@ module ProxmoxVMVolumesHelper
   include ProxmoxVMCdromHelper
   include ProxmoxVMCloudinitHelper
 
-  def add_disk_options(disk, args)
+  def add_disk_options(disk, args, bind_mount: false)
     options = ForemanFogProxmox::HashCollection.new_hash_reject_keys(args,
       ['id', 'volid', 'controller', 'device', 'storage', 'size', '_delete', 'storage_type'])
     ForemanFogProxmox::HashCollection.remove_empty_values(options)
+    # backup/quota/replicate/shared only apply to storage-backed volumes; PVE
+    # rejects them on bind mounts, so drop them there.
+    options.reject! { |key, _value| ['backup', 'quota', 'replicate', 'shared'].include?(key.to_s) } if bind_mount
+    # Drop boolean options left at their PVE default so they are not written out
+    # on every volume: ro/acl/quota/shared default to 0, replicate defaults to 1.
+    options.reject! { |key, value| ['ro', 'acl', 'quota', 'shared'].include?(key.to_s) && value.to_s == '0' }
+    options.reject! { |key, value| key.to_s == 'replicate' && value.to_s == '1' }
     disk[:options] = options
   end
 
@@ -53,22 +60,29 @@ module ProxmoxVMVolumesHelper
     disk = {}
     rootfs_volume = rootfs_volume?(args)
     set_disk_attributes(disk, args)
-    if rootfs_volume
+    # A bind mount references an absolute host path as its volume; like rootfs it
+    # is not a storage-backed volume, so PVE does not accept a backup flag on it.
+    bind_mount = disk[:volid].to_s.start_with?('/')
+    if rootfs_volume || bind_mount
       args.delete('backup')
     elsif args['backup'].nil?
       args['backup'] = '1'
     end
     if args.key?('options')
       options = args['options']
-      if rootfs_volume && options.respond_to?(:delete)
+      if (rootfs_volume || bind_mount) && options.respond_to?(:delete)
         options = options.dup
         options.delete('backup')
       end
       disk[:options] = options
     else
-      add_disk_options(disk, args)
+      add_disk_options(disk, args, bind_mount: bind_mount)
     end
-    disk.key?(:storage) ? disk : {}
+    # A bind mount references an absolute host path as its volume, so it has a
+    # volid but no storage; accept it as well as regular storage-backed disks.
+    return disk if disk.key?(:storage) || disk.key?(:volid)
+
+    {}
   end
 
   def rootfs_volume?(args)
@@ -79,7 +93,9 @@ module ProxmoxVMVolumesHelper
     disk[:id] = args['id'] if args.key?('id')
     disk[:volid] = args['volid'] if args.key?('volid') && !args['volid'].empty?
     disk[:storage] = args['storage'].to_s if args.key?('storage') && !args['storage'].empty?
-    disk[:size] = args['size'].to_i if args.key?('size') && !args['size'].empty?
+    # A bind mount (host-path volid) has no size, so only set it otherwise.
+    bind_mount = disk[:volid].to_s.start_with?('/')
+    disk[:size] = args['size'].to_i if args.key?('size') && !args['size'].empty? && !bind_mount
   end
 
   def volume_type?(args, type)

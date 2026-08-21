@@ -10,7 +10,11 @@ const MountPoint = ({ id, data, storagesMap }) => {
   const [error, setError] = useState('');
 
   const handleChange = e => {
-    const { name, value } = e.target;
+    const { name, type, checked, value: targetValue } = e.target;
+    let value = targetValue;
+    if (type === 'checkbox') {
+      value = checked ? '1' : '0';
+    }
     const updatedKey = Object.keys(mp).find(key => mp[key].name === name);
     const updatedData = {
       ...mp,
@@ -68,16 +72,66 @@ const MountPoint = ({ id, data, storagesMap }) => {
         options={ProxmoxComputeSelectors.proxmoxBackupsMap}
         onChange={handleChange}
       />
+      <InputField
+        name={mp?.volid?.name}
+        label={__('Host path (bind mount)')}
+        info={__(
+          'Optional. Set an absolute host directory (e.g. /host/dir) to create a bind mount instead of a storage-backed volume; leave the storage empty in that case.'
+        )}
+        value={mp?.volid?.value}
+        onChange={handleChange}
+      />
+      <InputField
+        name={mp?.ro?.name}
+        label={__('Read-only')}
+        type="checkbox"
+        value={mp?.ro?.value}
+        checked={String(mp?.ro?.value) === '1'}
+        onChange={handleChange}
+      />
+      <InputField
+        name={mp?.acl?.name}
+        label={__('ACL')}
+        type="checkbox"
+        value={mp?.acl?.value}
+        checked={String(mp?.acl?.value) === '1'}
+        onChange={handleChange}
+      />
+      <InputField
+        name={mp?.quota?.name}
+        label={__('Quota')}
+        type="checkbox"
+        value={mp?.quota?.value}
+        checked={String(mp?.quota?.value) === '1'}
+        onChange={handleChange}
+      />
+      <InputField
+        name={mp?.replicate?.name}
+        label={__('Replicate')}
+        type="checkbox"
+        value={mp?.replicate?.value}
+        checked={String(mp?.replicate?.value) === '1'}
+        onChange={handleChange}
+      />
+      <InputField
+        name={mp?.shared?.name}
+        label={__('Shared')}
+        type="checkbox"
+        value={mp?.shared?.value}
+        checked={String(mp?.shared?.value) === '1'}
+        onChange={handleChange}
+      />
+      <InputField
+        name={mp?.mountoptions?.name}
+        label={__('Mount options')}
+        info={__('Semicolon-separated fs mount options, e.g. noatime;nodev.')}
+        value={mp?.mountoptions?.value}
+        onChange={handleChange}
+      />
       <input
         name={mp?.id?.name}
         type="hidden"
         value={mp?.id?.value}
-        onChange={handleChange}
-      />
-      <input
-        name={mp?.volid?.name}
-        type="hidden"
-        value={mp?.volid?.value}
         onChange={handleChange}
       />
     </div>

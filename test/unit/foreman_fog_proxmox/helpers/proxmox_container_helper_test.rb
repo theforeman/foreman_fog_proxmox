@@ -40,6 +40,9 @@ module ForemanFogProxmox
           'password' => 'proxmox01',
           'config_attributes' => {
             'onboot' => '0',
+            'startup_order' => '1',
+            'startup_up' => '30',
+            'startup_down' => '30',
             'description' => '',
             'memory' => '1024',
             'swap' => '512',
@@ -132,6 +135,22 @@ module ForemanFogProxmox
         assert_equal 'amd64', cpu[:arch]
       end
 
+      test '#startup' do
+        startup = parse_typed_startup(host_form['config_attributes'])
+        assert startup.key?(:startup)
+        assert_equal 'order=1,up=30,down=30', startup[:startup]
+      end
+
+      test '#startup omits empty sub-parts' do
+        startup = parse_typed_startup('startup_order' => '2', 'startup_up' => '', 'startup_down' => '15')
+        assert_equal 'order=2,down=15', startup[:startup]
+      end
+
+      test '#startup empty when no sub-parts' do
+        startup = parse_typed_startup('startup_order' => '', 'startup_up' => '', 'startup_down' => '')
+        assert_empty startup
+      end
+
       test '#ostemplate' do
         ostemplate = parse_container_ostemplate(host_form)
         expected_ostemplate = {
@@ -147,6 +166,7 @@ module ForemanFogProxmox
           :password => 'proxmox01',
           :ostemplate => 'local:vztmpl/alpine-3.7-default_20171211_amd64.tar.xz',
           :onboot => '0',
+          :startup => 'order=1,up=30,down=30',
           :memory => '1024',
           :swap => '512',
           :cores => '1',

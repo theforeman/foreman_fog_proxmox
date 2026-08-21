@@ -53,6 +53,31 @@ module FogExtensions
         secure_boot = bios == 'ovmf' && Foreman::Cast.to_bool(efidisk&.pre_enrolled_keys)
         Foreman::Cast.to_bool(secure_boot) ? '1' : '0'
       end
+
+      def startup_order
+        startup_options['order']
+      end
+
+      def startup_up
+        startup_options['up']
+      end
+
+      def startup_down
+        startup_options['down']
+      end
+
+      private
+
+      # Parse the Proxmox 'startup' string (e.g. 'order=1,up=30,down=30')
+      # into a hash so the boot/shutdown ordering fields round-trip on read.
+      def startup_options
+        return {} if startup.nil? || startup == ''
+
+        startup.to_s.split(',').each_with_object({}) do |part, options|
+          key, value = part.split('=', 2)
+          options[key] = value
+        end
+      end
     end
   end
 end

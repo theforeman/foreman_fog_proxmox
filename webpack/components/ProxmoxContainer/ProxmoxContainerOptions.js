@@ -136,6 +136,30 @@ const ProxmoxContainerOptions = ({
         onChange={handleChange}
       />
       <InputField
+        name={opts?.startupOrder?.name}
+        label={__('Startup order')}
+        info={__(
+          'Boot/shutdown ordering, e.g. order=1,up=30,down=30. Leave empty to ignore.'
+        )}
+        type="number"
+        value={opts?.startupOrder?.value}
+        onChange={handleChange}
+      />
+      <InputField
+        name={opts?.startupUp?.name}
+        label={__('Startup up delay')}
+        type="number"
+        value={opts?.startupUp?.value}
+        onChange={handleChange}
+      />
+      <InputField
+        name={opts?.startupDown?.name}
+        label={__('Startup down delay')}
+        type="number"
+        value={opts?.startupDown?.value}
+        onChange={handleChange}
+      />
+      <InputField
         name={opts?.ostype?.name}
         label={__('OS Type')}
         type="select"

@@ -22,6 +22,15 @@ describe('ProxmoxComputeSelectors', () => {
     expect(values).not.toContain('');
   });
 
+  it('contains the supported LXC architectures', () => {
+    expect(ProxmoxComputeSelectors.proxmoxArchsMap).toEqual([
+      { value: 'amd64', label: 'amd64 (64-bit x86)' },
+      { value: 'i386', label: 'i386 (32-bit x86)' },
+      { value: 'arm64', label: 'arm64 (64-bit ARM)' },
+      { value: 'armhf', label: 'armhf (32-bit ARM)' },
+    ]);
+  });
+
   it('builds HDD controllers map from cloudinit controllers plus virtio', () => {
     const cloudinitValues = ProxmoxComputeSelectors.proxmoxControllersCloudinitMap.map(
       v => v.value

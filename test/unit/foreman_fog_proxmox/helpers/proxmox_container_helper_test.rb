@@ -40,6 +40,7 @@ module ForemanFogProxmox
           'password' => 'proxmox01',
           'config_attributes' => {
             'onboot' => '0',
+            'unprivileged' => '1',
             'description' => '',
             'memory' => '1024',
             'swap' => '512',
@@ -95,6 +96,7 @@ module ForemanFogProxmox
           :memory => '1024',
           'templated' => '0',
           :onboot => '0',
+          :unprivileged => '1',
           :swap => '512',
           'cores' => '1',
           :arch => 'amd64',
@@ -147,6 +149,7 @@ module ForemanFogProxmox
           :password => 'proxmox01',
           :ostemplate => 'local:vztmpl/alpine-3.7-default_20171211_amd64.tar.xz',
           :onboot => '0',
+          :unprivileged => '1',
           :memory => '1024',
           :swap => '512',
           :cores => '1',

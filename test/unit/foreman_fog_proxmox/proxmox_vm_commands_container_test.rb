@@ -56,7 +56,7 @@ module ForemanFogProxmox
         @cr.save_vm(uuid, attr)
       end
 
-      it 'saves modified container config' do
+      it 'saves modified container config without changing privilege mode' do
         uuid = '100'
         config = mock('config')
         config.stubs(:attributes).returns(:cores => '')
@@ -69,7 +69,8 @@ module ForemanFogProxmox
         vm.stubs(:attributes).returns(node_id: 'proxmox', type: 'lxc')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         attr = { 'templated' => '0', 'node_id' => 'proxmox',
-                 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0' } }.with_indifferent_access
+                 'config_attributes' => { 'cores' => '1', 'cpulimit' => '1', 'onboot' => '0',
+                                          'unprivileged' => '1' } }.with_indifferent_access
         @cr.stubs(:parse_container_vm).returns('vmid' => '100', 'node_id' => 'proxmox', 'type' => 'lxc',
           'cores' => '1', 'cpulimit' => '1')
         expected_attr = { :cores => '1', :cpulimit => '1' }
@@ -252,8 +253,8 @@ module ForemanFogProxmox
     end
 
     describe 'create_vm' do
-      it 'creates container without bootstart' do
-        args = { vmid: '100', type: 'lxc', node_id: 'proxmox', start_after_create: '0' }
+      it 'creates an unprivileged container without bootstart' do
+        args = { vmid: '100', type: 'lxc', node_id: 'proxmox', start_after_create: '0', unprivileged: '1' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         containers = mock('containers')
@@ -303,8 +304,9 @@ module ForemanFogProxmox
         cr.stubs(:find_vm_by_uuid).with('999').returns(image)
         cr.expects(:clone_from_image).with(image, 100).returns(vm)
         vm.expects(:container?).returns(true)
-        expected_args = { :vmid => "100", :type => "lxc" }
-        cr.stubs(:parse_typed_vm).with(args, 'lxc').returns(expected_args)
+        parsed_args = { vmid: '100', type: 'lxc', unprivileged: '1' }
+        cr.stubs(:parse_typed_vm).with(args, 'lxc').returns(parsed_args)
+        expected_args = { vmid: '100', type: 'lxc' }
         vm.expects(:update).with(expected_args)
         cr.create_vm(args)
       end

@@ -78,7 +78,11 @@ module ForemanFogProxmox
         options = { :hostname => args[:name] }
         parsed_args.merge(options)
       end
-      parsed_args.reject { |k| k == 'pool' }
+      # The root 'password' and 'ssh-public-keys' (raw 'sshkeys') are create-only
+      # container params: PVE rejects them on PUT .../lxc/{vmid}/config, so they must be
+      # kept out of the clone/update body (mirrors how 'pool' is excluded here).
+      excluded_keys = ['pool', 'password', 'sshkeys', 'ssh-public-keys']
+      parsed_args.reject { |k| excluded_keys.include?(k.to_s) }
     end
 
     def destroy_vm(uuid)
@@ -100,8 +104,10 @@ module ForemanFogProxmox
     end
 
     def compute_config_attributes(parsed_attr)
+      # The root 'password' and 'ssh-public-keys' (raw 'sshkeys') are create-only, like
+      # 'ostemplate': PVE rejects them on PUT .../config, so exclude them from updates.
       excluded_keys = [:vmid, :templated, :ostemplate, :ostemplate_file, :ostemplate_storage, :volumes_attributes,
-                       :pool]
+                       :pool, :password, :sshkeys, :'ssh-public-keys']
       config_attributes = parsed_attr.reject { |key, _value| excluded_keys.include? key.to_sym }
       ForemanFogProxmox::HashCollection.remove_empty_values(config_attributes)
       config_attributes = config_attributes.reject { |key, _value| Fog::Proxmox::DiskHelper.disk?(key) }

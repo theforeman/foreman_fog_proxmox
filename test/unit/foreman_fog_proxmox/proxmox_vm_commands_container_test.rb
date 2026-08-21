@@ -308,6 +308,40 @@ module ForemanFogProxmox
         vm.expects(:update).with(expected_args)
         cr.create_vm(args)
       end
+
+      it 'excludes the create-only password and ssh keys from the clone/update attributes' do
+        cr = ForemanFogProxmox::Proxmox.new
+        args = { vmid: '100', type: 'lxc', image_id: '999', name: 'name' }
+        cr.stubs(:parse_typed_vm).with(args, 'lxc').returns(
+          'vmid' => '100',
+          'type' => 'lxc',
+          'pool' => 'pool1',
+          'password' => 'secret',
+          'sshkeys' => 'ssh-rsa AAAAB3NzaC1 user@host',
+          'ssh-public-keys' => 'ssh-rsa AAAAB3NzaC1 user@host'
+        )
+        clone_attributes = cr.compute_clone_attributes(args, true, 'lxc')
+        assert_not clone_attributes.key?('ssh-public-keys')
+        assert_not clone_attributes.key?('sshkeys')
+        assert_not clone_attributes.key?('password')
+        assert_not clone_attributes.key?('pool')
+        assert_equal '100', clone_attributes['vmid']
+      end
+
+      it 'excludes the create-only password and ssh keys from the container update config' do
+        cr = ForemanFogProxmox::Proxmox.new
+        parsed_attr = {
+          'cores' => '1',
+          'password' => 'secret',
+          'sshkeys' => 'ssh-rsa AAAAB3NzaC1 user@host',
+          'ssh-public-keys' => 'ssh-rsa AAAAB3NzaC1 user@host',
+        }
+        config_attributes = cr.compute_config_attributes(parsed_attr)[:config_attributes]
+        assert_not config_attributes.key?('ssh-public-keys')
+        assert_not config_attributes.key?('sshkeys')
+        assert_not config_attributes.key?('password')
+        assert_equal '1', config_attributes['cores']
+      end
     end
   end
 end

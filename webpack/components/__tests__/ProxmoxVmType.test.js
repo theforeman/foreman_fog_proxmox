@@ -9,9 +9,10 @@ jest.mock('../ProxmoxVmUtils', () => ({
   networkSelected: jest.fn(),
 }));
 
-jest.mock('../GeneralTabContent', () => () => (
+const mockGeneralTabContent = jest.fn(() => (
   <div data-testid="general-tab-content" />
 ));
+jest.mock('../GeneralTabContent', () => props => mockGeneralTabContent(props));
 
 jest.mock('../common/FormInputs', () => () => <div data-testid="type-field" />);
 
@@ -38,6 +39,7 @@ describe('ProxmoxVmType', () => {
     window.tfm = { tools: { highlightTabErrors: jest.fn() } };
     jest.useFakeTimers();
     API.get.mockReset();
+    mockGeneralTabContent.mockClear();
   });
 
   afterEach(() => {
@@ -147,5 +149,62 @@ describe('ProxmoxVmType', () => {
     });
 
     await waitFor(() => expect(imageSelect).toHaveValue('template-9000'));
+  });
+
+  it('filters offline nodes and displays their names', async () => {
+    API.get.mockResolvedValue({
+      data: {
+        nodes: [{ node: 'online-node' }],
+        offline_nodes: ['offline-node'],
+        pools: [],
+        storages: [],
+        bridges: [],
+        images: [],
+      },
+    });
+
+    render(
+      <ProxmoxVmType {...baseProps} computeResourceId={1} propsLoaded={false} />
+    );
+
+    expect(
+      await screen.findByText(
+        'The following Proxmox nodes are offline and unavailable: offline-node'
+      )
+    ).toBeInTheDocument();
+    await waitFor(() => {
+      const { calls } = mockGeneralTabContent.mock;
+      const [lastCall] = calls.slice(-1);
+      const [props] = lastCall;
+      expect(props.nodesMap).toEqual([
+        { value: 'online-node', label: 'online-node' },
+      ]);
+      expect(props.offlineNodes).toEqual(['offline-node']);
+    });
+  });
+
+  it('shows the offline warning without placement choices when every node is offline', async () => {
+    API.get.mockResolvedValue({
+      data: {
+        nodes: [],
+        offline_nodes: ['node-a', 'node-b'],
+        pools: [],
+        storages: [],
+        bridges: [],
+        images: [],
+      },
+    });
+
+    render(
+      <ProxmoxVmType {...baseProps} computeResourceId={1} propsLoaded={false} />
+    );
+
+    expect(
+      await screen.findByText(
+        'The following Proxmox nodes are offline and unavailable: node-a, node-b'
+      )
+    ).toBeInTheDocument();
+    const [props] = mockGeneralTabContent.mock.calls.slice(-1)[0];
+    expect(props.nodesMap).toEqual([]);
   });
 });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import GeneralTabContent from '../GeneralTabContent';
 import { ResourceAvailabilityContext } from '../common/ResourceSelect';
 
@@ -67,6 +67,79 @@ describe('GeneralTabContent', () => {
       });
     }
   );
+
+  it.each([true, false])(
+    'preserves an offline selection until explicitly changed (fromProfile=%s)',
+    fromProfile => {
+      const handleChange = jest.fn();
+      const props = {
+        general,
+        fromProfile,
+        newVm: true,
+        nodesMap: [{ value: 'node-b', label: 'node-b' }],
+        offlineNodes: ['node-a', 'node-c'],
+        handleChange,
+      };
+      const { container, rerender } = render(<GeneralTabContent {...props} />);
+      const nodeSelect = container.querySelector(
+        'select[name="host[compute_attributes][node_id]"]'
+      );
+
+      expect(nodeSelect).toHaveValue('node-a');
+      expect(
+        screen.getByRole('option', { name: 'node-a (offline)' })
+      ).toBeEnabled();
+      expect(
+        screen.queryByRole('option', { name: /node-c/ })
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'The selected node is offline. Choose an available node before provisioning.'
+        )
+      ).toBeInTheDocument();
+      expect(handleChange).not.toHaveBeenCalled();
+
+      fireEvent.change(nodeSelect, { target: { value: 'node-b' } });
+      expect(handleChange).toHaveBeenCalledTimes(1);
+
+      rerender(
+        <GeneralTabContent
+          {...props}
+          general={{
+            ...general,
+            nodeId: { ...general.nodeId, value: 'node-b' },
+          }}
+        />
+      );
+
+      expect(nodeSelect).toHaveValue('node-b');
+      expect(
+        screen.queryByRole('option', { name: /node-a/ })
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          'The selected node is offline. Choose an available node before provisioning.'
+        )
+      ).not.toBeInTheDocument();
+    }
+  );
+
+  it('retains saved placement when there are no available replacement nodes', () => {
+    const { container } = render(
+      <GeneralTabContent
+        general={general}
+        offlineNodes={['node-a']}
+        fromProfile
+        handleChange={jest.fn()}
+      />
+    );
+
+    expect(
+      container.querySelector(
+        'select[name="host[compute_attributes][node_id]"]'
+      )
+    ).toHaveValue('node-a');
+  });
 
   it('offers ISO-capable storages for the selected node', () => {
     const { container } = render(

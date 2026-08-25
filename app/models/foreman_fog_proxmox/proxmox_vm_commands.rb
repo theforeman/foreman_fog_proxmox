@@ -34,7 +34,10 @@ module ForemanFogProxmox
 
     def create_vm(args = {})
       type = args[:type]
-      node = client.nodes.get(args[:node_id])
+      node_id = args[:node_id]
+      node = node_id.present? ? client.nodes.get(node_id) : default_node
+      raise ::Foreman::Exception, format(_('Proxmox node %<node>s was not found'), node: node_id) unless node
+
       vmid = args[:vmid] = assign_vmid(args[:vmid].to_i, node)
       image_id = args[:image_id]
       remove_volume_keys(args)
@@ -56,7 +59,7 @@ module ForemanFogProxmox
       start_on_boot(vm, args)
     rescue StandardError => e
       logger.warn("failed to create vm: #{e}")
-      destroy_vm id.to_s + '_' + vm.vmid.to_s if vm
+      rollback_vm_instance(vm) if vm
       raise e
     end
 
@@ -84,8 +87,7 @@ module ForemanFogProxmox
     def destroy_vm(uuid)
       vm = find_vm_by_uuid(uuid)
       return true if vm.nil?
-      vm.stop if vm.ready?
-      vm.ha&.dig("managed").to_i == 1 ? vm.destroy(query: { purge: 1 }) : vm.destroy
+      destroy_vm_instance(vm)
     rescue ActiveRecord::RecordNotFound
       # if the VM does not exists, we don't really care.
       true
@@ -136,6 +138,28 @@ module ForemanFogProxmox
         update_pool(vm, poolid) if poolid
       end
       find_vm_by_uuid(uuid)
+    end
+
+    private
+
+    def reload_vm_instance!(vm)
+      return vm if vm.reload
+
+      raise ::Foreman::Exception,
+        format(_('Unable to refresh Proxmox VM %<vmid>s on node %<node>s'), vmid: vm.vmid, node: vm.node_id)
+    end
+
+    def rollback_vm_instance(vm)
+      reload_vm_instance!(vm)
+      destroy_vm_instance(vm)
+    rescue StandardError => e
+      logger.error("Failed to clean up Proxmox VM #{vm.vmid} on node #{vm.node_id}: #{e}")
+      raise
+    end
+
+    def destroy_vm_instance(vm)
+      vm.stop if vm.ready?
+      vm.ha&.dig("managed").to_i == 1 ? vm.destroy(query: { purge: 1 }) : vm.destroy
     end
   end
 end

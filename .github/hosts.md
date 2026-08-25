@@ -2,6 +2,18 @@
 
 ## Create
 
+Nodes reported offline are excluded from new placement choices and node-local
+metadata queries. Saved offline node selections remain visible with a warning
+rather than being replaced automatically. Choose an available node before
+provisioning; an explicitly requested node is still attempted through the API
+because its reported status may be stale.
+
+Editing a host or compute profile whose selected node is offline is not fully
+supported: Fog may query that node's task API while constructing the form's VM
+object, which can prevent the form from rendering. Profiles without a VM ID
+also need an available node to generate defaults. Preserving a saved node
+selection does not guarantee that its form can open while the node is unreachable.
+
 You first choose VM type between a container or a server.
 
 The form automatically changes.
@@ -88,6 +100,21 @@ original node, or remove the affected device.
 For host network interfaces, open the interface's edit dialog to correct an
 unavailable bridge. If resource availability cannot be checked, reload the form
 to retry.
+
+## Delete
+
+VM lookup skips nodes reported offline, but still finds VMs on available nodes.
+If the VM is not found and any nodes were skipped, deletion fails explicitly:
+the VM might still exist on an unsearched node. This can also block deletion of
+a host whose VM is already gone until all nodes can be searched. API lookup
+failures likewise do not count as confirmation that the VM is absent.
+
+Cleanup after failed creation uses the newly created VM directly, rather than
+searching the cluster again, so a stale offline status does not prevent the
+cleanup attempt. Its current power and HA state is refreshed on its known node
+before deletion; refresh failures are reported rather than using stale state.
+New clones are also loaded from their known node, and remain eligible for cleanup
+if loading the clone fails after cloning succeeds.
 
 ## Clone images
 

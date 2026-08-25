@@ -16,11 +16,19 @@ You should have received a copy of the GNU General Public License
 along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <% untemplatable = new_vm || f.object.templated? %>
+<%
+  form_nodes = new_vm ? compute_resource.available_nodes : compute_resource.nodes
+  unavailable_selection = new_vm && f.object.node_id.present? && form_nodes.none? { |node| node.node == f.object.node_id }
+  if unavailable_selection
+    selected_node = compute_resource.nodes.find { |node| node.node == f.object.node_id }
+    form_nodes += [selected_node] if selected_node
+  end
+%>
 
 <%= field_set_tag _("General"), :id => "general" do %>
   <%= checkbox_f f, :templated, :label => _('Create image?'), :disabled => untemplatable, :class => ('hide' if untemplatable), :no_label => untemplatable %>
   <%= counter_f f, :vmid, :label => _('VM ID'), :label_size => "col-md-2", :required => true, :disabled => (!new_vm || from_profile) %>
-  <%= select_f f, :node_id, compute_resource.nodes, :node, :node, { }, :label => _('Node'), :label_size => "col-md-2", :required => true, :onchange => 'nodeSelected(this)' %>
+  <%= select_f f, :node_id, form_nodes, :node, :node, { }, :label => _('Node'), :label_size => "col-md-2", :required => true, :onchange => 'nodeSelected(this)', :help_inline => (unavailable_selection ? _('The selected node is unavailable. Choose an available node before provisioning.') : nil) %>
   <% unless !new_vm || from_profile %>
     <% checked = params[:host] && params[:host][:compute_attributes] && params[:host][:compute_attributes][:start_after_create] || '1' %>
     <%= checkbox_f f, :start_after_create, {:checked => (checked == '1'), :label => _('Start after creation?')} %>

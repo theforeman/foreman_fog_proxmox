@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { PageSection, Divider } from '@patternfly/react-core';
-import { translate as __ } from 'foremanReact/common/I18n';
+import { sprintf, translate as __ } from 'foremanReact/common/I18n';
 import InputField from './common/FormInputs';
 import ResourceSelect from './common/ResourceSelect';
 import { createStoragesMap } from './ProxmoxStoragesUtils';
@@ -11,6 +11,7 @@ const GeneralTabContent = ({
   fromProfile,
   newVm,
   nodesMap,
+  offlineNodes,
   poolsMap,
   imagesMap,
   storages,
@@ -25,6 +26,17 @@ const GeneralTabContent = ({
   );
   const hasIsoStorages = isoStorages.length > 0;
   const usesIsoUploadStorage = ['bootdisk', 'image'].includes(provisionMethod);
+  const selectedNode = general?.nodeId?.value;
+  const selectedNodeOffline = offlineNodes.includes(selectedNode);
+  const nodeOptions = selectedNodeOffline
+    ? [
+        {
+          value: selectedNode,
+          label: sprintf(__('%(node)s (offline)'), { node: selectedNode }),
+        },
+        ...nodesMap,
+      ]
+    : nodesMap;
 
   return (
     <PageSection padding={{ default: 'noPadding' }}>
@@ -44,7 +56,14 @@ const GeneralTabContent = ({
         required
         type="select"
         value={general?.nodeId?.value}
-        options={nodesMap}
+        options={nodeOptions}
+        error={
+          selectedNodeOffline
+            ? __(
+                'The selected node is offline. Choose an available node before provisioning.'
+              )
+            : ''
+        }
         onChange={handleChange}
       />
       <InputField
@@ -124,6 +143,7 @@ GeneralTabContent.propTypes = {
   fromProfile: PropTypes.bool,
   newVm: PropTypes.bool,
   nodesMap: PropTypes.array,
+  offlineNodes: PropTypes.arrayOf(PropTypes.string),
   poolsMap: PropTypes.array,
   imagesMap: PropTypes.array,
   storages: PropTypes.array,
@@ -136,6 +156,7 @@ GeneralTabContent.defaultProps = {
   fromProfile: false,
   newVm: false,
   nodesMap: [],
+  offlineNodes: [],
   poolsMap: [],
   imagesMap: [],
   storages: [],

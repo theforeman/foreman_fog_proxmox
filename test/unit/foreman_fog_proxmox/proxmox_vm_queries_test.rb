@@ -33,6 +33,89 @@ module ForemanFogProxmox
     include ProxmoxContainerMockFactory
     include ProxmoxVMHelper
 
+    describe 'nodes' do
+      before do
+        @cr = ForemanFogProxmox::Proxmox.new
+        @nodes = mock('nodes')
+        client = mock('client')
+        client.stubs(:nodes).returns(@nodes)
+        @cr.stubs(:client).returns(client)
+      end
+
+      it 'returns the complete node inventory sorted by name' do
+        node_z = OpenStruct.new(node: 'node-z', status: 'online')
+        node_a = OpenStruct.new(node: 'node-a', status: 'offline')
+        @nodes.stubs(:all).returns([node_z, node_a])
+
+        assert_equal %w[node-a node-z], @cr.nodes.map(&:node)
+      end
+
+      it 'excludes offline nodes' do
+        online = OpenStruct.new(node: 'online', status: 'online')
+        offline = OpenStruct.new(node: 'offline', status: 'offline')
+        @nodes.stubs(:all).returns([offline, online])
+
+        availability = @cr.node_availability
+
+        assert_equal [online], availability[:available]
+        assert_equal [offline], availability[:offline]
+        assert_equal [online], @cr.available_nodes
+        assert_equal [offline], @cr.offline_nodes
+        assert_equal [offline, online], @cr.nodes
+      end
+
+      it 'keeps nodes without a status for compatibility' do
+        node = OpenStruct.new(node: 'unknown')
+        @nodes.stubs(:all).returns([node])
+
+        assert_equal [node], @cr.nodes
+        assert_equal [node], @cr.available_nodes
+      end
+
+      it 'returns an empty available list when all nodes are offline' do
+        offline = OpenStruct.new(node: 'offline', status: 'offline')
+        @nodes.stubs(:all).returns([offline])
+
+        assert_equal [offline], @cr.nodes
+        assert_empty @cr.available_nodes
+        assert_equal [offline], @cr.node_availability[:offline]
+      end
+
+      it 'refreshes availability when a node goes offline' do
+        online = OpenStruct.new(node: 'online', status: 'online')
+        @nodes.expects(:all).twice.returns([online], [OpenStruct.new(node: 'online', status: 'offline')])
+
+        assert_equal [online], @cr.available_nodes
+        assert_empty @cr.available_nodes
+      end
+
+      it 'does not query VM collections on offline nodes' do
+        offline_servers = mock('offline servers')
+        offline_containers = mock('offline containers')
+        offline_servers.expects(:all).never
+        offline_containers.expects(:all).never
+        offline = OpenStruct.new(
+          node: 'offline',
+          status: 'offline',
+          servers: offline_servers,
+          containers: offline_containers
+        )
+        online_servers = mock('online servers')
+        online_containers = mock('online containers')
+        online_servers.stubs(:all).returns([])
+        online_containers.stubs(:all).returns([])
+        online = OpenStruct.new(
+          node: 'online',
+          status: 'online',
+          servers: online_servers,
+          containers: online_containers
+        )
+        @nodes.stubs(:all).returns([offline, online])
+
+        assert_empty @cr.vms.items
+      end
+    end
+
     describe 'storages' do
       before do
         @cr = ForemanFogProxmox::Proxmox.new
@@ -121,17 +204,75 @@ module ForemanFogProxmox
     end
 
     describe 'find_vm_by_uuid' do
+      it 'skips offline nodes when finding a VM' do
+        cr = ForemanFogProxmox::Proxmox.new
+        offline = stub('offline', node: 'offline', status: 'offline')
+        offline.expects(:servers).never
+        offline.expects(:containers).never
+        servers = mock('servers')
+        online = mock('online', node: 'online', status: 'online', servers: servers)
+        online.expects(:containers).never
+        vm = mock('vm')
+        cr.expects(:nodes).once.returns([offline, online])
+        cr.expects(:find_vm_in_servers_by_vmid).with(servers, '100').returns(vm)
+
+        assert_equal vm, cr.find_vm_by_uuid('1_100')
+      end
+
       it 'returns nil when the uuid does not match' do
         cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, empty_servers, empty_servers)
         assert_nil cr.find_vm_by_uuid('1_100')
       end
 
-      it 'raises RecordNotFound when the compute raises error' do
-        exception = Fog::Errors::Error.new
-        cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers_raising_exception(exception))
-        assert_raises ActiveRecord::RecordNotFound do
-          cr.find_vm_by_uuid('1_100')
+      [true, false].each do |has_online_node|
+        it "reports an inconclusive lookup when #{has_online_node ? 'some' : 'all'} nodes are offline" do
+          cr = ForemanFogProxmox::Proxmox.new
+          offline = mock('offline', node: 'node-a', status: 'offline')
+          offline.expects(:servers).never
+          offline.expects(:containers).never
+          nodes = [offline]
+          nodes << stub(node: 'node-b', status: 'online', servers: empty_servers, containers: empty_servers) if has_online_node
+          cr.expects(:nodes).once.returns(nodes)
+
+          error = assert_raises(::Foreman::Exception) { cr.find_vm_by_uuid('1_100') }
+
+          assert_equal 'Unable to locate Proxmox VM 100: nodes node-a were offline and were not searched', error.bare_message
         end
+      end
+
+      it 'returns nil for an invalid UUID without searching nodes' do
+        cr = ForemanFogProxmox::Proxmox.new
+        cr.expects(:nodes).never
+
+        assert_nil cr.find_vm_by_uuid('invalid')
+      end
+
+      it 'returns nil when both VM collections report not found' do
+        missing = Fog::Errors::NotFound.new
+        cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new,
+          servers_raising_exception(missing), servers_raising_exception(missing))
+
+        assert_nil cr.find_vm_by_uuid('1_100')
+      end
+
+      it 'raises an explicit lookup error when the compute raises error' do
+        exception = Fog::Errors::Error.new('API unavailable')
+        cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers_raising_exception(exception))
+
+        error = assert_raises(::Foreman::Exception) { cr.find_vm_by_uuid('1_100') }
+
+        assert_equal 'Failed retrieving Proxmox VM 100: API unavailable', error.bare_message
+      end
+
+      it 'does not treat a metadata lookup failure as an absent VM' do
+        vm = mock('vm')
+        servers = stub(get: vm)
+        cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
+        cr.expects(:pool_owner).with(vm).raises(Fog::Errors::NotFound.new('pool metadata unavailable'))
+
+        error = assert_raises(::Foreman::Exception) { cr.find_vm_by_uuid('1_100') }
+
+        assert_equal 'Failed retrieving Proxmox VM 100: pool metadata unavailable', error.bare_message
       end
 
       it 'finds vm on other node in cluster' do

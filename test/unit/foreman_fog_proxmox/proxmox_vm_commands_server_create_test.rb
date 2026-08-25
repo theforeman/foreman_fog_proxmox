@@ -32,6 +32,38 @@ module ForemanFogProxmox
     include ProxmoxVMHelper
 
     describe 'create_vm' do
+      %w[qemu lxc].each do |type|
+        it "attempts #{type} creation on the selected node even when its reported status is offline" do
+          args = { vmid: '100', type: type, node_id: 'offline', start_after_create: '0' }
+          servers = mock('servers')
+          containers = mock('containers')
+          servers.expects(:id_valid?).with(100).returns(true)
+          cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
+          node = cr.send(:client).nodes.get('offline')
+          node.stubs(:node).returns('offline')
+          node.stubs(:status).returns('offline')
+          cr.expects(:available_nodes).never
+          cr.stubs(:parse_typed_vm).with(args, type).returns(args)
+          cr.stubs(:update_boot_order).returns(nil)
+          vm = mock('vm')
+          node.public_send(vm_collection(type)).expects(:create).with(args).returns(vm)
+
+          assert_equal vm, cr.create_vm(args)
+        end
+      end
+
+      it 'reports a selected node that is not in the inventory' do
+        cr = ForemanFogProxmox::Proxmox.new
+        nodes = mock('nodes')
+        nodes.expects(:get).with('missing').returns(nil)
+        cr.stubs(:client).returns(stub(nodes: nodes))
+        cr.expects(:assign_vmid).never
+
+        error = assert_raises(::Foreman::Exception) { cr.create_vm(node_id: 'missing', type: 'qemu') }
+
+        assert_equal 'Proxmox node missing was not found', error.bare_message
+      end
+
       it 'uses next vmid when requested vmid is occupied or out of range' do
         args = { vmid: '100', type: 'qemu', node_id: 'proxmox', start_after_create: '0' }
         servers = mock('servers')

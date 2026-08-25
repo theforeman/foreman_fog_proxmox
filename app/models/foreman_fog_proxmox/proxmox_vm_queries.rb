@@ -23,8 +23,21 @@ module ForemanFogProxmox
     include ProxmoxVMUuidHelper
 
     def nodes
-      nodes = client.nodes.all if client
-      nodes&.sort_by(&:node)
+      client ? Array(client.nodes.all).sort_by(&:node) : []
+    end
+
+    def node_availability
+      available, offline = nodes.partition { |node| !offline_node?(node) }
+
+      { available: available, offline: offline }
+    end
+
+    def available_nodes
+      node_availability[:available]
+    end
+
+    def offline_nodes
+      node_availability[:offline]
     end
 
     def storages(node_id = default_node_id, type = 'images')
@@ -45,7 +58,7 @@ module ForemanFogProxmox
     # TODO: Pagination with filters
     def vms(opts = {})
       vms = []
-      nodes.each { |node| vms += node.servers.all + node.containers.all }
+      available_nodes.each { |node| vms += node.servers.all + node.containers.all }
       vms.each { |vm| attach_compute_resource_id(vm) }
       if opts.key?(:eager_loading) && opts[:eager_loading]
         vms_eager = []
@@ -56,31 +69,45 @@ module ForemanFogProxmox
     end
 
     def find_vm_by_uuid(uuid)
-      # look for the uuid on all known nodes
-      vm = nil
       vmid = extract_vmid(uuid)
-      nodes.each do |node|
+      return nil if ForemanFogProxmox::Value.empty?(vmid)
+
+      availability = node_availability
+      availability[:available].each do |node|
         vm = find_vm_in_servers_by_vmid(node.servers, vmid)
         vm ||= find_vm_in_servers_by_vmid(node.containers, vmid)
         next if vm.nil?
         logger.debug("found vm #{vmid} on node #{node.node}")
-        break
+        return vm
       end
-      vm
+
+      unless availability[:offline].empty?
+        raise ::Foreman::Exception,
+          format(_('Unable to locate Proxmox VM %<vmid>s: nodes %<nodes>s were offline and were not searched'),
+            vmid: vmid, nodes: availability[:offline].map(&:node).join(', '))
+      end
+      nil
     end
 
     def find_vm_in_servers_by_vmid(servers, vmid)
-      vm = servers.get(vmid) unless ForemanFogProxmox::Value.empty?(vmid)
+      vm = begin
+        servers.get(vmid) unless ForemanFogProxmox::Value.empty?(vmid)
+      rescue Fog::Errors::NotFound
+        nil
+      end
       pool_owner(vm) if vm
       attach_compute_resource_id(vm)
-    rescue Fog::Errors::NotFound
-      nil
     rescue StandardError => e
       Foreman::Logging.exception(format(_('Failed retrieving proxmox server vm by vmid=%<vmid>s'), vmid: vmid), e)
-      raise(ActiveRecord::RecordNotFound, e)
+      raise ::Foreman::Exception,
+        format(_('Failed retrieving Proxmox VM %<vmid>s: %<error>s'), vmid: vmid, error: e.message)
     end
 
     private
+
+    def offline_node?(node)
+      node.respond_to?(:status) && node.status == 'offline'
+    end
 
     def attach_compute_resource_id(virtual_machine)
       return virtual_machine if virtual_machine.nil?

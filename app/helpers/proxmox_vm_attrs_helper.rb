@@ -130,6 +130,7 @@ module ProxmoxVMAttrsHelper
       hostname: vms.config.hostname,
       ostemplate_storage: vms.ostemplate_storage,
       ostemplate_file: vms.ostemplate_file,
+      iso_upload_storage: vms.iso_upload_storage,
       start_after_create: vms.start_after_create,
       templated: vms.templated,
       is_secure_boot: vms.config.secure_boot?,

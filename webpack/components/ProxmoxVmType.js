@@ -371,6 +371,8 @@ const ProxmoxVmType = ({
               nodesMap={nodesMap}
               poolsMap={poolsMap}
               imagesMap={imagesMap}
+              storages={metaStorages}
+              provisionMethod={provisionMethodState}
               handleChange={handleChange}
               untemplatable={untemplatable}
             />

@@ -21,6 +21,9 @@ require 'fog/proxmox/helpers/disk_helper'
 require 'fog/proxmox/helpers/nic_helper'
 require 'foreman_fog_proxmox/value'
 require 'foreman_fog_proxmox/hash_collection'
+require 'fileutils'
+require 'open3'
+require 'tmpdir'
 
 # Convert a foreman form server hash into a fog-proxmox server attributes hash
 module ProxmoxVMCloudinitHelper
@@ -42,54 +45,59 @@ module ProxmoxVMCloudinitHelper
     cloudinit_h
   end
 
-  def create_cloudinit_iso(vm_name, configs, ssh)
-    iso = File.join(default_iso_path, "#{vm_name.tr('.', '_')}_cloudinit.iso")
+  def create_cloudinit_iso(vm_name, configs)
+    wd = create_temp_directory
+    iso = File.join(wd, "#{vm_name.tr('.', '_')}_cloudinit.iso")
     files = []
-    wd = create_temp_directory(ssh)
 
     configs.each do |config|
-      config_file = ssh.run("cat <<'EOF' > '#{wd}/#{config[0]}'\n#{config[1]}\nEOF")
-      unless config_file.first.status.zero?
-        delete_temp_dir(ssh, wd)
-        raise ::Foreman::Exception, "Failed to create file #{config[0]}: #{config_file.first.stdout}"
-      end
-      files.append(File.join(wd, config[0]))
+      config_file = File.join(wd, config[0])
+      File.write(config_file, config[1])
+      files.append(config_file)
     end
-    generated_iso = ssh.run(generate_iso_command(iso, files))
-    unless generated_iso.first.status.zero?
-      delete_temp_dir(ssh, wd)
-      raise Foreman::Exception, N_("ISO build failed: #{generated_iso.first.stdout}")
-    end
-    delete_temp_dir(ssh, wd)
-    iso
+    logger.debug("Generating cloud-init ISO at #{iso}")
+    stdout, stderr, status = Open3.capture3(*generate_iso_command(iso, files))
+    raise Foreman::Exception, N_("ISO build failed: #{stderr.presence || stdout}") unless status.success?
+
+    yield iso
+  ensure
+    delete_temp_dir(wd) if wd && Dir.exist?(wd)
   end
 
   def generate_iso_command(iso_file, config_files)
-    arguments = ["genisoimage", "-output #{iso_file}", '-volid', 'cidata', '-joliet', '-rock']
-    iso_command = arguments.concat(config_files).join(' ')
-    logger.debug("iso image generation args: #{iso_command}")
-    iso_command
+    arguments = ["genisoimage", '-output', iso_file, '-volid', 'cidata', '-joliet', '-rock']
+    arguments.concat(config_files)
+    logger.debug("iso image generation args: #{arguments.join(' ')}")
+    arguments
   end
 
-  def create_temp_directory(ssh)
-    res = ssh.run("mktemp -d")
-    raise ::Foreman::Exception, "Could not create working directory to store cloudinit config data: #{res.first.stdout}." unless res.first.status.zero?
-    res.first.stdout.chomp
+  def create_temp_directory
+    Dir.mktmpdir
+  rescue StandardError => e
+    raise ::Foreman::Exception, "Could not create working directory to store cloudinit config data: #{e}."
   end
 
-  def delete_temp_dir(ssh, working_dir)
-    ssh.run("rm -rf #{working_dir}")
-  rescue Foreman::Exception => e
+  def delete_temp_dir(working_dir)
+    FileUtils.remove_entry(working_dir)
+  rescue StandardError => e
     logger.warn("Could not delete directory for config files: #{e}. Please delete it manually at #{working_dir}")
   end
 
-  def parse_cloudinit_config(args)
+  def cloudinit_clone_args(args, vm_instance)
+    return args unless args[:user_data]
+
+    actual_node = vm_instance.node_id
+    logger.info("Cloud-init ISO storage will be validated for cloned VM node #{actual_node} instead of selected node #{args[:node_id]}") if args[:node_id] != actual_node
+
+    parse_cloudinit_config(args, vm_node: actual_node)
+  end
+
+  def parse_cloudinit_config(args, vm_node: args[:node_id])
     filenames = ["meta-data"]
     config_data = ["instance-id: #{args[:name]}"]
     user_data = args.delete(:user_data)
     return args if user_data == ''
     check_template_format(user_data)
-    ssh = vm_ssh
 
     if user_data.include?('#network-config') && user_data.include?('#cloud-config')
       config_data.concat(user_data.split('#network-config'))
@@ -105,32 +113,39 @@ module ProxmoxVMCloudinitHelper
     return args if config_data.length == 1
     configs = filenames.zip(config_data).to_h
 
-    iso = create_cloudinit_iso(args[:name], configs, ssh)
-    args.merge!(attach_cloudinit_iso(args[:node_id], iso))
+    create_cloudinit_iso(args[:name], configs) do |iso|
+      storage = upload_iso(args[:node_id], args[:iso_upload_storage], iso, vm_node: vm_node)
+      args.merge!(attach_cloudinit_iso(vm_node, storage, iso))
+    end
   end
 
-  def attach_cloudinit_iso(node, iso)
-    volume = nil
-    storages(node, 'iso').each do |storage|
-      volume = storage.volumes.detect { |v| v.volid.include? File.basename(iso) }
-      break if volume
+  def upload_iso(node, storage_id, iso, vm_node: node)
+    raise ::Foreman::Exception, _('ISO upload storage must be selected') if storage_id.blank?
+
+    iso_storages = storages(node, 'iso')
+    storage = iso_storages.find { |s| s.identity == storage_id }
+    raise ::Foreman::Exception, "Could not find selected ISO upload storage #{storage_id} for node #{node}" unless storage
+
+    if node != vm_node
+      vm_storage = storages(vm_node, 'iso').find { |s| s.identity == storage_id }
+      raise ::Foreman::Exception, "Selected ISO upload storage #{storage_id} is not accessible from cloned VM node #{vm_node}" unless vm_storage
+
+      storage = vm_storage
     end
 
-    raise ::Foreman::Exception, "Could not find generated cloud-init ISO #{File.basename(iso)} on any ISO storage for node #{node}" unless volume
+    storage.upload_iso(iso)
+    storage.identity
+  end
+
+  def attach_cloudinit_iso(node, storage_id, iso)
+    storage = client.nodes.get(node).storages.get(storage_id)
+    volume = storage&.volumes&.all&.detect do |v|
+      File.basename(v.volid) == File.basename(iso)
+    end
+
+    raise ::Foreman::Exception, "Could not find generated cloud-init ISO #{File.basename(iso)} on storage #{storage_id} for node #{node}" unless volume
 
     { ide2: "#{volume.volid},media=cdrom" }
-  end
-
-  def default_iso_path
-    "/var/lib/vz/template/iso"
-  end
-
-  def vm_ssh
-    ssh = Fog::SSH.new(URI.parse(fog_credentials[:proxmox_url]).host, fog_credentials[:proxmox_username].split('@')[0], { password: fog_credentials[:proxmox_password] })
-    ssh.run('ls') # test if ssh is successful
-    ssh
-  rescue StandardError => e
-    raise ::Foreman::Exception, "Unable to ssh into proxmox server: #{e}"
   end
 
   def check_template_format(user_data)

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import ProxmoxVmType from '../ProxmoxVmType';
 
 jest.mock('../ProxmoxVmUtils', () => ({
@@ -30,6 +30,11 @@ describe('ProxmoxVmType', () => {
     bridges: [],
   };
 
+  afterEach(() => {
+    const imageSelection = document.querySelector('#image_selection');
+    if (imageSelection) imageSelection.remove();
+  });
+
   it('renders Type select and General tab', () => {
     render(<ProxmoxVmType {...baseProps} />);
 
@@ -50,5 +55,35 @@ describe('ProxmoxVmType', () => {
     const { container } = render(<ProxmoxVmType {...baseProps} registerComp />);
 
     expect(container.firstChild).toBeNull();
+  });
+
+  it('restores a compute profile image after Foreman reloads image options', async () => {
+    document.body.insertAdjacentHTML(
+      'afterbegin',
+      '<div id="image_selection"><select name="host[compute_attributes][image_id]"></select></div>'
+    );
+    const imageSelect = document.querySelector('#image_selection select');
+
+    render(
+      <ProxmoxVmType
+        {...baseProps}
+        vmAttrs={{
+          ...baseProps.vmAttrs,
+          imageId: {
+            name: 'host[compute_attributes][image_id]',
+            value: 'template-9000',
+          },
+        }}
+      />
+    );
+
+    act(() => {
+      imageSelect.replaceChildren(
+        new Option('Other image', 'template-8000'),
+        new Option('Profile image', 'template-9000')
+      );
+    });
+
+    await waitFor(() => expect(imageSelect).toHaveValue('template-9000'));
   });
 });

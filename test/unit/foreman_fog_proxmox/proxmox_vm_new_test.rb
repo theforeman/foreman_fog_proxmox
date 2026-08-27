@@ -140,6 +140,26 @@ module ForemanFogProxmox
 
         assert_equal vm, @cr.new_typed_vm(attr, 'qemu')
       end
+
+      it 'preserves image id when rebuilding a profile VM' do
+        attr = {
+          'vmid' => '100',
+          'node_id' => 'proxmox',
+          'type' => 'qemu',
+          'image_id' => 'template-9000',
+        }.with_indifferent_access
+        servers = mock('servers')
+        vm = mock('vm')
+        mock_node_servers(@cr, servers)
+        servers.stubs(:id_valid?).with(100).returns(true)
+        @cr.stubs(:parse_typed_vm).returns(type: 'qemu')
+        servers.expects(:new).with({
+          type: 'qemu',
+          image_id: 'template-9000',
+        }).returns(vm)
+
+        assert_equal vm, @cr.new_typed_vm(attr, 'qemu')
+      end
     end
 
     describe 'assign_available_vmid' do

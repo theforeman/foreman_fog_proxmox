@@ -26,6 +26,7 @@ import ProxmoxContainerStorage from './ProxmoxContainer/ProxmoxContainerStorage'
 import ProxmoxContainerHardware from './ProxmoxContainer/ProxmoxContainerHardware';
 import InputField from './common/FormInputs';
 import GeneralTabContent from './GeneralTabContent';
+import useInheritedImageSelection from './hooks/useInheritedImageSelection';
 
 const ProxmoxVmType = ({
   vmAttrs,
@@ -68,6 +69,15 @@ const ProxmoxVmType = ({
     provisionMethodState === 'image'
       ? metaImages.find(image => image.uuid === selectedImageId)
       : null;
+  const inheritedImageId = general?.imageId?.value;
+
+  useInheritedImageSelection({
+    fromProfile,
+    inheritedImageId,
+    newVm,
+    provisionMethod: provisionMethodState,
+    setSelectedImageId,
+  });
 
   useEffect(() => {
     if (provisionMethodState !== 'image') {
@@ -197,6 +207,14 @@ const ProxmoxVmType = ({
         target.name?.endsWith('[image_id]')
       ) {
         setSelectedImageId(targetValue || null);
+        setGeneral(prevGeneral =>
+          prevGeneral?.imageId
+            ? {
+                ...prevGeneral,
+                imageId: { ...prevGeneral.imageId, value: targetValue },
+              }
+            : prevGeneral
+        );
       }
     };
 

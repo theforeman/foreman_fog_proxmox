@@ -195,6 +195,12 @@ module ForemanFogProxmox
       vm_h[:is_secure_boot] = secure_boot if type == 'qemu' && secure_boot
     end
 
+    def add_image_attribute(vm_h, options)
+      image_id = options['image_id']
+      vm_h[:image_id] = image_id if image_id.present?
+    end
+
+    # rubocop:disable Metrics/AbcSize
     def new_typed_vm(new_attr, type)
       convert_config_attributes(new_attr) if new_attr.key?(:config_attributes)
       node_id = new_attr['node_id']
@@ -210,11 +216,13 @@ module ForemanFogProxmox
       logger.debug("new_typed_vm(#{type}): options=#{options}")
       vm_h = parse_typed_vm(options, type).deep_symbolize_keys
       add_secure_boot_attribute(vm_h, options, type)
+      add_image_attribute(vm_h, options)
       logger.debug("new_typed_vm(#{type}): vm_h=#{vm_h}")
       vm_h = vm_h.merge(vm_typed_instance_defaults(type)) if vm_h.empty?
       logger.debug(format(_('new_typed_vm(%<type>s) with vm_typed_instance_defaults: vm_h=%<vm_h>s'), type: type, vm_h: vm_h))
       node.send(vm_collection(type)).new(vm_h)
     end
+    # rubocop:enable Metrics/AbcSize
   end
 end
 

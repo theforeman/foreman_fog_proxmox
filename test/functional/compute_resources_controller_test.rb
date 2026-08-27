@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 require 'test_plugin_helper'
+require 'ostruct'
 
 module ForemanFogProxmox
   class ComputeResourcesControllerTest < ActionController::TestCase
@@ -29,13 +30,14 @@ module ForemanFogProxmox
       mock_storage.stubs(:volumes).returns([])
 
       @compute_resource.stubs(:images_by_storage).returns([])
-      @compute_resource.stubs(:nodes).returns([])
+      @available_node = OpenStruct.new(node: 'proxmox')
+      @compute_resource.stubs(:node_availability).returns(available: [@available_node], offline: [])
       @compute_resource.stubs(:pools).returns([])
       @compute_resource.stubs(:storages).with('proxmox').returns([mock_storage])
       @compute_resource.stubs(:storages).with('proxmox', 'vztmpl').returns([])
       @compute_resource.stubs(:storages).with('proxmox', 'iso').returns([])
       @compute_resource.stubs(:storages).with(nil).returns([])
-      @compute_resource.stubs(:bridges).returns([])
+      @compute_resource.stubs(:bridges).with('proxmox').returns([])
 
       # Stub ComputeResource.find to return our stubbed instance
       ComputeResource.stubs(:find).with(@compute_resource.id).returns(@compute_resource)
@@ -86,13 +88,46 @@ module ForemanFogProxmox
       json_response = JSON.parse(show_response)
       assert_instance_of Hash, json_response
       assert json_response.key?('nodes')
+      assert json_response.key?('offline_nodes')
       assert json_response.key?('pools')
       assert json_response.key?('storages')
       assert json_response.key?('bridges')
       assert_instance_of Array, json_response['nodes']
+      assert_instance_of Array, json_response['offline_nodes']
       assert_instance_of Array, json_response['pools']
       assert_instance_of Array, json_response['storages']
       assert_instance_of Array, json_response['bridges']
+    end
+
+    test 'metadata separates offline nodes from available nodes' do
+      offline_node = OpenStruct.new(node: 'offline-node')
+      @compute_resource.stubs(:node_availability).returns(
+        available: [@available_node],
+        offline: [offline_node]
+      )
+
+      get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
+
+      assert_response :success
+      json_response = JSON.parse(@response.body)
+      assert_equal [{ 'node' => 'proxmox' }], json_response['nodes']
+      assert_equal ['offline-node'], json_response['offline_nodes']
+    end
+
+    test 'metadata skips node resources when all nodes are offline' do
+      offline_node = OpenStruct.new(node: 'offline-node')
+      @compute_resource.stubs(:node_availability).returns(available: [], offline: [offline_node])
+      @compute_resource.expects(:storages).never
+      @compute_resource.expects(:bridges).never
+
+      get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
+
+      assert_response :success
+      json_response = JSON.parse(@response.body)
+      assert_empty json_response['nodes']
+      assert_equal ['offline-node'], json_response['offline_nodes']
+      assert_empty json_response['storages']
+      assert_empty json_response['bridges']
     end
   end
 end

@@ -8,9 +8,10 @@ import {
   TabTitleText,
   Spinner,
   Bullseye,
+  Alert,
 } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
-import { translate as __ } from 'foremanReact/common/I18n';
+import { sprintf, translate as __ } from 'foremanReact/common/I18n';
 import { API } from 'foremanReact/redux/API';
 import { ProxmoxBiosProvider } from './ProxmoxBiosContext';
 
@@ -53,6 +54,7 @@ const ProxmoxVmType = ({
   const [metaLoaded, setMetaLoaded] = useState(!!propsLoaded);
   const [metaError, setMetaError] = useState(false);
   const [metaNodes, setMetaNodes] = useState([]);
+  const [metaOfflineNodes, setMetaOfflineNodes] = useState([]);
   const [metaPools, setMetaPools] = useState([]);
   const [metaStorages, setMetaStorages] = useState([]);
   const [metaBridges, setMetaBridges] = useState([]);
@@ -109,6 +111,7 @@ const ProxmoxVmType = ({
         );
         if (!isMounted) return;
         setMetaNodes(data?.nodes || []);
+        setMetaOfflineNodes(data?.['offline_nodes'] || []);
         setMetaPools(data?.pools || []);
         setMetaStorages(data?.storages || []);
         setMetaBridges(data?.bridges || []);
@@ -331,6 +334,20 @@ const ProxmoxVmType = ({
               'Failed to load Proxmox metadata. Please check your compute resource connection.'
             )}
           </div>
+        )}
+
+        {metaOfflineNodes.length > 0 && (
+          <Alert
+            isInline
+            variant="warning"
+            title={sprintf(
+              __(
+                'The following Proxmox nodes are offline and unavailable: %(nodes)s'
+              ),
+              { nodes: metaOfflineNodes.join(', ') }
+            )}
+            style={{ marginTop: '8px' }}
+          />
         )}
 
         <Tabs

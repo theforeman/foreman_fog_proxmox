@@ -23,8 +23,14 @@ module ForemanFogProxmox
     include ProxmoxVMUuidHelper
 
     def nodes
-      nodes = client.nodes.all if client
-      nodes&.sort_by(&:node)
+      node_availability[:available]
+    end
+
+    def node_availability
+      inventory = client ? Array(client.nodes.all).sort_by(&:node) : []
+      available, offline = inventory.partition { |node| !offline_node?(node) }
+
+      { available: available, offline: offline }
     end
 
     def storages(node_id = default_node_id, type = 'images')
@@ -81,6 +87,10 @@ module ForemanFogProxmox
     end
 
     private
+
+    def offline_node?(node)
+      node.respond_to?(:status) && node.status == 'offline'
+    end
 
     def attach_compute_resource_id(virtual_machine)
       return virtual_machine if virtual_machine.nil?

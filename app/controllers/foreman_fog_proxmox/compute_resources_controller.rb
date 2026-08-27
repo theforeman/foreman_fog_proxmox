@@ -95,20 +95,28 @@ module ForemanFogProxmox
     # GET foreman_fog_proxmox/metadata/:compute_resource_id
     def metadata
       cr = ComputeResource.find(params[:compute_resource_id])
+      node_availability = cr.node_availability
+      available_nodes = node_availability[:available]
+      default_node_id = available_nodes.first&.node
 
       render json: {
-        nodes: extract_nodes(cr),
+        nodes: extract_nodes(available_nodes),
+        offline_nodes: extract_node_names(node_availability[:offline]),
         pools: extract_pools(cr),
-        storages: extract_storages(cr),
-        bridges: extract_bridges(cr),
+        storages: default_node_id ? extract_storages(cr, default_node_id) : [],
+        bridges: default_node_id ? extract_bridges(cr, default_node_id) : [],
         images: extract_images(cr),
       }
     end
 
     private
 
-    def extract_nodes(compute_resource)
-      Array(compute_resource.nodes).map { |n| { node: n.node } }
+    def extract_nodes(nodes)
+      Array(nodes).map { |n| { node: n.node } }
+    end
+
+    def extract_node_names(nodes)
+      Array(nodes).map(&:node)
     end
 
     def extract_pools(compute_resource)
@@ -118,8 +126,8 @@ module ForemanFogProxmox
       end
     end
 
-    def extract_storages(compute_resource)
-      Array(compute_resource.storages).map do |s|
+    def extract_storages(compute_resource, node_id)
+      Array(compute_resource.storages(node_id)).map do |s|
         h = s.respond_to?(:as_json) ? s.as_json : s
         {
           storage: (h[:storage] || h['storage']),
@@ -132,8 +140,8 @@ module ForemanFogProxmox
       end
     end
 
-    def extract_bridges(compute_resource)
-      Array(compute_resource.bridges).map do |b|
+    def extract_bridges(compute_resource, node_id)
+      Array(compute_resource.bridges(node_id)).map do |b|
         h = b.respond_to?(:as_json) ? b.as_json : b
         {
           node_id: (h[:node_id] || h['node_id']),

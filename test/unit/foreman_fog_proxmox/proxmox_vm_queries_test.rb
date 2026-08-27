@@ -33,6 +33,51 @@ module ForemanFogProxmox
     include ProxmoxContainerMockFactory
     include ProxmoxVMHelper
 
+    describe 'nodes' do
+      before do
+        @cr = ForemanFogProxmox::Proxmox.new
+        @nodes = mock('nodes')
+        client = mock('client')
+        client.stubs(:nodes).returns(@nodes)
+        @cr.stubs(:client).returns(client)
+      end
+
+      it 'returns available nodes sorted by name' do
+        node_z = OpenStruct.new(node: 'node-z', status: 'online')
+        node_a = OpenStruct.new(node: 'node-a', status: 'online')
+        @nodes.stubs(:all).returns([node_z, node_a])
+
+        assert_equal %w[node-a node-z], @cr.nodes.map(&:node)
+      end
+
+      it 'excludes offline nodes' do
+        online = OpenStruct.new(node: 'online', status: 'online')
+        offline = OpenStruct.new(node: 'offline', status: 'offline')
+        @nodes.stubs(:all).returns([offline, online])
+
+        availability = @cr.node_availability
+
+        assert_equal [online], availability[:available]
+        assert_equal [offline], availability[:offline]
+        assert_equal [online], @cr.nodes
+      end
+
+      it 'keeps nodes without a status for compatibility' do
+        node = OpenStruct.new(node: 'unknown')
+        @nodes.stubs(:all).returns([node])
+
+        assert_equal [node], @cr.nodes
+      end
+
+      it 'returns an empty available list when all nodes are offline' do
+        offline = OpenStruct.new(node: 'offline', status: 'offline')
+        @nodes.stubs(:all).returns([offline])
+
+        assert_empty @cr.nodes
+        assert_equal [offline], @cr.node_availability[:offline]
+      end
+    end
+
     describe 'storages' do
       before do
         @cr = ForemanFogProxmox::Proxmox.new

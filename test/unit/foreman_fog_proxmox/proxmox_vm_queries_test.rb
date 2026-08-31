@@ -61,6 +61,17 @@ module ForemanFogProxmox
         assert_equal %w[local-lvm local-zfs], @cr.storages('proxmox').map(&:storage)
       end
 
+      it 'returns ISO storages compatible with foreman_bootdisk' do
+        iso = '/tmp/host.iso'
+        volume = OpenStruct.new(volid: 'local:iso/host.iso')
+        iso_storage = OpenStruct.new(storage: 'local', enabled: 1, active: 1, volumes: [volume])
+        @storages_collection.expects(:list_by_content_type).with('iso').returns([iso_storage])
+
+        storage = @cr.storages('proxmox', 'iso').first
+
+        assert(storage.volumes.any? { |v| v.volid.include? File.basename(iso) })
+      end
+
       it 'filters invalid storages and keeps valid ones' do
         valid = OpenStruct.new(storage: 'good', enabled: 1, active: 1)
         invalid = OpenStruct.new(storage: 'bad', enabled: 0, active: 1)

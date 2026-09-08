@@ -225,6 +225,39 @@ module ForemanFogProxmox
         assert_equal expected_boot_order, update_boot_order(vm, exclude_cdrom: true, include_network: true)
       end
 
+      it 'preserves the configured boot order and excludes network devices for an image' do
+        vm.expects(:disks).once.returns(['virtio0: local-lvm:vm-100-disk-0', 'virtio1: local-lvm:vm-100-disk-1'])
+        vm.stubs(:config).returns(mock('config', boot: 'order=net0;virtio1;virtio0'))
+
+        assert_equal({ boot: 'order=virtio1;virtio0' }, update_boot_order(vm, preserve_boot_order: true))
+      end
+
+      it 'uses the available disk order when no boot order is configured' do
+        vm.stubs(:config).returns(mock('config', boot: nil))
+
+        assert_equal({ boot: 'order=scsi0;ide2;virtio1' }, update_boot_order(vm, preserve_boot_order: true))
+      end
+
+      it 'uses the available disk order when the VM config is missing' do
+        vm.stubs(:config).returns(nil)
+
+        assert_equal({ boot: 'order=scsi0;ide2;virtio1' }, update_boot_order(vm, preserve_boot_order: true))
+      end
+
+      it 'preserves the configured order while excluding the default CD-ROM' do
+        vm.stubs(:config).returns(mock('config', boot: 'order=virtio1;ide2;scsi0'))
+
+        expected_boot_order = { boot: 'order=virtio1;scsi0' }
+
+        assert_equal expected_boot_order, update_boot_order(vm, preserve_boot_order: true, exclude_cdrom: true)
+      end
+
+      it 'returns an empty hash when the configured order has no available disks' do
+        vm.stubs(:config).returns(mock('config', boot: 'order=net0;scsi1'))
+
+        assert_empty(update_boot_order(vm, preserve_boot_order: true))
+      end
+
       it 'returns an empty hash when the VM is missing' do
         assert_empty(update_boot_order(nil))
       end

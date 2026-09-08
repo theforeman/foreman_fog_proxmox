@@ -42,10 +42,11 @@ module ProxmoxVMHelper
     ).merge(type: type)
   end
 
-  def update_boot_order(instance, exclude_cdrom: false, include_network: false)
+  def update_boot_order(instance, exclude_cdrom: false, include_network: false, preserve_boot_order: false)
     return {} unless instance
 
-    disks = Array(instance.disks).map { |disk| disk.split(":")[0] }
+    disk_ids = Array(instance.disks).map { |disk| disk.split(":")[0] }
+    disks = preserve_boot_order ? disks_in_boot_order(instance, disk_ids) : disk_ids
     disks.delete("ide2") if exclude_cdrom
     network_interfaces = include_network ? Array(instance.interfaces).map(&:id) : []
     boot_devices = network_interfaces + disks
@@ -53,6 +54,17 @@ module ProxmoxVMHelper
     return {} if boot_devices.empty?
 
     { boot: "order=" + boot_devices.join(";") }
+  end
+
+  def disks_in_boot_order(instance, disk_ids)
+    configured_boot = instance.config&.boot.to_s
+
+    return disk_ids if configured_boot.empty?
+
+    configured_boot
+      .delete_prefix("order=")
+      .split(";")
+      .select { |device| disk_ids.include?(device) }
   end
 
   # Convert a foreman form server/container vm hash into a fog-proxmox server/container attributes hash

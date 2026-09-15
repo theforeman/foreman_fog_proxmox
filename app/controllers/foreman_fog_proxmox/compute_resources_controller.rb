@@ -95,20 +95,21 @@ module ForemanFogProxmox
     # GET foreman_fog_proxmox/metadata/:compute_resource_id
     def metadata
       cr = ComputeResource.find(params[:compute_resource_id])
+      nodes = Array(cr.nodes)
 
       render json: {
-        nodes: extract_nodes(cr),
+        nodes: extract_nodes(nodes),
         pools: extract_pools(cr),
-        storages: extract_storages(cr),
-        bridges: extract_bridges(cr),
+        storages: extract_storages(cr, nodes),
+        bridges: extract_bridges(cr, nodes),
         images: extract_images(cr),
       }
     end
 
     private
 
-    def extract_nodes(compute_resource)
-      Array(compute_resource.nodes).map { |n| { node: n.node } }
+    def extract_nodes(nodes)
+      nodes.map { |n| { node: n.node } }
     end
 
     def extract_pools(compute_resource)
@@ -118,27 +119,34 @@ module ForemanFogProxmox
       end
     end
 
-    def extract_storages(compute_resource)
-      Array(compute_resource.storages).map do |s|
-        h = s.respond_to?(:as_json) ? s.as_json : s
-        {
-          storage: (h[:storage] || h['storage']),
-          node_id: (h[:node_id] || h['node_id']),
-          content: (h[:content] || h['content']),
-          avail: (h[:avail] || h['avail']),
-          used: (h[:used] || h['used']),
-          total: (h[:total] || h['total']),
-        }
+    def extract_storages(compute_resource, nodes)
+      nodes.flat_map do |node|
+        node_id = node.node
+        Array(compute_resource.storages(node_id)).map do |storage|
+          h = storage.respond_to?(:as_json) ? storage.as_json : storage
+          {
+            storage: (h[:storage] || h['storage']),
+            node_id: node_id,
+            content: (h[:content] || h['content']),
+            avail: (h[:avail] || h['avail']),
+            used: (h[:used] || h['used']),
+            total: (h[:total] || h['total']),
+            shared: (h[:shared] || h['shared']),
+          }
+        end
       end
     end
 
-    def extract_bridges(compute_resource)
-      Array(compute_resource.bridges).map do |b|
-        h = b.respond_to?(:as_json) ? b.as_json : b
-        {
-          node_id: (h[:node_id] || h['node_id']),
-          iface: (h[:iface] || h['iface']),
-        }
+    def extract_bridges(compute_resource, nodes)
+      nodes.flat_map do |node|
+        node_id = node.node
+        Array(compute_resource.bridges(node_id)).map do |bridge|
+          h = bridge.respond_to?(:as_json) ? bridge.as_json : bridge
+          {
+            node_id: node_id,
+            iface: (h[:iface] || h['iface']),
+          }
+        end
       end
     end
 

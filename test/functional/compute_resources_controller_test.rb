@@ -79,6 +79,18 @@ module ForemanFogProxmox
       assert_instance_of Array, json_response
     end
     test 'should get metadata' do
+      node_a = stub(node: 'node-a')
+      node_b = stub(node: 'node-b')
+      node_a_storages = [{ storage: 'shared-iso', content: 'iso', avail: 100, used: 20, total: 120, shared: 1 }]
+      node_b_storages = [{ storage: 'local', content: 'iso', avail: 200, used: 30, total: 230, shared: 0 }]
+      node_a_bridges = [{ iface: 'vmbr0' }]
+      node_b_bridges = [{ iface: 'vmbr1' }]
+      @compute_resource.stubs(:nodes).returns([node_a, node_b])
+      @compute_resource.expects(:storages).with('node-a').returns(node_a_storages)
+      @compute_resource.expects(:storages).with('node-b').returns(node_b_storages)
+      @compute_resource.expects(:bridges).with('node-a').returns(node_a_bridges)
+      @compute_resource.expects(:bridges).with('node-b').returns(node_b_bridges)
+
       get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
       assert_response :success
       show_response = @response.body
@@ -93,6 +105,35 @@ module ForemanFogProxmox
       assert_instance_of Array, json_response['pools']
       assert_instance_of Array, json_response['storages']
       assert_instance_of Array, json_response['bridges']
+      assert_equal ['node-a', 'node-b'], (json_response['storages'].map { |storage| storage['node_id'] })
+      assert_equal [1, 0], (json_response['storages'].map { |storage| storage['shared'] })
+      assert_equal ['node-a', 'node-b'], (json_response['bridges'].map { |bridge| bridge['node_id'] })
+      assert_equal ['vmbr0', 'vmbr1'], (json_response['bridges'].map { |bridge| bridge['iface'] })
+    end
+
+    test 'metadata includes shared storage for every node where it is available' do
+      node_a = stub(node: 'node-a')
+      node_b = stub(node: 'node-b')
+      shared_storage = {
+        storage: 'shared-iso',
+        content: 'iso',
+        avail: 100,
+        used: 20,
+        total: 120,
+        shared: 1,
+      }
+      @compute_resource.stubs(:nodes).returns([node_a, node_b])
+      @compute_resource.expects(:storages).with('node-a').returns([shared_storage])
+      @compute_resource.expects(:storages).with('node-b').returns([shared_storage])
+
+      get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
+      assert_response :success
+      json_response = JSON.parse(@response.body)
+
+      assert_equal [
+        ['shared-iso', 'node-a'],
+        ['shared-iso', 'node-b'],
+      ], (json_response['storages'].map { |storage| [storage['storage'], storage['node_id']] })
     end
   end
 end

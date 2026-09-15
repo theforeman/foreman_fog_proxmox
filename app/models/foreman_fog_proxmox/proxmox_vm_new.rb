@@ -200,6 +200,11 @@ module ForemanFogProxmox
       vm_h[:image_id] = image_id if image_id.present?
     end
 
+    def add_iso_upload_storage_attribute(vm_h, options, type)
+      iso_upload_storage = options['iso_upload_storage']
+      vm_h[:iso_upload_storage] = iso_upload_storage if type == 'qemu' && iso_upload_storage.present?
+    end
+
     # rubocop:disable Metrics/AbcSize
     def new_typed_vm(new_attr, type)
       convert_config_attributes(new_attr) if new_attr.key?(:config_attributes)
@@ -217,6 +222,7 @@ module ForemanFogProxmox
       vm_h = parse_typed_vm(options, type).deep_symbolize_keys
       add_secure_boot_attribute(vm_h, options, type)
       add_image_attribute(vm_h, options)
+      add_iso_upload_storage_attribute(vm_h, options, type)
       logger.debug("new_typed_vm(#{type}): vm_h=#{vm_h}")
       vm_h = vm_h.merge(vm_typed_instance_defaults(type)) if vm_h.empty?
       logger.debug(format(_('new_typed_vm(%<type>s) with vm_typed_instance_defaults: vm_h=%<vm_h>s'), type: type, vm_h: vm_h))

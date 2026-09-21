@@ -143,7 +143,7 @@ module ForemanFogProxmox
         vm.expects(:container?).returns(false)
         cr.expects(:parse_cloudinit_config).never
         cr.expects(:find_vm_by_uuid).with('999').once.returns(image)
-        cr.expects(:update_boot_order).with(image).returns(boot: 'order=scsi0;virtio1')
+        cr.expects(:update_boot_order).with(image, preserve_boot_order: true).returns(boot: 'order=scsi0;virtio1')
         expected_args = { vmid: '100', type: 'qemu', name: 'name', config_attributes: { onboot: '0', boot: 'order=scsi0;virtio1' } }
         cr.expects(:parse_typed_vm).with(args, 'qemu').returns(expected_args)
         vm.expects(:update).with(expected_args)

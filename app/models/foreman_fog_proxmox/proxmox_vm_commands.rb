@@ -72,7 +72,7 @@ module ForemanFogProxmox
     end
 
     def compute_clone_attributes(args, container, type, image: nil)
-      args[:config_attributes].merge!(update_boot_order(image)) if image && args[:config_attributes]
+      args[:config_attributes].merge!(update_boot_order(image, preserve_boot_order: true)) if image && args[:config_attributes]
       parsed_args = parse_typed_vm(args, type)
       if container
         options = { :hostname => args[:name] }

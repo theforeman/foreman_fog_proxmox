@@ -15,6 +15,7 @@ import { API } from 'foremanReact/redux/API';
 import { ProxmoxBiosProvider } from './ProxmoxBiosContext';
 
 import { networkSelected } from './ProxmoxVmUtils';
+import { observeHostBridgeOptions } from './ProxmoxBridgesUtils';
 import ProxmoxComputeSelectors from './ProxmoxComputeSelectors';
 import ProxmoxServerStorage from './ProxmoxServer/ProxmoxServerStorage';
 import ProxmoxServerOptions from './ProxmoxServer/ProxmoxServerOptions';
@@ -184,6 +185,22 @@ const ProxmoxVmType = ({
     );
     setFilteredBridges(filtered);
   }, [nodeIdValue, metaBridges, registerComp]);
+
+  useEffect(() => {
+    if (registerComp || fromProfile || !metaLoaded || metaError) {
+      return undefined;
+    }
+    return observeHostBridgeOptions(
+      metaBridges.filter(bridge => bridge.node_id === nodeIdValue)
+    );
+  }, [
+    nodeIdValue,
+    metaBridges,
+    registerComp,
+    fromProfile,
+    metaLoaded,
+    metaError,
+  ]);
 
   useEffect(() => {
     const handler = event => {

@@ -74,6 +74,16 @@ module ForemanFogProxmox
 
         assert_equal '', defaults[:compute_attributes][:bridge]
       end
+
+      %w[qemu lxc].each do |type|
+        it "uses an explicit #{type} form bridge without querying default-node bridges" do
+          @cr.expects(:bridges).never
+
+          defaults = @cr.interface_typed_defaults(type, bridge: 'vmbr9')
+
+          assert_equal 'vmbr9', defaults[:compute_attributes][:bridge]
+        end
+      end
     end
 
     describe 'new_vm' do

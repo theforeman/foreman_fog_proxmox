@@ -24,19 +24,23 @@ module ProxmoxFormHelper
     compute_attributes = form_object.compute_attributes || {}
     host_compute_attrs = host.respond_to?(:compute_attributes) ? (host.compute_attributes || {}) : {}
     host_vm_type = extract_attr(host_compute_attrs, :type)
+    vm = proxmox_form_vm(host)
+    if vm
+      compute_attributes = proxmox_form_interface_attributes(host, form_object, vm, compute_attributes,
+        submitted: params.dig(:host, :interfaces_attributes).present?)
+    end
 
-    profile_attrs = profile_compute_attributes(host)
+    profile_attrs = host.uuid.present? ? {} : profile_compute_attributes(host)
     profile_vm_type = extract_attr(profile_attrs, :type)
 
     vm_type = [
       params.dig(:host, :compute_attributes, :type).presence,
       params.dig(:compute_attribute, :vm_attrs, :type).presence,
       host_vm_type,
+      vm&.type,
       profile_vm_type,
       'qemu',
     ].find(&:present?)
-
-    compute_attributes = proxmox_default_interface_compute_attributes(host, vm_type) unless proxmox_valid_interface_compute_attributes?(compute_attributes, vm_type)
 
     compute_node_id = extract_attr(compute_attributes, :node_id)
     object_node_id = form_object.respond_to?(:node_id) ? form_object.node_id : nil
@@ -49,14 +53,25 @@ module ProxmoxFormHelper
       object_node_id,
       compute_node_id,
       host_node_id,
+      vm&.node_id,
       profile_node_id,
     ].find(&:present?)
+
+    compute_attributes = proxmox_default_interface_compute_attributes(host, vm_type, node_id, compute_attributes) unless proxmox_valid_interface_compute_attributes?(compute_attributes, vm_type)
 
     {
       compute_attributes: compute_attributes,
       vm_type: vm_type,
       node_id: node_id,
     }
+  end
+
+  def proxmox_bridge_options(compute_resource, node_id, selected_bridge = nil)
+    nodes = Array(compute_resource.nodes)
+    node = node_id.present? ? nodes.find { |candidate| candidate.node == node_id } : nodes.first
+    options = node ? compute_resource.bridges(node.node).map { |bridge| [bridge.iface, bridge.iface] } : []
+    options.unshift([format(_('%<bridge>s (unavailable)'), bridge: selected_bridge), selected_bridge]) if selected_bridge.present? && options.none? { |option| option.last == selected_bridge }
+    options
   end
 
   def password_proxmox_f(f, attr, options = {})
@@ -123,8 +138,36 @@ module ProxmoxFormHelper
 
   private
 
-  def proxmox_default_interface_compute_attributes(host, vm_type)
-    host.compute_resource.interface_typed_defaults(vm_type).fetch(:compute_attributes).deep_dup
+  def proxmox_form_vm(host)
+    return if host.uuid.blank?
+
+    vm_cache = @proxmox_form_vms ||= {}
+    vm_cache.fetch(host) { vm_cache[host] = host.compute_object }
+  end
+
+  def proxmox_form_interface_attributes(host, form_object, vm, compute_attributes, submitted: false)
+    interface_id = extract_attr(compute_attributes, :id)
+    mac = form_object.mac if form_object.respond_to?(:mac)
+    interface = vm.interfaces.find { |candidate| candidate.id == interface_id } if interface_id.present?
+    if interface.nil? && mac.present?
+      interface = vm.interfaces.find do |candidate|
+        [candidate.macaddr, candidate.hwaddr].compact.any? { |address| address.casecmp?(mac) }
+      end
+    end
+    return compute_attributes unless interface
+
+    attributes = host.compute_resource.interface_compute_attributes(interface.attributes).fetch(:compute_attributes).with_indifferent_access
+    merged = attributes.merge(compute_attributes)
+    # On initial edit, a no-change save must preserve the bridge actually in use.
+    merged[:bridge] = attributes[:bridge] if !submitted && attributes.key?(:bridge)
+    merged
+  end
+
+  def proxmox_default_interface_compute_attributes(host, vm_type, node_id, compute_attributes)
+    bridge = extract_attr(compute_attributes, :bridge)
+    bridge = proxmox_bridge_options(host.compute_resource, node_id).first&.last.to_s if bridge.nil?
+    defaults = host.compute_resource.interface_typed_defaults(vm_type, bridge: bridge).fetch(:compute_attributes)
+    defaults.with_indifferent_access.merge(compute_attributes)
   end
 
   def proxmox_valid_interface_compute_attributes?(compute_attributes, vm_type)

@@ -74,15 +74,15 @@ module ForemanFogProxmox
       { id: id, compute_attributes: { model: 'virtio', name: 'eth0', bridge: bridges.first&.identity.to_s } }
     end
 
-    def interface_typed_defaults(type)
+    def interface_typed_defaults(type, bridge: bridges.first&.identity.to_s)
       interface_attributes_h = { id: 'net0', compute_attributes: {} }
       if type == 'qemu'
         interface_attributes_h[:compute_attributes] =
-          { model: 'virtio', bridge: bridges.first&.identity.to_s }
+          { model: 'virtio', bridge: bridge }
       end
       if type == 'lxc'
         interface_attributes_h[:compute_attributes] =
-          { name: 'eth0', bridge: bridges.first&.identity.to_s, dhcp: 1, dhcp6: 1 }
+          { name: 'eth0', bridge: bridge, dhcp: 1, dhcp6: 1 }
       end
       interface_attributes_h
     end

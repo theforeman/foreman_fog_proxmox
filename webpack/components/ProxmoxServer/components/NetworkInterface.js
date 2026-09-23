@@ -4,6 +4,7 @@ import { Divider } from '@patternfly/react-core';
 import { translate as __ } from 'foremanReact/common/I18n';
 import InputField from '../../common/FormInputs';
 import ProxmoxComputeSelectors from '../../ProxmoxComputeSelectors';
+import { bridgeOptions } from '../../ProxmoxBridgesUtils';
 
 const NetworkInterface = ({
   id,
@@ -56,10 +57,7 @@ const NetworkInterface = ({
       setError('');
     }
   };
-  const bridgesMap = bridges.map(bridge => ({
-    value: bridge.iface,
-    label: bridge.iface,
-  }));
+  const bridgesMap = bridgeOptions(bridges, network?.bridge?.value);
 
   return (
     <div style={{ position: 'relative' }}>

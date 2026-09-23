@@ -87,7 +87,6 @@ const ProxmoxContainerNetwork = ({ network, bridges, paramScope }) => {
         const newId = availableIds.length > 0 ? availableIds[0] : prevId;
         const newInterface = {
           id: newId,
-          bridges,
           data: initData,
           networks: network,
         };
@@ -161,7 +160,7 @@ const ProxmoxContainerNetwork = ({ network, bridges, paramScope }) => {
             <NetworkInterface
               id={nic.id}
               data={nic.data}
-              bridges={nic.bridges}
+              bridges={bridges}
               networks={nic.networks}
               updateNetworkData={updateNetworkData}
               existingInterfaces={interfaces}

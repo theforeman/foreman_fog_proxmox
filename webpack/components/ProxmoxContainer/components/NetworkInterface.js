@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Divider } from '@patternfly/react-core';
 import { translate as __ } from 'foremanReact/common/I18n';
 import InputField from '../../common/FormInputs';
+import { bridgeOptions } from '../../ProxmoxBridgesUtils';
 
 const NetworkInterface = ({
   id,
@@ -69,10 +70,7 @@ const NetworkInterface = ({
       }
     }
   };
-  const bridgesMap = bridges.map(bridge => ({
-    value: bridge.iface,
-    label: bridge.iface,
-  }));
+  const bridgesMap = bridgeOptions(bridges, network?.bridge?.value);
 
   const dhcpEnabled = String(network.dhcp.value) === '1';
   const dhcp6Enabled = String(network.dhcp6.value) === '1';

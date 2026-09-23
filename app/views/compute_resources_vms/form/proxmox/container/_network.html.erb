@@ -20,7 +20,7 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 
 <%= javascript_include_tag 'foreman_fog_proxmox/proxmox_vm_container', "data-turbolinks-track" => true %>
 
-<%= field_set_tag _("Nic"), :id => "container_network_#{index}", :style => ('display: none;' unless container) do %>  
+<%= field_set_tag _("Nic"), :id => "container_network_#{index}", :style => ('display: none;' unless container), :disabled => !container do %>
     <% dhcp_enabled = ActiveModel::Type::Boolean.new.cast(f.object.dhcp) %>
     <% dhcp6_enabled = ActiveModel::Type::Boolean.new.cast(f.object.dhcp6) %>
     <%= checkbox_f f, :dhcp, :label => _('DHCP IPv4'), :class => 'proxmox-dhcp-ipv4', :onchange => "dhcpIPSelected(this, 'ipv4')" %>
@@ -32,5 +32,5 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
     <%= text_f f, :tag, :class => "input-mini", :label => _('VLAN tag'), :label_size => "col-md-2" %>
     <%= text_f f, :rate, :class => "input-mini", :label => _('Rate limit'), :label_size => "col-md-2" %>
     <%= checkbox_f f, :firewall, :label => _('Firewall') %>
-    <%= select_f f, :bridge, compute_resource.bridges(node_id), :iface, :iface, { }, :label => _('Bridge'), :label_size => "col-md-2", :id => "host_interfaces_attributes_0_compute_attributes_bridge_1" %>
+    <%= select_f f, :bridge, proxmox_bridge_options(compute_resource, node_id, f.object.bridge), :last, :first, { :include_blank => true }, :label => _('Bridge'), :label_size => "col-md-2", :id => "host_interfaces_attributes_0_compute_attributes_bridge_1", :data => { :proxmox_bridge => true } %>
 <% end %>

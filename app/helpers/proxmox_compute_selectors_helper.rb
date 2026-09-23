@@ -28,6 +28,12 @@ module ProxmoxComputeSelectorsHelper
      OpenStruct.new(id: 'i386', name: '32 bits')]
   end
 
+  def proxmox_cmodes_map
+    [OpenStruct.new(id: 'tty', name: 'tty'),
+     OpenStruct.new(id: 'console', name: 'console'),
+     OpenStruct.new(id: 'shell', name: 'shell')]
+  end
+
   def proxmox_ostypes_map
     [OpenStruct.new(id: 'debian', name: 'Debian'),
      OpenStruct.new(id: 'ubuntu', name: 'Ubuntu'),

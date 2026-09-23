@@ -22,6 +22,14 @@ describe('ProxmoxComputeSelectors', () => {
     expect(values).not.toContain('');
   });
 
+  it('contains known container console modes', () => {
+    const values = ProxmoxComputeSelectors.proxmoxCmodesMap.map(v => v.value);
+
+    expect(values).toContain('tty');
+    expect(values).toContain('console');
+    expect(values).toContain('shell');
+  });
+
   it('builds HDD controllers map from cloudinit controllers plus virtio', () => {
     const cloudinitValues = ProxmoxComputeSelectors.proxmoxControllersCloudinitMap.map(
       v => v.value

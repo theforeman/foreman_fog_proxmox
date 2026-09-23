@@ -161,6 +161,16 @@ module ForemanFogProxmox
         assert_equal expected_vm, vm
       end
 
+      test '#console options' do
+        form = host_form.deep_merge(
+          'config_attributes' => { 'cmode' => 'shell', 'tty' => '2', 'console' => '1' }
+        )
+        vm = parse_typed_vm(form, type)
+        assert_equal 'shell', vm[:cmode]
+        assert_equal '2', vm[:tty]
+        assert_equal '1', vm[:console]
+      end
+
       test '#volume with rootfs 1Gb' do
         volumes = parse_typed_volumes(host_form['volumes_attributes'], type)
         assert_not volumes.empty?

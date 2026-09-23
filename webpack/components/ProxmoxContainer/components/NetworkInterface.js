@@ -171,11 +171,34 @@ const NetworkInterface = ({
         onChange={handleChange}
       />
       <InputField
+        name={network?.mtu?.name}
+        label={__('MTU')}
+        type="text"
+        value={network?.mtu?.value}
+        onChange={handleChange}
+      />
+      <InputField
+        name={network?.trunks?.name}
+        label={__('VLAN Trunks')}
+        type="text"
+        value={network?.trunks?.value}
+        onChange={handleChange}
+        info={__('Semicolon-separated VLAN IDs, e.g. 10;20;30')}
+      />
+      <InputField
         name={network?.firewall?.name}
         label={__('Firewall')}
         type="checkbox"
         value={network?.firewall?.value}
         checked={String(network?.firewall?.value) === '1'}
+        onChange={handleChange}
+      />
+      <InputField
+        name={network?.linkDown?.name}
+        label={__('Disconnect')}
+        type="checkbox"
+        value={network?.linkDown?.value}
+        checked={String(network?.linkDown?.value) === '1'}
         onChange={handleChange}
       />
     </div>

@@ -211,6 +211,59 @@ module ForemanFogProxmox
         assert_includes interfaces_to_add,
           { net1: 'name=eth1,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876' }
       end
+
+      test '#interface compute attributes typed keys include mtu, trunks and link_down' do
+        keys = interface_compute_attributes_typed_keys(type)
+        assert_includes keys, 'mtu'
+        assert_includes keys, 'trunks'
+        assert_includes keys, 'link_down'
+      end
+
+      test '#interface with mtu, trunks and link_down' do
+        deletes = []
+        nics = []
+        interface_attributes = {
+          'id' => 'net0',
+          'compute_attributes' => {
+            'name' => 'eth0',
+            'bridge' => 'vmbr0',
+            'ip' => 'dhcp',
+            'ip6' => 'dhcp',
+            'gw' => '192.168.56.100',
+            'gw6' => '2001:0:1234::c1c0:abcd:876',
+            'mtu' => '1400',
+            'trunks' => '2;3;4',
+            'link_down' => '1',
+          },
+        }
+        add_or_delete_typed_interface(interface_attributes, deletes, nics, type)
+        assert_equal 1, nics.length
+        assert nics[0].key?(:net0)
+        assert_equal 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876,mtu=1400,trunks=2;3;4,link_down=1',
+          nics[0][:net0]
+      end
+
+      test '#interface normalizes comma-separated trunks to semicolons' do
+        deletes = []
+        nics = []
+        interface_attributes = {
+          'id' => 'net0',
+          'compute_attributes' => {
+            'name' => 'eth0',
+            'bridge' => 'vmbr0',
+            'ip' => 'dhcp',
+            'ip6' => 'dhcp',
+            'gw' => '192.168.56.100',
+            'gw6' => '2001:0:1234::c1c0:abcd:876',
+            'trunks' => '10,20,30',
+          },
+        }
+        add_or_delete_typed_interface(interface_attributes, deletes, nics, type)
+        assert_equal 1, nics.length
+        assert nics[0].key?(:net0)
+        assert_equal 'name=eth0,bridge=vmbr0,ip=dhcp,ip6=dhcp,gw=192.168.56.100,gw6=2001:0:1234::c1c0:abcd:876,trunks=10;20;30',
+          nics[0][:net0]
+      end
     end
   end
 end

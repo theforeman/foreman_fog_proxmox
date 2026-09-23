@@ -115,14 +115,33 @@ module ProxmoxVMConfigHelper
     logger.debug("parsed_typed_config(#{type}): config_cpu=#{config_cpu}")
     cpu = parse_typed_cpu(config_cpu, type)
     memory = parse_typed_memory(config.select { |key, _value| config_typed_keys(type)[:memory].include? key }, type)
+    features = parse_typed_features(config)
     parsed_config = config.reject do |key, value|
-      config_a(type).include?(key) || ForemanFogProxmox::Value.empty?(value)
+      config_a(type).include?(key) || features_keys.include?(key) || ForemanFogProxmox::Value.empty?(value)
     end
     parsed_vm = args.reject { |key, value| args_a(type).include?(key) || ForemanFogProxmox::Value.empty?(value) }
     parsed_vm = parsed_vm.merge(config_options(config, args, type))
-    parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory)
+    parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory).merge(features)
     logger.debug("parsed_typed_config(#{type}): parsed_vm=#{parsed_vm}")
     parsed_vm
+  end
+
+  def features_keys
+    ['feature_nesting', 'feature_keyctl', 'feature_fuse', 'feature_mount']
+  end
+
+  # Serialise the individual container-feature form fields into a single
+  # Proxmox 'features' config value (e.g. 'nesting=1,keyctl=1,mount=nfs').
+  # When no toggle is set this returns {} so a fresh create sends nothing.
+  # On edit, disabling the last remaining feature is handled by
+  # reconcile_container_features, which needs the container's previous value.
+  def parse_typed_features(config)
+    parts = []
+    parts << 'nesting=1' if config['feature_nesting'] == '1'
+    parts << 'keyctl=1' if config['feature_keyctl'] == '1'
+    parts << 'fuse=1' if config['feature_fuse'] == '1'
+    parts << "mount=#{config['feature_mount']}" unless ForemanFogProxmox::Value.empty?(config['feature_mount'])
+    parts.empty? ? {} : { features: parts.join(',') }
   end
 
   def parse_typed_memory(args, type)

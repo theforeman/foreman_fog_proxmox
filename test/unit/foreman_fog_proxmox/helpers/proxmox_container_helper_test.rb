@@ -173,6 +173,36 @@ module ForemanFogProxmox
         assert_equal 'local-lvm:1,mp=/opt/path,backup=1', mp0[:mp0]
       end
 
+      test '#mount point serialises ro, quota and mountoptions and drops disabled booleans' do
+        args = { 'id' => 'mp0', 'storage' => 'local-lvm', 'size' => '8', 'mp' => '/data',
+                 'backup' => '1', 'ro' => '1', 'acl' => '0', 'quota' => '1', 'replicate' => '0',
+                 'shared' => '0', 'mountoptions' => 'noatime;nodev' }
+        volume = parse_typed_volume(args, type)
+        assert volume.key?(:mp0)
+        value = volume[:mp0]
+        assert_includes value, 'local-lvm:8'
+        assert_includes value, 'mp=/data'
+        assert_includes value, 'ro=1'
+        assert_includes value, 'quota=1'
+        assert_includes value, 'mountoptions=noatime;nodev'
+        assert_not_includes value, 'acl=0'
+        assert_not_includes value, 'shared=0'
+        # replicate defaults to 1 in PVE, so an explicit 0 must be sent to disable it
+        assert_includes value, 'replicate=0'
+      end
+
+      test '#bind mount uses the host path as the volume without storage, size or backup' do
+        args = { 'id' => 'mp1', 'storage' => '', 'size' => '8', 'mp' => '/data', 'volid' => '/host/dir', 'backup' => '1' }
+        volume = parse_typed_volume(args, type)
+        assert volume.key?(:mp1)
+        value = volume[:mp1]
+        assert value.start_with?('/host/dir')
+        assert_includes value, 'mp=/data'
+        assert_not_includes value, 'size='
+        # backup only applies to storage-backed volumes, not bind mounts
+        assert_not_includes value, 'backup'
+      end
+
       test '#interface with name eth0 and bridge' do
         deletes = []
         nics = []

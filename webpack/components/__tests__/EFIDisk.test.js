@@ -36,7 +36,7 @@ describe('EFIDisk', () => {
     expect(checkbox).toBeDisabled();
     expect(checkbox).toBeChecked();
     expect(submittedValue).toHaveValue('1');
-    fireEvent.click(container.querySelector('.field-help'));
+    fireEvent.click(screen.getByRole('button', { name: 'Help' }));
     expect(
       await screen.findByText(
         'This checkbox is read-only and automatically checked when UEFI Secure Boot is selected'

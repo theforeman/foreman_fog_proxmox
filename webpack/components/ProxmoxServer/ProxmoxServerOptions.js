@@ -7,7 +7,14 @@ import { useBios } from '../ProxmoxBiosContext';
 import SecureBoot, { normalizeFirmwareOptions } from './components/SecureBoot';
 
 const ProxmoxServerOptions = ({ options }) => {
-  const [opts, setOpts] = useState(normalizeFirmwareOptions(options));
+  const [opts, setOpts] = useState(() => normalizeFirmwareOptions(options));
+
+  const optionGroupStyle = {
+    marginLeft: '30px',
+    marginBottom: '15px',
+    paddingLeft: '10px',
+  };
+
   const { efiDiskSelected, setBios } = useBios();
 
   const handleChange = e => {
@@ -61,14 +68,82 @@ const ProxmoxServerOptions = ({ options }) => {
         checked={String(opts?.onboot?.value) === '1'}
         onChange={handleChange}
       />
+      <input type="hidden" name={opts?.agent?.name} value="0" />
       <InputField
         name={opts?.agent?.name}
         label={__('Qemu Agent')}
+        info={__(
+          'Enable/disable QEMU Guest Agent communication. The agent must be installed in the VM.'
+        )}
         type="checkbox"
         value={opts?.agent?.value}
         checked={String(opts?.agent?.value) === '1'}
         onChange={handleChange}
       />
+      {String(opts?.agent?.value) === '1' && (
+        <div
+          role="group"
+          aria-label={__('Qemu Agent options')}
+          style={optionGroupStyle}
+        >
+          {ProxmoxComputeSelectors.proxmoxAgentOptionsMap.map(
+            ([key, label]) => (
+              <InputField
+                key={key}
+                label={__(label)}
+                name={opts?.[key]?.name}
+                type="checkbox"
+                value="1"
+                checked={String(opts?.[key]?.value) === '1'}
+                onChange={handleChange}
+              />
+            )
+          )}
+          <InputField
+            name={opts?.agentType?.name}
+            label={__('Agent type')}
+            type="select"
+            value={opts?.agentType?.value}
+            options={[
+              { label: 'VirtIO', value: 'virtio' },
+              { label: 'ISA', value: 'isa' },
+            ]}
+            onChange={handleChange}
+          />
+        </div>
+      )}
+
+      <input type="hidden" name={opts?.hotplug?.name} value="0" />
+      <InputField
+        name={opts?.hotplug?.name}
+        label={__('Hotplug')}
+        info={__('Enable/disable hotplug for selected devices')}
+        type="checkbox"
+        value={opts?.hotplug?.value}
+        checked={String(opts?.hotplug?.value) === '1'}
+        onChange={handleChange}
+      />
+      {String(opts?.hotplug?.value) === '1' && (
+        <div
+          role="group"
+          aria-label={__('Hotplug devices')}
+          style={optionGroupStyle}
+        >
+          {ProxmoxComputeSelectors.proxmoxHotplugOptionsMap.map(
+            ([key, label]) => (
+              <InputField
+                key={key}
+                label={__(label)}
+                name={opts?.[key]?.name}
+                type="checkbox"
+                value="1"
+                checked={String(opts?.[key]?.value) === '1'}
+                onChange={handleChange}
+              />
+            )
+          )}
+        </div>
+      )}
       <InputField
         name={opts?.kvm?.name}
         label={__('KVM')}

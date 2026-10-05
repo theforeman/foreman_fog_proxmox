@@ -24,9 +24,36 @@ require 'foreman_fog_proxmox/value'
 require 'foreman_fog_proxmox/hash_collection'
 
 # Convert a foreman form server hash into a fog-proxmox server attributes hash
+# rubocop:disable Metrics/ModuleLength
 module ProxmoxVMAttrsHelper
+  include ProxmoxVMConfigHelper
+
+  HOTPLUG_DEFAULTS = %w[disk network usb].freeze
+
+  AGENT_DEFAULTS = {
+    'enabled' => '0',
+    'freeze-fs-on-backup' => '1',
+    'fstrim_cloned_disks' => '0',
+    'type' => 'virtio',
+  }.freeze
+
   def object_to_attributes_hash(vms, from_profile, start_checked)
     param_scope = from_profile ? "compute_attribute[vm_attrs]" : "host[compute_attributes]"
+    vm_h = base_vm_attrs(param_scope, vms)
+
+    vm_h.merge!(additional_attrs(vms, param_scope, start_checked))
+    vm_h[:interfaces] = network_attrs(param_scope, vms.interfaces)
+    vm_h[:disks] = volumes_attrs(param_scope, vms.volumes)
+    vm_h[:efidisk] = efidisk_attrs(param_scope, vms.efidisk) if vms.efidisk.present?
+    vm_h.merge!(cpu_flags_attrs(param_scope, vms.config))
+    if vms.type == 'qemu'
+      vm_h.merge!(hotplug_attrs(param_scope, vms.config))
+      vm_h.merge!(agent_attrs(param_scope, vms.config))
+    end
+    vm_h
+  end
+
+  def base_vm_attrs(param_scope, vms)
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
     keys = [:vmid, :node_id, :type, :pool, :efidisk]
     main = vms.attributes.select { |key, _value| keys.include? key }
@@ -38,13 +65,54 @@ module ProxmoxVMAttrsHelper
       camel_key = key.to_s.include?('_') ? snake_to_camel(key.to_s).to_sym : key
       vm_h[camel_key] = { :name => "#{param_scope}[#{key}]", :value => value } if keys.include? key
     end
-
-    vm_h.merge!(additional_attrs(vms, param_scope, start_checked))
-    vm_h[:interfaces] = network_attrs(param_scope, vms.interfaces)
-    vm_h[:disks] = volumes_attrs(param_scope, vms.volumes)
-    vm_h[:efidisk] = efidisk_attrs(param_scope, vms.efidisk) if vms.efidisk.present?
-    vm_h.merge!(cpu_flags_attrs(param_scope, vms.config))
     vm_h
+  end
+
+  def agent_attrs(param_scope, config)
+    settings = AGENT_DEFAULTS.dup
+    config.agent.to_s.split(',').each do |option|
+      key, value = option.split('=', 2)
+      if value.nil?
+        settings['enabled'] = key
+      else
+        settings[key] = value
+      end
+    end
+
+    freeze_fs = settings.fetch('freeze-fs', settings['freeze-fs-on-backup'])
+    values = {
+      'agent' => Foreman::Cast.to_bool(settings['enabled']) ? '1' : '0',
+      'agent_freeze_fs' => Foreman::Cast.to_bool(freeze_fs) ? '1' : '0',
+      'agent_fstrim_cloned_disks' => Foreman::Cast.to_bool(settings['fstrim_cloned_disks']) ? '1' : '0',
+      'agent_type' => settings['type'],
+    }
+    values.each_with_object({}) do |(key, value), attrs|
+      attrs[snake_to_camel(key)] = {
+        name: "#{param_scope}[config_attributes][#{key}]", value: value
+      }
+    end
+  end
+
+  def hotplug_attrs(param_scope, config)
+    hotplug = config.hotplug.to_s
+    hotplug_enabled = hotplug != '0'
+    enabled_devices = hotplug.empty? || hotplug == '1' ? HOTPLUG_DEFAULTS : hotplug.split(',')
+
+    attrs = {
+      'hotplug' => {
+        name: "#{param_scope}[config_attributes][hotplug]",
+        value: hotplug_enabled ? '1' : '0',
+      },
+    }
+
+    HOTPLUG_DEVICES.each do |device|
+      key = "hotplug_#{device}"
+      attrs[snake_to_camel(key)] = {
+        name: "#{param_scope}[config_attributes][#{key}]", value: enabled_devices.include?(device) ? '1' : '0'
+      }
+    end
+
+    attrs
   end
 
   def cpu_flags_attrs(param_scope, config)
@@ -150,3 +218,4 @@ module ProxmoxVMAttrsHelper
     str.split('_').inject([]) { |buffer, e| buffer.push(buffer.empty? ? e : e.capitalize) }.join
   end
 end
+# rubocop:enable Metrics/ModuleLength

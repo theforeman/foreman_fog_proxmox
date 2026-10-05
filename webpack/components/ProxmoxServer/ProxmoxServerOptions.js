@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { FieldLevelHelp } from 'patternfly-react';
 import { translate as __ } from 'foremanReact/common/I18n';
 import InputField from '../common/FormInputs';
 import ProxmoxComputeSelectors from '../ProxmoxComputeSelectors';
@@ -7,7 +8,17 @@ import { useBios } from '../ProxmoxBiosContext';
 import SecureBoot, { normalizeFirmwareOptions } from './components/SecureBoot';
 
 const ProxmoxServerOptions = ({ options }) => {
-  const [opts, setOpts] = useState(normalizeFirmwareOptions(options));
+  const [opts, setOpts] = useState(() => normalizeFirmwareOptions(options));
+
+  const agentOptionsHelp = {
+    agentFreezeFs: __(
+      'Freeze/thaw guest filesystems during certain operations for consistency'
+    ),
+    agentFstrimClonedDisks: __(
+      'Run guest-trim after a disk move or VM migration'
+    ),
+  };
+
   const { efiDiskSelected, setBios } = useBios();
 
   const handleChange = e => {
@@ -43,7 +54,7 @@ const ProxmoxServerOptions = ({ options }) => {
   }, [opts, setBios]);
 
   return (
-    <div>
+    <div className="proxmox-server-options">
       <InputField
         name={opts?.boot?.name}
         label={__('Boot device order')}
@@ -61,14 +72,92 @@ const ProxmoxServerOptions = ({ options }) => {
         checked={String(opts?.onboot?.value) === '1'}
         onChange={handleChange}
       />
+      <input type="hidden" name={opts?.agent?.name} value="0" />
       <InputField
         name={opts?.agent?.name}
         label={__('Qemu Agent')}
+        info={__(
+          'Enable/disable QEMU Guest Agent communication. The agent must be installed in the VM.'
+        )}
         type="checkbox"
         value={opts?.agent?.value}
         checked={String(opts?.agent?.value) === '1'}
         onChange={handleChange}
       />
+      {String(opts?.agent?.value) === '1' && (
+        <div
+          role="group"
+          aria-label={__('Qemu Agent options')}
+          className="proxmox-options-group"
+        >
+          {ProxmoxComputeSelectors.proxmoxAgentOptionsMap.map(
+            ([key, label]) => (
+              <div key={key} className="checkbox" style={{ margin: 0 }}>
+                <label>
+                  <input
+                    name={opts?.[key]?.name}
+                    type="checkbox"
+                    value="1"
+                    checked={String(opts?.[key]?.value) === '1'}
+                    onChange={handleChange}
+                  />
+                  {__(label)}
+                </label>
+                <FieldLevelHelp
+                  buttonClass="field-help"
+                  content={agentOptionsHelp[key]}
+                />
+              </div>
+            )
+          )}
+          <InputField
+            name={opts?.agentType?.name}
+            label={__('Agent type')}
+            type="select"
+            value={opts?.agentType?.value}
+            options={[
+              { label: 'VirtIO', value: 'virtio' },
+              { label: 'ISA', value: 'isa' },
+            ]}
+            onChange={handleChange}
+          />
+        </div>
+      )}
+
+      <input type="hidden" name={opts?.hotplug?.name} value="0" />
+      <InputField
+        name={opts?.hotplug?.name}
+        label={__('Hotplug')}
+        info={__('Enable/disable hotplug for selected devices')}
+        type="checkbox"
+        value={opts?.hotplug?.value}
+        checked={String(opts?.hotplug?.value) === '1'}
+        onChange={handleChange}
+      />
+      {String(opts?.hotplug?.value) === '1' && (
+        <div
+          role="group"
+          aria-label={__('Hotplug devices')}
+          className="proxmox-options-group"
+        >
+          {ProxmoxComputeSelectors.proxmoxHotplugOptionsMap.map(
+            ([key, label]) => (
+              <div key={key} className="checkbox" style={{ margin: 0 }}>
+                <label>
+                  <input
+                    name={opts?.[key]?.name}
+                    type="checkbox"
+                    value="1"
+                    checked={String(opts?.[key]?.value) === '1'}
+                    onChange={handleChange}
+                  />
+                  {__(label)}
+                </label>
+              </div>
+            )
+          )}
+        </div>
+      )}
       <InputField
         name={opts?.kvm?.name}
         label={__('KVM')}

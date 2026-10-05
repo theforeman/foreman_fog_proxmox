@@ -34,6 +34,10 @@ along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>. %>
 <% untemplatable = new_vm || f.object.templated? %>
 <% checked = (params.dig(:host, :compute_attributes, :start) || params.dig(:host, :compute_attributes, :start_after_create) || '1') %>
 
+<% content_for(:stylesheets) do %>
+  <%= stylesheet_link_tag 'foreman_fog_proxmox/proxmox_server_options' %>
+<% end %>
+
 <% content_for(:javascripts) do %>
   <%= webpacked_plugins_js_for :foreman_fog_proxmox %>
 <% end %>

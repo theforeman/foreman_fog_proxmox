@@ -1,0 +1,51 @@
+.proxmox-server-options .proxmox-options-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  border-left: 2px solid #ededed;
+  margin-left: 12px;
+  margin-bottom: 16px;
+  padding: 4px 0 4px 16px;
+}
+
+.proxmox-server-options .proxmox-options-group > .form-group {
+  flex-basis: 100%;
+  margin-bottom: 0;
+}
+
+@media (min-width: 992px) {
+  .proxmox-server-options {
+    max-width: 600px;
+  }
+  .proxmox-server-options .form-group {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr);
+    column-gap: 16px;
+    margin-right: 0;
+    margin-left: 0;
+  }
+  .proxmox-server-options .form-group::before,
+  .proxmox-server-options .form-group::after {
+    content: none;
+  }
+  .proxmox-server-options .form-group > .control-label,
+  .proxmox-server-options .form-group > .col-md-4 {
+    float: none;
+    width: auto;
+    min-width: 0;
+    padding-right: 0;
+    padding-left: 0;
+  }
+  .proxmox-server-options .form-group > .col-md-offset-2 {
+    grid-column: 2;
+    width: auto;
+    margin-left: 0;
+    padding: 0;
+  }
+  .proxmox-server-options .proxmox-options-group {
+    margin-left: 156px;
+  }
+  .proxmox-server-options .proxmox-options-group > .form-group {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+}

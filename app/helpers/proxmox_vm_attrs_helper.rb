@@ -25,8 +25,25 @@ require 'foreman_fog_proxmox/hash_collection'
 
 # Convert a foreman form server hash into a fog-proxmox server attributes hash
 module ProxmoxVMAttrsHelper
+  include ProxmoxVMConfigAttrsHelper
+
   def object_to_attributes_hash(vms, from_profile, start_checked)
     param_scope = from_profile ? "compute_attribute[vm_attrs]" : "host[compute_attributes]"
+    vm_h = base_vm_attrs(param_scope, vms)
+
+    vm_h.merge!(additional_attrs(vms, param_scope, start_checked))
+    vm_h[:interfaces] = network_attrs(param_scope, vms.interfaces)
+    vm_h[:disks] = volumes_attrs(param_scope, vms.volumes)
+    vm_h[:efidisk] = efidisk_attrs(param_scope, vms.efidisk) if vms.efidisk.present?
+    vm_h.merge!(cpu_flags_attrs(param_scope, vms.config))
+    if vms.type == 'qemu'
+      vm_h.merge!(hotplug_attrs(param_scope, vms.config))
+      vm_h.merge!(agent_attrs(param_scope, vms.config))
+    end
+    vm_h
+  end
+
+  def base_vm_attrs(param_scope, vms)
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
     keys = [:vmid, :node_id, :type, :pool, :efidisk]
     main = vms.attributes.select { |key, _value| keys.include? key }
@@ -38,21 +55,7 @@ module ProxmoxVMAttrsHelper
       camel_key = key.to_s.include?('_') ? snake_to_camel(key.to_s).to_sym : key
       vm_h[camel_key] = { :name => "#{param_scope}[#{key}]", :value => value } if keys.include? key
     end
-
-    vm_h.merge!(additional_attrs(vms, param_scope, start_checked))
-    vm_h[:interfaces] = network_attrs(param_scope, vms.interfaces)
-    vm_h[:disks] = volumes_attrs(param_scope, vms.volumes)
-    vm_h[:efidisk] = efidisk_attrs(param_scope, vms.efidisk) if vms.efidisk.present?
-    vm_h.merge!(cpu_flags_attrs(param_scope, vms.config))
     vm_h
-  end
-
-  def cpu_flags_attrs(param_scope, config)
-    flag_attrs = ActiveSupport::HashWithIndifferentAccess.new
-    Fog::Proxmox::CpuHelper.flags.each_key do |key|
-      flag_attrs.merge!({ key => { :name => "#{param_scope}[config_attributes][#{key}]", :value => config.public_send(key) } })
-    end
-    flag_attrs
   end
 
   def efidisk_attrs(param_scope, efidisk)

@@ -5,6 +5,7 @@ import { translate as __ } from 'foremanReact/common/I18n';
 import { createStoragesMap, imagesByStorage } from '../ProxmoxStoragesUtils';
 import ProxmoxComputeSelectors from '../ProxmoxComputeSelectors';
 import InputField from '../common/FormInputs';
+import ResourceSelect, { resourceAvailability } from '../common/ResourceSelect';
 import useVolumes from '../hooks/useVolumes';
 
 const ProxmoxContainerOptions = ({
@@ -18,7 +19,8 @@ const ProxmoxContainerOptions = ({
   const [opts, setOpts] = useState(options);
   const storagesMap = createStoragesMap(storages, 'vztmpl', nodeId);
 
-  const storageValue = opts?.ostemplateStorage?.value || 'local';
+  const storageValue =
+    opts?.ostemplateStorage?.value || storagesMap[0]?.value || '';
   const isEditMode = !newVm && !fromProfile;
 
   const fromStorages = useMemo(
@@ -82,16 +84,18 @@ const ProxmoxContainerOptions = ({
 
   return (
     <div>
-      <InputField
+      <ResourceSelect
+        active={!isEditMode}
+        required={!isEditMode}
         name={opts?.ostemplateStorage?.name}
         label={__('Template Storage')}
-        value={opts?.ostemplateStorage?.value}
+        value={storageValue}
         options={storagesMap}
         type="select"
         onChange={handleChange}
       />
 
-      {loadingVolumes ? (
+      {loadingVolumes && (
         <div
           style={{
             display: 'flex',
@@ -103,21 +107,21 @@ const ProxmoxContainerOptions = ({
           <Spinner size="md" />
           <span>{__('Fetching templates...')}</span>
         </div>
-      ) : (
-        <InputField
-          name={opts?.ostemplateFile?.name}
-          label={__('OS Template')}
-          required
-          options={volumesMap}
-          value={opts?.ostemplateFile?.value}
-          type="select"
-          disabled={isEditMode}
-          onChange={handleChange}
-          error={
-            volumeError ? __('Failed fetching templates please try again.') : ''
-          }
-        />
       )}
+      <ResourceSelect
+        availability={resourceAvailability(loadingVolumes, volumeError)}
+        name={opts?.ostemplateFile?.name}
+        label={__('OS Template')}
+        required
+        options={volumesMap}
+        value={opts?.ostemplateFile?.value}
+        type="select"
+        disabled={isEditMode}
+        onChange={handleChange}
+        error={
+          volumeError ? __('Failed fetching templates please try again.') : ''
+        }
+      />
 
       <InputField
         name={opts?.password?.name}

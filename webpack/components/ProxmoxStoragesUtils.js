@@ -23,7 +23,7 @@ export const createStoragesMap = (
         ? content.includes(filterContent)
         : true;
       // eslint-disable-next-line camelcase
-      const nodeMatch = nodeId ? st?.node_id === nodeId : true;
+      const nodeMatch = !!nodeId && st?.node_id === nodeId;
       return contentMatch && nodeMatch;
     })
     .map(st => ({

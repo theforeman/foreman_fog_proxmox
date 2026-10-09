@@ -3,6 +3,7 @@ import { Divider } from '@patternfly/react-core';
 import { translate as __ } from 'foremanReact/common/I18n';
 import PropTypes from 'prop-types';
 import InputField from '../common/FormInputs';
+import ResourceSelect from '../common/ResourceSelect';
 import ProxmoxComputeSelectors from '../ProxmoxComputeSelectors';
 
 const MountPoint = ({ id, data, storagesMap }) => {
@@ -28,7 +29,9 @@ const MountPoint = ({ id, data, storagesMap }) => {
   return (
     <div>
       <Divider component="li" style={{ marginBottom: '2rem' }} />
-      <InputField
+      <ResourceSelect
+        defaultToFirst
+        required
         name={mp?.storage?.name}
         label={__('Storage')}
         type="select"

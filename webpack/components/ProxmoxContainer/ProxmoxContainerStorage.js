@@ -76,7 +76,7 @@ const ProxmoxContainerStorage = ({
     }));
   };
 
-  const storagesMap = createStoragesMap(storages, null, nodeId);
+  const storagesMap = createStoragesMap(storages, 'rootdir', nodeId);
 
   const addMountPoint = useCallback(
     (event, initialData = null) => {

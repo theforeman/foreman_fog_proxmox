@@ -36,7 +36,7 @@ const HardDisk = ({
   );
   const [controllerError, setControllerError] = useState(null);
   const [deviceError, setDeviceError] = useState(null);
-  const storagesMap = createStoragesMap(storages, null, nodeId);
+  const storagesMap = createStoragesMap(storages, 'images', nodeId);
   const lockController = isPersistedDisk && !isNew && !fromProfile;
   useEffect(() => {
     const currentHddData = JSON.stringify(hdd);

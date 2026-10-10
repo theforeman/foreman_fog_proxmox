@@ -30,7 +30,7 @@ module ForemanFogProxmox
     def storages(node_id = default_node_id, type = 'images')
       node = client.nodes.get node_id
       node ||= default_node
-      storages = node.storages.list_by_content_type type
+      storages = type ? node.storages.list_by_content_type(type) : node.storages.all
       logger.debug("storages(): node_id #{node_id} type #{type}")
       storages.reject { |s| s.enabled.to_i.zero? || s.active.to_i.zero? }.sort_by(&:storage)
     end

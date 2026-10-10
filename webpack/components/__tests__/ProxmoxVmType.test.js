@@ -151,6 +151,62 @@ describe('ProxmoxVmType', () => {
     await waitFor(() => expect(imageSelect).toHaveValue('template-9000'));
   });
 
+  it('revalidates a saved bridge when moving from an offline node to a compatible online node', async () => {
+    const mediaStorage = {
+      storage: 'local',
+      node_id: 'online-node',
+      content: 'iso,vztmpl,backup',
+    };
+    API.get.mockResolvedValue({
+      data: {
+        nodes: [{ node: 'online-node' }],
+        offline_nodes: ['offline-node'],
+        bridges: [{ node_id: 'online-node', iface: 'shared' }],
+        storages: [mediaStorage],
+        pools: [],
+        images: [],
+      },
+    });
+    const { container } = render(
+      <form>
+        <div className="form-group">
+          <select name="bridge" data-proxmox-bridge defaultValue="shared">
+            <option value="shared">shared</option>
+          </select>
+        </div>
+        <ProxmoxVmType
+          {...baseProps}
+          vmAttrs={{
+            ...baseProps.vmAttrs,
+            nodeId: { name: 'node', value: 'offline-node' },
+          }}
+          computeResourceId={1}
+        />
+      </form>
+    );
+    await screen.findByText(
+      'The following Proxmox nodes are offline and unavailable: offline-node'
+    );
+    const select = container.querySelector('select');
+    expect(select.value).toBe('shared');
+    expect(select.selectedOptions[0].textContent).toContain('unavailable');
+    expect(select.checkValidity()).toBe(false);
+    const [props] = mockGeneralTabContent.mock.calls.slice(-1)[0];
+    expect(props.offlineNodes).toEqual(['offline-node']);
+    expect(props.storages).toEqual([mediaStorage]);
+
+    act(() =>
+      props.handleChange({ target: { name: 'node', value: 'online-node' } })
+    );
+
+    expect(select.value).toBe('shared');
+    expect(select.selectedOptions[0].textContent).not.toContain('unavailable');
+    expect(select.checkValidity()).toBe(true);
+    expect(new FormData(container.querySelector('form')).get('bridge')).toBe(
+      'shared'
+    );
+  });
+
   it('filters offline nodes and displays their names', async () => {
     API.get.mockResolvedValue({
       data: {

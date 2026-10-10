@@ -159,11 +159,16 @@ module ForemanFogProxmox
       ]
       service = storage_service(inventory)
       service.expects(:list_volumes).never
+      offline_node = OpenStruct.new(node: 'offline-node', status: 'offline')
+      @compute_resource.stubs(:nodes).returns([offline_node, @available_node])
+      @compute_resource.expects(:bridges).with('offline-node').never
 
       get :metadata, params: { compute_resource_id: @compute_resource.id }, session: set_session_user
 
       assert_response :success
-      storages = JSON.parse(@response.body)['storages']
+      metadata = JSON.parse(@response.body)
+      assert_equal ['offline-node'], metadata['offline_nodes']
+      storages = metadata['storages']
       assert_equal %w[containers disks local], (storages.map { |storage| storage['storage'] })
       assert_equal %w[rootdir images iso,vztmpl,backup], (storages.map { |storage| storage['content'] })
       assert_equal ['proxmox'], storages.map { |storage| storage['node_id'] }.uniq

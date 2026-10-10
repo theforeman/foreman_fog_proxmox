@@ -20,6 +20,13 @@
 module ProxmoxFormHelper
   include ProxmoxVMInterfacesHelper
 
+  def proxmox_bridge_options(compute_resource, node_id, selected)
+    names = Array(compute_resource.bridges(node_id)).map(&:iface)
+    options = names.map { |name| [name, name] }
+    options.unshift([format(_('%<value>s (unavailable)'), value: selected), selected]) if selected.present? && !names.include?(selected)
+    [['', '']] + options
+  end
+
   def proxmox_vm_type_and_node_id(host, form_object, params)
     compute_attributes = form_object.compute_attributes || {}
     host_compute_attrs = host.respond_to?(:compute_attributes) ? (host.compute_attributes || {}) : {}

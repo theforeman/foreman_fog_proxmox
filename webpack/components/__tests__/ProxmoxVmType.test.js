@@ -1,6 +1,9 @@
 import React from 'react';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
+import { API } from 'foremanReact/redux/API';
 import ProxmoxVmType from '../ProxmoxVmType';
+
+jest.mock('foremanReact/redux/API', () => ({ API: { get: jest.fn() } }));
 
 jest.mock('../ProxmoxVmUtils', () => ({
   networkSelected: jest.fn(),
@@ -30,7 +33,19 @@ describe('ProxmoxVmType', () => {
     bridges: [],
   };
 
+  beforeEach(() => {
+    window.update_interface_table = jest.fn();
+    window.tfm = { tools: { highlightTabErrors: jest.fn() } };
+    jest.useFakeTimers();
+    API.get.mockReset();
+  });
+
   afterEach(() => {
+    cleanup();
+    delete window.update_interface_table;
+    delete window.tfm;
+    jest.clearAllTimers();
+    jest.useRealTimers();
     const imageSelection = document.querySelector('#image_selection');
     if (imageSelection) imageSelection.remove();
   });
@@ -55,6 +70,53 @@ describe('ProxmoxVmType', () => {
     const { container } = render(<ProxmoxVmType {...baseProps} registerComp />);
 
     expect(container.firstChild).toBeNull();
+  });
+
+  it('updates Rails bridge fields and displays their validation error after metadata loads', async () => {
+    let complete;
+    API.get.mockImplementation(
+      () =>
+        new Promise(resolve => {
+          complete = resolve;
+        })
+    );
+    const { container } = render(
+      <form>
+        <div className="form-group">
+          <select name="bridge" data-proxmox-bridge defaultValue="saved">
+            <option value="saved">saved</option>
+          </select>
+        </div>
+        <ProxmoxVmType
+          {...baseProps}
+          vmAttrs={{
+            ...baseProps.vmAttrs,
+            nodeId: { name: 'node', value: 'node-a' },
+          }}
+          computeResourceId={1}
+        />
+      </form>
+    );
+    const select = container.querySelector('select');
+    expect(select.value).toBe('saved');
+    expect(select.validationMessage).toContain('loading');
+    await act(async () =>
+      complete({
+        data: {
+          nodes: [{ node: 'node-a' }],
+          bridges: [{ node_id: 'node-a', iface: 'other' }],
+          storages: [],
+          pools: [],
+          images: [],
+        },
+      })
+    );
+    expect(select.value).toBe('saved');
+    expect(select.checkValidity()).toBe(false);
+    expect(select.closest('.form-group')).toHaveClass('has-error');
+    expect(container.querySelector('.help-block')).toHaveTextContent(
+      'Select an available resource'
+    );
   });
 
   it('restores a compute profile image after Foreman reloads image options', async () => {

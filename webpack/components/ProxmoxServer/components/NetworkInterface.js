@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Divider } from '@patternfly/react-core';
 import { translate as __ } from 'foremanReact/common/I18n';
 import InputField from '../../common/FormInputs';
+import ResourceSelect from '../../common/ResourceSelect';
 import ProxmoxComputeSelectors from '../../ProxmoxComputeSelectors';
 
 const NetworkInterface = ({
@@ -81,7 +82,7 @@ const NetworkInterface = ({
         value={network?.model?.value}
         onChange={handleChange}
       />
-      <InputField
+      <ResourceSelect
         name={network?.bridge?.name}
         label={__('Bridge')}
         type="select"

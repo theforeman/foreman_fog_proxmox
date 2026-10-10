@@ -78,6 +78,17 @@ Network interface container tab:
 
 Update config is available.
 
+## Resource selections
+
+Changing the selected node updates the available storage, media, and bridges.
+Existing selections that are unavailable on the new node remain visible and
+must be resolved before saving. Select an available resource, return to the
+original node, or remove the affected device.
+
+For host network interfaces, open the interface's edit dialog to correct an
+unavailable bridge. If resource availability cannot be checked, reload the form
+to retry.
+
 ## Clone images
 
 You can also change a host (server or container) into an image, i.e. a [template](https://pve.proxmox.com/wiki/Qemu/KVM_Virtual_Machines#qm_templates) in Proxmox.

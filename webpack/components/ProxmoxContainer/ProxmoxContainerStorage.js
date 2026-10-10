@@ -12,6 +12,7 @@ import { sprintf, translate as __ } from 'foremanReact/common/I18n';
 import PropTypes from 'prop-types';
 import { createStoragesMap } from '../ProxmoxStoragesUtils';
 import InputField from '../common/FormInputs';
+import ResourceSelect from '../common/ResourceSelect';
 import MountPoint from './MountPoint';
 
 const ProxmoxContainerStorage = ({
@@ -148,7 +149,9 @@ const ProxmoxContainerStorage = ({
         </Title>
         <Divider component="li" style={{ marginBottom: '2rem' }} />
 
-        <InputField
+        <ResourceSelect
+          defaultToFirst
+          required
           name={rootfs?.storage?.name}
           label="Storage"
           type="select"

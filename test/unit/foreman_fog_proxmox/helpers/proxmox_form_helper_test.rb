@@ -20,6 +20,43 @@ require 'test_plugin_helper'
 module ForemanFogProxmox
   class ProxmoxFormHelperTest < ActiveSupport::TestCase
     include ProxmoxFormHelper
+    include ActionView::Helpers::FormOptionsHelper
+
+    describe 'bridge choices' do
+      it 'preserves unavailable bridges without replacing the saved value' do
+        compute_resource = mock('compute resource')
+        compute_resource.expects(:bridges).with('node-b').returns([stub(iface: 'other')])
+        assert_equal [['', ''], ['saved (unavailable)', 'saved'], ['other', 'other']],
+          proxmox_bridge_options(compute_resource, 'node-b', 'saved')
+      end
+
+      it 'preserves blank and available selections without duplicates' do
+        compute_resource = stub(bridges: [stub(iface: 'saved')])
+        [nil, '', 'saved'].each do |selected|
+          assert_equal [['', ''], ['saved', 'saved']],
+            proxmox_bridge_options(compute_resource, 'node-a', selected)
+        end
+      end
+
+      it 'propagates lookup failures rather than treating them as missing bridges' do
+        compute_resource = mock('compute resource')
+        compute_resource.expects(:bridges).with('node-a').raises(StandardError, 'lookup failed')
+        assert_raises(StandardError) { proxmox_bridge_options(compute_resource, 'node-a', 'saved') }
+      end
+
+      it 'renders the saved missing bridge as the selected option and escapes labels' do
+        compute_resource = stub(bridges: [stub(iface: 'other')])
+        selected = '<saved>'
+        html = options_from_collection_for_select(
+          proxmox_bridge_options(compute_resource, 'node-a', selected), :last, :first, selected
+        )
+        options = Nokogiri::HTML.fragment(html).css('option')
+        assert_equal selected, options.at('[selected]')['value']
+        assert_equal '<saved> (unavailable)', options.at('[selected]').text
+        assert_equal 0, options.at('[selected]').element_children.size
+        assert_equal '', options.first['value']
+      end
+    end
 
     describe 'interface compute attribute validation' do
       let(:required_attrs) do

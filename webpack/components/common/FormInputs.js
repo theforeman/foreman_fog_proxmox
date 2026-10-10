@@ -18,6 +18,8 @@ const InputField = ({
   checked,
   error,
   tooltip,
+  validationMessage,
+  resourceSelect,
 }) => {
   const renderOptions = opts =>
     opts.map(option => (
@@ -44,6 +46,11 @@ const InputField = ({
     case 'select':
       renderComponent = (
         <select
+          data-resource-select={resourceSelect || undefined}
+          ref={input => {
+            if (input) input.setCustomValidity(validationMessage);
+          }}
+          aria-invalid={validationMessage ? true : undefined}
           disabled={disabled}
           readOnly={readOnly}
           name={name}
@@ -89,6 +96,8 @@ const InputField = ({
       label={label}
       required={required}
       className="common-textInput"
+      touched={!!error}
+      error={error}
       tooltipHelp={
         info && (
           <FieldLevelHelp
@@ -102,9 +111,6 @@ const InputField = ({
         <Tooltip content={tooltip}>{renderComponent}</Tooltip>
       ) : (
         renderComponent
-      )}
-      {error && (
-        <div style={{ color: 'red', marginTop: '0.5rem' }}>{error}</div>
       )}
     </CommonForm>
   );
@@ -141,6 +147,8 @@ InputField.propTypes = {
   ),
   error: PropTypes.string,
   tooltip: PropTypes.string,
+  validationMessage: PropTypes.string,
+  resourceSelect: PropTypes.bool,
 };
 
 InputField.defaultProps = {
@@ -156,6 +164,8 @@ InputField.defaultProps = {
   options: [],
   error: '',
   tooltip: '',
+  validationMessage: '',
+  resourceSelect: false,
 };
 
 export default InputField;

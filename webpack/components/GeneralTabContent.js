@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { PageSection, Divider } from '@patternfly/react-core';
 import { translate as __ } from 'foremanReact/common/I18n';
 import InputField from './common/FormInputs';
+import ResourceSelect from './common/ResourceSelect';
 import { createStoragesMap } from './ProxmoxStoragesUtils';
 
 const GeneralTabContent = ({
@@ -55,7 +56,7 @@ const GeneralTabContent = ({
         onChange={handleChange}
       />
       {(newVm || fromProfile) && general?.type?.value === 'qemu' && (
-        <InputField
+        <ResourceSelect
           name={general?.isoUploadStorage?.name}
           label={__('ISO Upload Storage')}
           info={__(
@@ -65,7 +66,7 @@ const GeneralTabContent = ({
           type="select"
           value={general?.isoUploadStorage?.value || ''}
           options={[{ value: '', label: '' }, ...isoStorages]}
-          disabled={(!fromProfile && !usesIsoUploadStorage) || !hasIsoStorages}
+          disabled={!fromProfile && !usesIsoUploadStorage}
           error={
             usesIsoUploadStorage && !hasIsoStorages
               ? __(

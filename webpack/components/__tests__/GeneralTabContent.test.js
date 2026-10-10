@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import GeneralTabContent from '../GeneralTabContent';
+import { ResourceAvailabilityContext } from '../common/ResourceSelect';
 
 describe('GeneralTabContent', () => {
   const general = {
@@ -41,6 +42,31 @@ describe('GeneralTabContent', () => {
       total: 2000,
     },
   ];
+
+  it.each(['parent', 'error', 'ready'])(
+    'leaves node, pool and profile image selectors outside resource validation (%s)',
+    availability => {
+      const { container } = render(
+        <ResourceAvailabilityContext.Provider value={availability}>
+          <GeneralTabContent
+            general={{
+              ...general,
+              pool: { name: 'pool', value: 'removed' },
+              imageId: { name: 'image', value: 'removed' },
+            }}
+            fromProfile
+            handleChange={jest.fn()}
+          />
+        </ResourceAvailabilityContext.Provider>
+      );
+      ['host[compute_attributes][node_id]', 'pool', 'image'].forEach(name => {
+        const select = container.querySelector(`select[name="${name}"]`);
+        expect(select).not.toHaveAttribute('data-resource-select');
+        expect(select.validationMessage).toBe('');
+        expect(select.textContent).not.toContain('unavailable');
+      });
+    }
+  );
 
   it('offers ISO-capable storages for the selected node', () => {
     const { container } = render(
@@ -142,7 +168,7 @@ describe('GeneralTabContent', () => {
     ).toBeInTheDocument();
   });
 
-  it('disables ISO upload storage and shows a message when none is available', () => {
+  it('preserves ISO upload storage and blocks submission when none is available', () => {
     const { container } = render(
       <GeneralTabContent
         general={general}
@@ -156,7 +182,9 @@ describe('GeneralTabContent', () => {
     const isoUploadStorage = container.querySelector(
       'select[name="host[compute_attributes][iso_upload_storage]"]'
     );
-    expect(isoUploadStorage).toBeDisabled();
+    expect(isoUploadStorage).toBeEnabled();
+    expect(isoUploadStorage).toHaveValue('shared-iso');
+    expect(isoUploadStorage.checkValidity()).toBe(false);
     expect(
       screen.getByText(
         'No ISO storage is available for the selected node. Try selecting another node.'

@@ -16,6 +16,7 @@ const GeneralTabContent = ({
   provisionMethod,
   handleChange,
   untemplatable,
+  provisionMethodState,
 }) => {
   const isoStorages = createStoragesMap(
     storages,
@@ -108,6 +109,20 @@ const GeneralTabContent = ({
           onChange={handleChange}
         />
       )}
+      {(fromProfile || newVm) && (
+        <InputField
+          name={general?.fullClone?.name}
+          label={__('Full clone')}
+          info={__(
+            'Clone the full disk instead of a linked clone. Required during image-based provisioning for storages that do not support linked clones, e.g. LVM.'
+          )}
+          type="checkbox"
+          value={general?.fullClone?.value}
+          checked={String(general?.fullClone?.value) === '1'}
+          disabled={!fromProfile && provisionMethodState !== 'image'}
+          onChange={handleChange}
+        />
+      )}
       <InputField
         name={general?.description?.name}
         label={__('Description')}
@@ -129,6 +144,7 @@ GeneralTabContent.propTypes = {
   provisionMethod: PropTypes.string,
   handleChange: PropTypes.func.isRequired,
   untemplatable: PropTypes.bool,
+  provisionMethodState: PropTypes.string,
 };
 
 GeneralTabContent.defaultProps = {
@@ -140,6 +156,7 @@ GeneralTabContent.defaultProps = {
   storages: [],
   provisionMethod: 'build',
   untemplatable: false,
+  provisionMethodState: 'build',
 };
 
 export default GeneralTabContent;

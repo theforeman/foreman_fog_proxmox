@@ -201,6 +201,19 @@ module ForemanFogProxmox
         assert_equal '0', vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:dhcp]
         assert_equal '0', vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:dhcp6]
       end
+
+      it 'uses vm.full_clone directly when present' do
+        vm, = mock_server_vm
+        vm.stubs(:full_clone).returns('1')
+        vm_attrs = @cr.vm_compute_attributes(vm)
+        assert_equal '1', vm_attrs[:full_clone]
+      end
+
+      it 'omits full_clone from attrs when vm.full_clone is nil' do
+        vm, = mock_server_vm
+        vm_attrs = @cr.vm_compute_attributes(vm)
+        assert_not vm_attrs.key?(:full_clone)
+      end
     end
   end
 end

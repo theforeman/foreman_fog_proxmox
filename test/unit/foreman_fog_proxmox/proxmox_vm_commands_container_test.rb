@@ -308,6 +308,29 @@ module ForemanFogProxmox
         vm.expects(:update).with(expected_args)
         cr.create_vm(args)
       end
+
+      it 'registers a requested container with the HA manager' do
+        cr = ForemanFogProxmox::Proxmox.new
+        ha_resources = mock('ha_resources')
+        client = mock('client')
+        client.stubs(:ha_resources).returns(ha_resources)
+        cr.stubs(:client).returns(client)
+        vm = mock('vm', vmid: 100)
+        vm.stubs(:container?).returns(true)
+        ha_resources.expects(:create).with({ sid: 'ct:100', group: 'production', state: 'started' })
+
+        cr.register_ha_resource(vm, ha_managed: '1', ha_group: 'production', ha_state: 'started')
+      end
+
+      it 'fails requested HA placement when the client has no HA support' do
+        cr = ForemanFogProxmox::Proxmox.new
+        cr.stubs(:client).returns(Object.new)
+        vm = mock('vm')
+
+        assert_raises(Foreman::Exception) do
+          cr.register_ha_resource(vm, ha_managed: '1')
+        end
+      end
     end
   end
 end

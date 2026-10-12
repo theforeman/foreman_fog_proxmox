@@ -17,7 +17,7 @@ import { useBios } from '../../ProxmoxBiosContext';
 
 const EFIDisk = ({ onRemove, data, storages, nodeId, vmId }) => {
   const [efidisk, setEfiDisk] = useState(data);
-  const storagesMap = createStoragesMap(storages, null, nodeId);
+  const storagesMap = createStoragesMap(storages, 'images', nodeId);
   const { bios } = useBios();
   const isBiosOvmf = ['ovmf', 'uefi_secure_boot'].includes(bios);
   const secureBootEnabled = bios === 'uefi_secure_boot';

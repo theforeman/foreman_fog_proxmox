@@ -17,6 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 require 'test_plugin_helper'
+require 'fog/proxmox/attributes'
+require 'fog/proxmox/compute/models/storages'
+require 'fog/proxmox/compute/models/volumes'
 
 module ForemanFogProxmox
   class ComputeResourcesControllerTest < ActionController::TestCase
@@ -31,7 +34,7 @@ module ForemanFogProxmox
       @compute_resource.stubs(:images_by_storage).returns([])
       @compute_resource.stubs(:nodes).returns([])
       @compute_resource.stubs(:pools).returns([])
-      @compute_resource.stubs(:storages).with('proxmox').returns([mock_storage])
+      @compute_resource.stubs(:storages).with('proxmox', nil).returns([mock_storage])
       @compute_resource.stubs(:storages).with('proxmox', 'vztmpl').returns([])
       @compute_resource.stubs(:storages).with('proxmox', 'iso').returns([])
       @compute_resource.stubs(:storages).with(nil).returns([])
@@ -86,8 +89,8 @@ module ForemanFogProxmox
       node_a_bridges = [{ iface: 'vmbr0' }]
       node_b_bridges = [{ iface: 'vmbr1' }]
       @compute_resource.stubs(:nodes).returns([node_a, node_b])
-      @compute_resource.expects(:storages).with('node-a').returns(node_a_storages)
-      @compute_resource.expects(:storages).with('node-b').returns(node_b_storages)
+      @compute_resource.expects(:storages).with('node-a', nil).returns(node_a_storages)
+      @compute_resource.expects(:storages).with('node-b', nil).returns(node_b_storages)
       @compute_resource.expects(:bridges).with('node-a').returns(node_a_bridges)
       @compute_resource.expects(:bridges).with('node-b').returns(node_b_bridges)
 
@@ -123,8 +126,8 @@ module ForemanFogProxmox
         shared: 1,
       }
       @compute_resource.stubs(:nodes).returns([node_a, node_b])
-      @compute_resource.expects(:storages).with('node-a').returns([shared_storage])
-      @compute_resource.expects(:storages).with('node-b').returns([shared_storage])
+      @compute_resource.expects(:storages).with('node-a', nil).returns([shared_storage])
+      @compute_resource.expects(:storages).with('node-b', nil).returns([shared_storage])
 
       get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
       assert_response :success
@@ -134,6 +137,56 @@ module ForemanFogProxmox
         ['shared-iso', 'node-a'],
         ['shared-iso', 'node-b'],
       ], (json_response['storages'].map { |storage| [storage['storage'], storage['node_id']] })
+    end
+
+    test 'metadata includes media-only and container-only storage without disk image support' do
+      inventory = [
+        { storage: 'local', content: 'iso,vztmpl,backup', active: 1, enabled: 1 },
+        { storage: 'containers', content: 'rootdir', active: 1, enabled: 1 },
+        { storage: 'disks', content: 'images', active: 1, enabled: 1 },
+        { storage: 'disabled', content: 'iso', active: 1, enabled: 0 },
+        { storage: 'inactive', content: 'vztmpl', active: 0, enabled: 1 },
+      ]
+      service = storage_service(inventory)
+      service.expects(:list_volumes).never
+      @compute_resource.stubs(:nodes).returns([stub(node: 'proxmox')])
+
+      get :metadata, params: { compute_resource_id: @compute_resource.id }, session: set_session_user
+
+      assert_response :success
+      storages = JSON.parse(@response.body)['storages']
+      assert_equal %w[containers disks local], (storages.map { |storage| storage['storage'] })
+      assert_equal %w[rootdir images iso,vztmpl,backup], (storages.map { |storage| storage['content'] })
+      assert_equal ['proxmox'], storages.map { |storage| storage['node_id'] }.uniq
+    end
+
+    %w[iso vztmpl].each do |content|
+      test "lists #{content} volumes from storage without disk image support" do
+        service = storage_service([{ storage: 'local', content: content, active: 1, enabled: 1 }])
+        volume = { volid: "local:#{content}/test", content: content }
+        service.expects(:list_volumes).with('proxmox', 'local', {}).returns([volume])
+
+        get :volumes_by_node_and_storage,
+          params: { compute_resource_id: @compute_resource.id, node_id: 'proxmox', storage: 'local' },
+          session: set_session_user
+
+        assert_response :success
+        assert_equal [volume.stringify_keys], JSON.parse(@response.body)
+      end
+    end
+
+    private
+
+    def storage_service(storages)
+      service = mock('storage service')
+      service.expects(:list_storages).with('proxmox', {}).returns(storages)
+      collection = Fog::Proxmox::Compute::Storages.new(service: service, node_id: 'proxmox')
+      node = stub(storages: collection)
+      nodes = mock('nodes')
+      nodes.expects(:get).with('proxmox').returns(node)
+      @compute_resource.unstub(:storages)
+      @compute_resource.stubs(:client).returns(stub(nodes: nodes))
+      service
     end
   end
 end

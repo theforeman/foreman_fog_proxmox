@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   PageSection,
   Divider,
@@ -8,9 +8,10 @@ import {
   TabTitleText,
   Spinner,
   Bullseye,
+  Alert,
 } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
-import { translate as __ } from 'foremanReact/common/I18n';
+import { sprintf, translate as __ } from 'foremanReact/common/I18n';
 import { API } from 'foremanReact/redux/API';
 import { ProxmoxBiosProvider } from './ProxmoxBiosContext';
 
@@ -27,6 +28,12 @@ import ProxmoxContainerHardware from './ProxmoxContainer/ProxmoxContainerHardwar
 import InputField from './common/FormInputs';
 import GeneralTabContent from './GeneralTabContent';
 import useInheritedImageSelection from './hooks/useInheritedImageSelection';
+import {
+  ResourceAvailabilityContext,
+  resourceAvailability,
+} from './common/ResourceSelect';
+import useHostBridgeSelections from './hooks/useHostBridgeSelections';
+import useResourceValidation from './hooks/useResourceValidation';
 
 const ProxmoxVmType = ({
   vmAttrs,
@@ -54,6 +61,7 @@ const ProxmoxVmType = ({
   const [metaLoaded, setMetaLoaded] = useState(!!propsLoaded);
   const [metaError, setMetaError] = useState(false);
   const [metaNodes, setMetaNodes] = useState([]);
+  const [metaOfflineNodes, setMetaOfflineNodes] = useState([]);
   const [metaPools, setMetaPools] = useState([]);
   const [metaStorages, setMetaStorages] = useState([]);
   const [metaBridges, setMetaBridges] = useState([]);
@@ -119,6 +127,7 @@ const ProxmoxVmType = ({
         );
         if (!isMounted) return;
         setMetaNodes(data?.nodes || []);
+        setMetaOfflineNodes(data?.['offline_nodes'] || []);
         setMetaPools(data?.pools || []);
         setMetaStorages(data?.storages || []);
         setMetaBridges(data?.bridges || []);
@@ -166,24 +175,29 @@ const ProxmoxVmType = ({
         ]
       : [];
 
-  const [filteredBridges, setFilteredBridges] = useState([]);
-
   const typeValue = general?.type?.value;
   const nodeIdValue = general?.nodeId?.value;
+  const filteredBridges = useMemo(
+    () => metaBridges.filter(bridge => bridge.node_id === nodeIdValue),
+    [metaBridges, nodeIdValue]
+  );
+  const metadataAvailability = nodeIdValue
+    ? resourceAvailability(!metaLoaded, metaError)
+    : 'parent';
+  const rootRef = useRef(null);
+  useHostBridgeSelections(
+    rootRef,
+    filteredBridges,
+    metadataAvailability,
+    !registerComp && !fromProfile
+  );
+  useResourceValidation(rootRef, setActiveTabKey);
 
   useEffect(() => {
     if (!registerComp && !fromProfile) {
       networkSelected(typeValue);
     }
   }, [typeValue, registerComp, fromProfile]);
-
-  useEffect(() => {
-    if (registerComp) return;
-    const filtered = metaBridges.filter(
-      bridge => bridge.node_id === nodeIdValue
-    );
-    setFilteredBridges(filtered);
-  }, [nodeIdValue, metaBridges, registerComp]);
 
   useEffect(() => {
     const handler = event => {
@@ -317,119 +331,152 @@ const ProxmoxVmType = ({
   };
 
   return (
-    <ProxmoxBiosProvider
-      initialEfiDiskSelected={
-        !!(vmAttrs?.efidisk && Object.keys(vmAttrs.efidisk).length > 0)
-      }
-    >
-      <div>
-        <InputField
-          name={general?.type?.name}
-          label={__('Type')}
-          required
-          onChange={handleChange}
-          value={general?.type?.value}
-          options={ProxmoxComputeSelectors.proxmoxTypesMap}
-          disabled={!newVm}
-          type="select"
-        />
+    <ResourceAvailabilityContext.Provider value={metadataAvailability}>
+      <ProxmoxBiosProvider
+        initialEfiDiskSelected={
+          !!(vmAttrs?.efidisk && Object.keys(vmAttrs.efidisk).length > 0)
+        }
+      >
+        <div ref={rootRef}>
+          <InputField
+            name={general?.type?.name}
+            label={__('Type')}
+            required
+            onChange={handleChange}
+            value={general?.type?.value}
+            options={ProxmoxComputeSelectors.proxmoxTypesMap}
+            disabled={!newVm}
+            type="select"
+          />
 
-        {!metaLoaded && (
-          <PageSection padding={{ default: 'noPadding' }}>
-            <Divider component="li" style={{ marginBottom: '1rem' }} />
-            <Bullseye>
-              <Spinner size="lg" />
-            </Bullseye>
-          </PageSection>
-        )}
-
-        {metaError && (
-          <div style={{ color: '#c9190b', fontSize: '14px', marginTop: '8px' }}>
-            {__(
-              'Failed to load Proxmox metadata. Please check your compute resource connection.'
-            )}
-          </div>
-        )}
-
-        <Tabs
-          ouiaId="proxmox-vm-type-tabs-options"
-          activeKey={activeTabKey}
-          onSelect={handleTabClick}
-          aria-label="Options tabs"
-          role="region"
-        >
-          <Tab
-            ouiaId="proxmox-vm-type-tab-general"
-            eventKey={0}
-            title={<TabTitleText>{__('General')}</TabTitleText>}
-            aria-label="Default content - general"
-          >
-            <GeneralTabContent
-              general={general}
-              fromProfile={fromProfile}
-              newVm={newVm}
-              nodesMap={nodesMap}
-              poolsMap={poolsMap}
-              imagesMap={imagesMap}
-              storages={metaStorages}
-              provisionMethod={provisionMethodState}
-              handleChange={handleChange}
-              untemplatable={untemplatable}
-            />
-          </Tab>
-
-          <Tab
-            ouiaId="proxmox-vm-type-tab-advanced"
-            eventKey={1}
-            title={<TabTitleText>{__('Advanced Options')}</TabTitleText>}
-            aria-label="advanced options"
-          >
+          {!metaLoaded && (
             <PageSection padding={{ default: 'noPadding' }}>
-              <Divider component="li" style={{ marginBottom: '2rem' }} />
-              {componentMap[general?.type?.value]?.options}
+              <Divider component="li" style={{ marginBottom: '1rem' }} />
+              <Bullseye>
+                <Spinner size="lg" />
+              </Bullseye>
             </PageSection>
-          </Tab>
-
-          <Tab
-            ouiaId="proxmox-vm-type-tab-hardware"
-            eventKey={2}
-            title={<TabTitleText>{__('Hardware')}</TabTitleText>}
-            aria-label="hardware"
-          >
-            <PageSection padding={{ default: 'noPadding' }}>
-              <Divider component="li" style={{ marginBottom: '2rem' }} />
-              {componentMap[general?.type?.value]?.hardware}
-            </PageSection>
-          </Tab>
-
-          {fromProfile && (
-            <Tab
-              ouiaId="proxmox-vm-type-tab-network"
-              eventKey={3}
-              title={<TabTitleText>{__('Network Interfaces')}</TabTitleText>}
-              aria-label="Network interface"
-            >
-              <PageSection padding={{ default: 'noPadding' }}>
-                <Divider component="li" style={{ marginBottom: '2rem' }} />
-                {componentMap[general?.type?.value]?.network}
-              </PageSection>
-            </Tab>
           )}
 
-          <Tab
-            ouiaId="proxmox-vm-type-tab-storage"
-            eventKey={4}
-            title={<TabTitleText>{__('Storage')}</TabTitleText>}
-            aria-label="storage"
+          {metaError && (
+            <div
+              style={{ color: '#c9190b', fontSize: '14px', marginTop: '8px' }}
+            >
+              {__(
+                'Failed to load Proxmox metadata. Please check your compute resource connection.'
+              )}
+            </div>
+          )}
+
+          {metaOfflineNodes.length > 0 && (
+            <Alert
+              isInline
+              variant="warning"
+              title={sprintf(
+                __(
+                  'The following Proxmox nodes are offline and unavailable: %(nodes)s'
+                ),
+                { nodes: metaOfflineNodes.join(', ') }
+              )}
+              style={{ marginTop: '8px' }}
+            />
+          )}
+
+          <Tabs
+            ouiaId="proxmox-vm-type-tabs-options"
+            activeKey={activeTabKey}
+            onSelect={handleTabClick}
+            aria-label="Options tabs"
+            role="region"
           >
-            <PageSection padding={{ default: 'noPadding' }}>
-              <Divider component="li" style={{ marginBottom: '2rem' }} />
-              {componentMap[general?.type?.value]?.storage}
-            </PageSection>
-          </Tab>
-        </Tabs>
-      </div>
-    </ProxmoxBiosProvider>
+            <Tab
+              ouiaId="proxmox-vm-type-tab-general"
+              eventKey={0}
+              title={<TabTitleText>{__('General')}</TabTitleText>}
+              aria-label="Default content - general"
+            >
+              <div data-resource-tab="0">
+                <GeneralTabContent
+                  general={general}
+                  fromProfile={fromProfile}
+                  newVm={newVm}
+                  nodesMap={nodesMap}
+                  offlineNodes={metaOfflineNodes}
+                  poolsMap={poolsMap}
+                  imagesMap={imagesMap}
+                  storages={metaStorages}
+                  provisionMethod={provisionMethodState}
+                  handleChange={handleChange}
+                  untemplatable={untemplatable}
+                />
+              </div>
+            </Tab>
+
+            <Tab
+              ouiaId="proxmox-vm-type-tab-advanced"
+              eventKey={1}
+              title={<TabTitleText>{__('Advanced Options')}</TabTitleText>}
+              aria-label="advanced options"
+            >
+              <PageSection
+                data-resource-tab="1"
+                padding={{ default: 'noPadding' }}
+              >
+                <Divider component="li" style={{ marginBottom: '2rem' }} />
+                {componentMap[general?.type?.value]?.options}
+              </PageSection>
+            </Tab>
+
+            <Tab
+              ouiaId="proxmox-vm-type-tab-hardware"
+              eventKey={2}
+              title={<TabTitleText>{__('Hardware')}</TabTitleText>}
+              aria-label="hardware"
+            >
+              <PageSection
+                data-resource-tab="2"
+                padding={{ default: 'noPadding' }}
+              >
+                <Divider component="li" style={{ marginBottom: '2rem' }} />
+                {componentMap[general?.type?.value]?.hardware}
+              </PageSection>
+            </Tab>
+
+            {fromProfile && (
+              <Tab
+                ouiaId="proxmox-vm-type-tab-network"
+                eventKey={3}
+                title={<TabTitleText>{__('Network Interfaces')}</TabTitleText>}
+                aria-label="Network interface"
+              >
+                <PageSection
+                  data-resource-tab="3"
+                  padding={{ default: 'noPadding' }}
+                >
+                  <Divider component="li" style={{ marginBottom: '2rem' }} />
+                  {componentMap[general?.type?.value]?.network}
+                </PageSection>
+              </Tab>
+            )}
+
+            <Tab
+              ouiaId="proxmox-vm-type-tab-storage"
+              eventKey={4}
+              title={<TabTitleText>{__('Storage')}</TabTitleText>}
+              aria-label="storage"
+            >
+              <PageSection
+                data-resource-tab="4"
+                padding={{ default: 'noPadding' }}
+              >
+                <Divider component="li" style={{ marginBottom: '2rem' }} />
+                {componentMap[general?.type?.value]?.storage}
+              </PageSection>
+            </Tab>
+          </Tabs>
+        </div>
+      </ProxmoxBiosProvider>
+    </ResourceAvailabilityContext.Provider>
   );
 };
 

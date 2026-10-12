@@ -26,7 +26,7 @@ module ForemanFogProxmox
 
       def node
         @compute_resource = ComputeResource.where(type: 'ForemanFogProxmox::Proxmox').first
-        @compute_resource.nodes.first
+        @compute_resource.available_nodes.first
       end
 
       def node_id

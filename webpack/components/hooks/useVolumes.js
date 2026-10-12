@@ -7,22 +7,23 @@ const useVolumes = (
   storageValue,
   contentType = null
 ) => {
-  const [volumes, setVolumes] = useState([]);
-  const [loadingVolumes, setLoadingVolumes] = useState(false);
-  const [volumeError, setVolumeError] = useState(false);
+  const [result, setResult] = useState(null);
+  const requestKey = JSON.stringify([
+    computeResourceId,
+    nodeId,
+    storageValue,
+    contentType,
+  ]);
+  const enabled = !!(computeResourceId && nodeId && storageValue);
 
   useEffect(() => {
-    if (!computeResourceId || !nodeId || !storageValue) {
-      setVolumes([]);
-      setLoadingVolumes(false);
-      setVolumeError(false);
+    if (!enabled) {
+      setResult(null);
       return undefined;
     }
 
     let mounted = true;
-    setLoadingVolumes(true);
-    setVolumeError(false);
-    setVolumes([]);
+    setResult(null);
 
     const fetchVolumes = async () => {
       const url = `/foreman_fog_proxmox/volumes/${encodeURIComponent(
@@ -38,16 +39,10 @@ const useVolumes = (
           ? safe.filter(v => (v?.content || '').includes(contentType))
           : safe;
 
-        setVolumes(filtered);
-        setVolumeError(false);
+        setResult({ requestKey, volumes: filtered, error: false });
       } catch (e) {
         if (mounted) {
-          setVolumes([]);
-          setVolumeError(true);
-        }
-      } finally {
-        if (mounted) {
-          setLoadingVolumes(false);
+          setResult({ requestKey, volumes: [], error: true });
         }
       }
     };
@@ -57,9 +52,21 @@ const useVolumes = (
     return () => {
       mounted = false;
     };
-  }, [computeResourceId, nodeId, storageValue, contentType]);
+  }, [
+    computeResourceId,
+    nodeId,
+    storageValue,
+    contentType,
+    requestKey,
+    enabled,
+  ]);
 
-  return { volumes, loadingVolumes, volumeError };
+  const current = enabled && result?.requestKey === requestKey ? result : null;
+  return {
+    volumes: current?.volumes || [],
+    loadingVolumes: enabled && !current,
+    volumeError: current?.error || false,
+  };
 };
 
 export default useVolumes;

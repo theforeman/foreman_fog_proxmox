@@ -50,6 +50,10 @@ module ForemanFogProxmox
         @host.compute_resource.nodes
       end
 
+      def available_nodes
+        @host.compute_resource.available_nodes
+      end
+
       def storages
         @host.compute_resource.storages
       end

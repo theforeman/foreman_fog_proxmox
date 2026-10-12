@@ -84,7 +84,7 @@ module ForemanFogProxmox
       node_id = params[:node_id]
       storage = params[:storage]
 
-      vols = cr.storages(node_id).find { |s| s.storage == storage }&.volumes || []
+      vols = cr.storages(node_id, nil).find { |s| s.storage == storage }&.volumes || []
 
       render json: Array(vols).map { |v|
         h = v.respond_to?(:as_json) ? v.as_json : v
@@ -95,13 +95,15 @@ module ForemanFogProxmox
     # GET foreman_fog_proxmox/metadata/:compute_resource_id
     def metadata
       cr = ComputeResource.find(params[:compute_resource_id])
-      nodes = Array(cr.nodes)
+      node_availability = cr.node_availability
+      available_nodes = node_availability[:available]
 
       render json: {
-        nodes: extract_nodes(nodes),
+        nodes: extract_nodes(available_nodes),
+        offline_nodes: extract_node_names(node_availability[:offline]),
         pools: extract_pools(cr),
-        storages: extract_storages(cr, nodes),
-        bridges: extract_bridges(cr, nodes),
+        storages: extract_storages(cr, available_nodes),
+        bridges: extract_bridges(cr, available_nodes),
         images: extract_images(cr),
       }
     end
@@ -110,6 +112,10 @@ module ForemanFogProxmox
 
     def extract_nodes(nodes)
       nodes.map { |n| { node: n.node } }
+    end
+
+    def extract_node_names(nodes)
+      Array(nodes).map(&:node)
     end
 
     def extract_pools(compute_resource)
@@ -122,7 +128,7 @@ module ForemanFogProxmox
     def extract_storages(compute_resource, nodes)
       nodes.flat_map do |node|
         node_id = node.node
-        Array(compute_resource.storages(node_id)).map do |storage|
+        Array(compute_resource.storages(node_id, nil)).map do |storage|
           h = storage.respond_to?(:as_json) ? storage.as_json : storage
           {
             storage: (h[:storage] || h['storage']),

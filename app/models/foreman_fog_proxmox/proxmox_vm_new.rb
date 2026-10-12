@@ -99,7 +99,10 @@ module ForemanFogProxmox
     end
 
     def default_node
-      nodes.first
+      node = available_nodes.first
+      raise ::Foreman::Exception, _('No available Proxmox nodes') unless node
+
+      node
     end
 
     def default_node_id
@@ -209,8 +212,11 @@ module ForemanFogProxmox
     def new_typed_vm(new_attr, type)
       convert_config_attributes(new_attr) if new_attr.key?(:config_attributes)
       node_id = new_attr['node_id']
-      node = node_id ? client.nodes.get(node_id) : default_node
-      assign_available_vmid(new_attr, node)
+      node = node_id.present? ? client.nodes.get(node_id) : default_node
+      raise ::Foreman::Exception, format(_('Proxmox node %<node>s is unavailable'), node: node_id) unless node
+
+      # Forms must be able to reconstruct saved placement on an offline node.
+      assign_available_vmid(new_attr, node) unless offline_node?(node)
       new_attr_type = new_attr['type']
       new_attr_type ||= new_attr['config_attributes']['type'] if new_attr.key?('config_attributes')
       new_attr_type ||= type

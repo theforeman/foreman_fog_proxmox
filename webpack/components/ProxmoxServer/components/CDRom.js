@@ -13,7 +13,9 @@ import {
 import { TimesIcon } from '@patternfly/react-icons';
 import { translate as __ } from 'foremanReact/common/I18n';
 import { createStoragesMap } from '../../ProxmoxStoragesUtils';
-import InputField from '../../common/FormInputs';
+import ResourceSelect, {
+  resourceAvailability,
+} from '../../common/ResourceSelect';
 import useVolumes from '../../hooks/useVolumes';
 
 const CDRom = ({
@@ -191,20 +193,19 @@ const CDRom = ({
           </Title>
           <Divider component="li" style={{ marginBottom: '2rem' }} />
 
-          <InputField
+          <ResourceSelect
+            required
+            active={!hidden}
             label={__('Storage')}
             name={cdrom?.storage?.name}
             type="select"
-            value={
-              cdrom?.storage?.value ||
-              (storagesMap?.length > 0 ? storagesMap[0].value : '')
-            }
+            value={storageValue}
             options={storagesMap}
             onChange={handleChange}
             disabled={!canAttachCdromImage}
           />
 
-          {loadingVolumes ? (
+          {loadingVolumes && (
             <div
               style={{
                 display: 'flex',
@@ -215,22 +216,24 @@ const CDRom = ({
               <Spinner size="md" />
               <span>{__('Fetching images ISO...')}</span>
             </div>
-          ) : (
-            <InputField
-              name={cdrom?.volid?.name}
-              label={__('Image ISO')}
-              type="select"
-              value={cdrom?.volid?.value}
-              options={imagesMap}
-              onChange={handleChange}
-              disabled={!canAttachCdromImage}
-              error={
-                volumeError
-                  ? __('Failed fetching images ISO please try again.')
-                  : ''
-              }
-            />
           )}
+          <ResourceSelect
+            required
+            active={!hidden}
+            availability={resourceAvailability(loadingVolumes, volumeError)}
+            name={cdrom?.volid?.name}
+            label={__('Image ISO')}
+            type="select"
+            value={cdrom?.volid?.value}
+            options={imagesMap}
+            onChange={handleChange}
+            disabled={!canAttachCdromImage}
+            error={
+              volumeError
+                ? __('Failed fetching images ISO please try again.')
+                : ''
+            }
+          />
         </PageSection>
       )}
     </div>

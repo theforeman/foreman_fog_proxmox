@@ -81,6 +81,63 @@ module ForemanFogProxmox
         @cr = FactoryBot.build_stubbed(:proxmox_cr)
       end
 
+      it 'raises a clear error when no Proxmox nodes are available' do
+        @cr.stubs(:nodes).returns([stub(node: 'offline', status: 'offline')])
+
+        error = assert_raises(::Foreman::Exception) { @cr.default_node }
+
+        assert_equal 'No available Proxmox nodes', error.bare_message
+      end
+
+      it 'defaults to the first available node rather than the first inventory entry' do
+        offline = stub(node: 'offline', status: 'offline')
+        online = stub(node: 'online', status: 'online')
+        @cr.stubs(:nodes).returns([offline, online])
+
+        assert_equal online, @cr.default_node
+        assert_equal 'online', @cr.default_node_id
+      end
+
+      it 'uses an available node to allocate a VM ID when cloning a host' do
+        servers = mock('servers')
+        servers.expects(:next_id).returns('101')
+        offline = stub(node: 'offline', status: 'offline')
+        online = stub(node: 'online', status: 'online', servers: servers)
+        @cr.stubs(:nodes).returns([offline, online])
+        controller = Class.new do
+          include ForemanFogProxmox::HostsController::Overrides
+        end.new
+        controller.instance_variable_set(:@host, stub(compute_resource: @cr))
+
+        assert_equal '101', controller.next_vmid
+      end
+
+      %w[qemu lxc].product(['100', nil]).each do |type, vmid|
+        it "preserves offline placement for a #{type} profile with a #{vmid ? 'saved' : 'default'} VM ID" do
+          collection = mock('VM collection')
+          node = stub(node: 'offline', status: 'offline')
+          node.stubs(vm_collection(type)).returns(collection)
+          nodes = stub
+          nodes.expects(:get).with('offline').returns(node)
+          @cr.stubs(:client).returns(stub(nodes: nodes))
+          @cr.expects(:assign_available_vmid).never
+          attr = { 'type' => type, 'node_id' => 'offline' }
+          attr['vmid'] = vmid if vmid
+          unless vmid
+            @cr.expects(:vm_typed_instance_defaults).with(type).returns(
+              { 'node_id' => 'online', 'vmid' => '101' }.with_indifferent_access
+            )
+          end
+          expected_attrs = attr.merge('vmid' => vmid || '101')
+          parsed_attrs = { type: type, node_id: 'offline', vmid: vmid || '101' }
+          vm = mock('VM')
+          @cr.expects(:parse_typed_vm).with(expected_attrs, type).returns(parsed_attrs)
+          collection.expects(:new).with(parsed_attrs).returns(vm)
+
+          assert_equal vm, @cr.new_vm(attr)
+        end
+      end
+
       it 'new server with attr empty' do
         attr = {}
         vm = mock('vm')

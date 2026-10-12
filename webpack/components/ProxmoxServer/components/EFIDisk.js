@@ -13,18 +13,19 @@ import { translate as __ } from 'foremanReact/common/I18n';
 import { createStoragesMap } from '../../ProxmoxStoragesUtils';
 import { setEfiDiskVolId } from '../../ProxmoxVmUtils';
 import InputField from '../../common/FormInputs';
+import ResourceSelect from '../../common/ResourceSelect';
 import { useBios } from '../../ProxmoxBiosContext';
 
 const EFIDisk = ({ onRemove, data, storages, nodeId, vmId }) => {
   const [efidisk, setEfiDisk] = useState(data);
-  const storagesMap = createStoragesMap(storages, null, nodeId);
+  const storagesMap = createStoragesMap(storages, 'images', nodeId);
   const { bios } = useBios();
   const isBiosOvmf = ['ovmf', 'uefi_secure_boot'].includes(bios);
   const secureBootEnabled = bios === 'uefi_secure_boot';
 
   useEffect(() => {
     if (storagesMap?.length > 0 && !efidisk?.volid?.value) {
-      const firstStorage = storagesMap[0].value;
+      const firstStorage = efidisk?.storage?.value || storagesMap[0].value;
 
       const newVolId = setEfiDiskVolId(null, firstStorage, vmId);
 
@@ -97,7 +98,7 @@ const EFIDisk = ({ onRemove, data, storages, nodeId, vmId }) => {
             </FormHelperText>
           )}
         </Title>
-        <button onClick={onRemove}>
+        <button onClick={onRemove} type="button">
           <TimesIcon />
         </button>
       </div>
@@ -125,14 +126,12 @@ const EFIDisk = ({ onRemove, data, storages, nodeId, vmId }) => {
           type="hidden"
           value={efidisk?.format.value}
         />
-        <InputField
+        <ResourceSelect
+          required
           label={__('EFI Storage')}
           name={efidisk?.storage?.name}
           type="select"
-          value={
-            efidisk?.storage?.value ||
-            (storagesMap?.length > 0 ? storagesMap[0].value : '')
-          }
+          value={efidisk?.storage?.value}
           options={storagesMap}
           onChange={handleChange}
         />

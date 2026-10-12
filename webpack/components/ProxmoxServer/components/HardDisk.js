@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Divider } from '@patternfly/react-core';
 import { sprintf, translate as __ } from 'foremanReact/common/I18n';
 import InputField from '../../common/FormInputs';
+import ResourceSelect from '../../common/ResourceSelect';
 import ProxmoxComputeSelectors from '../../ProxmoxComputeSelectors';
 import { createStoragesMap } from '../../ProxmoxStoragesUtils';
 
@@ -35,7 +36,7 @@ const HardDisk = ({
   );
   const [controllerError, setControllerError] = useState(null);
   const [deviceError, setDeviceError] = useState(null);
-  const storagesMap = createStoragesMap(storages, null, nodeId);
+  const storagesMap = createStoragesMap(storages, 'images', nodeId);
   const lockController = isPersistedDisk && !isNew && !fromProfile;
   useEffect(() => {
     const currentHddData = JSON.stringify(hdd);
@@ -131,13 +132,16 @@ const HardDisk = ({
         value={hdd?.volid?.value}
         onChange={handleChange}
       />
-      <InputField
+      <ResourceSelect
         name={hdd?.storage?.name}
         label={__('Storage')}
         type="select"
         value={hdd?.storage?.value}
         options={storagesMap}
         onChange={handleChange}
+        active={!hidden}
+        defaultToFirst
+        required
       />
       <InputField
         name={hdd?.controller?.name}

@@ -1,14 +1,18 @@
 import React from 'react';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
+import { API } from 'foremanReact/redux/API';
 import ProxmoxVmType from '../ProxmoxVmType';
+
+jest.mock('foremanReact/redux/API', () => ({ API: { get: jest.fn() } }));
 
 jest.mock('../ProxmoxVmUtils', () => ({
   networkSelected: jest.fn(),
 }));
 
-jest.mock('../GeneralTabContent', () => () => (
+const mockGeneralTabContent = jest.fn(() => (
   <div data-testid="general-tab-content" />
 ));
+jest.mock('../GeneralTabContent', () => props => mockGeneralTabContent(props));
 
 jest.mock('../common/FormInputs', () => () => <div data-testid="type-field" />);
 
@@ -30,7 +34,20 @@ describe('ProxmoxVmType', () => {
     bridges: [],
   };
 
+  beforeEach(() => {
+    window.update_interface_table = jest.fn();
+    window.tfm = { tools: { highlightTabErrors: jest.fn() } };
+    jest.useFakeTimers();
+    API.get.mockReset();
+    mockGeneralTabContent.mockClear();
+  });
+
   afterEach(() => {
+    cleanup();
+    delete window.update_interface_table;
+    delete window.tfm;
+    jest.clearAllTimers();
+    jest.useRealTimers();
     const imageSelection = document.querySelector('#image_selection');
     if (imageSelection) imageSelection.remove();
   });
@@ -55,6 +72,53 @@ describe('ProxmoxVmType', () => {
     const { container } = render(<ProxmoxVmType {...baseProps} registerComp />);
 
     expect(container.firstChild).toBeNull();
+  });
+
+  it('updates Rails bridge fields and displays their validation error after metadata loads', async () => {
+    let complete;
+    API.get.mockImplementation(
+      () =>
+        new Promise(resolve => {
+          complete = resolve;
+        })
+    );
+    const { container } = render(
+      <form>
+        <div className="form-group">
+          <select name="bridge" data-proxmox-bridge defaultValue="saved">
+            <option value="saved">saved</option>
+          </select>
+        </div>
+        <ProxmoxVmType
+          {...baseProps}
+          vmAttrs={{
+            ...baseProps.vmAttrs,
+            nodeId: { name: 'node', value: 'node-a' },
+          }}
+          computeResourceId={1}
+        />
+      </form>
+    );
+    const select = container.querySelector('select');
+    expect(select.value).toBe('saved');
+    expect(select.validationMessage).toContain('loading');
+    await act(async () =>
+      complete({
+        data: {
+          nodes: [{ node: 'node-a' }],
+          bridges: [{ node_id: 'node-a', iface: 'other' }],
+          storages: [],
+          pools: [],
+          images: [],
+        },
+      })
+    );
+    expect(select.value).toBe('saved');
+    expect(select.checkValidity()).toBe(false);
+    expect(select.closest('.form-group')).toHaveClass('has-error');
+    expect(container.querySelector('.help-block')).toHaveTextContent(
+      'Select an available resource'
+    );
   });
 
   it('restores a compute profile image after Foreman reloads image options', async () => {
@@ -85,5 +149,118 @@ describe('ProxmoxVmType', () => {
     });
 
     await waitFor(() => expect(imageSelect).toHaveValue('template-9000'));
+  });
+
+  it('revalidates a saved bridge when moving from an offline node to a compatible online node', async () => {
+    const mediaStorage = {
+      storage: 'local',
+      node_id: 'online-node',
+      content: 'iso,vztmpl,backup',
+    };
+    API.get.mockResolvedValue({
+      data: {
+        nodes: [{ node: 'online-node' }],
+        offline_nodes: ['offline-node'],
+        bridges: [{ node_id: 'online-node', iface: 'shared' }],
+        storages: [mediaStorage],
+        pools: [],
+        images: [],
+      },
+    });
+    const { container } = render(
+      <form>
+        <div className="form-group">
+          <select name="bridge" data-proxmox-bridge defaultValue="shared">
+            <option value="shared">shared</option>
+          </select>
+        </div>
+        <ProxmoxVmType
+          {...baseProps}
+          vmAttrs={{
+            ...baseProps.vmAttrs,
+            nodeId: { name: 'node', value: 'offline-node' },
+          }}
+          computeResourceId={1}
+        />
+      </form>
+    );
+    await screen.findByText(
+      'The following Proxmox nodes are offline and unavailable: offline-node'
+    );
+    const select = container.querySelector('select');
+    expect(select.value).toBe('shared');
+    expect(select.selectedOptions[0].textContent).toContain('unavailable');
+    expect(select.checkValidity()).toBe(false);
+    const [props] = mockGeneralTabContent.mock.calls.slice(-1)[0];
+    expect(props.offlineNodes).toEqual(['offline-node']);
+    expect(props.storages).toEqual([mediaStorage]);
+
+    act(() =>
+      props.handleChange({ target: { name: 'node', value: 'online-node' } })
+    );
+
+    expect(select.value).toBe('shared');
+    expect(select.selectedOptions[0].textContent).not.toContain('unavailable');
+    expect(select.checkValidity()).toBe(true);
+    expect(new FormData(container.querySelector('form')).get('bridge')).toBe(
+      'shared'
+    );
+  });
+
+  it('filters offline nodes and displays their names', async () => {
+    API.get.mockResolvedValue({
+      data: {
+        nodes: [{ node: 'online-node' }],
+        offline_nodes: ['offline-node'],
+        pools: [],
+        storages: [],
+        bridges: [],
+        images: [],
+      },
+    });
+
+    render(
+      <ProxmoxVmType {...baseProps} computeResourceId={1} propsLoaded={false} />
+    );
+
+    expect(
+      await screen.findByText(
+        'The following Proxmox nodes are offline and unavailable: offline-node'
+      )
+    ).toBeInTheDocument();
+    await waitFor(() => {
+      const { calls } = mockGeneralTabContent.mock;
+      const [lastCall] = calls.slice(-1);
+      const [props] = lastCall;
+      expect(props.nodesMap).toEqual([
+        { value: 'online-node', label: 'online-node' },
+      ]);
+      expect(props.offlineNodes).toEqual(['offline-node']);
+    });
+  });
+
+  it('shows the offline warning without placement choices when every node is offline', async () => {
+    API.get.mockResolvedValue({
+      data: {
+        nodes: [],
+        offline_nodes: ['node-a', 'node-b'],
+        pools: [],
+        storages: [],
+        bridges: [],
+        images: [],
+      },
+    });
+
+    render(
+      <ProxmoxVmType {...baseProps} computeResourceId={1} propsLoaded={false} />
+    );
+
+    expect(
+      await screen.findByText(
+        'The following Proxmox nodes are offline and unavailable: node-a, node-b'
+      )
+    ).toBeInTheDocument();
+    const [props] = mockGeneralTabContent.mock.calls.slice(-1)[0];
+    expect(props.nodesMap).toEqual([]);
   });
 });

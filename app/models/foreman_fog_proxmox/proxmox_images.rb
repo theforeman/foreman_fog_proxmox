@@ -46,7 +46,7 @@ module ForemanFogProxmox
 
     def templates
       volumes = []
-      nodes.each do |node|
+      available_nodes.each do |node|
         storages(node.node).each do |storage|
           # Skip disabled storages (enabled == 0 or nil)
           unless storage.enabled.to_i == 1
@@ -72,8 +72,18 @@ module ForemanFogProxmox
 
     def clone_from_image(image, vmid)
       logger.debug("create_vm(): clone #{image.identity} in #{vmid}")
+      clone = image.collection.new(vmid: vmid)
       image.clone(vmid)
-      find_vm_by_uuid(id.to_s + '_' + vmid.to_s)
+      # Own cleanup after cloning succeeds, until the caller receives the VM.
+      begin
+        reload_vm_instance!(clone)
+        pool_owner(clone)
+        attach_compute_resource_id(clone)
+      rescue StandardError => e
+        logger.warn("Failed to load cloned Proxmox VM #{vmid}: #{e}")
+        rollback_vm_instance(clone)
+        raise
+      end
     end
   end
 end

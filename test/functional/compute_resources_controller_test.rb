@@ -17,6 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with ForemanFogProxmox. If not, see <http://www.gnu.org/licenses/>.
 require 'test_plugin_helper'
+require 'fog/proxmox/attributes'
+require 'fog/proxmox/compute/models/storages'
+require 'fog/proxmox/compute/models/volumes'
+require 'ostruct'
 
 module ForemanFogProxmox
   class ComputeResourcesControllerTest < ActionController::TestCase
@@ -27,11 +31,13 @@ module ForemanFogProxmox
       mock_storage = mock('storage')
       mock_storage.stubs(:storage).returns('local')
       mock_storage.stubs(:volumes).returns([])
+      mock_storage.stubs(:as_json).returns(storage: 'local', content: 'images', avail: 1, used: 1, total: 2)
 
       @compute_resource.stubs(:images_by_storage).returns([])
-      @compute_resource.stubs(:nodes).returns([])
+      @available_node = OpenStruct.new(node: 'proxmox', status: 'online')
+      @compute_resource.stubs(:nodes).returns([@available_node])
       @compute_resource.stubs(:pools).returns([])
-      @compute_resource.stubs(:storages).with('proxmox').returns([mock_storage])
+      @compute_resource.stubs(:storages).with('proxmox', nil).returns([mock_storage])
       @compute_resource.stubs(:storages).with('proxmox', 'vztmpl').returns([])
       @compute_resource.stubs(:storages).with('proxmox', 'iso').returns([])
       @compute_resource.stubs(:storages).with(nil).returns([])
@@ -81,13 +87,16 @@ module ForemanFogProxmox
     test 'should get metadata' do
       node_a = stub(node: 'node-a')
       node_b = stub(node: 'node-b')
+      offline_node = stub(node: 'offline-node', status: 'offline')
       node_a_storages = [{ storage: 'shared-iso', content: 'iso', avail: 100, used: 20, total: 120, shared: 1 }]
       node_b_storages = [{ storage: 'local', content: 'iso', avail: 200, used: 30, total: 230, shared: 0 }]
       node_a_bridges = [{ iface: 'vmbr0' }]
       node_b_bridges = [{ iface: 'vmbr1' }]
-      @compute_resource.stubs(:nodes).returns([node_a, node_b])
-      @compute_resource.expects(:storages).with('node-a').returns(node_a_storages)
-      @compute_resource.expects(:storages).with('node-b').returns(node_b_storages)
+      @compute_resource.stubs(:nodes).returns([offline_node, node_a, node_b])
+      @compute_resource.expects(:storages).with('offline-node', nil).never
+      @compute_resource.expects(:bridges).with('offline-node').never
+      @compute_resource.expects(:storages).with('node-a', nil).returns(node_a_storages)
+      @compute_resource.expects(:storages).with('node-b', nil).returns(node_b_storages)
       @compute_resource.expects(:bridges).with('node-a').returns(node_a_bridges)
       @compute_resource.expects(:bridges).with('node-b').returns(node_b_bridges)
 
@@ -98,13 +107,17 @@ module ForemanFogProxmox
       json_response = JSON.parse(show_response)
       assert_instance_of Hash, json_response
       assert json_response.key?('nodes')
+      assert json_response.key?('offline_nodes')
       assert json_response.key?('pools')
       assert json_response.key?('storages')
       assert json_response.key?('bridges')
       assert_instance_of Array, json_response['nodes']
+      assert_instance_of Array, json_response['offline_nodes']
       assert_instance_of Array, json_response['pools']
       assert_instance_of Array, json_response['storages']
       assert_instance_of Array, json_response['bridges']
+      assert_equal [{ 'node' => 'node-a' }, { 'node' => 'node-b' }], json_response['nodes']
+      assert_equal ['offline-node'], json_response['offline_nodes']
       assert_equal ['node-a', 'node-b'], (json_response['storages'].map { |storage| storage['node_id'] })
       assert_equal [1, 0], (json_response['storages'].map { |storage| storage['shared'] })
       assert_equal ['node-a', 'node-b'], (json_response['bridges'].map { |bridge| bridge['node_id'] })
@@ -123,8 +136,8 @@ module ForemanFogProxmox
         shared: 1,
       }
       @compute_resource.stubs(:nodes).returns([node_a, node_b])
-      @compute_resource.expects(:storages).with('node-a').returns([shared_storage])
-      @compute_resource.expects(:storages).with('node-b').returns([shared_storage])
+      @compute_resource.expects(:storages).with('node-a', nil).returns([shared_storage])
+      @compute_resource.expects(:storages).with('node-b', nil).returns([shared_storage])
 
       get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
       assert_response :success
@@ -134,6 +147,88 @@ module ForemanFogProxmox
         ['shared-iso', 'node-a'],
         ['shared-iso', 'node-b'],
       ], (json_response['storages'].map { |storage| [storage['storage'], storage['node_id']] })
+    end
+
+    test 'metadata includes media-only and container-only storage without disk image support' do
+      inventory = [
+        { storage: 'local', content: 'iso,vztmpl,backup', active: 1, enabled: 1 },
+        { storage: 'containers', content: 'rootdir', active: 1, enabled: 1 },
+        { storage: 'disks', content: 'images', active: 1, enabled: 1 },
+        { storage: 'disabled', content: 'iso', active: 1, enabled: 0 },
+        { storage: 'inactive', content: 'vztmpl', active: 0, enabled: 1 },
+      ]
+      service = storage_service(inventory)
+      service.expects(:list_volumes).never
+      offline_node = OpenStruct.new(node: 'offline-node', status: 'offline')
+      @compute_resource.stubs(:nodes).returns([offline_node, @available_node])
+      @compute_resource.expects(:bridges).with('offline-node').never
+
+      get :metadata, params: { compute_resource_id: @compute_resource.id }, session: set_session_user
+
+      assert_response :success
+      metadata = JSON.parse(@response.body)
+      assert_equal ['offline-node'], metadata['offline_nodes']
+      storages = metadata['storages']
+      assert_equal %w[containers disks local], (storages.map { |storage| storage['storage'] })
+      assert_equal %w[rootdir images iso,vztmpl,backup], (storages.map { |storage| storage['content'] })
+      assert_equal ['proxmox'], storages.map { |storage| storage['node_id'] }.uniq
+    end
+
+    %w[iso vztmpl].each do |content|
+      test "lists #{content} volumes from storage without disk image support" do
+        service = storage_service([{ storage: 'local', content: content, active: 1, enabled: 1 }])
+        volume = { volid: "local:#{content}/test", content: content }
+        service.expects(:list_volumes).with('proxmox', 'local', {}).returns([volume])
+
+        get :volumes_by_node_and_storage,
+          params: { compute_resource_id: @compute_resource.id, node_id: 'proxmox', storage: 'local' },
+          session: set_session_user
+
+        assert_response :success
+        assert_equal [volume.stringify_keys], JSON.parse(@response.body)
+      end
+    end
+
+    test 'metadata separates offline nodes from available nodes' do
+      offline_node = OpenStruct.new(node: 'offline-node', status: 'offline')
+      @compute_resource.stubs(:nodes).returns([offline_node, @available_node])
+
+      get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
+
+      assert_response :success
+      json_response = JSON.parse(@response.body)
+      assert_equal [{ 'node' => 'proxmox' }], json_response['nodes']
+      assert_equal ['offline-node'], json_response['offline_nodes']
+    end
+
+    test 'metadata skips node resources when all nodes are offline' do
+      offline_node = OpenStruct.new(node: 'offline-node', status: 'offline')
+      @compute_resource.stubs(:nodes).returns([offline_node])
+      @compute_resource.expects(:storages).never
+      @compute_resource.expects(:bridges).never
+
+      get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
+
+      assert_response :success
+      json_response = JSON.parse(@response.body)
+      assert_empty json_response['nodes']
+      assert_equal ['offline-node'], json_response['offline_nodes']
+      assert_empty json_response['storages']
+      assert_empty json_response['bridges']
+    end
+
+    private
+
+    def storage_service(storages)
+      service = mock('storage service')
+      service.expects(:list_storages).with('proxmox', {}).returns(storages)
+      collection = Fog::Proxmox::Compute::Storages.new(service: service, node_id: 'proxmox')
+      node = stub(storages: collection)
+      nodes = mock('nodes')
+      nodes.expects(:get).with('proxmox').returns(node)
+      @compute_resource.unstub(:storages)
+      @compute_resource.stubs(:client).returns(stub(nodes: nodes))
+      service
     end
   end
 end

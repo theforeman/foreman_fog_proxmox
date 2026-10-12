@@ -109,13 +109,12 @@ module ForemanFogProxmox
     private
 
     def extract_nodes(nodes)
-      nodes.map { |n| { node: n.node } }
+      nodes.map { |node| { node: node.node } }
     end
 
     def extract_pools(compute_resource)
-      Array(compute_resource.pools).map do |p|
-        poolid = p.respond_to?(:poolid) ? p.poolid : (p[:poolid] || p['poolid'])
-        { poolid: poolid }
+      Array(compute_resource.pools).map do |pool|
+        { poolid: metadata_value(pool, :poolid) }
       end
     end
 
@@ -123,15 +122,14 @@ module ForemanFogProxmox
       nodes.flat_map do |node|
         node_id = node.node
         Array(compute_resource.storages(node_id)).map do |storage|
-          h = storage.respond_to?(:as_json) ? storage.as_json : storage
           {
-            storage: (h[:storage] || h['storage']),
+            storage: metadata_value(storage, :storage),
             node_id: node_id,
-            content: (h[:content] || h['content']),
-            avail: (h[:avail] || h['avail']),
-            used: (h[:used] || h['used']),
-            total: (h[:total] || h['total']),
-            shared: (h[:shared] || h['shared']),
+            content: metadata_value(storage, :content),
+            avail: metadata_value(storage, :avail),
+            used: metadata_value(storage, :used),
+            total: metadata_value(storage, :total),
+            shared: metadata_value(storage, :shared),
           }
         end
       end
@@ -141,13 +139,22 @@ module ForemanFogProxmox
       nodes.flat_map do |node|
         node_id = node.node
         Array(compute_resource.bridges(node_id)).map do |bridge|
-          h = bridge.respond_to?(:as_json) ? bridge.as_json : bridge
           {
             node_id: node_id,
-            iface: (h[:iface] || h['iface']),
+            iface: metadata_value(bridge, :iface),
           }
         end
       end
+    end
+
+    def metadata_value(record, key)
+      return record.public_send(key) if record.respond_to?(key)
+
+      data = record.respond_to?(:as_json) ? record.as_json : record
+      return data[key] if data.respond_to?(:key?) && data.key?(key)
+      return data[key.to_s] if data.respond_to?(:key?) && data.key?(key.to_s)
+
+      nil
     end
 
     def extract_images(compute_resource)

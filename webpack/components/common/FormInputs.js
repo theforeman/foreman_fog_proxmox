@@ -2,7 +2,6 @@ import React, { Fragment } from 'react';
 import { FieldLevelHelp } from 'patternfly-react';
 import { Tooltip } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
-import CommonForm from 'foremanReact/components/common/forms/CommonForm';
 
 const InputField = ({
   name,
@@ -85,28 +84,28 @@ const InputField = ({
   }
 
   return (
-    <CommonForm
-      label={label}
-      required={required}
-      className="common-textInput"
-      tooltipHelp={
-        info && (
+    <div className="form-group common-textInput">
+      <label className="col-md-2 control-label">
+        {label}
+        {required && ' *'}
+        {info && (
           <FieldLevelHelp
             buttonClass="field-help"
             content={<Fragment>{info}</Fragment>}
           />
-        )
-      }
-    >
-      {tooltip ? (
-        <Tooltip content={tooltip}>{renderComponent}</Tooltip>
-      ) : (
-        renderComponent
-      )}
-      {error && (
-        <div style={{ color: 'red', marginTop: '0.5rem' }}>{error}</div>
-      )}
-    </CommonForm>
+        )}
+      </label>
+      <div className="col-md-4">
+        {tooltip ? (
+          <Tooltip content={tooltip}>{renderComponent}</Tooltip>
+        ) : (
+          renderComponent
+        )}
+        {error && (
+          <div style={{ color: 'red', marginTop: '0.5rem' }}>{error}</div>
+        )}
+      </div>
+    </div>
   );
 };
 

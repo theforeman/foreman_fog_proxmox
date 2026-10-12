@@ -61,6 +61,8 @@ The container form slightly differs from the server one:
 
 * OS template is required
 * advanced options are slightly different
+* console mode, TTY count (including zero), and `/dev/console` attachment can
+  be configured in the advanced options
 
 Container VM Proxmox config tab:
 

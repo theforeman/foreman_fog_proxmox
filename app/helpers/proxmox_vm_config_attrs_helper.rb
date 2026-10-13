@@ -18,6 +18,15 @@
 module ProxmoxVMConfigAttrsHelper
   include ProxmoxVMConfigHelper
 
+  def rng_attrs(param_scope, rng)
+    attrs = ActiveSupport::HashWithIndifferentAccess.new
+    keys = ['max_bytes', 'period', 'source']
+    keys.each do |key|
+      attrs[key] = config_field_attrs(param_scope, key, rng.public_send(key), 'rng_attributes').values.first
+    end
+    attrs
+  end
+
   def agent_attrs(param_scope, config)
     settings = Fog::Proxmox::AgentHelper.extract(config.agent)
     freeze_fs = settings['freeze-fs-on-backup']
@@ -61,10 +70,10 @@ module ProxmoxVMConfigAttrsHelper
     flag_attrs
   end
 
-  def config_field_attrs(param_scope, key, value)
+  def config_field_attrs(param_scope, key, value, attributes_key = 'config_attributes')
     {
       snake_to_camel(key) => {
-        name: "#{param_scope}[config_attributes][#{key}]", value: value
+        name: "#{param_scope}[#{attributes_key}][#{key}]", value: value
       },
     }
   end

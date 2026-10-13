@@ -30,6 +30,46 @@ module ForemanFogProxmox
     include ProxmoxServerMockFactory
     include ProxmoxVMHelper
 
+    describe 'RNG removal' do
+      before do
+        @cr = FactoryBot.build_stubbed(:proxmox_cr)
+        @config = mock('config')
+        @vm = mock('vm')
+        @vm.stubs(:type).returns('qemu')
+        @vm.stubs(:config).returns(@config)
+        @vm.stubs(:identity).returns('100')
+      end
+
+      it 'deletes an existing RNG when its attributes are absent' do
+        @config.stubs(:rng).returns(mock('rng'))
+        @vm.expects(:update).with(delete: 'rng0')
+
+        @cr.process_rng_removal(@vm, {})
+      end
+
+      it 'keeps an RNG when its attributes are submitted' do
+        @config.stubs(:rng).returns(mock('rng'))
+        @vm.expects(:update).never
+
+        @cr.process_rng_removal(@vm, 'rng_attributes' => { 'source' => '/dev/urandom' })
+      end
+
+      it 'does not delete a nonexistent RNG' do
+        @config.stubs(:rng).returns(nil)
+        @vm.expects(:update).never
+
+        @cr.process_rng_removal(@vm, {})
+      end
+
+      it 'does not try to delete RNG from containers' do
+        @vm.stubs(:type).returns('lxc')
+        @vm.expects(:config).never
+        @vm.expects(:update).never
+
+        @cr.process_rng_removal(@vm, {})
+      end
+    end
+
     describe 'save_vm' do
       before do
         @cr = FactoryBot.build_stubbed(:proxmox_cr)
@@ -56,6 +96,7 @@ module ForemanFogProxmox
         config = mock('config')
         config.stubs(:attributes).returns(:cores => '')
         config.stubs(:efidisk).returns(nil)
+        config.stubs(:rng).returns(nil)
         vm = mock('vm')
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
@@ -98,6 +139,7 @@ module ForemanFogProxmox
         config.stubs(:interfaces).returns(interfaces)
         config.stubs(:attributes).returns(:cores => '')
         config.stubs(:efidisk).returns(nil)
+        config.stubs(:rng).returns(nil)
         vm = mock('vm')
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
@@ -137,6 +179,7 @@ module ForemanFogProxmox
         config = mock('config')
         config.stubs(:pool).returns('pool1')
         config.stubs(:efidisk).returns(nil)
+        config.stubs(:rng).returns(nil)
         config.expects(:pool=).with('pool1')
         vm = mock('vm')
         vm.stubs(:config).returns(config)
@@ -175,6 +218,7 @@ module ForemanFogProxmox
         config.expects(:pool=).with('pool1')
         config.stubs(:pool).returns('pool1')
         config.stubs(:efidisk).returns(nil)
+        config.stubs(:rng).returns(nil)
         vm = mock('vm')
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)
@@ -208,6 +252,7 @@ module ForemanFogProxmox
         config.expects(:pool=).with(nil)
         config.stubs(:pool).returns(nil)
         config.stubs(:efidisk).returns(nil)
+        config.stubs(:rng).returns(nil)
         vm = mock('vm')
         vm.stubs(:config).returns(config)
         vm.stubs(:container?).returns(false)

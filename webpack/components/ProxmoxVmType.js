@@ -231,7 +231,9 @@ const ProxmoxVmType = ({
   const componentMap = {
     qemu: {
       options: <ProxmoxServerOptions options={vmAttrs} />,
-      hardware: <ProxmoxServerHardware hardware={vmAttrs} />,
+      hardware: (
+        <ProxmoxServerHardware hardware={vmAttrs} paramScope={paramScope} />
+      ),
       network: (
         <ProxmoxServerNetwork
           network={vmAttrs?.interfaces || []}

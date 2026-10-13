@@ -23,6 +23,7 @@ module ForemanFogProxmox
   module ProxmoxVMCommands
     include ProxmoxVolumes
     include ProxmoxEfidisks
+    include ProxmoxRngs
     include ProxmoxPools
     include ProxmoxVMHelper
 
@@ -130,6 +131,7 @@ module ForemanFogProxmox
         end
 
         process_efidisk_removal(vm, processed_attributes)
+        process_rng_removal(vm, processed_attributes)
 
         vm.update(config_attributes[:config_attributes])
         poolid = new_attributes['pool'] if new_attributes.key?('pool')

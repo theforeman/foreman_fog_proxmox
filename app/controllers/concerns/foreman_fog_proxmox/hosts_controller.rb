@@ -38,6 +38,8 @@ module ForemanFogProxmox
         @host.compute_attributes[:volumes_attributes].each do |index, volume_attributes|
           @host.compute_attributes[:volumes_attributes][index] = volume_attributes.merge(volid: nil)
         end
+        efidisk = @host.compute_attributes.dig(:config_attributes, :efidisk)
+        efidisk.volid = "#{efidisk.storage}:0" if efidisk
       end
 
       private

@@ -50,6 +50,7 @@ module ProxmoxComputeSelectorsHelper
      OpenStruct.new(id: 'win7', name: 'Microsoft Windows 7'),
      OpenStruct.new(id: 'win8', name: 'Microsoft Windows 8/2012/2012r2'),
      OpenStruct.new(id: 'win10', name: 'Microsoft Windows 10/2016'),
+     OpenStruct.new(id: 'win11', name: 'Microsoft Windows 11/2022/2025'),
      OpenStruct.new(id: 'l24', name: 'Linux 2.4 Kernel'),
      OpenStruct.new(id: 'l26', name: 'Linux 2.6/3.X + Kernel'),
      OpenStruct.new(id: 'solaris', name: 'Solaris/OpenSolaris/OpenIndiania kernel')]

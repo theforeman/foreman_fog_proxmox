@@ -26,12 +26,6 @@ module ForemanFogProxmox
     include ProxmoxPools
     include ProxmoxVMHelper
 
-    def start_on_boot(vm, args)
-      startonboot = args[:start_after_create].blank? ? false : Foreman::Cast.to_bool(args[:start_after_create])
-      vm.start if startonboot
-      vm
-    end
-
     def create_vm(args = {})
       type = args[:type]
       node = client.nodes.get(args[:node_id])
@@ -53,7 +47,7 @@ module ForemanFogProxmox
           vm.update(boot_order) if boot_order
         end
       end
-      start_on_boot(vm, args)
+      vm
     rescue StandardError => e
       logger.warn("failed to create vm: #{e}")
       destroy_vm id.to_s + '_' + vm.vmid.to_s if vm

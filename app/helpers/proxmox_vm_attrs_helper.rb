@@ -131,7 +131,7 @@ module ProxmoxVMAttrsHelper
       ostemplate_storage: vms.ostemplate_storage,
       ostemplate_file: vms.ostemplate_file,
       iso_upload_storage: vms.iso_upload_storage,
-      start_after_create: vms.start_after_create,
+      start: start_checked,
       templated: vms.templated,
       is_secure_boot: vms.config.secure_boot?,
     }
@@ -140,7 +140,6 @@ module ProxmoxVMAttrsHelper
     attributes.each do |key, value|
       camel_key = key.to_s.include?('_') ? snake_to_camel(key.to_s).to_sym : key
       nested_key = vms_keys.include?(key) ? "config_attributes[#{key}]" : key
-      value = start_checked if key == :start_after_create
       extra_attrs[camel_key] = { name: "#{param_scope}[#{nested_key}]", value: value }
     end
     extra_attrs

@@ -61,6 +61,8 @@ The container form slightly differs from the server one:
 
 * OS template is required
 * advanced options are slightly different
+* new containers default to unprivileged mode; clones inherit privilege mode
+  from their template and existing containers cannot change it
 
 Container VM Proxmox config tab:
 

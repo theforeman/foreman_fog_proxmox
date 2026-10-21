@@ -162,6 +162,29 @@ const ProxmoxContainerOptions = ({
         value={opts?.searchdomain?.value}
         onChange={handleChange}
       />
+      <InputField
+        name={opts?.cmode?.name}
+        label={__('Console mode')}
+        type="select"
+        options={ProxmoxComputeSelectors.proxmoxCmodesMap}
+        value={opts?.cmode?.value}
+        onChange={handleChange}
+      />
+      <InputField
+        name={opts?.tty?.name}
+        label={__('TTY count')}
+        type="number"
+        value={opts?.tty?.value}
+        onChange={handleChange}
+      />
+      <InputField
+        name={opts?.console?.name}
+        label={__('Attach console (/dev/console)')}
+        type="checkbox"
+        value={opts?.console?.value}
+        checked={String(opts?.console?.value) === '1'}
+        onChange={handleChange}
+      />
     </div>
   );
 };

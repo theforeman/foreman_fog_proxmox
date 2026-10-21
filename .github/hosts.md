@@ -103,7 +103,9 @@ Then you can make linked clones of this image. To do so, you create a new host a
 
 ![Build from image](images/create_host_os_image.png)
 
-The the vm is cloned by proxmox in a new VM. The name starts with `Copy of image-name`.
+The VM is cloned by Proxmox into a new VM. The name starts with `Copy of image-name`.
+When the selected target node differs from the template's node, the target is
+passed to Proxmox so the clone is created on the selected node.
 
 ## List hosts
 

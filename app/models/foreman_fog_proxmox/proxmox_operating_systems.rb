@@ -39,7 +39,7 @@ module ForemanFogProxmox
     end
 
     def available_windows_operating_systems
-      ['wxp', 'w2k', 'w2k3', 'w2k8', 'wvista', 'win7', 'win8', 'win10']
+      ['wxp', 'w2k', 'w2k3', 'w2k8', 'wvista', 'win7', 'win8', 'win10', 'win11']
     end
 
     def os_linux_types_mapping(host)

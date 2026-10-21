@@ -46,6 +46,7 @@ const ProxmoxComputeSelectors = {
     { value: 'win7', label: 'Microsoft Windows 7' },
     { value: 'win8', label: 'Microsoft Windows 8/2012/2012r2' },
     { value: 'win10', label: 'Microsoft Windows 10/2016' },
+    { value: 'win11', label: 'Microsoft Windows 11/2022/2025' },
     { value: 'l24', label: 'Linux 2.4 Kernel' },
     { value: 'l26', label: 'Linux 2.6/3.X + Kernel' },
     { value: 'solaris', label: 'Solaris/OpenSolaris/OpenIndiania kernel' },

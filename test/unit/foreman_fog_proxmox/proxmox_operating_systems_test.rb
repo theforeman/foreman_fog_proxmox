@@ -31,6 +31,10 @@ module ForemanFogProxmox
       assert_equal @cr.available_windows_operating_systems, @cr.compute_os_types(host_with_os_type('Windows'))
     end
 
+    test '#compute_os_types accepts Windows 11 and Server 2022/2025 for Windows family' do
+      assert_includes @cr.compute_os_types(host_with_os_type('Windows')), 'win11'
+    end
+
     test '#compute_os_types returns other os type for Freebsd family' do
       assert_equal ['other'], @cr.compute_os_types(host_with_os_type('Freebsd'))
     end

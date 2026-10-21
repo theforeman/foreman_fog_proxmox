@@ -27,8 +27,9 @@
     "react-intl": "^2.8.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.0",
-    "@theforeman/builder": ">= 15.0.1",
+    "@babel/core": "^7.29.7",
+    "@babel/preset-env": "~7.29.7",
+    "@babel/preset-react": "~7.29.7",
     "@theforeman/eslint-plugin-foreman": ">= 15.0.1",
     "@theforeman/find-foreman": ">= 15.0.1",
     "@theforeman/test": ">= 15.0.1",

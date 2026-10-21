@@ -33,7 +33,7 @@ module ForemanFogProxmox
 
     describe 'create_vm' do
       it 'uses next vmid when requested vmid is occupied or out of range' do
-        args = { vmid: '100', type: 'qemu', node_id: 'proxmox', start_after_create: '0' }
+        args = { vmid: '100', type: 'qemu', node_id: 'proxmox', start: '0' }
         servers = mock('servers')
         servers.expects(:id_valid?).with(100).returns(false)
         servers.expects(:next_id).returns('101')
@@ -48,7 +48,7 @@ module ForemanFogProxmox
       end
 
       it 'computes next vmid when vmid == 0 and creates server' do
-        args = { vmid: '0', type: 'qemu', node_id: 'proxmox', start_after_create: '0' }
+        args = { vmid: '0', type: 'qemu', node_id: 'proxmox', start: '0' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         servers.stubs(:next_id).returns('101')
@@ -60,8 +60,8 @@ module ForemanFogProxmox
         cr.create_vm(args)
       end
 
-      it 'creates server without bootstart' do
-        args = { vmid: '100', type: 'qemu', node_id: 'proxmox', start_after_create: '0' }
+      it 'creates server with startup disabled' do
+        args = { vmid: '100', type: 'qemu', node_id: 'proxmox', start: '0' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
@@ -73,7 +73,7 @@ module ForemanFogProxmox
       end
 
       it 'updates the boot order after creating a network-provisioned server' do
-        args = { vmid: '100', type: 'qemu', node_id: 'proxmox', start_after_create: '0' }
+        args = { vmid: '100', type: 'qemu', node_id: 'proxmox', start: '0' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         vm = mock('vm')
@@ -86,8 +86,8 @@ module ForemanFogProxmox
         cr.create_vm(args)
       end
 
-      it 'creates server with bootstart' do
-        args = { vmid: '100', type: 'qemu', node_id: 'proxmox', start_after_create: '1' }
+      it 'leaves server stopped when startup is requested' do
+        args = { vmid: '100', type: 'qemu', node_id: 'proxmox', start: '1' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
@@ -96,12 +96,13 @@ module ForemanFogProxmox
         vm = mock('vm')
         servers.stubs(:create).with(args).returns(vm)
         cr.stubs(:find_vm_by_uuid).with((args[:vmid]).to_s).returns(vm)
-        cr.stubs(:start_on_boot).with(vm, args).returns(vm)
-        cr.create_vm(args)
+        vm.expects(:start).never
+
+        assert_same vm, cr.create_vm(args)
       end
 
       it 'creates server within pool' do
-        args = { vmid: '100', type: 'qemu', node_id: 'proxmox', start_after_create: '0', pool: 'pool1' }
+        args = { vmid: '100', type: 'qemu', node_id: 'proxmox', start: '0', pool: 'pool1' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         cr = mock_node_servers(ForemanFogProxmox::Proxmox.new, servers)
@@ -110,12 +111,11 @@ module ForemanFogProxmox
         vm = mock('vm')
         servers.stubs(:create).with(args).returns(vm)
         cr.stubs(:find_vm_by_uuid).with((args[:vmid]).to_s).returns(vm)
-        cr.stubs(:start_on_boot).with(vm, args).returns(vm)
         cr.create_vm(args)
       end
 
       it 'clones server' do
-        args = { vmid: '100', type: 'qemu', image_id: '999', name: 'name' }
+        args = { vmid: '100', type: 'qemu', image_id: '999', name: 'name', start: '1' }
         servers = mock('servers')
         containers = mock('containers')
         servers.stubs(:id_valid?).returns(true)
@@ -128,7 +128,9 @@ module ForemanFogProxmox
         expected_args = { :vmid => "100", :type => "qemu", :name => "name" }
         cr.stubs(:parse_typed_vm).with(args, 'qemu').returns(expected_args)
         vm.expects(:update).with(expected_args)
-        cr.create_vm(args)
+        vm.expects(:start).never
+
+        assert_same vm, cr.create_vm(args)
       end
 
       it 'updates the boot order when cloning without user data' do

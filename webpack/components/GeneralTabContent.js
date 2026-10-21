@@ -78,11 +78,12 @@ const GeneralTabContent = ({
       )}
       {newVm && !fromProfile && (
         <InputField
-          name={general?.startAfterCreate?.name}
-          label={__('Start after creation?')}
+          name={general?.start?.name}
+          label={__('Start')}
           type="checkbox"
-          value={general?.startAfterCreate?.value}
-          checked={String(general?.startAfterCreate?.value) === '1'}
+          value={general?.start?.value}
+          checked={String(general?.start?.value) === '1'}
+          info={__('Power ON this machine after provisioning is complete.')}
           onChange={handleChange}
         />
       )}

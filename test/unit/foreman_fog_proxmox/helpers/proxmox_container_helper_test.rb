@@ -161,6 +161,18 @@ module ForemanFogProxmox
         assert_equal expected_vm, vm
       end
 
+      test '#vm container with ssh public keys' do
+        ssh_form = host_form.merge(
+          'config_attributes' => host_form['config_attributes'].merge(
+            'sshkeys' => 'ssh-rsa AAAAB3NzaC1 user@host'
+          )
+        )
+        vm = parse_typed_vm(ssh_form, type)
+        assert vm.key?('ssh-public-keys')
+        assert_equal 'ssh-rsa AAAAB3NzaC1 user@host', vm['ssh-public-keys']
+        assert_not vm.key?('sshkeys')
+      end
+
       test '#volume with rootfs 1Gb' do
         volumes = parse_typed_volumes(host_form['volumes_attributes'], type)
         assert_not volumes.empty?

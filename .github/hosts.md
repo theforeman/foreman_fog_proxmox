@@ -61,6 +61,8 @@ The container form slightly differs from the server one:
 
 * OS template is required
 * advanced options are slightly different
+* optional startup order, startup delay, and shutdown delay values are combined
+  into Proxmox's startup configuration
 
 Container VM Proxmox config tab:
 

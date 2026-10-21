@@ -72,6 +72,18 @@ const ProxmoxContainerNetwork = ({ network, bridges, paramScope }) => {
           name: `${paramScope}[interfaces_attributes][${nextId}][firewall]`,
           value: '0',
         },
+        mtu: {
+          name: `${paramScope}[interfaces_attributes][${nextId}][mtu]`,
+          value: '',
+        },
+        trunks: {
+          name: `${paramScope}[interfaces_attributes][${nextId}][trunks]`,
+          value: '',
+        },
+        linkDown: {
+          name: `${paramScope}[interfaces_attributes][${nextId}][link_down]`,
+          value: '0',
+        },
       };
       const initData = {
         ...defaultData,

@@ -20,8 +20,10 @@ const ProxmoxComputeSelectors = {
   ],
 
   proxmoxArchsMap: [
-    { value: 'amd64', label: '64 bits' },
-    { value: 'i386', label: '32 bits' },
+    { value: 'amd64', label: 'amd64 (64-bit x86)' },
+    { value: 'i386', label: 'i386 (32-bit x86)' },
+    { value: 'arm64', label: 'arm64 (64-bit ARM)' },
+    { value: 'armhf', label: 'armhf (32-bit ARM)' },
   ],
 
   proxmoxOstypesMap: [

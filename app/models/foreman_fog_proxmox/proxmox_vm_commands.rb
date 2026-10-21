@@ -53,11 +53,31 @@ module ForemanFogProxmox
           vm.update(boot_order) if boot_order
         end
       end
-      start_on_boot(vm, args)
+      finalize_vm(vm, args)
     rescue StandardError => e
       logger.warn("failed to create vm: #{e}")
       destroy_vm id.to_s + '_' + vm.vmid.to_s if vm
       raise e
+    end
+
+    def finalize_vm(vm, args)
+      register_ha_resource(vm, args)
+      start_on_boot(vm, args)
+    end
+
+    # Optionally place the freshly created guest under the cluster HA manager.
+    # Requires a fog-proxmox that exposes the ha_resources collection
+    # (see fog/fog-proxmox#141). A requested HA placement must either succeed
+    # or fail provisioning so Foreman never reports an unmanaged guest as HA.
+    def register_ha_resource(vm, args)
+      return unless Foreman::Cast.to_bool(args[:ha_managed])
+
+      raise Foreman::Exception, N_('HA placement requires fog-proxmox HA resource support') unless client.respond_to?(:ha_resources)
+
+      attributes = { sid: "#{vm.container? ? 'ct' : 'vm'}:#{vm.vmid}" }
+      attributes[:group] = args[:ha_group] if args[:ha_group].present?
+      attributes[:state] = args[:ha_state] if args[:ha_state].present?
+      client.ha_resources.create(attributes)
     end
 
     def assign_vmid(vmid, node, log: true)

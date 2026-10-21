@@ -62,6 +62,10 @@ The container form slightly differs from the server one:
 * OS template is required
 * advanced options are slightly different
 
+Servers and containers can optionally be registered with the Proxmox HA
+manager during provisioning. If HA is requested, registration must succeed
+before the guest is started; otherwise provisioning fails and is rolled back.
+
 Container VM Proxmox config tab:
 
 ![Create host container](images/create_host_container.png)

@@ -6,9 +6,10 @@ import ProxmoxComputeSelectors from '../ProxmoxComputeSelectors';
 import { useBios } from '../ProxmoxBiosContext';
 import SecureBoot, { normalizeFirmwareOptions } from './components/SecureBoot';
 
-const ProxmoxServerOptions = ({ options }) => {
+const ProxmoxServerOptions = ({ options, newVm, fromProfile }) => {
   const [opts, setOpts] = useState(normalizeFirmwareOptions(options));
   const { efiDiskSelected, setBios } = useBios();
+  const isEditMode = !newVm && !fromProfile;
 
   const handleChange = e => {
     const { name, type, checked, value: targetValue } = e.target;
@@ -115,16 +116,46 @@ const ProxmoxServerOptions = ({ options }) => {
         value={opts?.ostype?.value}
         onChange={handleChange}
       />
+      <InputField
+        name={opts?.haManaged?.name}
+        label={__('HA managed')}
+        info={__('Place this guest under the cluster HA manager at creation.')}
+        type="checkbox"
+        value={opts?.haManaged?.value}
+        checked={String(opts?.haManaged?.value) === '1'}
+        disabled={isEditMode}
+        onChange={handleChange}
+      />
+      <InputField
+        name={opts?.haGroup?.name}
+        label={__('HA group')}
+        value={opts?.haGroup?.value}
+        disabled={isEditMode}
+        onChange={handleChange}
+      />
+      <InputField
+        name={opts?.haState?.name}
+        label={__('HA state')}
+        type="select"
+        options={ProxmoxComputeSelectors.proxmoxHaStatesMap}
+        value={opts?.haState?.value}
+        disabled={isEditMode}
+        onChange={handleChange}
+      />
     </div>
   );
 };
 
 ProxmoxServerOptions.propTypes = {
   options: PropTypes.object,
+  newVm: PropTypes.bool,
+  fromProfile: PropTypes.bool,
 };
 
 ProxmoxServerOptions.defaultProps = {
   options: {},
+  newVm: false,
+  fromProfile: false,
 };
 
 export default ProxmoxServerOptions;

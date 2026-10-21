@@ -132,6 +132,7 @@ module ProxmoxVMAttrsHelper
       ostemplate_file: vms.ostemplate_file,
       iso_upload_storage: vms.iso_upload_storage,
       start_after_create: vms.start_after_create,
+      full_clone: vms.full_clone,
       templated: vms.templated,
       is_secure_boot: vms.config.secure_boot?,
     }

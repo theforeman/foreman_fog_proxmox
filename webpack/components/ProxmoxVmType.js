@@ -375,6 +375,7 @@ const ProxmoxVmType = ({
               provisionMethod={provisionMethodState}
               handleChange={handleChange}
               untemplatable={untemplatable}
+              provisionMethodState={provisionMethodState}
             />
           </Tab>
 

@@ -123,7 +123,26 @@ module ForemanFogProxmox
         vm = mock('vm')
         image = mock('image', config: mock('config', disks: []))
         cr.stubs(:find_vm_by_uuid).with('999').returns(image)
-        cr.expects(:clone_from_image).with(image, 100).returns(vm)
+        cr.expects(:clone_from_image).with(image, 100, full_clone: false).returns(vm)
+        vm.expects(:full_clone=).with('0')
+        vm.expects(:container?).returns(false)
+        expected_args = { :vmid => "100", :type => "qemu", :name => "name" }
+        cr.stubs(:parse_typed_vm).with(args, 'qemu').returns(expected_args)
+        vm.expects(:update).with(expected_args)
+        cr.create_vm(args)
+      end
+
+      it 'clones server with full clone' do
+        args = { vmid: '100', type: 'qemu', image_id: '999', name: 'name', full_clone: '1' }
+        servers = mock('servers')
+        containers = mock('containers')
+        servers.stubs(:id_valid?).returns(true)
+        cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
+        vm = mock('vm')
+        image = mock('image', config: mock('config', disks: []))
+        cr.stubs(:find_vm_by_uuid).with('999').returns(image)
+        cr.expects(:clone_from_image).with(image, 100, full_clone: true).returns(vm)
+        vm.expects(:full_clone=).with('1')
         vm.expects(:container?).returns(false)
         expected_args = { :vmid => "100", :type => "qemu", :name => "name" }
         cr.stubs(:parse_typed_vm).with(args, 'qemu').returns(expected_args)
@@ -139,7 +158,8 @@ module ForemanFogProxmox
         cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
         image = mock('image', config: mock('config', disks: []))
         vm = mock('vm')
-        cr.expects(:clone_from_image).with(image, 100).returns(vm)
+        cr.expects(:clone_from_image).with(image, 100, full_clone: false).returns(vm)
+        vm.stubs(:full_clone=)
         vm.expects(:container?).returns(false)
         cr.expects(:parse_cloudinit_config).never
         cr.expects(:find_vm_by_uuid).with('999').once.returns(image)
@@ -169,7 +189,8 @@ module ForemanFogProxmox
         cloudinit_args = args.merge(vmid: 100)
 
         cr.stubs(:find_vm_by_uuid).with('999').returns(image)
-        cr.expects(:clone_from_image).with(image, 100).returns(vm)
+        cr.expects(:clone_from_image).with(image, 100, full_clone: false).returns(vm)
+        vm.stubs(:full_clone=)
         cr.expects(:parse_cloudinit_config).with(cloudinit_args, vm_node: 'template-node').returns(cloudinit_args)
         cr.stubs(:parse_typed_vm).with(cloudinit_args, 'qemu').returns(cloudinit_args)
         cr.stubs(:update_boot_order).with(image).returns({})

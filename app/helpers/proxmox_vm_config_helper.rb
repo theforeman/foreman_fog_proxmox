@@ -20,11 +20,16 @@
 require 'fog/proxmox/helpers/disk_helper'
 require 'fog/proxmox/helpers/nic_helper'
 require 'fog/proxmox/helpers/cpu_helper'
+require 'fog/proxmox/helpers/agent_helper'
+require 'fog/proxmox/helpers/hotplug_helper'
 require 'foreman_fog_proxmox/value'
 require 'foreman_fog_proxmox/hash_collection'
 
 # Convert a foreman form server hash into a fog-proxmox server attributes hash
 module ProxmoxVMConfigHelper
+  HOTPLUG_DEVICES = Fog::Proxmox::HotplugHelper::DEVICES
+  AGENT_FIELDS = %w[agent_freeze_fs agent_fstrim_cloned_disks agent_type].freeze
+
   def object_to_config_hash(vm, type)
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
     main_a = ['vmid', 'type']
@@ -121,6 +126,10 @@ module ProxmoxVMConfigHelper
     parsed_vm = args.reject { |key, value| args_a(type).include?(key) || ForemanFogProxmox::Value.empty?(value) }
     parsed_vm = parsed_vm.merge(config_options(config, args, type))
     parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory)
+    if type == 'qemu'
+      parsed_vm = parse_hotplug(parsed_vm)
+      parsed_vm = parse_agent(parsed_vm)
+    end
     logger.debug("parsed_typed_config(#{type}): parsed_vm=#{parsed_vm}")
     parsed_vm
   end
@@ -154,5 +163,40 @@ module ProxmoxVMConfigHelper
     end
     logger.debug("parse_typed_cpu(#{type}): cpu=#{cpu}")
     cpu
+  end
+
+  def parse_agent(config)
+    config = config.with_indifferent_access
+    return config unless AGENT_FIELDS.any? { |key| config.key?(key) }
+
+    agent_enabled = Foreman::Cast.to_bool(config['agent']) ? '1' : '0'
+    freeze_fs = Foreman::Cast.to_bool(config.delete('agent_freeze_fs')) ? '1' : '0'
+    fstrim = Foreman::Cast.to_bool(config.delete('agent_fstrim_cloned_disks')) ? '1' : '0'
+    agent_type = config.delete('agent_type').presence || 'virtio'
+    config['agent'] = Fog::Proxmox::AgentHelper.flatten(
+      'enabled' => agent_enabled, 'freeze-fs-on-backup' => freeze_fs,
+      'fstrim_cloned_disks' => fstrim, 'type' => agent_type
+    )
+    config
+  end
+
+  def parse_hotplug(config)
+    config = config.with_indifferent_access
+    return config unless HOTPLUG_DEVICES.any? { |device| config.key?("hotplug_#{device}") }
+
+    hotplug_enabled = Foreman::Cast.to_bool(config['hotplug'])
+
+    unless hotplug_enabled
+      HOTPLUG_DEVICES.each { |device| config.delete("hotplug_#{device}") }
+      config['hotplug'] = Fog::Proxmox::HotplugHelper.flatten(enabled: false, devices: [])
+      return config
+    end
+
+    hotplug_devices_enabled = HOTPLUG_DEVICES.select do |device|
+      Foreman::Cast.to_bool(config.delete("hotplug_#{device}"))
+    end
+
+    config['hotplug'] = Fog::Proxmox::HotplugHelper.flatten(enabled: hotplug_enabled, devices: hotplug_devices_enabled)
+    config
   end
 end

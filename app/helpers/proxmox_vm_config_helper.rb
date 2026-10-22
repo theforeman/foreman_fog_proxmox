@@ -20,6 +20,7 @@
 require 'fog/proxmox/helpers/disk_helper'
 require 'fog/proxmox/helpers/nic_helper'
 require 'fog/proxmox/helpers/cpu_helper'
+require 'fog/proxmox/helpers/rng_helper'
 require 'foreman_fog_proxmox/value'
 require 'foreman_fog_proxmox/hash_collection'
 
@@ -40,7 +41,7 @@ module ProxmoxVMConfigHelper
   end
 
   def general_a(type)
-    general_a = ['node_id', 'type', 'config_attributes', 'efidisk_attributes', 'volumes_attributes', 'interfaces_attributes', 'image_id']
+    general_a = ['node_id', 'type', 'config_attributes', 'efidisk_attributes', 'rng_attributes', 'volumes_attributes', 'interfaces_attributes', 'image_id']
     general_a += ['firmware_type', 'provision_method', 'container_volumes', 'server_volumes', 'start_after_create', 'iso_upload_storage']
     general_a += ['name'] if type == 'lxc'
     general_a
@@ -123,6 +124,18 @@ module ProxmoxVMConfigHelper
     parsed_vm = parsed_vm.merge(parsed_config).merge(cpu).merge(memory)
     logger.debug("parsed_typed_config(#{type}): parsed_vm=#{parsed_vm}")
     parsed_vm
+  end
+
+  def parsed_typed_rng(args, type, parsed_vm)
+    return parsed_vm unless type == 'qemu'
+
+    rng = args['rng_attributes']
+    return parsed_vm if rng.blank?
+
+    rng_attributes = rng.to_h.symbolize_keys.reject { |_key, value| value.blank? }
+    return parsed_vm if rng_attributes.empty?
+
+    parsed_vm.merge(Fog::Proxmox::RngHelper.flatten(rng_attributes))
   end
 
   def parse_typed_memory(args, type)

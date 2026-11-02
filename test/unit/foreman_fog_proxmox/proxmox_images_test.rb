@@ -29,18 +29,27 @@ module ForemanFogProxmox
         @cr = FactoryBot.build_stubbed(:proxmox_cr)
         @vmid = 101
         @image = mock('vm', identity: '100')
-        @image.expects(:clone)
+        @image.stubs(:node_id).returns('pve1')
         @clone = mock('vm')
-      end
-      it 'clones server from image' do
-        @clone.stubs(:container?).returns(false)
         @cr.stubs(:find_vm_by_uuid).with(@cr.id.to_s + '_' + @vmid.to_s).returns(@clone)
-        @cr.clone_from_image(@image, @vmid)
       end
-      it 'clones container from image' do
-        @clone.stubs(:container?).returns(true)
-        @cr.stubs(:find_vm_by_uuid).with(@cr.id.to_s + '_' + @vmid.to_s).returns(@clone)
-        @cr.clone_from_image(@image, @vmid)
+
+      it 'passes the target node to the clone call so image deployment works across hosts' do
+        @image.expects(:clone).with(@vmid, { target: 'pve2' })
+
+        assert_equal @clone, @cr.clone_from_image(@image, @vmid, target_node: 'pve2')
+      end
+
+      it 'omits the target for a same-node deploy so local-storage templates keep working' do
+        @image.expects(:clone).with(@vmid, {})
+
+        assert_equal @clone, @cr.clone_from_image(@image, @vmid, target_node: 'pve1')
+      end
+
+      it 'omits the target when no node is given' do
+        @image.expects(:clone).with(@vmid, {})
+
+        assert_equal @clone, @cr.clone_from_image(@image, @vmid)
       end
     end
 

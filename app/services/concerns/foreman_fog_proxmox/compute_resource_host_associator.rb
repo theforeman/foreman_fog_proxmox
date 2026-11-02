@@ -24,8 +24,8 @@ module ForemanFogProxmox
       prepend Overrides
     end
     module Overrides
-      def associate_hosts
-        compute_resource.vms(:eager_loading => true).each do |vm|
+      def associate_hosts(vms = compute_resource.vms(:eager_loading => true))
+        vms.each do |vm|
           associate_vm(vm) if Host.for_vm_uuid(compute_resource, vm).empty?
         end
       end

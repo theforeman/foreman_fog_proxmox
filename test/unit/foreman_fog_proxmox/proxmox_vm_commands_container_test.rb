@@ -249,6 +249,37 @@ module ForemanFogProxmox
         vm.expects(:update, expected_config_attr)
         @cr.save_vm(uuid, new_attributes)
       end
+
+      it 'clears container features when the last feature is unchecked on edit' do
+        uuid = '100'
+        config = mock('config')
+        config.stubs(:attributes).returns(:cores => '')
+        config.stubs(:efidisk).returns(nil)
+        config.stubs(:features).returns('nesting=1')
+        vm = mock('vm')
+        vm.stubs(:config).returns(config)
+        vm.stubs(:container?).returns(true)
+        vm.stubs(:type).returns('lxc')
+        vm.stubs(:node_id).returns('proxmox')
+        vm.stubs(:attributes).returns(node_id: 'proxmox', type: 'lxc')
+        @cr.stubs(:find_vm_by_uuid).returns(vm)
+        new_attributes = {
+          'templated' => '0',
+          'node_id' => 'proxmox',
+          'config_attributes' => {
+            'cores' => '1',
+            'cpulimit' => '1',
+            'feature_nesting' => '0',
+            'feature_keyctl' => '0',
+            'feature_fuse' => '0',
+            'feature_mount' => '',
+          },
+        }.with_indifferent_access
+        # An edit that unchecks the last feature must unset it via the Proxmox
+        # 'delete' list, not omit the key (which would keep the old value).
+        vm.expects(:update).with { |attrs| attrs[:delete] == 'features' && !attrs.key?(:features) }
+        @cr.save_vm(uuid, new_attributes)
+      end
     end
 
     describe 'create_vm' do

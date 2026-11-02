@@ -162,6 +162,46 @@ const ProxmoxContainerOptions = ({
         value={opts?.searchdomain?.value}
         onChange={handleChange}
       />
+      <InputField
+        name={opts?.featureNesting?.name}
+        label={__('Feature: nesting')}
+        info={__(
+          'Allow nested virtualization / running containers inside the container.'
+        )}
+        type="checkbox"
+        value={opts?.featureNesting?.value}
+        checked={String(opts?.featureNesting?.value) === '1'}
+        onChange={handleChange}
+      />
+      <InputField
+        name={opts?.featureKeyctl?.name}
+        label={__('Feature: keyctl')}
+        info={__(
+          'Enable the keyctl() system call (needed by some workloads, e.g. systemd).'
+        )}
+        type="checkbox"
+        value={opts?.featureKeyctl?.value}
+        checked={String(opts?.featureKeyctl?.value) === '1'}
+        onChange={handleChange}
+      />
+      <InputField
+        name={opts?.featureFuse?.name}
+        label={__('Feature: FUSE')}
+        info={__('Allow using FUSE file systems inside the container.')}
+        type="checkbox"
+        value={opts?.featureFuse?.value}
+        checked={String(opts?.featureFuse?.value) === '1'}
+        onChange={handleChange}
+      />
+      <InputField
+        name={opts?.featureMount?.name}
+        label={__('Feature: mount')}
+        info={__(
+          'Semicolon-separated list of file systems allowed to be mounted, e.g. nfs;cifs.'
+        )}
+        value={opts?.featureMount?.value}
+        onChange={handleChange}
+      />
     </div>
   );
 };

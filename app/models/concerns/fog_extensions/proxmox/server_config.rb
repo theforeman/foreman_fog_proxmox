@@ -53,6 +53,37 @@ module FogExtensions
         secure_boot = bios == 'ovmf' && Foreman::Cast.to_bool(efidisk&.pre_enrolled_keys)
         Foreman::Cast.to_bool(secure_boot) ? '1' : '0'
       end
+
+      def feature_nesting
+        features_options['nesting']
+      end
+
+      def feature_keyctl
+        features_options['keyctl']
+      end
+
+      def feature_fuse
+        features_options['fuse']
+      end
+
+      def feature_mount
+        features_options['mount']
+      end
+
+      private
+
+      # Parse the Proxmox 'features' string (e.g. 'nesting=1,keyctl=1,mount=nfs')
+      # into a hash so the individual feature fields round-trip on read. Guarded
+      # with respond_to? so it also works against fog-proxmox versions that do
+      # not yet declare the 'features' attribute.
+      def features_options
+        return {} unless respond_to?(:features) && features
+
+        features.to_s.split(',').each_with_object({}) do |part, options|
+          key, value = part.split('=', 2)
+          options[key] = value
+        end
+      end
     end
   end
 end

@@ -128,6 +128,10 @@ module ProxmoxVMAttrsHelper
       nameserver: vms.config.nameserver,
       searchdomain: vms.config.searchdomain,
       hostname: vms.config.hostname,
+      feature_nesting: vms.config.feature_nesting,
+      feature_keyctl: vms.config.feature_keyctl,
+      feature_fuse: vms.config.feature_fuse,
+      feature_mount: vms.config.feature_mount,
       ostemplate_storage: vms.ostemplate_storage,
       ostemplate_file: vms.ostemplate_file,
       iso_upload_storage: vms.iso_upload_storage,
@@ -135,7 +139,8 @@ module ProxmoxVMAttrsHelper
       templated: vms.templated,
       is_secure_boot: vms.config.secure_boot?,
     }
-    vms_keys = [:cpu_type, :nameserver, :searchdomain, :hostname, :is_secure_boot]
+    vms_keys = [:cpu_type, :nameserver, :searchdomain, :hostname,
+                :is_secure_boot, :feature_nesting, :feature_keyctl, :feature_fuse, :feature_mount]
     extra_attrs = ActiveSupport::HashWithIndifferentAccess.new
     attributes.each do |key, value|
       camel_key = key.to_s.include?('_') ? snake_to_camel(key.to_s).to_sym : key

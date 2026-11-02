@@ -30,6 +30,7 @@ module ForemanFogProxmox
       case type
       when 'lxc'
         host.compute_attributes['config_attributes'].store('hostname', host.name)
+        ensure_container_login!(host, config['sshkeys'])
       when 'qemu'
         host.compute_attributes['config_attributes'].store('name', host.name)
         unless compute_os_types(host).include?(ostype)
@@ -39,6 +40,17 @@ module ForemanFogProxmox
         end
       end
       super
+    end
+
+    # The root password and the SSH public keys are both optional on the form, but a
+    # new container needs at least one of them, otherwise it is provisioned with no way
+    # to log in. Enforce this only when creating a new host (both are create-only params
+    # that are not stored on the VM, so they are legitimately absent when editing).
+    def ensure_container_login!(host, sshkeys)
+      return unless host.new_record?
+      return unless ForemanFogProxmox::Value.empty?(host.compute_attributes['password']) && ForemanFogProxmox::Value.empty?(sshkeys)
+
+      raise ::Foreman::Exception, _('A new container requires a root password or SSH public keys to be able to log in')
     end
 
     def not_config_key?(vm, key)

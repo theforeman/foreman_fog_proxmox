@@ -159,12 +159,13 @@ module ForemanFogProxmox
 
       it 'converts a server to hash' do
         vm, config_attributes, volume_attributes, interface_attributes = mock_server_vm
+        vm.config.stubs(:secure_boot?).returns('0')
         vm_attrs = @cr.vm_compute_attributes(vm)
         assert_not vm_attrs.key?(:config)
         assert vm_attrs.key?(:config_attributes)
         assert_equal config_attributes.reject { |key, value|
                        excluded_keys.include?(key) || value.to_s.empty?
-                     }, vm_attrs[:config_attributes]
+                     }.merge(is_secure_boot: '0'), vm_attrs[:config_attributes]
         assert_not vm_attrs[:config_attributes].key?(:disks)
         assert vm_attrs.key?(:volumes_attributes)
         assert_equal volume_attributes.merge(_delete: '0'), vm_attrs[:volumes_attributes]['0']
@@ -178,6 +179,36 @@ module ForemanFogProxmox
           vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:bridge]
         assert_equal '0', vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:dhcp]
         assert_equal '0', vm_attrs[:interfaces_attributes]['0'][:compute_attributes][:dhcp6]
+      end
+
+      it 'preserves inferred secure boot in attributes used to clone a server' do
+        vm, config_attributes = mock_server_vm
+        config_attributes[:bios] = 'ovmf'
+        config_attributes[:efidisk] = mock('efidisk', pre_enrolled_keys: '1')
+        config_class = Class.new(Struct.new(:attributes, :bios, :efidisk)) do
+          include FogExtensions::Proxmox::ServerConfig
+        end
+        vm.stubs(:config).returns(config_class.new(config_attributes, 'ovmf', config_attributes[:efidisk]))
+
+        vm_attrs = @cr.vm_compute_attributes(vm)
+
+        assert_equal 'ovmf', vm_attrs[:config_attributes][:bios]
+        assert_equal '1', vm_attrs[:config_attributes][:is_secure_boot]
+      end
+
+      it 'preserves an explicit disabled secure boot setting when cloning a server' do
+        vm, config_attributes = mock_server_vm
+        config_attributes[:bios] = 'ovmf'
+        config_attributes[:is_secure_boot] = '0'
+        config_attributes[:efidisk] = stub('efidisk', pre_enrolled_keys: '1')
+        config_class = Class.new(Struct.new(:attributes, :bios, :efidisk)) do
+          include FogExtensions::Proxmox::ServerConfig
+        end
+        vm.stubs(:config).returns(config_class.new(config_attributes, 'ovmf', config_attributes[:efidisk]))
+
+        vm_attrs = @cr.vm_compute_attributes(vm)
+
+        assert_equal '0', vm_attrs[:config_attributes][:is_secure_boot]
       end
 
       it 'converts a container to hash' do

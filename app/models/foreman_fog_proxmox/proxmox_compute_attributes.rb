@@ -75,6 +75,14 @@ module ForemanFogProxmox
       cdrom_compute_attributes(attrs) || attrs
     end
 
+    def config_compute_attributes(vm)
+      attrs = vm.config.attributes.reject do |key, value|
+        not_config_key?(vm, key) || ForemanFogProxmox::Value.empty?(value.to_s) || Fog::Proxmox::DiskHelper.disk?(key.to_s) || Fog::Proxmox::NicHelper.nic?(key.to_s)
+      end
+      attrs[:is_secure_boot] = vm.config.secure_boot? if vm.type == 'qemu'
+      attrs
+    end
+
     def vm_compute_attributes(vm)
       vm_attrs = {}
       vm_attrs = vm_attrs.merge(vmid: vm.identity, node_id: vm.node_id, type: vm.type)
@@ -89,9 +97,7 @@ module ForemanFogProxmox
                                                     [idx.to_s, interface_compute_attributes(interface.attributes)]
                                                   end ]
         end
-        vm_attrs[:config_attributes] = vm.config.attributes.reject do |key, value|
-          not_config_key?(vm, key) || ForemanFogProxmox::Value.empty?(value.to_s) || Fog::Proxmox::DiskHelper.disk?(key.to_s) || Fog::Proxmox::NicHelper.nic?(key.to_s)
-        end
+        vm_attrs[:config_attributes] = config_compute_attributes(vm)
       end
       vm_attrs
     end

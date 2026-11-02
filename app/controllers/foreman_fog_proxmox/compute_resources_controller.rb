@@ -122,7 +122,7 @@ module ForemanFogProxmox
     def extract_storages(compute_resource, nodes)
       nodes.flat_map do |node|
         node_id = node.node
-        Array(compute_resource.storages(node_id)).map do |storage|
+        Array(compute_resource.storages(node_id, nil)).map do |storage|
           h = storage.respond_to?(:as_json) ? storage.as_json : storage
           {
             storage: (h[:storage] || h['storage']),

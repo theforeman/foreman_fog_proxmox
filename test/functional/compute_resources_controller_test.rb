@@ -86,8 +86,8 @@ module ForemanFogProxmox
       node_a_bridges = [{ iface: 'vmbr0' }]
       node_b_bridges = [{ iface: 'vmbr1' }]
       @compute_resource.stubs(:nodes).returns([node_a, node_b])
-      @compute_resource.expects(:storages).with('node-a').returns(node_a_storages)
-      @compute_resource.expects(:storages).with('node-b').returns(node_b_storages)
+      @compute_resource.expects(:storages).with('node-a', nil).returns(node_a_storages)
+      @compute_resource.expects(:storages).with('node-b', nil).returns(node_b_storages)
       @compute_resource.expects(:bridges).with('node-a').returns(node_a_bridges)
       @compute_resource.expects(:bridges).with('node-b').returns(node_b_bridges)
 
@@ -123,8 +123,8 @@ module ForemanFogProxmox
         shared: 1,
       }
       @compute_resource.stubs(:nodes).returns([node_a, node_b])
-      @compute_resource.expects(:storages).with('node-a').returns([shared_storage])
-      @compute_resource.expects(:storages).with('node-b').returns([shared_storage])
+      @compute_resource.expects(:storages).with('node-a', nil).returns([shared_storage])
+      @compute_resource.expects(:storages).with('node-b', nil).returns([shared_storage])
 
       get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
       assert_response :success
@@ -134,6 +134,23 @@ module ForemanFogProxmox
         ['shared-iso', 'node-a'],
         ['shared-iso', 'node-b'],
       ], (json_response['storages'].map { |storage| [storage['storage'], storage['node_id']] })
+    end
+
+    test 'metadata includes all storage types' do
+      @compute_resource.stubs(:nodes).returns([stub(node: 'proxmox')])
+      @compute_resource.expects(:storages).with('proxmox', nil).returns([
+                                                                          { storage: 'vm-disks', content: 'images' },
+                                                                          { storage: 'iso-only', content: 'iso' },
+                                                                          { storage: 'container-disks', content: 'rootdir' },
+                                                                          { storage: 'templates', content: 'vztmpl' },
+                                                                        ])
+
+      get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
+      assert_response :success
+      metadata_storages = JSON.parse(@response.body)['storages']
+
+      assert_equal %w[vm-disks iso-only container-disks templates], (metadata_storages.map { |storage| storage['storage'] })
+      assert_equal %w[images iso rootdir vztmpl], (metadata_storages.map { |storage| storage['content'] })
     end
   end
 end

@@ -53,6 +53,17 @@ module ForemanFogProxmox
         assert_equal [active_storage], @cr.storages('proxmox')
       end
 
+      it 'returns all content types when type is nil while filtering unavailable storages' do
+        images = OpenStruct.new(storage: 'vm-disks', content: 'images', enabled: 1, active: 1)
+        iso = OpenStruct.new(storage: 'iso-only', content: 'iso', enabled: 1, active: 1)
+        disabled = OpenStruct.new(storage: 'disabled', content: 'iso', enabled: 0, active: 1)
+        inactive = OpenStruct.new(storage: 'inactive', content: 'iso', enabled: 1, active: 0)
+        @storages_collection.expects(:all).returns([images, disabled, iso, inactive])
+        @storages_collection.expects(:list_by_content_type).never
+
+        assert_equal [iso, images], @cr.storages('proxmox', nil)
+      end
+
       it 'returns active storages sorted by storage name' do
         storage_zfs = OpenStruct.new(storage: 'local-zfs', enabled: 1, active: 1)
         storage_lvm = OpenStruct.new(storage: 'local-lvm', enabled: 1, active: 1)

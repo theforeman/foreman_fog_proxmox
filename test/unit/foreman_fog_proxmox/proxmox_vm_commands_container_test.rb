@@ -252,8 +252,8 @@ module ForemanFogProxmox
     end
 
     describe 'create_vm' do
-      it 'creates container without bootstart' do
-        args = { vmid: '100', type: 'lxc', node_id: 'proxmox', start_after_create: '0' }
+      it 'creates container with startup disabled' do
+        args = { vmid: '100', type: 'lxc', node_id: 'proxmox', start: '0' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         containers = mock('containers')
@@ -265,8 +265,8 @@ module ForemanFogProxmox
         cr.create_vm(args)
       end
 
-      it 'creates container with bootstart' do
-        args = { vmid: '100', type: 'lxc', node_id: 'proxmox', start_after_create: '1' }
+      it 'leaves container stopped when startup is requested' do
+        args = { vmid: '100', type: 'lxc', node_id: 'proxmox', start: '1' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         containers = mock('containers')
@@ -275,12 +275,13 @@ module ForemanFogProxmox
         cr = mock_node_servers_containers(ForemanFogProxmox::Proxmox.new, servers, containers)
         cr.stubs(:parse_typed_vm).with(args, 'lxc').returns(args)
         cr.stubs(:find_vm_by_uuid).with((args[:vmid]).to_s).returns(vm)
-        cr.stubs(:start_on_boot).with(vm, args).returns(vm)
-        cr.create_vm(args)
+        vm.expects(:start).never
+
+        assert_same vm, cr.create_vm(args)
       end
 
       it 'creates container within pool' do
-        args = { vmid: '100', type: 'lxc', node_id: 'proxmox', start_after_create: '0', pool: 'pool1' }
+        args = { vmid: '100', type: 'lxc', node_id: 'proxmox', start: '0', pool: 'pool1' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         containers = mock('containers')
@@ -293,7 +294,7 @@ module ForemanFogProxmox
       end
 
       it 'clones container' do
-        args = { vmid: '100', type: 'lxc', image_id: '999', name: 'name' }
+        args = { vmid: '100', type: 'lxc', image_id: '999', name: 'name', start: '1' }
         servers = mock('servers')
         servers.stubs(:id_valid?).returns(true)
         containers = mock('containers')
@@ -306,7 +307,9 @@ module ForemanFogProxmox
         expected_args = { :vmid => "100", :type => "lxc" }
         cr.stubs(:parse_typed_vm).with(args, 'lxc').returns(expected_args)
         vm.expects(:update).with(expected_args)
-        cr.create_vm(args)
+        vm.expects(:start).never
+
+        assert_same vm, cr.create_vm(args)
       end
     end
   end

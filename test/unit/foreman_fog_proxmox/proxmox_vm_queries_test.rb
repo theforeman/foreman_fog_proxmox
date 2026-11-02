@@ -97,6 +97,34 @@ module ForemanFogProxmox
 
         assert_empty @cr.storages('proxmox')
       end
+
+      it 'returns empty when the storage is not available on the node (no shared storage access)' do
+        response = OpenStruct.new(body: "storage 'ceph' is not available on node 'proxmox'")
+        error = Excon::Errors::InternalServerError.new('500 Internal Server Error', nil, response)
+        @storages_collection.stubs(:list_by_content_type).with('images').raises(error)
+
+        assert_empty @cr.storages('proxmox')
+      end
+
+      it 're-raises an authentication error instead of silently emptying the storage list' do
+        error = Excon::Errors::Unauthorized.new('401 Unauthorized: authentication failure')
+        @storages_collection.stubs(:list_by_content_type).with('images').raises(error)
+
+        assert_raises(Excon::Errors::Unauthorized) { @cr.storages('proxmox') }
+      end
+
+      it 're-raises an unexpected server error that is not a not-available case' do
+        error = Excon::Errors::InternalServerError.new('API endpoint is not available')
+        @storages_collection.stubs(:list_by_content_type).with('images').raises(error)
+
+        assert_raises(Excon::Errors::InternalServerError) { @cr.storages('proxmox') }
+      end
+
+      it 'does not swallow generic (non-HTTP) errors' do
+        @storages_collection.stubs(:list_by_content_type).with('images').raises(StandardError.new('boom'))
+
+        assert_raises(StandardError) { @cr.storages('proxmox') }
+      end
     end
 
     describe 'find_vm_by_uuid' do

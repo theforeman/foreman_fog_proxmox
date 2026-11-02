@@ -33,6 +33,11 @@ module ForemanFogProxmox
       storages = node.storages.list_by_content_type type
       logger.debug("storages(): node_id #{node_id} type #{type}")
       storages.reject { |s| s.enabled.to_i.zero? || s.active.to_i.zero? }.sort_by(&:storage)
+    rescue Excon::Errors::HTTPStatusError => e
+      raise unless storage_unavailable_on_node?(e)
+
+      logger.warn("storages(): skipping node #{node_id}, storage not available on this node: #{e.message}")
+      []
     end
 
     def bridges(node_id = default_node_id)
@@ -81,6 +86,14 @@ module ForemanFogProxmox
     end
 
     private
+
+    def storage_unavailable_on_node?(error)
+      response = error.response if error.respond_to?(:response)
+      response_body = response.body if response.respond_to?(:body)
+      error_text = [error.message, response_body].compact.join("\n")
+
+      error_text.match?(/storage\b.*\bnot available on node\b|storage_check_node/i)
+    end
 
     def attach_compute_resource_id(virtual_machine)
       return virtual_machine if virtual_machine.nil?

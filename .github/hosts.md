@@ -74,6 +74,10 @@ Network interface container tab:
 
 ![Interface](images/create_host_container_interface.png)
 
+Container interfaces also support MTU, VLAN trunks, and an explicit
+disconnect option. VLAN trunks may be entered with semicolons or commas; they
+are sent to Proxmox in semicolon-separated form.
+
 ## Update
 
 Update config is available.

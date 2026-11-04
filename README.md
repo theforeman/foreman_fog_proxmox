@@ -320,6 +320,20 @@ bundle exec foreman start
 
 See details in [foreman plugin development](https://projects.theforeman.org/projects/foreman/wiki/How_to_Create_a_Plugin)
 
+### JavaScript lint and tests
+
+Plugin JavaScript is linted and tested through [Foreman](https://github.com/theforeman/foreman) core (not `tfm-test` / `tfm-lint` in this repository).
+
+From the Foreman application directory (with this plugin linked, e.g. via `bundler.d/foreman_fog_proxmox.local.rb`):
+
+```bash
+cd /path/to/foreman-core
+npm run lint:plugins foreman_fog_proxmox
+npm run test:plugins foreman_fog_proxmox
+npm run test:plugins foreman_fog_proxmox -- --watchAll
+npm run test:plugins foreman_fog_proxmox -- path/to/test.js
+```
+
 ## Contributing
 
 If you like it and still want to improve it, [sponsor me](https://github.com/sponsors/tristanrobert)!

@@ -137,6 +137,30 @@ module ForemanFogProxmox
         } }
     end
 
+    describe '#normalize_vm_start_attributes' do
+      { '1' => '1', '0' => '0', true => '1', false => '0' }.each do |value, expected|
+        it "maps legacy start_after_create #{value.inspect} to the Foreman start flag" do
+          attributes = { start_after_create: value }
+          normalized = normalize_vm_start_attributes(attributes)
+
+          assert_equal expected, normalized[:start]
+          assert_equal({ start_after_create: value }, attributes)
+        end
+      end
+
+      ['1', '0'].each do |value|
+        it "preserves explicit start #{value}" do
+          attributes = { 'start' => value, 'start_after_create' => value == '1' ? '0' : '1' }
+
+          assert_equal value, normalize_vm_start_attributes(attributes)[:start]
+        end
+      end
+
+      it 'leaves an absent start flag unset' do
+        assert_not normalize_vm_start_attributes({}).key?(:start)
+      end
+    end
+
     describe '#parse_vm_update_attributes' do
       it 'removes volume attributes and adds the VM type without parsing' do
         attributes = parse_vm_update_attributes(host_server, 'qemu')

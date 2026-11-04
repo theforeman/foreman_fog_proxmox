@@ -22,6 +22,12 @@ module Orchestration
     module Compute
       extend ActiveSupport::Concern
 
+      included do
+        before_validation do
+          self.compute_attributes = compute_resource.normalize_vm_start_attributes(compute_attributes) if compute_resource.is_a?(ForemanFogProxmox::Proxmox) && compute_attributes
+        end
+      end
+
       def setComputeUpdate
         if compute_resource.class != ForemanFogProxmox::Proxmox
           super

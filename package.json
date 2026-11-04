@@ -4,13 +4,6 @@
   "description": "DESCRIPTION",
   "main": "index.js",
   "scripts": {
-    "lint": "tfm-lint --plugin -d webpack",
-    "test": "tfm-test --config jest.config.js",
-    "test:watch": "tfm-test --config jest.config.js --plugin --watchAll",
-    "test:current": "tfm-test --config jest.config.js --plugin --watch",
-    "publish-coverage": "tfm-publish-coverage",
-    "stories": "tfm-stories --plugin",
-    "stories:build": "tfm-build-stories --plugin",
     "create-react-component": "yo react-domain"
   },
   "repository": {
@@ -20,23 +13,16 @@
   "bugs": {
     "url": "http://projects.theforeman.org/projects/foreman_fog_proxmox/issues"
   },
-  "peerDependencies": {
-    "@theforeman/vendor": "^15.0.1"
-  },
   "dependencies": {
     "react-intl": "^2.8.0"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
-    "@babel/preset-env": "~7.29.7",
-    "@babel/preset-react": "~7.29.7",
-    "@theforeman/eslint-plugin-foreman": ">= 15.0.1",
-    "@theforeman/find-foreman": ">= 15.0.1",
-    "@theforeman/test": ">= 15.0.1",
-    "@theforeman/vendor-dev": ">= 15.0.1",
+    "@testing-library/jest-dom": "^5.3.0",
     "babel-eslint": "^10.0.3",
     "eslint": "^6.7.2",
-    "prettier": "^1.19.1",
-    "react-redux-test-utils": "^0.2.0"
+    "eslint-plugin-jquery": "~1.5.1",
+    "jquery": "~3.7.1",
+    "prettier": "^1.19.1"
   }
 }

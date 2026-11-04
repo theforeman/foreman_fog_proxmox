@@ -5,6 +5,8 @@ require 'test_plugin_helper'
 module ForemanFogProxmox
   class ProxmoxOrchestrationComputeTest < ActiveSupport::TestCase
     class ComputeValueHost
+      include ActiveModel::Validations
+      include ActiveModel::Validations::Callbacks
       include Orchestration::Proxmox::Compute
 
       attr_accessor :compute_resource, :vm

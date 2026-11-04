@@ -30,6 +30,14 @@ module ProxmoxVMHelper
   include ProxmoxVMOsTemplateHelper
   include ProxmoxVMEfidiskHelper
 
+  def normalize_vm_start_attributes(attributes)
+    attributes = attributes.with_indifferent_access
+    if attributes.key?(:start_after_create) && !attributes.key?(:start)
+      attributes[:start] = Foreman::Cast.to_bool(attributes[:start_after_create]) ? '1' : '0'
+    end
+    attributes
+  end
+
   def vm_collection(type)
     collection = :servers
     collection = :containers if type == 'lxc'

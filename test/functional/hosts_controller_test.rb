@@ -28,7 +28,7 @@ module ForemanFogProxmox
           compute_attributes: @compute_attributes)
       end
 
-      it 'resets the EFI disk volume ID in the cloned host compute attributes' do
+      test 'resets the EFI disk volume ID in the cloned host compute attributes' do
         @compute_attributes[:config_attributes][:efidisk] = Fog::Proxmox::Compute::Efidisk.new(
           volid: 'local-lvm:vm-100-disk-0',
           storage: 'local-lvm',
@@ -46,7 +46,7 @@ module ForemanFogProxmox
         assert_equal '1', @controller.host.compute_attributes.dig(:config_attributes, :is_secure_boot)
       end
 
-      it 'clones a host without an EFI disk' do
+      test 'clones a host without an EFI disk' do
         @controller.clone
 
         assert_equal 101, @controller.host.compute_attributes[:vmid]

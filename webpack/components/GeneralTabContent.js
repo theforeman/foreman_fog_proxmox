@@ -59,13 +59,13 @@ const GeneralTabContent = ({
           name={general?.isoUploadStorage?.name}
           label={__('ISO Upload Storage')}
           info={__(
-            'Storage used for ISO uploads when using Bootdisk provisioning or image-based provisioning with user data.'
+            'Storage used for ISO uploads when using Bootdisk provisioning or image-based provisioning with user data. Ignored for network provisioning.'
           )}
           required={newVm && usesIsoUploadStorage}
           type="select"
           value={general?.isoUploadStorage?.value || ''}
           options={[{ value: '', label: '' }, ...isoStorages]}
-          disabled={(!fromProfile && !usesIsoUploadStorage) || !hasIsoStorages}
+          disabled={!hasIsoStorages}
           error={
             usesIsoUploadStorage && !hasIsoStorages
               ? __(

@@ -21,6 +21,6 @@ jobs:
   test:
     name: Ruby
     needs: rubocop
-    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v0
+    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v1
     with:
       plugin: foreman_fog_proxmox

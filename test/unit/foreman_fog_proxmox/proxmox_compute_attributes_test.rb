@@ -114,6 +114,7 @@ module ForemanFogProxmox
           :interfaces => [physical_nic],
           :compute_attributes => {
             'type' => 'lxc',
+            'password' => 'proxmox01',
             'config_attributes' => {
               'hostname' => '',
             },
@@ -124,6 +125,52 @@ module ForemanFogProxmox
         )
         @cr.host_compute_attrs(host)
         assert_equal host.name, host.compute_attributes['config_attributes']['hostname']
+      end
+
+      it 'accepts a container with only SSH public keys and no root password' do
+        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :primary => true,
+          :compute_attributes => { 'dhcp' => '1', 'dhcp6' => '1' })
+        host = FactoryBot.build(
+          :host_empty,
+          :interfaces => [physical_nic],
+          :compute_attributes => {
+            'type' => 'lxc',
+            'password' => '',
+            'config_attributes' => {
+              'hostname' => '',
+              'sshkeys' => 'ssh-rsa AAAAB3NzaC1 user@host',
+            },
+            'interfaces_attributes' => {
+              '0' => {},
+            },
+          }
+        )
+        @cr.host_compute_attrs(host)
+        assert_equal host.name, host.compute_attributes['config_attributes']['hostname']
+      end
+
+      it 'raises Foreman::Exception for a container without a root password nor SSH public keys' do
+        physical_nic = FactoryBot.build(:nic_base_empty, :identifier => 'net0', :primary => true,
+          :compute_attributes => { 'dhcp' => '1', 'dhcp6' => '1' })
+        host = FactoryBot.build(
+          :host_empty,
+          :interfaces => [physical_nic],
+          :compute_attributes => {
+            'type' => 'lxc',
+            'password' => '',
+            'config_attributes' => {
+              'hostname' => '',
+              'sshkeys' => '',
+            },
+            'interfaces_attributes' => {
+              '0' => {},
+            },
+          }
+        )
+        err = assert_raises Foreman::Exception do
+          @cr.host_compute_attrs(host)
+        end
+        assert err.message.end_with?('A new container requires a root password or SSH public keys to be able to log in')
       end
     end
 

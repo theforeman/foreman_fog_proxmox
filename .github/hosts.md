@@ -61,6 +61,10 @@ The container form slightly differs from the server one:
 
 * OS template is required
 * advanced options are slightly different
+* a new container needs either a root password or at least one SSH public key
+
+Root passwords and SSH public keys are create-only Proxmox options. They are
+not reapplied when a container is cloned or updated.
 
 Container VM Proxmox config tab:
 

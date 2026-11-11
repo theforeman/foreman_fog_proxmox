@@ -70,6 +70,10 @@ You can add (many) mount points:
 
 ![Create host container](images/create_host_container_volume_mp.png)
 
+Mount points support read-only, ACL, quota, replication, shared-volume, and
+mount-option settings. An absolute host path can be used instead of storage to
+create a bind mount; storage-only options are omitted for bind mounts.
+
 Network interface container tab:
 
 ![Interface](images/create_host_container_interface.png)

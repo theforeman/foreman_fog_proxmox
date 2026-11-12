@@ -9,9 +9,6 @@ import {
   Spinner,
   Bullseye,
   Divider,
-  FormHelperText,
-  HelperText,
-  HelperTextItem,
 } from '@patternfly/react-core';
 import { TimesIcon } from '@patternfly/react-icons';
 import { sprintf, translate as __ } from 'foremanReact/common/I18n';
@@ -19,6 +16,7 @@ import HardDisk from './components/HardDisk';
 import CDRom from './components/CDRom';
 import EFIDisk from './components/EFIDisk';
 import { useBios } from '../ProxmoxBiosContext';
+import WarningMessage from '../common/WarningMessage';
 
 const ProxmoxServerStorage = ({
   storage,
@@ -435,20 +433,16 @@ const ProxmoxServerStorage = ({
           {__('Add Efi Disk')}
         </Button>
         {templateDiskSlotList.length > 0 && (
-          <FormHelperText>
-            <HelperText id="helper-template-reserved-slots">
-              <HelperTextItem
-                variant="warning"
-                style={{ fontSize: '1rem', fontWeight: 350, lineHeight: 1.5 }}
-              >
-                {`${
-                  templateDiskSlotList.length === 1
-                    ? __('Image template reserved slot')
-                    : __('Image template reserved slots')
-                }: ${templateDiskSlotList.join(', ')}`}
-              </HelperTextItem>
-            </HelperText>
-          </FormHelperText>
+          <WarningMessage
+            id="helper-template-reserved-slots"
+            style={{ fontSize: '1rem', fontWeight: 350 }}
+          >
+            {`${
+              templateDiskSlotList.length === 1
+                ? __('Image template reserved slot')
+                : __('Image template reserved slots')
+            }: ${templateDiskSlotList.join(', ')}`}
+          </WarningMessage>
         )}
         {cdRom && cdRomData && (
           <div style={{ display: cdRomHidden ? 'none' : 'block' }}>

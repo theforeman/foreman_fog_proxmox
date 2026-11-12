@@ -53,6 +53,7 @@ const ProxmoxVmType = ({
 
   const [metaLoaded, setMetaLoaded] = useState(!!propsLoaded);
   const [metaError, setMetaError] = useState(false);
+  const [skippedNodes, setSkippedNodes] = useState([]);
   const [metaNodes, setMetaNodes] = useState([]);
   const [metaPools, setMetaPools] = useState([]);
   const [metaStorages, setMetaStorages] = useState([]);
@@ -123,6 +124,8 @@ const ProxmoxVmType = ({
         setMetaStorages(data?.storages || []);
         setMetaBridges(data?.bridges || []);
         setMetaImages(data?.images || []);
+        const { skipped_nodes: skippedNodeIds = [] } = data || {};
+        setSkippedNodes(skippedNodeIds);
         setMetaLoaded(true);
         setMetaError(false);
       } catch (error) {
@@ -369,6 +372,7 @@ const ProxmoxVmType = ({
               fromProfile={fromProfile}
               newVm={newVm}
               nodesMap={nodesMap}
+              skippedNodes={skippedNodes}
               poolsMap={poolsMap}
               imagesMap={imagesMap}
               storages={metaStorages}

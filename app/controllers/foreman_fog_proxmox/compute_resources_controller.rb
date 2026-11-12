@@ -95,18 +95,37 @@ module ForemanFogProxmox
     # GET foreman_fog_proxmox/metadata/:compute_resource_id
     def metadata
       cr = ComputeResource.find(params[:compute_resource_id])
-      nodes = Array(cr.nodes)
+      node_metadata = extract_node_metadata(cr)
 
-      render json: {
-        nodes: extract_nodes(nodes),
+      render json: node_metadata.merge(
         pools: extract_pools(cr),
-        storages: extract_storages(cr, nodes),
-        bridges: extract_bridges(cr, nodes),
-        images: extract_images(cr),
-      }
+        images: extract_images(cr)
+      )
     end
 
     private
+
+    def extract_node_metadata(compute_resource)
+      metadata = { nodes: [], storages: [], bridges: [], skipped_nodes: [] }
+
+      Array(compute_resource.nodes).each do |node|
+        node_id = node.node
+        begin
+          storages = extract_storages(compute_resource, [node])
+          bridges = extract_bridges(compute_resource, [node])
+        rescue StandardError => e
+          Foreman::Logging.exception("Failed to load Proxmox metadata for node #{node_id}", e)
+          metadata[:skipped_nodes] << node_id
+          next
+        end
+
+        metadata[:nodes].concat(extract_nodes([node]))
+        metadata[:storages].concat(storages)
+        metadata[:bridges].concat(bridges)
+      end
+
+      metadata
+    end
 
     def extract_nodes(nodes)
       nodes.map { |n| { node: n.node } }
@@ -117,6 +136,9 @@ module ForemanFogProxmox
         poolid = p.respond_to?(:poolid) ? p.poolid : (p[:poolid] || p['poolid'])
         { poolid: poolid }
       end
+    rescue StandardError => e
+      Foreman::Logging.exception("Failed to load Proxmox pools for compute resource #{compute_resource.id}", e)
+      []
     end
 
     def extract_storages(compute_resource, nodes)
@@ -164,6 +186,9 @@ module ForemanFogProxmox
           disks: image_disks(compute_resource, uuid),
         }
       end
+    rescue StandardError => e
+      Foreman::Logging.exception("Failed to load Proxmox images for compute resource #{compute_resource.id}", e)
+      []
     end
 
     def image_disks(compute_resource, uuid)

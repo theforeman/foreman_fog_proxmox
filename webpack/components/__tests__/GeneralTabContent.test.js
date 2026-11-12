@@ -42,6 +42,54 @@ describe('GeneralTabContent', () => {
     },
   ];
 
+  it.each([
+    [['pools'], true],
+    [['images'], false],
+    [[], false],
+  ])(
+    'shows the pool warning only when pools failed: %j',
+    (failedSections, shouldWarn) => {
+      const { container } = render(
+        <GeneralTabContent
+          general={{ ...general, pool: { name: 'pool', value: '' } }}
+          failedSections={failedSections}
+          handleChange={jest.fn()}
+        />
+      );
+      const warning = screen.queryByText(
+        'Failed to load Proxmox pools. Please check your compute resource connection.'
+      );
+      if (shouldWarn) {
+        expect(warning).toBeInTheDocument();
+        const poolField = container.querySelector('[name="pool"]');
+        expect(
+          poolField.closest('.form-group').nextElementSibling
+        ).toContainElement(warning);
+      } else {
+        expect(warning).not.toBeInTheDocument();
+      }
+    }
+  );
+
+  it('keeps available storages when other node sections fail', () => {
+    const { container } = render(
+      <GeneralTabContent
+        general={general}
+        storages={storages}
+        failedSections={['storages:node-b', 'bridges:node-a', 'bridges:node:c']}
+        newVm
+        provisionMethod="image"
+        handleChange={jest.fn()}
+      />
+    );
+
+    expect(
+      container.querySelector(
+        'select[name="host[compute_attributes][iso_upload_storage]"]'
+      )
+    ).toHaveValue('shared-iso');
+  });
+
   it('offers ISO-capable storages for the selected node', () => {
     const { container } = render(
       <GeneralTabContent

@@ -10,7 +10,7 @@ import {
   Bullseye,
 } from '@patternfly/react-core';
 import PropTypes from 'prop-types';
-import { translate as __ } from 'foremanReact/common/I18n';
+import { sprintf, translate as __ } from 'foremanReact/common/I18n';
 import { API } from 'foremanReact/redux/API';
 import { ProxmoxBiosProvider } from './ProxmoxBiosContext';
 
@@ -25,6 +25,7 @@ import ProxmoxContainerOptions from './ProxmoxContainer/ProxmoxContainerOptions'
 import ProxmoxContainerStorage from './ProxmoxContainer/ProxmoxContainerStorage';
 import ProxmoxContainerHardware from './ProxmoxContainer/ProxmoxContainerHardware';
 import InputField from './common/FormInputs';
+import WarningMessage from './common/WarningMessage';
 import GeneralTabContent from './GeneralTabContent';
 import useInheritedImageSelection from './hooks/useInheritedImageSelection';
 
@@ -53,6 +54,8 @@ const ProxmoxVmType = ({
 
   const [metaLoaded, setMetaLoaded] = useState(!!propsLoaded);
   const [metaError, setMetaError] = useState(false);
+  const [failedSections, setFailedSections] = useState([]);
+  const [skippedNodes, setSkippedNodes] = useState([]);
   const [metaNodes, setMetaNodes] = useState([]);
   const [metaPools, setMetaPools] = useState([]);
   const [metaStorages, setMetaStorages] = useState([]);
@@ -123,6 +126,11 @@ const ProxmoxVmType = ({
         setMetaStorages(data?.storages || []);
         setMetaBridges(data?.bridges || []);
         setMetaImages(data?.images || []);
+        const { failed_metadata_sections: failedMetadataSections = [] } =
+          data || {};
+        setFailedSections(failedMetadataSections);
+        const { skipped_nodes: skippedNodeNames = [] } = data || {};
+        setSkippedNodes(skippedNodeNames);
         setMetaLoaded(true);
         setMetaError(false);
       } catch (error) {
@@ -351,6 +359,36 @@ const ProxmoxVmType = ({
           </div>
         )}
 
+        {failedSections.includes('images') && (
+          <WarningMessage id="proxmox-images-warning">
+            {__(
+              'Failed to load Proxmox images. Please check your compute resource connection.'
+            )}
+          </WarningMessage>
+        )}
+
+        {failedSections
+          .filter(
+            section =>
+              section.startsWith('storages:') || section.startsWith('bridges:')
+          )
+          .map(section => (
+            <WarningMessage
+              key={section}
+              id={`proxmox-node-warning-${section}`}
+            >
+              {section.startsWith('storages:')
+                ? sprintf(
+                    __('Failed to load Proxmox storages for node %s.'),
+                    section.slice('storages:'.length)
+                  )
+                : sprintf(
+                    __('Failed to load Proxmox bridges for node %s.'),
+                    section.slice('bridges:'.length)
+                  )}
+            </WarningMessage>
+          ))}
+
         <Tabs
           ouiaId="proxmox-vm-type-tabs-options"
           activeKey={activeTabKey}
@@ -369,7 +407,9 @@ const ProxmoxVmType = ({
               fromProfile={fromProfile}
               newVm={newVm}
               nodesMap={nodesMap}
+              skippedNodes={skippedNodes}
               poolsMap={poolsMap}
+              failedSections={failedSections}
               imagesMap={imagesMap}
               storages={metaStorages}
               provisionMethod={provisionMethodState}

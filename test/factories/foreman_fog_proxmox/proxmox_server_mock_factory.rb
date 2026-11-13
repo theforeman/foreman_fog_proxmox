@@ -137,6 +137,7 @@ module ForemanFogProxmox
       }
       vm.stubs(:attributes).returns(vm_attributes)
       vm.stubs(:container?).returns(false)
+      vm.stubs(:full_clone).returns(nil)
       [vm, config_attributes, volume_attributes, mock_server_interface_attributes]
     end
   end

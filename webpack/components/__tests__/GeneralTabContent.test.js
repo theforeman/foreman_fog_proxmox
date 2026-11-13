@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import GeneralTabContent from '../GeneralTabContent';
 
 describe('GeneralTabContent', () => {
@@ -107,21 +107,51 @@ describe('GeneralTabContent', () => {
     expect(isoUploadStorage).toBeEnabled();
   });
 
-  it('disables ISO upload storage for provisioning without an ISO', () => {
-    const { container } = render(
-      <GeneralTabContent
-        general={general}
-        storages={storages}
-        newVm
-        provisionMethod="build"
-        handleChange={jest.fn()}
-      />
+  it.each(['build', ''])(
+    'allows ISO storage selection with provision method "%s"',
+    provisionMethod => {
+      const handleChange = jest.fn();
+      const { container } = render(
+        <GeneralTabContent
+          general={general}
+          storages={storages}
+          newVm
+          provisionMethod={provisionMethod}
+          handleChange={handleChange}
+        />
+      );
+
+      const isoUploadStorage = container.querySelector(
+        'select[name="host[compute_attributes][iso_upload_storage]"]'
+      );
+      expect(isoUploadStorage).toBeEnabled();
+      fireEvent.change(isoUploadStorage, { target: { value: '' } });
+      expect(handleChange).toHaveBeenCalledTimes(1);
+    }
+  );
+
+  it('preserves the selected ISO storage when the provision method changes', () => {
+    const props = {
+      general,
+      storages,
+      newVm: true,
+      handleChange: jest.fn(),
+    };
+    const { container, rerender } = render(
+      <GeneralTabContent {...props} provisionMethod="" />
     );
 
-    const isoUploadStorage = container.querySelector(
-      'select[name="host[compute_attributes][iso_upload_storage]"]'
-    );
-    expect(isoUploadStorage).toBeDisabled();
+    ['bootdisk', 'build', 'image'].forEach(provisionMethod => {
+      rerender(
+        <GeneralTabContent {...props} provisionMethod={provisionMethod} />
+      );
+
+      const isoUploadStorage = container.querySelector(
+        'select[name="host[compute_attributes][iso_upload_storage]"]'
+      );
+      expect(isoUploadStorage).toHaveValue('shared-iso');
+      expect(isoUploadStorage).toBeEnabled();
+    });
   });
 
   it('shows the missing ISO storage message for bootdisk provisioning', () => {

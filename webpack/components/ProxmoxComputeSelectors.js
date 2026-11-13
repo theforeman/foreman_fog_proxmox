@@ -182,6 +182,19 @@ const ProxmoxComputeSelectors = {
     { value: 'ovmf', label: 'OVMF (UEFI)' },
     { value: 'uefi_secure_boot', label: 'OVMF (UEFI Secure Boot)' },
   ],
+
+  proxmoxAgentOptionsMap: [
+    ['agentFreezeFs', 'Freeze filesystems on backup'],
+    ['agentFstrimClonedDisks', 'Trim cloned disks'],
+  ],
+
+  proxmoxHotplugOptionsMap: [
+    ['hotplugDisk', 'Disk'],
+    ['hotplugNetwork', 'Network'],
+    ['hotplugUsb', 'USB'],
+    ['hotplugCpu', 'CPU'],
+    ['hotplugMemory', 'Memory'],
+  ],
 };
 
 ProxmoxComputeSelectors.proxmoxControllersHDDMap = [

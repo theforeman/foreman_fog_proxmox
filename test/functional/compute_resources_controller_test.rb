@@ -109,6 +109,104 @@ module ForemanFogProxmox
       assert_equal [1, 0], (json_response['storages'].map { |storage| storage['shared'] })
       assert_equal ['node-a', 'node-b'], (json_response['bridges'].map { |bridge| bridge['node_id'] })
       assert_equal ['vmbr0', 'vmbr1'], (json_response['bridges'].map { |bridge| bridge['iface'] })
+      assert_empty json_response['skipped_nodes']
+    end
+
+    test 'node listing errors propagate instead of returning partial metadata' do
+      error = StandardError.new('node listing unavailable')
+      @compute_resource.expects(:nodes).raises(error)
+
+      raised = assert_raises(StandardError) do
+        @controller.send(:extract_node_metadata, @compute_resource)
+      end
+      assert_same error, raised
+    end
+
+    ['pools', 'images'].each do |section|
+      test "metadata preserves other sections when #{section} fails" do
+        @compute_resource.stubs(:nodes).returns([stub(node: 'healthy')])
+        @compute_resource.stubs(:storages).with('healthy').returns([{ storage: 'local' }])
+        @compute_resource.stubs(:bridges).with('healthy').returns([{ iface: 'vmbr0' }])
+        @compute_resource.stubs(:pools).returns([{ poolid: 'pool-a' }])
+        @compute_resource.stubs(:images).returns([{ uuid: nil, name: 'image-a' }])
+        error = StandardError.new("#{section} unavailable")
+        @compute_resource.expects(section.to_sym).raises(error)
+        Foreman::Logging.expects(:exception).with(
+          "Failed to load Proxmox #{section} for compute resource #{@compute_resource.id}", error
+        )
+
+        get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
+
+        assert_response :success
+        metadata = JSON.parse(@response.body)
+        assert_empty metadata[section]
+        assert_equal [{ 'node' => 'healthy' }], metadata['nodes']
+        assert_equal ['local'], (metadata['storages'].map { |storage| storage['storage'] })
+        assert_equal [{ 'node_id' => 'healthy', 'iface' => 'vmbr0' }], metadata['bridges']
+        other_section = section == 'pools' ? 'images' : 'pools'
+        assert_equal 1, metadata[other_section].size
+      end
+    end
+
+    test 'metadata tolerates and logs both pool and image failures' do
+      ['pools', 'images'].each do |section|
+        error = StandardError.new("#{section} unavailable")
+        @compute_resource.expects(section.to_sym).raises(error)
+        Foreman::Logging.expects(:exception).with(
+          "Failed to load Proxmox #{section} for compute resource #{@compute_resource.id}", error
+        )
+      end
+
+      get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
+
+      assert_response :success
+      metadata = JSON.parse(@response.body)
+      assert_empty metadata['pools']
+      assert_empty metadata['images']
+    end
+
+    test 'metadata skips nodes when storage or bridge requests fail and continues processing' do
+      @compute_resource.stubs(:nodes).returns([
+                                                stub(node: 'storage-failure'), stub(node: 'bridge-failure'), stub(node: 'healthy')
+                                              ])
+      storage_error = StandardError.new('storage request failed')
+      bridge_error = StandardError.new('bridge request failed')
+      @compute_resource.expects(:storages).with('storage-failure').raises(storage_error)
+      @compute_resource.expects(:bridges).with('storage-failure').never
+      @compute_resource.expects(:storages).with('bridge-failure').returns([{ storage: 'discarded' }])
+      @compute_resource.expects(:bridges).with('bridge-failure').raises(bridge_error)
+      @compute_resource.expects(:storages).with('healthy').returns([{ storage: 'local' }])
+      @compute_resource.expects(:bridges).with('healthy').returns([{ iface: 'vmbr0' }])
+      Foreman::Logging.expects(:exception).with('Failed to load Proxmox metadata for node storage-failure', storage_error)
+      Foreman::Logging.expects(:exception).with('Failed to load Proxmox metadata for node bridge-failure', bridge_error)
+
+      get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
+
+      assert_response :success
+      metadata = JSON.parse(@response.body)
+      assert_equal [{ 'node' => 'healthy' }], metadata['nodes']
+      assert_equal ['healthy'], (metadata['storages'].map { |storage| storage['node_id'] })
+      assert_equal ['local'], (metadata['storages'].map { |storage| storage['storage'] })
+      assert_equal [{ 'node_id' => 'healthy', 'iface' => 'vmbr0' }], metadata['bridges']
+      assert_equal ['storage-failure', 'bridge-failure'], metadata['skipped_nodes']
+      assert metadata.key?('pools')
+      assert metadata.key?('images')
+    end
+
+    test 'metadata returns empty node metadata when all nodes fail' do
+      @compute_resource.stubs(:nodes).returns([stub(node: 'offline')])
+      error = StandardError.new('node is offline')
+      @compute_resource.expects(:storages).with('offline').raises(error)
+      Foreman::Logging.expects(:exception).with('Failed to load Proxmox metadata for node offline', error)
+
+      get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
+
+      assert_response :success
+      metadata = JSON.parse(@response.body)
+      assert_empty metadata['nodes']
+      assert_empty metadata['storages']
+      assert_empty metadata['bridges']
+      assert_equal ['offline'], metadata['skipped_nodes']
     end
 
     test 'metadata includes shared storage for every node where it is available' do

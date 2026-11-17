@@ -84,7 +84,7 @@ module ForemanFogProxmox
       node_id = params[:node_id]
       storage = params[:storage]
 
-      vols = cr.storages(node_id).find { |s| s.storage == storage }&.volumes || []
+      vols = cr.storages(node_id, nil).find { |s| s.storage == storage }&.volumes || []
 
       render json: Array(vols).map { |v|
         h = v.respond_to?(:as_json) ? v.as_json : v
@@ -122,7 +122,7 @@ module ForemanFogProxmox
     def extract_storages(compute_resource, nodes)
       nodes.flat_map do |node|
         node_id = node.node
-        Array(compute_resource.storages(node_id)).map do |storage|
+        Array(compute_resource.storages(node_id, nil)).map do |storage|
           h = storage.respond_to?(:as_json) ? storage.as_json : storage
           {
             storage: (h[:storage] || h['storage']),

@@ -61,6 +61,27 @@ module ForemanFogProxmox
         assert_equal %w[local-lvm local-zfs], @cr.storages('proxmox').map(&:storage)
       end
 
+      it 'returns all active enabled storage types when no content filter is specified' do
+        media = OpenStruct.new(storage: 'local', content: 'iso,vztmpl,backup', enabled: 1, active: 1)
+        rootfs = OpenStruct.new(storage: 'containers', content: 'rootdir', enabled: 1, active: 1)
+        disk = OpenStruct.new(storage: 'disks', content: 'images', enabled: 1, active: 1)
+        disabled = OpenStruct.new(storage: 'disabled', content: 'iso', enabled: 0, active: 1)
+        inactive = OpenStruct.new(storage: 'inactive', content: 'vztmpl', enabled: 1, active: 0)
+        @storages_collection.expects(:all).returns([media, rootfs, disk, disabled, inactive])
+        @storages_collection.expects(:list_by_content_type).never
+
+        assert_equal [rootfs, disk, media], @cr.storages('proxmox', nil)
+      end
+
+      it 'preserves explicit media content filters' do
+        media = OpenStruct.new(storage: 'local', content: 'iso,vztmpl', enabled: 1, active: 1)
+        @storages_collection.expects(:list_by_content_type).with('iso').returns([media])
+        @storages_collection.expects(:list_by_content_type).with('vztmpl').returns([media])
+
+        assert_equal [media], @cr.storages('proxmox', 'iso')
+        assert_equal [media], @cr.storages('proxmox', 'vztmpl')
+      end
+
       it 'filters invalid storages and keeps valid ones' do
         valid = OpenStruct.new(storage: 'good', enabled: 1, active: 1)
         invalid = OpenStruct.new(storage: 'bad', enabled: 0, active: 1)

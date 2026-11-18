@@ -54,16 +54,88 @@ module ForemanFogProxmox
       end
     end
 
+    describe 'template lookup from available images' do
+      %w[qemu lxc].each do |type|
+        it "resolves a listed #{type} template to the full VM object" do
+          cr = FactoryBot.build_stubbed(:proxmox_cr)
+          client = mock('client')
+          resource = { 'vmid' => 100, 'type' => type, 'template' => 1, 'name' => 'template' }
+          client.expects(:list_cluster_resources).with(type: 'vm').once.returns([resource])
+          cr.stubs(:client).returns(client)
+          cr.stubs(:pool_owner)
+
+          vm = mock('full VM')
+          servers = mock('servers')
+          containers = mock('containers')
+          servers.expects(:get).with('100').returns(type == 'qemu' ? vm : nil)
+          if type == 'lxc'
+            containers.expects(:get).with('100').returns(vm)
+          else
+            containers.expects(:get).never
+          end
+          cr.stubs(:nodes).returns([stub('node', node: 'pve1', servers: servers, containers: containers)])
+
+          image = cr.available_images.first
+
+          assert_equal "#{cr.id}_100", image.id
+          assert_same vm, cr.template(image.id)
+        end
+      end
+
+      it 'returns nil when the template no longer exists' do
+        cr = FactoryBot.build_stubbed(:proxmox_cr)
+        cr.expects(:templates).never
+        cr.stubs(:nodes).returns([])
+
+        assert_nil cr.template("#{cr.id}_100")
+      end
+    end
+
     describe 'available_images' do
-      it 'removes duplicates' do
+      before do
         @cr = FactoryBot.build_stubbed(:proxmox_cr)
-        clone = mock('vm')
-        clone.stubs(:name).returns('vm-1')
-        @cr.stubs(:find_vm_by_uuid).returns(clone)
-        template = mock('template')
-        template.stubs(:vmid).returns(100).at_least(2)
-        @cr.stubs(:templates).returns([template, template])
+        @client = mock('client')
+        @cr.stubs(:client).returns(@client)
+        @client.expects(:nodes).never
+        @cr.expects(:find_vm_by_uuid).never
+      end
+
+      it 'lists QEMU and LXC templates from one cluster request' do
+        resources = [
+          { 'vmid' => 100, 'node' => 'pve1', 'type' => 'qemu', 'template' => 1, 'name' => 'qemu-template' },
+          { 'vmid' => 101, 'node' => 'pve2', 'type' => 'lxc', 'template' => 1, 'name' => 'lxc-template' },
+          { 'vmid' => 102, 'type' => 'qemu', 'template' => 0, 'name' => 'regular-vm' },
+          { 'vmid' => 103, 'type' => 'lxc', 'name' => 'regular-container' },
+        ]
+        @client.expects(:list_cluster_resources).with(type: 'vm').once.returns(resources)
+
+        images = @cr.available_images
+
+        assert_equal ["#{@cr.id}_100", "#{@cr.id}_101"], images.map(&:id)
+        assert_equal %w[qemu-template lxc-template], images.map(&:name)
+      end
+
+      it 'removes duplicates' do
+        template = { 'vmid' => 100, 'type' => 'qemu', 'template' => 1, 'name' => 'vm-1' }
+        @client.expects(:list_cluster_resources).with(type: 'vm').once.returns([template, template])
+
         assert_equal 1, @cr.available_images.length
+      end
+
+      it 'returns no images when the cluster has no templates' do
+        @client.expects(:list_cluster_resources).with(type: 'vm').once.returns([])
+
+        assert_empty @cr.available_images
+      end
+
+      it 'accepts a string template flag' do
+        resources = [
+          { 'vmid' => 100, 'type' => 'qemu', 'template' => '1', 'name' => 'vm-1' },
+          { 'vmid' => 101, 'type' => 'qemu', 'template' => '0', 'name' => 'vm-2' },
+        ]
+        @client.expects(:list_cluster_resources).with(type: 'vm').once.returns(resources)
+
+        assert_equal ['vm-1'], @cr.available_images.map(&:name)
       end
     end
   end

@@ -31,39 +31,18 @@ module ForemanFogProxmox
       storage.volumes.list_by_content_type(type).sort_by(&:volid) if storage
     end
 
-    def template_name(template)
-      image = find_vm_by_uuid(template_uuid(template))
-      image&.name
-    end
-
     def template_uuid(template)
       id.to_s + '_' + template.vmid.to_s
     end
 
     def available_images
-      templates.collect { |template| OpenStruct.new(id: template_uuid(template), name: template_name(template)) }.uniq
+      templates.collect { |template| OpenStruct.new(id: template_uuid(template), name: template.name) }.uniq
     end
 
     def templates
-      volumes = []
-      nodes.each do |node|
-        storages(node.node).each do |storage|
-          # Skip disabled storages (enabled == 0 or nil)
-          unless storage.enabled.to_i == 1
-            logger.warn("Skipping disabled storage #{storage.identity} on #{node.node}")
-            next
-          end
-
-          # Fetch QEMU and LXC template images
-          volumes += storage.volumes.list_by_content_type('images')
-          volumes += storage.volumes.list_by_content_type('rootdir')
-        rescue StandardError => e
-          logger.error("Failed to fetch volumes for storage #{storage.identity} on #{node.node}: #{e.message}")
-          next
-        end
-      end
-      # for creating image, only list volumes which are templated
-      volumes.select(&:template?)
+      client.list_cluster_resources(type: 'vm')
+            .select { |resource| resource['template'].to_i == 1 }
+            .map { |resource| OpenStruct.new(resource) }
     end
 
     def template(uuid)

@@ -25,8 +25,10 @@ module ForemanFogProxmox
       end
 
       def node
+        return @node if defined?(@node)
+
         @compute_resource = ComputeResource.where(type: 'ForemanFogProxmox::Proxmox').first
-        @compute_resource.nodes.first
+        @node = @compute_resource&.available_nodes&.first
       end
 
       def node_id
@@ -34,7 +36,7 @@ module ForemanFogProxmox
       end
 
       def statistics
-        node.statistics('rrddata', timeframe: 'hour', cf: 'AVERAGE') if node_id
+        node&.statistics('rrddata', timeframe: 'hour', cf: 'AVERAGE')
       end
     end
   end

@@ -24,6 +24,45 @@ module ForemanFogProxmox
   class ProxmoxVMCommandsServerTest < ActiveSupport::TestCase
     include ComputeResourceTestHelpers
 
+    describe 'images_by_storage' do
+      before do
+        @cr = FactoryBot.build_stubbed(:proxmox_cr)
+        @node = stub(status: 'offline')
+        @nodes = mock('nodes')
+        @cr.stubs(:client).returns(stub(nodes: @nodes))
+      end
+
+      it 'returns no images for an offline node without accessing storages' do
+        @nodes.expects(:get).with('node-a').returns(@node)
+        @node.expects(:storages).never
+
+        assert_empty @cr.images_by_storage('node-a', 'local')
+      end
+
+      it 'returns no images when the default node is offline' do
+        @nodes.expects(:get).with(nil).returns(nil)
+        @cr.expects(:default_node).returns(@node)
+        @node.expects(:storages).never
+
+        assert_empty @cr.images_by_storage(nil, 'local', 'vztmpl')
+      end
+
+      it 'returns sorted images for an online node' do
+        @node.stubs(:status).returns('online')
+        @nodes.expects(:get).with('node-a').returns(@node)
+        volumes = mock('volumes')
+        storage = stub(volumes: volumes)
+        storages = mock('storages')
+        @node.stubs(:storages).returns(storages)
+        storages.expects(:get).with('local').returns(storage)
+        first_image = stub(volid: 'local:iso/a.iso')
+        second_image = stub(volid: 'local:iso/b.iso')
+        volumes.expects(:list_by_content_type).with('iso').returns([second_image, first_image])
+
+        assert_equal [first_image, second_image], @cr.images_by_storage('node-a', 'local')
+      end
+    end
+
     describe 'clone_from_image' do
       before do
         @cr = FactoryBot.build_stubbed(:proxmox_cr)
@@ -73,7 +112,7 @@ module ForemanFogProxmox
           else
             containers.expects(:get).never
           end
-          cr.stubs(:nodes).returns([stub('node', node: 'pve1', servers: servers, containers: containers)])
+          cr.stubs(:nodes).returns([stub('node', node: 'pve1', status: 'online', servers: servers, containers: containers)])
 
           image = cr.available_images.first
 

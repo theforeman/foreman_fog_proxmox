@@ -28,7 +28,7 @@ module ForemanFogProxmox
 
     def create_vm(args = {})
       type = args[:type]
-      node = client.nodes.get(args[:node_id])
+      node = find_online_node!(args[:node_id])
       vmid = args[:vmid] = assign_vmid(args[:vmid].to_i, node)
       image_id = args[:image_id]
       remove_volume_keys(args)
@@ -105,6 +105,7 @@ module ForemanFogProxmox
       if templated == '1' && !vm.templated?
         vm.create_template
       elsif vm.node_id != node_id
+        find_online_node!(node_id)
         vm.migrate(node_id)
       else
         processed_attributes = process_firmware_attributes(new_attributes, vm.type)

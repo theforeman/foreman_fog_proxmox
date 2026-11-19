@@ -32,6 +32,29 @@ module ForemanFogProxmox
     include ProxmoxContainerMockFactory
     include ProxmoxVMHelper
 
+    describe 'create_vm' do
+      before do
+        @cr = ForemanFogProxmox::Proxmox.new
+        @nodes = mock('nodes')
+        @cr.stubs(:client).returns(stub(nodes: @nodes))
+        @cr.expects(:assign_vmid).never
+      end
+
+      it 'rejects a missing node' do
+        @nodes.expects(:get).with('missing').returns(nil)
+
+        error = assert_raises(Foreman::Exception) { @cr.create_vm(node_id: 'missing') }
+        assert_includes error.message, "Proxmox node 'missing' not found"
+      end
+
+      it 'rejects an offline node' do
+        @nodes.expects(:get).with('node-a').returns(stub(node: 'node-a', status: 'offline'))
+
+        error = assert_raises(Foreman::Exception) { @cr.create_vm(node_id: 'node-a') }
+        assert_includes error.message, "Proxmox node 'node-a' is not online"
+      end
+    end
+
     describe 'destroy_vm' do
       it 'handles situation when vm is not present' do
         cr = mock_cr_servers(ForemanFogProxmox::Proxmox.new, empty_servers)

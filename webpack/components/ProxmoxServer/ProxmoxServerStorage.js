@@ -524,6 +524,7 @@ const ProxmoxServerStorage = ({
                 id={hardDisk.id}
                 data={hardDisk.data}
                 storages={storages}
+                nodeId={nodeId}
                 fromProfile={fromProfile}
                 updateHardDiskData={updateHardDiskData}
                 createUniqueDevice={createUniqueDevice}

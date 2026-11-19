@@ -87,7 +87,8 @@ module ForemanFogProxmox
         vm.stubs(:node_id).returns('proxmox')
         @cr.stubs(:find_vm_by_uuid).returns(vm)
         attr = { 'templated' => '0', 'node_id' => 'proxmox2' }
-        vm.expects(:migrate)
+        @cr.expects(:find_online_node!).with('proxmox2').returns(stub(status: 'online'))
+        vm.expects(:migrate).with('proxmox2')
         @cr.save_vm(uuid, attr)
       end
 

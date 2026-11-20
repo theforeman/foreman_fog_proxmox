@@ -141,7 +141,14 @@ const ProxmoxVmType = ({
 
   const nodesMap =
     metaNodes.length > 0
-      ? metaNodes.map(node => ({ value: node.node, label: node.node }))
+      ? metaNodes.map(node => ({
+          value: node.node,
+          disabled: node.status !== 'online',
+          label:
+            node.status !== 'online'
+              ? `${node.node} (${node.status || __('Unknown')})`
+              : node.node,
+        }))
       : [];
 
   const imagesMap =
@@ -170,6 +177,9 @@ const ProxmoxVmType = ({
 
   const typeValue = general?.type?.value;
   const nodeIdValue = general?.nodeId?.value;
+  const selectedNodeUnavailable = metaNodes.some(
+    node => node.node === nodeIdValue && node.status !== 'online'
+  );
 
   useEffect(() => {
     if (!registerComp && !fromProfile) {
@@ -371,6 +381,7 @@ const ProxmoxVmType = ({
               fromProfile={fromProfile}
               newVm={newVm}
               nodesMap={nodesMap}
+              selectedNodeUnavailable={selectedNodeUnavailable}
               poolsMap={poolsMap}
               imagesMap={imagesMap}
               storages={metaStorages}

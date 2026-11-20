@@ -27,9 +27,27 @@ module ForemanFogProxmox
       nodes&.sort_by(&:node)
     end
 
+    def available_nodes
+      nodes.select { |node| online_node?(node) }
+    end
+
+    def find_online_node!(node_id)
+      node = client.nodes.get(node_id)
+      raise Foreman::Exception, "Proxmox node '#{node_id}' not found" unless node
+      raise Foreman::Exception, "Proxmox node '#{node.node}' is not online" unless online_node?(node)
+
+      node
+    end
+
+    def online_node?(node)
+      node&.status == 'online'
+    end
+
     def storages(node_id = default_node_id, type = 'images')
       node = client.nodes.get node_id
       node ||= default_node
+      return [] unless online_node?(node)
+
       storages = type ? node.storages.list_by_content_type(type) : node.storages.all
       logger.debug("storages(): node_id #{node_id} type #{type}")
       storages.reject { |s| s.enabled.to_i.zero? || s.active.to_i.zero? }.sort_by(&:storage)
@@ -38,6 +56,8 @@ module ForemanFogProxmox
     def bridges(node_id = default_node_id)
       node = network_client.nodes.get node_id
       node ||= network_client.nodes.first
+      return [] unless online_node?(node)
+
       bridges = node.networks.all(type: 'any_bridge')
       bridges.sort_by(&:iface)
     end
@@ -45,7 +65,7 @@ module ForemanFogProxmox
     # TODO: Pagination with filters
     def vms(opts = {})
       vms = []
-      nodes.each { |node| vms += node.servers.all + node.containers.all }
+      available_nodes.each { |node| vms += node.servers.all + node.containers.all }
       vms.each { |vm| attach_compute_resource_id(vm) }
       if opts.key?(:eager_loading) && opts[:eager_loading]
         vms_eager = []
@@ -59,13 +79,21 @@ module ForemanFogProxmox
       # look for the uuid on all known nodes
       vm = nil
       vmid = extract_vmid(uuid)
+      offline_nodes = []
       nodes.each do |node|
+        unless online_node?(node)
+          offline_nodes << node.node
+          next
+        end
+
         vm = find_vm_in_servers_by_vmid(node.servers, vmid)
         vm ||= find_vm_in_servers_by_vmid(node.containers, vmid)
         next if vm.nil?
         logger.debug("found vm #{vmid} on node #{node.node}")
         break
       end
+      raise Foreman::Exception, "Cannot locate VM #{vmid}. Some Proxmox nodes are offline: #{offline_nodes.join(', ')}" if vm.nil? && offline_nodes.any?
+
       vm
     end
 
@@ -77,7 +105,7 @@ module ForemanFogProxmox
       nil
     rescue StandardError => e
       Foreman::Logging.exception(format(_('Failed retrieving proxmox server vm by vmid=%<vmid>s'), vmid: vmid), e)
-      raise(ActiveRecord::RecordNotFound, e)
+      raise
     end
 
     private

@@ -10,6 +10,7 @@ const GeneralTabContent = ({
   fromProfile,
   newVm,
   nodesMap,
+  selectedNodeUnavailable,
   poolsMap,
   imagesMap,
   storages,
@@ -45,6 +46,11 @@ const GeneralTabContent = ({
         type="select"
         value={general?.nodeId?.value}
         options={nodesMap}
+        error={
+          selectedNodeUnavailable
+            ? __('The selected node is offline. Please select an online node.')
+            : ''
+        }
         onChange={handleChange}
       />
       <InputField
@@ -139,6 +145,7 @@ GeneralTabContent.propTypes = {
   fromProfile: PropTypes.bool,
   newVm: PropTypes.bool,
   nodesMap: PropTypes.array,
+  selectedNodeUnavailable: PropTypes.bool,
   poolsMap: PropTypes.array,
   imagesMap: PropTypes.array,
   storages: PropTypes.array,
@@ -152,6 +159,7 @@ GeneralTabContent.defaultProps = {
   fromProfile: false,
   newVm: false,
   nodesMap: [],
+  selectedNodeUnavailable: false,
   poolsMap: [],
   imagesMap: [],
   storages: [],

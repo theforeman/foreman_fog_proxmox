@@ -40,6 +40,23 @@ module ForemanFogProxmox
     should_not allow_value('a').for(:url)
     should allow_values('http://foo.com', 'http://bar.com/baz').for(:url)
 
+    test '#client reports a socket error instead of raising NoMethodError' do
+      cr = FactoryBot.build_stubbed(:proxmox_cr)
+      socket_error = Excon::Error::Socket.new(SocketError.new('no address for proxmox.example.com'))
+      ::Fog::Proxmox::Compute.stubs(:new).raises(socket_error)
+      err = assert_raises(::Foreman::Exception) { cr.send(:client) }
+      assert_match(/no address for proxmox\.example\.com/, err.message)
+    end
+
+    test '#client keeps the HTTP reason phrase for authentication failures' do
+      cr = FactoryBot.build_stubbed(:proxmox_cr)
+      response = Excon::Response.new(status: 401, reason_phrase: 'authentication failure')
+      unauthorized = Excon::Error::Unauthorized.new('Expected(200) <=> Actual(401 Unauthorized)', nil, response)
+      ::Fog::Proxmox::Compute.stubs(:new).raises(unauthorized)
+      err = assert_raises(::Foreman::Exception) { cr.send(:client) }
+      assert_match(/Authentication Failure: Failed to create Proxmox compute resource: authentication failure\./, err.message)
+    end
+
     test '#associated_host matches any NIC' do
       mac = 'ca:d0:e6:32:16:97'
       host = FactoryBot.create(:host, :mac => mac)

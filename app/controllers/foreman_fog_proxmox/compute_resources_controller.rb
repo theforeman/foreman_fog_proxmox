@@ -95,28 +95,65 @@ module ForemanFogProxmox
     # GET foreman_fog_proxmox/metadata/:compute_resource_id
     def metadata
       cr = ComputeResource.find(params[:compute_resource_id])
-      nodes = Array(cr.nodes)
+      node_metadata = extract_node_metadata(cr)
+      failed_metadata_sections = node_metadata[:failed_metadata_sections]
 
-      render json: {
-        nodes: extract_nodes(nodes),
-        pools: extract_pools(cr),
-        storages: extract_storages(cr, nodes),
-        bridges: extract_bridges(cr, nodes),
-        images: extract_images(cr),
-      }
+      render json: node_metadata.merge(
+        pools: extract_pools(cr, failed_metadata_sections),
+        images: extract_images(cr, failed_metadata_sections),
+        failed_metadata_sections: failed_metadata_sections
+      )
     end
 
     private
+
+    def extract_node_metadata(compute_resource)
+      metadata = { nodes: [], storages: [], bridges: [], skipped_nodes: [], failed_metadata_sections: [] }
+
+      Array(compute_resource.nodes).each do |node|
+        node_id = node.node
+        storages = begin
+          extract_storages(compute_resource, [node])
+        rescue StandardError => e
+          Foreman::Logging.exception("Failed to load Proxmox storages for node #{node_id}", e)
+          metadata[:failed_metadata_sections] << "storages:#{node_id}"
+          nil
+        end
+
+        bridges = begin
+          extract_bridges(compute_resource, [node])
+        rescue StandardError => e
+          Foreman::Logging.exception("Failed to load Proxmox bridges for node #{node_id}", e)
+          metadata[:failed_metadata_sections] << "bridges:#{node_id}"
+          nil
+        end
+
+        if storages.nil? && bridges.nil?
+          metadata[:skipped_nodes] << node_id
+          next
+        end
+
+        metadata[:nodes].concat(extract_nodes([node]))
+        metadata[:storages].concat(storages || [])
+        metadata[:bridges].concat(bridges || [])
+      end
+
+      metadata
+    end
 
     def extract_nodes(nodes)
       nodes.map { |n| { node: n.node } }
     end
 
-    def extract_pools(compute_resource)
+    def extract_pools(compute_resource, failed_metadata_sections)
       Array(compute_resource.pools).map do |p|
         poolid = p.respond_to?(:poolid) ? p.poolid : (p[:poolid] || p['poolid'])
         { poolid: poolid }
       end
+    rescue StandardError => e
+      Foreman::Logging.exception("Failed to load Proxmox pools for compute resource #{compute_resource.id}", e)
+      failed_metadata_sections << 'pools'
+      []
     end
 
     def extract_storages(compute_resource, nodes)
@@ -150,7 +187,7 @@ module ForemanFogProxmox
       end
     end
 
-    def extract_images(compute_resource)
+    def extract_images(compute_resource, failed_metadata_sections)
       images = compute_resource.images
       images = images.order(:name) if images.respond_to?(:order)
 
@@ -164,6 +201,10 @@ module ForemanFogProxmox
           disks: image_disks(compute_resource, uuid),
         }
       end
+    rescue StandardError => e
+      Foreman::Logging.exception("Failed to load Proxmox images for compute resource #{compute_resource.id}", e)
+      failed_metadata_sections << 'images'
+      []
     end
 
     def image_disks(compute_resource, uuid)

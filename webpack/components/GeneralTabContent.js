@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { PageSection, Divider } from '@patternfly/react-core';
 import { translate as __ } from 'foremanReact/common/I18n';
 import InputField from './common/FormInputs';
+import WarningMessage from './common/WarningMessage';
 import { createStoragesMap } from './ProxmoxStoragesUtils';
 
 const GeneralTabContent = ({
@@ -10,7 +11,9 @@ const GeneralTabContent = ({
   fromProfile,
   newVm,
   nodesMap,
+  skippedNodes,
   poolsMap,
+  failedSections,
   imagesMap,
   storages,
   provisionMethod,
@@ -47,6 +50,18 @@ const GeneralTabContent = ({
         options={nodesMap}
         onChange={handleChange}
       />
+      {skippedNodes.length > 0 && (
+        <div className="form-group">
+          <div className="col-md-4 col-md-offset-2">
+            <WarningMessage id="helper-skipped-proxmox-nodes">
+              {__(
+                'Unable to retrieve resources from the following nodes. These nodes will not be available for VM creation: '
+              )}{' '}
+              {skippedNodes.join(', ')}
+            </WarningMessage>
+          </div>
+        </div>
+      )}
       <InputField
         name={general?.pool?.name}
         label={__('Pool')}
@@ -55,6 +70,17 @@ const GeneralTabContent = ({
         options={poolsMap}
         onChange={handleChange}
       />
+      {failedSections.includes('pools') && (
+        <div className="form-group">
+          <div className="col-md-4 col-md-offset-2">
+            <WarningMessage id="proxmox-pools-warning">
+              {__(
+                'Failed to load Proxmox pools. Please check your compute resource connection.'
+              )}
+            </WarningMessage>
+          </div>
+        </div>
+      )}
       {(newVm || fromProfile) && general?.type?.value === 'qemu' && (
         <InputField
           name={general?.isoUploadStorage?.name}
@@ -139,7 +165,9 @@ GeneralTabContent.propTypes = {
   fromProfile: PropTypes.bool,
   newVm: PropTypes.bool,
   nodesMap: PropTypes.array,
+  skippedNodes: PropTypes.arrayOf(PropTypes.string),
   poolsMap: PropTypes.array,
+  failedSections: PropTypes.arrayOf(PropTypes.string),
   imagesMap: PropTypes.array,
   storages: PropTypes.array,
   provisionMethod: PropTypes.string,
@@ -152,7 +180,9 @@ GeneralTabContent.defaultProps = {
   fromProfile: false,
   newVm: false,
   nodesMap: [],
+  skippedNodes: [],
   poolsMap: [],
+  failedSections: [],
   imagesMap: [],
   storages: [],
   provisionMethod: 'build',

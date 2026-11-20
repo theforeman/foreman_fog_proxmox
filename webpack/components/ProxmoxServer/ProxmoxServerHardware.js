@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import InputField from '../common/FormInputs';
 import ProxmoxComputeSelectors from '../ProxmoxComputeSelectors';
 import CPUFlagsModal from './components/CPUFlagsModal';
+import Rng from './components/Rng';
 
 const cpuFlagsHash = [
   { key: 'md_clear', label: 'md-clear' },
@@ -62,7 +63,7 @@ const filterAndAddDescriptions = hardware =>
     return acc;
   }, {});
 
-const ProxmoxServerHardware = ({ hardware }) => {
+const ProxmoxServerHardware = ({ hardware, paramScope }) => {
   const [hw, setHw] = useState(hardware);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -90,6 +91,7 @@ const ProxmoxServerHardware = ({ hardware }) => {
 
   return (
     <div>
+      <Rng initialRng={hardware.rng || null} paramScope={paramScope} />
       <PageSection padding={{ default: 'noPadding' }}>
         <Title ouiaId="proxmox-server-hardware-cpu" headingLevel="h3">
           {__('CPU')}
@@ -203,10 +205,12 @@ const ProxmoxServerHardware = ({ hardware }) => {
 
 ProxmoxServerHardware.propTypes = {
   hardware: PropTypes.object,
+  paramScope: PropTypes.string,
 };
 
 ProxmoxServerHardware.defaultProps = {
   hardware: {},
+  paramScope: '',
 };
 
 export default ProxmoxServerHardware;

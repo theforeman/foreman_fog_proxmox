@@ -20,15 +20,13 @@
 require 'fog/proxmox/helpers/disk_helper'
 require 'fog/proxmox/helpers/nic_helper'
 require 'fog/proxmox/helpers/cpu_helper'
-require 'fog/proxmox/helpers/agent_helper'
-require 'fog/proxmox/helpers/hotplug_helper'
+require 'fog/proxmox/helpers/rng_helper'
 require 'foreman_fog_proxmox/value'
 require 'foreman_fog_proxmox/hash_collection'
 
 # Convert a foreman form server hash into a fog-proxmox server attributes hash
 module ProxmoxVMConfigHelper
-  HOTPLUG_DEVICES = Fog::Proxmox::HotplugHelper::DEVICES
-  AGENT_FIELDS = %w[agent_freeze_fs agent_fstrim_cloned_disks agent_type].freeze
+  include ProxmoxVMOptionsHelper
 
   def object_to_config_hash(vm, type)
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
@@ -43,7 +41,7 @@ module ProxmoxVMConfigHelper
   end
 
   def general_a(type)
-    general_a = ['node_id', 'type', 'config_attributes', 'efidisk_attributes', 'volumes_attributes', 'interfaces_attributes', 'image_id']
+    general_a = ['node_id', 'type', 'config_attributes', 'efidisk_attributes', 'rng_attributes', 'volumes_attributes', 'interfaces_attributes', 'image_id']
     general_a += ['firmware_type', 'provision_method', 'container_volumes', 'server_volumes', 'start', 'start_after_create', 'iso_upload_storage', 'full_clone']
     general_a += ['name'] if type == 'lxc'
     general_a
@@ -127,9 +125,17 @@ module ProxmoxVMConfigHelper
     if type == 'qemu'
       parsed_vm = parse_hotplug(parsed_vm)
       parsed_vm = parse_agent(parsed_vm)
+      parsed_vm = parsed_typed_rng(args, parsed_vm)
     end
     logger.debug("parsed_typed_config(#{type}): parsed_vm=#{parsed_vm}")
     parsed_vm
+  end
+
+  def parsed_typed_rng(args, parsed_vm)
+    rng_attributes = args['rng_attributes'].to_h.symbolize_keys.reject { |_key, value| value.blank? }
+    return parsed_vm if rng_attributes.empty?
+
+    parsed_vm.merge(Fog::Proxmox::RngHelper.flatten(rng_attributes))
   end
 
   def parse_typed_memory(args, type)
@@ -161,40 +167,5 @@ module ProxmoxVMConfigHelper
     end
     logger.debug("parse_typed_cpu(#{type}): cpu=#{cpu}")
     cpu
-  end
-
-  def parse_agent(config)
-    config = config.with_indifferent_access
-    return config unless AGENT_FIELDS.any? { |key| config.key?(key) }
-
-    agent_enabled = bool_to_proxmox_flag(config['agent'])
-    freeze_fs = bool_to_proxmox_flag(config.delete('agent_freeze_fs'))
-    fstrim = bool_to_proxmox_flag(config.delete('agent_fstrim_cloned_disks'))
-    agent_type = config.delete('agent_type').presence || 'virtio'
-    config['agent'] = Fog::Proxmox::AgentHelper.flatten(
-      'enabled' => agent_enabled, 'freeze-fs-on-backup' => freeze_fs,
-      'fstrim_cloned_disks' => fstrim, 'type' => agent_type
-    )
-    config
-  end
-
-  def bool_to_proxmox_flag(value)
-    Foreman::Cast.to_bool(value) ? '1' : '0'
-  end
-
-  def parse_hotplug(config)
-    config = config.with_indifferent_access
-    return config unless HOTPLUG_DEVICES.any? { |device| config.key?("hotplug_#{device}") }
-
-    hotplug_enabled = Foreman::Cast.to_bool(config['hotplug'])
-
-    hotplug_devices_enabled = HOTPLUG_DEVICES.select do |device|
-      Foreman::Cast.to_bool(config.delete("hotplug_#{device}"))
-    end
-
-    config['hotplug'] = Fog::Proxmox::HotplugHelper.flatten(
-      enabled: hotplug_enabled, devices: hotplug_enabled ? hotplug_devices_enabled : []
-    )
-    config
   end
 end

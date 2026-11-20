@@ -17,6 +17,7 @@ const InputField = ({
   checked,
   error,
   tooltip,
+  placeholder,
 }) => {
   const renderOptions = opts =>
     opts.map(option => (
@@ -35,6 +36,7 @@ const InputField = ({
           className="form-control"
           rows="3"
           cols="50"
+          placeholder={placeholder}
           value={value}
           onChange={onChange}
         />
@@ -74,6 +76,7 @@ const InputField = ({
           name={name}
           type={type}
           className="form-control"
+          placeholder={placeholder}
           value={value}
           onChange={onChange}
           disabled={disabled}
@@ -140,6 +143,7 @@ InputField.propTypes = {
   ),
   error: PropTypes.string,
   tooltip: PropTypes.string,
+  placeholder: PropTypes.string,
 };
 
 InputField.defaultProps = {
@@ -155,6 +159,7 @@ InputField.defaultProps = {
   options: [],
   error: '',
   tooltip: '',
+  placeholder: '',
 };
 
 export default InputField;

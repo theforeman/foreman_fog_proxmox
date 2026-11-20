@@ -35,6 +35,7 @@ module ProxmoxVMAttrsHelper
     vm_h[:interfaces] = network_attrs(param_scope, vms.interfaces)
     vm_h[:disks] = volumes_attrs(param_scope, vms.volumes)
     vm_h[:efidisk] = efidisk_attrs(param_scope, vms.efidisk) if vms.efidisk.present?
+    vm_h[:rng] = rng_attrs(param_scope, vms.config.rng) if vms.config.rng.present?
     vm_h.merge!(cpu_flags_attrs(param_scope, vms.config))
     if vms.type == 'qemu'
       vm_h.merge!(hotplug_attrs(param_scope, vms.config))
@@ -45,7 +46,7 @@ module ProxmoxVMAttrsHelper
 
   def base_vm_attrs(param_scope, vms)
     vm_h = ActiveSupport::HashWithIndifferentAccess.new
-    keys = [:vmid, :node_id, :type, :pool, :efidisk]
+    keys = [:vmid, :node_id, :type, :pool, :efidisk, :rng]
     main = vms.attributes.select { |key, _value| keys.include? key }
     vms.config.all_attributes.each do |key, value|
       camel_key = key.to_s.include?('_') ? snake_to_camel(key.to_s).to_sym : key

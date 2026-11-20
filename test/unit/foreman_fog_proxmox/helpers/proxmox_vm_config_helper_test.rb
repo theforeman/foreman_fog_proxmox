@@ -5,130 +5,43 @@ require 'test_plugin_helper'
 module ForemanFogProxmox
   class ProxmoxVMConfigHelperTest < ActiveSupport::TestCase
     include ProxmoxVMConfigHelper
+    include ProxmoxVMOsTemplateHelper
 
-    describe '#parse_agent' do
-      let(:config) do
+    describe '#parsed_typed_config RNG attributes' do
+      let(:args) do
         {
-          'agent' => '1',
-          'agent_freeze_fs' => '0',
-          'agent_fstrim_cloned_disks' => '1',
-          'agent_type' => 'isa',
-          'memory' => '1024',
-        }
+          'config_attributes' => { 'memory' => '1024' },
+          'rng_attributes' => { 'source' => '/dev/urandom', 'max_bytes' => '', 'period' => '' },
+        }.with_indifferent_access
       end
 
-      it 'serializes selected agent options and removes the form fields' do
-        assert_equal({
-          'agent' => 'enabled=1,freeze-fs-on-backup=0,fstrim_cloned_disks=1,type=isa',
-          'memory' => '1024',
-        }, parse_agent(config))
+      it 'serializes RNG attributes for QEMU and omits blank options' do
+        parsed_vm = parsed_typed_config(args, 'qemu')
+
+        assert_equal 'source=/dev/urandom', parsed_vm['rng0']
+        assert_equal '1024', parsed_vm['memory']
+        assert_not parsed_vm.key?('rng_attributes')
       end
 
-      it 'serializes a disabled agent while preserving selected options' do
-        config['agent'] = '0'
+      it 'preserves zero values for RNG rate limiting' do
+        args['rng_attributes']['max_bytes'] = '0'
+        args['rng_attributes']['period'] = '1000'
 
-        assert_equal({
-          'agent' => 'enabled=0,freeze-fs-on-backup=0,fstrim_cloned_disks=1,type=isa',
-          'memory' => '1024',
-        }, parse_agent(config))
+        rng = Fog::Proxmox::RngHelper.extract(parsed_typed_config(args, 'qemu')['rng0'])
+
+        assert_equal({ source: '/dev/urandom', max_bytes: '0', period: '1000' }, rng)
       end
 
-      [nil, ''].each do |type|
-        it "defaults the agent type to virtio when it is #{type.inspect}" do
-          config['agent_type'] = type
+      it 'leaves RNG unset for absent or empty attributes' do
+        [nil, {}, { 'source' => '', 'max_bytes' => '', 'period' => '' }].each do |rng|
+          args['rng_attributes'] = rng
 
-          assert_equal({
-            'agent' => 'enabled=1,freeze-fs-on-backup=0,fstrim_cloned_disks=1,type=virtio',
-            'memory' => '1024',
-          }, parse_agent(config))
+          assert_not parsed_typed_config(args, 'qemu').key?('rng0')
         end
       end
 
-      it 'serializes boolean checkbox values' do
-        config['agent'] = true
-        config['agent_freeze_fs'] = true
-        config['agent_fstrim_cloned_disks'] = false
-
-        assert_equal({
-          'agent' => 'enabled=1,freeze-fs-on-backup=1,fstrim_cloned_disks=0,type=isa',
-          'memory' => '1024',
-        }, parse_agent(config))
-      end
-
-      it 'preserves an existing agent configuration when no form fields are submitted' do
-        config = { 'agent' => 'enabled=1,freeze-fs=0,fstrim_cloned_disks=1,type=isa', 'memory' => '1024' }
-
-        assert_equal config, parse_agent(config)
-      end
-
-      it 'preserves a legacy agent configuration when no form fields are submitted' do
-        config = { 'agent' => 'enabled=1,freeze-fs-on-backup=0', 'memory' => '1024' }
-
-        assert_equal config, parse_agent(config)
-      end
-
-      it 'keeps missing checkbox options disabled for a partial submission' do
-        assert_equal({
-          'agent' => 'enabled=0,freeze-fs-on-backup=0,fstrim_cloned_disks=0,type=isa',
-        }, parse_agent(agent_type: 'isa'))
-      end
-
-      it 'defaults a whitespace-only agent type to virtio' do
-        config['agent_type'] = '  '
-
-        assert_equal 'enabled=1,freeze-fs-on-backup=0,fstrim_cloned_disks=1,type=virtio', parse_agent(config)['agent']
-      end
-
-      it 'leaves the agent unset when no agent fields are submitted' do
-        config = { 'memory' => '1024' }
-
-        assert_equal config, parse_agent(config)
-      end
-    end
-
-    describe '#parse_hotplug' do
-      let(:config) do
-        {
-          'hotplug' => '1',
-          'hotplug_disk' => '1',
-          'hotplug_network' => '1',
-          'hotplug_usb' => '0',
-          'hotplug_cpu' => '0',
-          'hotplug_memory' => '0',
-          'memory' => '1024',
-        }
-      end
-
-      it 'serializes two selected devices as disk,network and removes the form fields' do
-        assert_equal({ 'hotplug' => 'disk,network', 'memory' => '1024' }, parse_hotplug(config))
-      end
-
-      it 'preserves raw hotplug settings when device form fields are absent' do
-        [nil, '0', '1', 'disk,cpu,memory'].each do |hotplug|
-          config = { 'hotplug' => hotplug, 'memory' => '1024' }
-
-          assert_equal config, parse_hotplug(config)
-        end
-      end
-
-      it 'disables hotplug when no devices are selected' do
-        HOTPLUG_DEVICES.each { |device| config["hotplug_#{device}"] = '0' }
-
-        assert_equal({ 'hotplug' => '0', 'memory' => '1024' }, parse_hotplug(config))
-      end
-
-      it 'handles symbol keys and boolean checkbox values' do
-        assert_equal({ 'hotplug' => 'disk,memory' }, parse_hotplug(hotplug: true, hotplug_disk: true, hotplug_memory: true))
-      end
-
-      it 'disables hotplug when the main checkbox is missing' do
-        assert_equal({ 'hotplug' => '0' }, parse_hotplug(hotplug_disk: true))
-      end
-
-      it 'serializes disabled hotplug as 0 even when devices are selected' do
-        config['hotplug'] = '0'
-
-        assert_equal({ 'hotplug' => '0', 'memory' => '1024' }, parse_hotplug(config))
+      it 'ignores RNG attributes for containers' do
+        assert_not parsed_typed_config(args, 'lxc').key?('rng0')
       end
     end
   end

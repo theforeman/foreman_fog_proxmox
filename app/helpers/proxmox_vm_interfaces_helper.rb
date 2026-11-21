@@ -50,7 +50,7 @@ module ProxmoxVMInterfacesHelper
     when 'qemu'
       keys += ['model', 'firewall', 'link_down', 'queues']
     when 'lxc'
-      keys += ['name', 'ip', 'ip6', 'gw', 'gw6', 'dhcp', 'dhcp6', 'cidr', 'cidr6', 'firewall']
+      keys += ['name', 'ip', 'ip6', 'gw', 'gw6', 'dhcp', 'dhcp6', 'cidr', 'cidr6', 'firewall', 'mtu', 'trunks', 'link_down']
     end
     keys
   end
@@ -118,6 +118,7 @@ module ProxmoxVMInterfacesHelper
       interface_compute_attributes_typed_keys(type).each do |key|
         ForemanFogProxmox::HashCollection.add_and_format_element(nic, key.to_sym, interface_attributes_h, key)
       end
+      nic[:trunks] = nic[:trunks].to_s.tr(',', ';') unless ForemanFogProxmox::Value.empty?(nic[:trunks])
       compute_dhcps(interface_attributes_h)
       logger.debug("add_or_delete_typed_interface(#{type}): add nic=#{nic}")
       interfaces_to_add.push(Fog::Proxmox::NicHelper.flatten(nic))

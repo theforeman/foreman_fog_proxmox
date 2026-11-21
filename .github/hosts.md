@@ -61,6 +61,7 @@ The container form slightly differs from the server one:
 
 * OS template is required
 * advanced options are slightly different
+* the architecture selector supports `amd64`, `i386`, `arm64`, and `armhf`
 
 Container VM Proxmox config tab:
 

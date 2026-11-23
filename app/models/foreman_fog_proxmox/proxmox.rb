@@ -179,7 +179,9 @@ module ForemanFogProxmox
     end
 
     def error_message(e)
-      "Failed to create Proxmox compute resource: #{e.response.reason_phrase}.
+      # only HTTP errors carry a response, socket errors (DNS, refused, timeout) do not
+      reason = e.try(:response)&.reason_phrase || e.message
+      "Failed to create Proxmox compute resource: #{reason}.
        Either provided credentials or FQDN is wrong or
        your server cannot connect to Proxmox due to network issues."
     end

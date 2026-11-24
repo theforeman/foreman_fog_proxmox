@@ -82,13 +82,16 @@ module ForemanFogProxmox
       assert_instance_of Array, json_response
     end
     test 'should get metadata' do
-      node_a = stub(node: 'node-a')
-      node_b = stub(node: 'node-b')
+      node_a = stub(node: 'node-a', status: 'online')
+      node_b = stub(node: 'node-b', status: 'online')
+      offline_node = stub(node: 'node-offline', status: 'offline')
       node_a_storages = [{ storage: 'shared-iso', content: 'iso', avail: 100, used: 20, total: 120, shared: 1 }]
       node_b_storages = [{ storage: 'local', content: 'iso', avail: 200, used: 30, total: 230, shared: 0 }]
       node_a_bridges = [{ iface: 'vmbr0' }]
       node_b_bridges = [{ iface: 'vmbr1' }]
-      @compute_resource.stubs(:nodes).returns([node_a, node_b])
+      @compute_resource.stubs(:nodes).returns([node_a, offline_node, node_b])
+      @compute_resource.expects(:storages).with('node-offline', nil).returns([])
+      @compute_resource.expects(:bridges).with('node-offline').returns([])
       @compute_resource.expects(:storages).with('node-a', nil).returns(node_a_storages)
       @compute_resource.expects(:storages).with('node-b', nil).returns(node_b_storages)
       @compute_resource.expects(:bridges).with('node-a').returns(node_a_bridges)
@@ -105,6 +108,11 @@ module ForemanFogProxmox
       assert json_response.key?('storages')
       assert json_response.key?('bridges')
       assert_instance_of Array, json_response['nodes']
+      assert_equal [
+        { 'node' => 'node-a', 'status' => 'online' },
+        { 'node' => 'node-offline', 'status' => 'offline' },
+        { 'node' => 'node-b', 'status' => 'online' },
+      ], json_response['nodes']
       assert_instance_of Array, json_response['pools']
       assert_instance_of Array, json_response['storages']
       assert_instance_of Array, json_response['bridges']
@@ -128,7 +136,7 @@ module ForemanFogProxmox
 
     ['pools', 'images'].each do |section|
       test "metadata preserves other sections when #{section} fails" do
-        @compute_resource.stubs(:nodes).returns([stub(node: 'healthy')])
+        @compute_resource.stubs(:nodes).returns([stub(node: 'healthy', status: 'online')])
         @compute_resource.stubs(:storages).with('healthy', nil).returns([{ storage: 'local' }])
         @compute_resource.stubs(:bridges).with('healthy').returns([{ iface: 'vmbr0' }])
         @compute_resource.stubs(:pools).returns([{ poolid: 'pool-a' }])
@@ -145,7 +153,7 @@ module ForemanFogProxmox
         metadata = JSON.parse(@response.body)
         assert_empty metadata[section]
         assert_equal [section], metadata['failed_metadata_sections']
-        assert_equal [{ 'node' => 'healthy' }], metadata['nodes']
+        assert_equal [{ 'node' => 'healthy', 'status' => 'online' }], metadata['nodes']
         assert_equal ['local'], (metadata['storages'].map { |storage| storage['storage'] })
         assert_equal [{ 'node_id' => 'healthy', 'iface' => 'vmbr0' }], metadata['bridges']
         other_section = section == 'pools' ? 'images' : 'pools'
@@ -173,7 +181,9 @@ module ForemanFogProxmox
 
     test 'metadata preserves successful sections when storage or bridge requests fail' do
       @compute_resource.stubs(:nodes).returns([
-                                                stub(node: 'storage-failure'), stub(node: 'bridge-failure'), stub(node: 'healthy')
+                                                stub(node: 'storage-failure', status: 'online'),
+                                                stub(node: 'bridge-failure', status: 'online'),
+                                                stub(node: 'healthy', status: 'online'),
                                               ])
       storage_error = StandardError.new('storage request failed')
       bridge_error = StandardError.new('bridge request failed')
@@ -205,7 +215,7 @@ module ForemanFogProxmox
 
     ['storages', 'bridges'].each do |section|
       test "metadata keeps node when #{section} fails and the other section is empty" do
-        @compute_resource.stubs(:nodes).returns([stub(node: 'partial')])
+        @compute_resource.stubs(:nodes).returns([stub(node: 'partial', status: 'online')])
         @compute_resource.stubs(:storages).with('partial', nil).returns([])
         @compute_resource.stubs(:bridges).with('partial').returns([])
         error = StandardError.new("#{section} unavailable")
@@ -217,7 +227,7 @@ module ForemanFogProxmox
 
         assert_response :success
         metadata = JSON.parse(@response.body)
-        assert_equal [{ 'node' => 'partial' }], metadata['nodes']
+        assert_equal [{ 'node' => 'partial', 'status' => 'online' }], metadata['nodes']
         assert_equal ["#{section}:partial"], metadata['failed_metadata_sections']
         assert_empty metadata['storages']
         assert_empty metadata['bridges']
@@ -244,9 +254,22 @@ module ForemanFogProxmox
       assert_equal ['storages:offline', 'bridges:offline'], metadata['failed_metadata_sections']
     end
 
+    test 'metadata returns an empty node list when no nodes are available' do
+      @compute_resource.expects(:storages).never
+      @compute_resource.expects(:bridges).never
+
+      get :metadata, params: { :compute_resource_id => @compute_resource.id }, session: set_session_user
+
+      assert_response :success
+      json_response = JSON.parse(@response.body)
+      assert_empty json_response['nodes']
+      assert_empty json_response['storages']
+      assert_empty json_response['bridges']
+    end
+
     test 'metadata includes shared storage for every node where it is available' do
-      node_a = stub(node: 'node-a')
-      node_b = stub(node: 'node-b')
+      node_a = stub(node: 'node-a', status: 'online')
+      node_b = stub(node: 'node-b', status: 'online')
       shared_storage = {
         storage: 'shared-iso',
         content: 'iso',
@@ -279,7 +302,7 @@ module ForemanFogProxmox
       ]
       service = storage_service(inventory)
       service.expects(:list_volumes).never
-      @compute_resource.stubs(:nodes).returns([stub(node: 'proxmox')])
+      @compute_resource.stubs(:nodes).returns([stub(node: 'proxmox', status: 'online')])
 
       get :metadata, params: { compute_resource_id: @compute_resource.id }, session: set_session_user
 
@@ -311,7 +334,7 @@ module ForemanFogProxmox
       service = mock('storage service')
       service.expects(:list_storages).with('proxmox', {}).returns(storages)
       collection = Fog::Proxmox::Compute::Storages.new(service: service, node_id: 'proxmox')
-      node = stub(storages: collection)
+      node = stub(storages: collection, status: 'online')
       nodes = mock('nodes')
       nodes.expects(:get).with('proxmox').returns(node)
       @compute_resource.unstub(:storages)

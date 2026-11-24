@@ -142,7 +142,7 @@ module ForemanFogProxmox
     end
 
     def extract_nodes(nodes)
-      nodes.map { |n| { node: n.node } }
+      nodes.map { |n| { node: n.node, status: n.status } }
     end
 
     def extract_pools(compute_resource, failed_metadata_sections)

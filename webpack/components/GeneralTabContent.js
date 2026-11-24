@@ -12,6 +12,7 @@ const GeneralTabContent = ({
   newVm,
   nodesMap,
   skippedNodes,
+  isSelectedNodeUnavailable,
   poolsMap,
   failedSections,
   imagesMap,
@@ -48,6 +49,11 @@ const GeneralTabContent = ({
         type="select"
         value={general?.nodeId?.value}
         options={nodesMap}
+        error={
+          isSelectedNodeUnavailable
+            ? __('The selected node is offline. Please select an online node.')
+            : ''
+        }
         onChange={handleChange}
       />
       {skippedNodes.length > 0 && (
@@ -166,6 +172,7 @@ GeneralTabContent.propTypes = {
   newVm: PropTypes.bool,
   nodesMap: PropTypes.array,
   skippedNodes: PropTypes.arrayOf(PropTypes.string),
+  isSelectedNodeUnavailable: PropTypes.bool,
   poolsMap: PropTypes.array,
   failedSections: PropTypes.arrayOf(PropTypes.string),
   imagesMap: PropTypes.array,
@@ -181,6 +188,7 @@ GeneralTabContent.defaultProps = {
   newVm: false,
   nodesMap: [],
   skippedNodes: [],
+  isSelectedNodeUnavailable: false,
   poolsMap: [],
   failedSections: [],
   imagesMap: [],

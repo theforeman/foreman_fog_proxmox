@@ -30,7 +30,7 @@ module ForemanFogProxmox
         super
         return true unless @host.compute_resource.instance_of?(ForemanFogProxmox::Proxmox)
 
-        @host.compute_attributes[:vmid] = next_vmid
+        @host.compute_attributes[:vmid] = @host.compute_resource.next_vmid
         @host.compute_attributes[:interfaces_attributes].each do |index, interface_attributes|
           @host.compute_attributes[:interfaces_attributes][index] =
             interface_attributes.merge(macaddr: nil).merge(hwaddr: nil).merge(ip: nil).merge(ip6: nil)

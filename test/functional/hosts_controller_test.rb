@@ -16,7 +16,8 @@ module ForemanFogProxmox
           include ForemanFogProxmox::HostsController
         end
         @controller = controller_class.new
-        @controller.stubs(:next_vmid).returns(101)
+        @compute_resource = FactoryBot.build_stubbed(:proxmox_cr)
+        @compute_resource.stubs(:next_vmid).returns(101)
         @compute_attributes = {
           vmid: 100,
           interfaces_attributes: {},
@@ -24,8 +25,16 @@ module ForemanFogProxmox
           config_attributes: { bios: 'ovmf', is_secure_boot: '1' },
         }.with_indifferent_access
         @controller.host = stub('host',
-          compute_resource: FactoryBot.build_stubbed(:proxmox_cr),
+          compute_resource: @compute_resource,
           compute_attributes: @compute_attributes)
+      end
+
+      test 'gets the cloned host VMID from its compute resource' do
+        @compute_resource.expects(:next_vmid).returns(102)
+
+        @controller.clone
+
+        assert_equal 102, @controller.host.compute_attributes[:vmid]
       end
 
       test 'resets the EFI disk volume ID in the cloned host compute attributes' do
